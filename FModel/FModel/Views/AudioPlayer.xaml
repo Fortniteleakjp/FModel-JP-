@@ -85,7 +85,7 @@
                     </Grid>
                     <TextBox Grid.Column="0" Grid.ColumnSpan="2" AcceptsTab="False" AcceptsReturn="False"
                              Padding="25 0 0 0" HorizontalAlignment="Stretch" TextChanged="OnFilterTextChanged"
-                             adonisExtensions:WatermarkExtension.Watermark="Search by name..." />
+                             adonisExtensions:WatermarkExtension.Watermark="検索するファイル名を入力してください..." />
                 </Grid>
                 <ListBox DockPanel.Dock="Top" Style="{StaticResource AudioFilesListBox}" PreviewMouseDoubleClick="OnAudioFileMouseDoubleClick">
                     <ListBox.ContextMenu>
