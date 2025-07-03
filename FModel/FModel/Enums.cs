@@ -35,31 +35,31 @@ public enum EStatusKind
 
 public enum EAesReload
 {
-    [Description("Always")]
+    [Description("起動時")]
     Always,
-    [Description("Never")]
+    [Description("しない")]
     Never,
-    [Description("Once Per Day")]
+    [Description("１日に１回")]
     OncePerDay
 }
 
 public enum EDiscordRpc
 {
-    [Description("Always")]
+    [Description("常に表示")]
     Always,
-    [Description("Never")]
+    [Description("常に表示しない")]
     Never
 }
 
 public enum ELoadingMode
 {
-    [Description("Multiple")]
+    [Description("指定したアーカイブファイルのみ")]
     Multiple,
-    [Description("All")]
+    [Description("すべてのファイル")]
     All,
-    [Description("All (New)")]
+    [Description("追加・移動したファイル")]
     AllButNew,
-    [Description("All (Modified)")]
+    [Description("更新されたファイル)")]
     AllButModified
 }
 

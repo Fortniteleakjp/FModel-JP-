@@ -46,8 +46,8 @@
         </Grid.RowDefinitions>
 
         <Menu Grid.Row="0">
-            <MenuItem Header="Directory">
-                <MenuItem Header="Selector" Command="{Binding MenuCommand}" CommandParameter="Directory_Selector">
+            <MenuItem Header="ディレクトリ">
+                <MenuItem Header="セレクター" Command="{Binding MenuCommand}" CommandParameter="Directory_Selector">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -56,7 +56,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="AES" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding Status.IsReady}">
+                <MenuItem Header="AESキー" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -65,7 +65,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="バックアップ" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding Status.IsReady}">
+                <MenuItem Header="バックアップファイル" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -107,8 +107,8 @@
                 <MenuItem Header="音源を自動で開く" IsCheckable="True" StaysOpenOnClick="True"
                           IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
             </MenuItem>
-            <MenuItem Header="ビューア">
-                <MenuItem Header="3D Viewer" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
+            <MenuItem Header="表示">
+                <MenuItem Header="3Dビューアー" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -126,7 +126,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="画像生成" Command="{Binding MenuCommand}" CommandParameter="Views_ImageMerger">
+                <MenuItem Header="画像結合" Command="{Binding MenuCommand}" CommandParameter="Views_ImageMerger">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -210,7 +210,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="ロードモード" VerticalAlignment="Center" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="読み込み方式" VerticalAlignment="Center" />
                                 <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
                                           SelectedItem="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
                                     <ComboBox.ItemTemplate>
@@ -219,7 +219,7 @@
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
-                                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="Load"
+                                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="読み込む"
                                         Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding Status.IsReady}"
                                         CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
                             </Grid>
@@ -282,7 +282,7 @@
                                            Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
                                     <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
                                         <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}'{0}' has {1} folders and {2} packages">
+                                            <MultiBinding StringFormat="{}'{0}' 直下には {1} 個のフォルダと {2} つのファイルがあります">
                                                 <Binding Path="SelectedItem.Header" ElementName="AssetsFolderName" FallbackValue="None" />
                                                 <Binding Path="SelectedItem.FoldersView.Count" ElementName="AssetsFolderName" FallbackValue="0" />
                                                 <Binding Path="SelectedItem.AssetsList.Assets.Count" ElementName="AssetsFolderName" FallbackValue="0" />
@@ -446,7 +446,7 @@
                                 </Grid>
                                 <TextBox Grid.Column="0" Grid.ColumnSpan="2" x:Name="AssetsSearchName" AcceptsTab="False" AcceptsReturn="False"
                                          Padding="25 0 0 0" HorizontalAlignment="Stretch" TextChanged="OnFilterTextChanged"
-                                         adonisExtensions:WatermarkExtension.Watermark="Search by name..." />
+                                         adonisExtensions:WatermarkExtension.Watermark="検索するファイル名を入力してください..." />
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                                     <Button ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
