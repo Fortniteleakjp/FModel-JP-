@@ -117,7 +117,7 @@ public class FModelApiEndpoint : AbstractApiProvider
             AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
         }
-        AutoUpdater.Start("https://api.fmodel.app/v1/infos/Qa");
+        AutoUpdater.Start("https://fljpapi2-sjnq.onrender.com/v1/infos/Qa");
     }
 
     private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
