@@ -294,7 +294,7 @@
                                 <ToolTip>
                                     <TextBlock>
                                         <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0} has {1} folders and {2} packages">
+                                            <MultiBinding StringFormat="{}'{0}' 直下には {1} 個のフォルダと {2} つのファイルがあります">
                                                 <Binding Path="Header" />
                                                 <Binding Path="FoldersView.Count" />
                                                 <Binding Path="AssetsList.Assets.Count" />

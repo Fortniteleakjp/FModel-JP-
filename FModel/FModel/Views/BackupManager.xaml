@@ -9,7 +9,7 @@
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.225'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="バックアップ生成" />
+            <Setter Property="Title" Value="Backup file を生成" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -36,12 +36,12 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Text="You can only use backup files when loading new &amp; modified archives. FModel will compare your local archives with the backup file you selected to filter packages and only show what you asked. We provide pre-created backups for some popular games but you can still create your own that will store information about all the game's packages at time T, for later use." />
+                   Text="追加 / 更新 された アーカイブ を読み込む際、バックアップファイル が必要です。FModel は、選択された バックアップファイル と現在の アーカイブ を比較し、指定した条件に一致するファイルのみを表示します。ここでは、バックアップファイル が作成できます。これにより、現時点でのゲーム内すべてのファイル情報を保存し、後で使用できます。" />
 
         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="OnCreateBackupClick"
-                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Content="Create" />
+                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Content="最新の バックアップファイル を作成" />
 
-        <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" Tag="PRE-CREATED BACKUP FILES" />
+        <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" Tag="クラウドからダウンロード" />
 
         <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center"
                    Text="{Binding SelectedBackup.FileSize, Converter={x:Static converters:SizeToStringConverter.Instance}, FallbackValue='Backup', StringFormat={}Backup ({0})}" />
@@ -62,7 +62,7 @@
                 </Style>
             </ComboBox.Style>
         </ComboBox>
-        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Content="Download" Click="OnDownloadClick">
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Content="ダウンロード" Click="OnDownloadClick">
             <Button.Style>
                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                     <Setter Property="IsEnabled" Value="True" />

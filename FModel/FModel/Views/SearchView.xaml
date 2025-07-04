@@ -48,10 +48,10 @@
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                 <Setter Property="Text" Value="{Binding CUE4Parse.SearchVm.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your pattern and press enter..." />
+                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="検索したいフォルダ/ファイル名を入力してください..." />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CUE4Parse.SearchVm.HasRegexEnabled}" Value="True">
-                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your regex pattern and press enter..." />
+                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="検索したいフォルダ/ファイル名を正規表現で入力してください..." />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
