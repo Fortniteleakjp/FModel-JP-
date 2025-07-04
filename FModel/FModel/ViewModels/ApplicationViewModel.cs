@@ -130,7 +130,7 @@ public class ApplicationViewModel : ViewModel
 
     public void RestartWithWarning()
     {
-        MessageBox.Show("It looks like you just changed something.\nFModel will restart to apply your changes.", "Uh oh, a restart is needed", MessageBoxButton.OK, MessageBoxImage.Warning);
+        MessageBox.Show("何かを変更しましたか？\n変更を適用するために FModel は再起動します。", "再起動が必要です", MessageBoxButton.OK, MessageBoxImage.Warning);
         Restart();
     }
 
