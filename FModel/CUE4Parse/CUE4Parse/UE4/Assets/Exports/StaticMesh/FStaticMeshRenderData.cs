@@ -1,3 +1,4 @@
+
 using System;
 using CUE4Parse.UE4.Assets.Exports.Nanite;
 using CUE4Parse.UE4.Assets.Objects;
@@ -103,7 +104,7 @@ public class FStaticMeshRenderData
                     var bValid = Ar.ReadBoolean();
                     if (bValid)
                     {
-                        if (Ar.Game >= EGame.GAME_UE5_0)
+                        if (Ar.Game is >= EGame.GAME_UE5_0 or EGame.GAME_TerminullBrigade)
                         {
                             _ = new FDistanceFieldVolumeData5(Ar);
                         }
