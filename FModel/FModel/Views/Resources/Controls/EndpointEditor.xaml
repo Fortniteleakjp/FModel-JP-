@@ -45,7 +45,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="API" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Column="0" Text="API URL" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Column="2" Margin="0 0 0 5" Text="{Binding Url, Mode=TwoWay}" TextChanged="OnTextChanged" />
                     <Button Grid.Column="4" Content="取得" HorizontalAlignment="Right" Margin="0 0 0 5"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="OnSend"/>

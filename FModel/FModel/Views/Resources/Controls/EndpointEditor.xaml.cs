@@ -32,14 +32,14 @@ public partial class EndpointEditor
 @"この機能を使うには、あなたがAPIやjsonに詳しく知っており、独自のAPIを持っている必要があります。
 
 知識がない場合は、
-API : https://fortnitecentral.genxgames.gg/api/v1/aes
+API URL : https://fortnitecentral.genxgames.gg/api/v1/aes
 取得するもの : $.['mainKey','dynamicKeys']
 を入力してください。",
             EEndpointType.Mapping =>
 @"この機能を使うには、あなたがAPIやjsonに詳しく知っており、独自のAPIを持っている必要があります。
 
 知識がない場合は、
-API : https://fortnitecentral.genxgames.gg/api/v1/mappings
+API URL : https://fortnitecentral.genxgames.gg/api/v1/mappings
 取得するもの : $.[0].['url','fileName']
 を入力してください。",
             _ => ""
