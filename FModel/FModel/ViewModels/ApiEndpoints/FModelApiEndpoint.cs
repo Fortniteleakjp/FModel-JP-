@@ -156,7 +156,7 @@ public class FModelApiEndpoint : AbstractApiProvider
             var currentVersion = new System.Version(args.CurrentVersion);
             UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
 
-            const string message = "A new update is available!";
+            const string message = "新しいバージョンが利用可能です";
             Log.Warning("{message} Version {CurrentVersion} ({Hash})", message, currentVersion, targetHash);
             Helper.OpenWindow<AdonisWindow>(message, () => new UpdateView { Title = message, ResizeMode = ResizeMode.NoResize }.ShowDialog());
         }
@@ -174,7 +174,7 @@ public class FModelApiEndpoint : AbstractApiProvider
         var response = _client.Execute(request);
         if (!response.IsSuccessful || string.IsNullOrEmpty(response.Content)) return;
 
-        _applicationView.CUE4Parse.TabControl.AddTab($"Release Notes: {args.CurrentVersion}");
+        _applicationView.CUE4Parse.TabControl.AddTab($"リリースノート : {args.CurrentVersion}");
         _applicationView.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("changelog");
         _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false, false);
         UserSettings.Default.ShowChangelog = false;
