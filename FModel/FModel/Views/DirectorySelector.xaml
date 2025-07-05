@@ -29,9 +29,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-            <TextBlock Text="Instruction" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="説明" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
             <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center"
-                       Text="できるだけシンプルにしたいと考えております。検出されたゲームからお選びいただくか、ご自身のゲームを手動で追加してください。FModelはこの情報をもとに、必要に応じて読み込み・復号するアーカイブを自動的に検出します。この手順を必ずお忘れなく！" />
+                       Text="'利用可能'から選ぶか、任意のゲームを手動で追加してください([LIVE] はクラウドから、それ以外はパソコンからデータを取得します)。FModelはこの情報をもとに、必要に応じて読み込み・復号するアーカイブを自動的に検出します。この手順を必ずお忘れなく！" />
         </StackPanel>
 
         <GroupBox Grid.Row="1" adonisExtensions:LayerExtension.Layer="2" Margin="10 10 10 18"
@@ -51,7 +51,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="検出されたゲーム" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="利用可能" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:FilterableComboBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3"
                                                  ItemsSource="{Binding DetectedDirectories}" Margin="0 0 0 5"
                                                  Style="{StaticResource UComboBox}"
@@ -64,7 +64,7 @@
                         </ComboBox.ItemTemplate>
                     </controls:FilterableComboBox>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="UE Versions" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="UE バージョン" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:FilterableComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5"
                                                  ItemsSource="{Binding UeGames}"
                                                  Style="{StaticResource UComboBox}"
@@ -76,7 +76,7 @@
                         </ComboBox.ItemTemplate>
                     </controls:FilterableComboBox>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="ゲームのフォルダ" VerticalAlignment="Center" />
                     <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding SelectedDirectory.GameDirectory, Mode=TwoWay}" />
                     <Button Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" />
                     <Button Grid.Row="2" Grid.Column="4" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Padding="0"
@@ -90,7 +90,7 @@
                     </Button>
                 </Grid>
 
-                <Separator Style="{StaticResource CustomSeparator}" Tag="ADD UNDETECTED GAME" />
+                <Separator Style="{StaticResource CustomSeparator}" Tag="未検出のゲームを指定" />
 
                 <Expander ExpandDirection="Down" IsExpanded="False">
                     <Grid MaxWidth="{Binding ActualWidth, ElementName=Hello}">
@@ -109,10 +109,10 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="ゲーム名" VerticalAlignment="Center" />
                         <TextBox x:Name="HelloMyNameIsGame" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="5" />
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="ゲームのフォルダ" VerticalAlignment="Center" />
                         <TextBox x:Name="HelloGameMyNameIsDirectory" Grid.Row="2" Grid.Column="2" />
                         <Button x:Name="OkGuysButWhoFuckingAsked" Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseManualDirectories" />
                         <Button Grid.Row="2" Grid.Column="6" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Padding="0"
