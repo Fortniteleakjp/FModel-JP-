@@ -9,7 +9,7 @@ public class GitHubApiEndpoint : AbstractApiProvider
 {
     public GitHubApiEndpoint(RestClient client) : base(client) { }
 
-    public async Task<GitHubCommit[]> GetCommitHistoryAsync(string branch = "dev", int page = 1, int limit = 30)
+    public async Task<GitHubCommit[]> GetCommitHistoryAsync(string branch = "main", int page = 1, int limit = 30)
     {
         var request = new FRestRequest(Constants.GH_COMMITS_HISTORY);
         request.AddParameter("sha", branch);
