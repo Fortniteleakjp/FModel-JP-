@@ -125,7 +125,7 @@
                         </ComboBox.ItemTemplate>
                     </controls:FilterableComboBox>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="テクスチャプラットフォーム" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the game's platform to ensure texture compatibility" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="テクスチャプラットフォーム *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the game's platform to ensure texture compatibility" />
                     <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.Platforms}" SelectedItem="{Binding SettingsView.SelectedUePlatform, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Margin="0 0 0 5">
@@ -642,7 +642,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Text="* 変更を有効にするには再起動が必要です"
+                <TextBlock Grid.Column="0" Text="注意 : * 印がついた項目の変更を適用するには、FModelの再起動が必要です"
                            HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" Margin="0 0 10 0"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
