@@ -39,7 +39,7 @@ public class UpdateViewModel : ViewModel
     {
         Commits.AddRange(await _apiEndpointView.GitHubApi.GetCommitHistoryAsync());
 
-        var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
+        var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("jp-v1.0.1"); // placeholder 
         var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
 
         for (var i = 0; i < assets.Count; i++)
@@ -47,7 +47,7 @@ public class UpdateViewModel : ViewModel
             var asset = assets[i];
             asset.IsLatest = i == 0;
 
-            var commitSha = asset.Name.SubstringBeforeLast(".zip");
+            var commitSha = asset.Name.SubstringBeforeLast("*.zip");
             var commit = Commits.FirstOrDefault(x => x.Sha == commitSha);
             if (commit != null)
             {
