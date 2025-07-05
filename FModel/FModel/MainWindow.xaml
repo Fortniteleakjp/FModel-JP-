@@ -331,7 +331,7 @@
                                         <!--     </MenuItem.Icon> -->
                                         <!-- </MenuItem> -->
                                         <!-- <Separator /> -->
-                                        <MenuItem Header="Export Folder's Packages Raw Data (.uasset)" Click="OnFolderExportClick">
+                                        <MenuItem Header=".uasset 形式で保存" Click="OnFolderExportClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -340,7 +340,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Folder's Packages Properties (.json)" Click="OnFolderSaveClick">
+                                        <MenuItem Header=".json 形式で保存" Click="OnFolderSaveClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -349,7 +349,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Folder's Packages Textures" Click="OnFolderTextureClick">
+                                        <MenuItem Header="テクスチャを保存" Click="OnFolderTextureClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -358,7 +358,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Folder's Packages Models" Click="OnFolderModelClick">
+                                        <MenuItem Header="モデルを保存" Click="OnFolderModelClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -367,7 +367,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Folder's Packages Animations" Click="OnFolderAnimationClick">
+                                        <MenuItem Header="アニメーションを保存" Click="OnFolderAnimationClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -377,7 +377,7 @@
                                             </MenuItem.Icon>
                                         </MenuItem>
                                         <Separator />
-                                        <MenuItem Header="お気に入りのディレクトリ" Click="OnFavoriteDirectoryClick">
+                                        <MenuItem Header="お気に入りのディレクトリに追加" Click="OnFavoriteDirectoryClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -386,7 +386,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Copy Directory Path" Click="OnCopyDirectoryPathClick">
+                                        <MenuItem Header="パスをコピー" Click="OnCopyDirectoryPathClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -398,7 +398,7 @@
                                     </ContextMenu>
                                 </TreeView.ContextMenu>
                             </TreeView>
-                            <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
+                            <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="フォルダ情報" />
                             <StackPanel Grid.Row="4" Orientation="Vertical" Margin="0 0 0 5">
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
@@ -637,7 +637,7 @@
                                         </ContextMenu>
                                     </ListBox.ContextMenu>
                                 </ListBox>
-                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
+                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="フォルダ情報" />
                                 <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">
                                         <Grid.RowDefinitions>
