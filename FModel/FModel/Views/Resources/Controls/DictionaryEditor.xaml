@@ -36,7 +36,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="HeBrokeIt" Grid.Column="0" Text="IF YOU DON'T KNOW WHAT THIS DOES, DON'T TOUCH IT!"
+                <TextBlock x:Name="HeBrokeIt" Grid.Column="0" Text="これについての知識がない場合、ここは変更しないでください"
                            HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" Margin="0 0 10 0" FontWeight="DemiBold"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
 

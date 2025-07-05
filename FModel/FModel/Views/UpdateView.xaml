@@ -31,9 +31,11 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="10">
-            以下のすべてのリリースはダウンロード可能です。最新のリリースが上に表示されるよう日付順に並んでいます。
-            古いアップデートは定期的に削除し、最新のUEリリースに合わせて一覧を整理しています。
-            手動でアップデートを確認したい場合は、[Help] > [Releases] メニューからこのウィンドウを開くことができます。
+            以下のリリースがダウンロード可能です。リリースは上から順に、日付順に並んでいます。
+            <LineBreak/>
+            手動でアップデートを確認したい場合は、メニューの [Help] > [Releases] からこのウィンドウを開くことができます。
+            <LineBreak/>
+            注意 : 日本語バージョンを利用する場合、ダウンロードは行わないでください
         </TextBlock>
 
         <Grid Grid.Row="1" HorizontalAlignment="Center">
@@ -56,16 +58,16 @@
             <Button Grid.Column="0" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
                     VerticalAlignment="Top" Height="{Binding ActualHeight, ElementName=RemindButton}"
                     Click="OnDownloadLatest">
-                Download Latest Release
+                最新バージョンをダウンロード
             </Button>
             <StackPanel Grid.Column="2">
-                <adonisControls:SplitButton x:Name="RemindButton" Content="Remind Me Now ..." Command="{Binding RemindMeCommand}">
+                <adonisControls:SplitButton x:Name="RemindButton" Content="あとで通知" Command="{Binding RemindMeCommand}">
                     <adonisControls:SplitButton.SplitMenu>
                         <ContextMenu>
-                            <MenuItem Header="In 3 Days" Command="{Binding RemindMeCommand}" CommandParameter="Days" />
-                            <MenuItem Header="Next Week" Command="{Binding RemindMeCommand}" CommandParameter="Week" />
-                            <MenuItem Header="Next Month" Command="{Binding RemindMeCommand}" CommandParameter="Month" />
-                            <MenuItem Header="Never" Command="{Binding RemindMeCommand}" CommandParameter="Never" />
+                            <MenuItem Header="3日後" Command="{Binding RemindMeCommand}" CommandParameter="Days" />
+                            <MenuItem Header="1週間後" Command="{Binding RemindMeCommand}" CommandParameter="Week" />
+                            <MenuItem Header="1ヶ月後" Command="{Binding RemindMeCommand}" CommandParameter="Month" />
+                            <MenuItem Header="通知しない" Command="{Binding RemindMeCommand}" CommandParameter="Never" />
                         </ContextMenu>
                     </adonisControls:SplitButton.SplitMenu>
                 </adonisControls:SplitButton>

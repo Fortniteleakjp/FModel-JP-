@@ -75,26 +75,26 @@ public enum ELoadingMode
 
 public enum ECompressedAudio
 {
-    [Description("Play the decompressed data")]
+    [Description("解凍して再生")]
     PlayDecompressed,
-    [Description("Play the compressed data (might not always be a valid audio data)")]
+    [Description("解凍せず、圧縮された状態のまま再生(正常に再生されないことがあります)")]
     PlayCompressed
 }
 
 public enum EIconStyle
 {
-    [Description("Default")]
+    [Description("デフォルト")]
     Default,
-    [Description("No Background")]
+    [Description("背景無し")]
     NoBackground,
-    [Description("No Text")]
+    [Description("テキスト無し")]
     NoText,
-    [Description("Flat")]
+    [Description("フラット")]
     Flat,
-    [Description("Cataba")]
+    [Description("カタバ")]
     Cataba,
-    // [Description("Community")]
-    // CommunityMade
+    [Description("非公式")]
+    CommunityMade
 }
 
 public enum EEndpointType

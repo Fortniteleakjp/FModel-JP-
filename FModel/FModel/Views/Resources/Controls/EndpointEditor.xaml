@@ -45,9 +45,9 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="Endpoint" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Column="0" Text="API URL" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Column="2" Margin="0 0 0 5" Text="{Binding Url, Mode=TwoWay}" TextChanged="OnTextChanged" />
-                    <Button Grid.Column="4" Content="Send" HorizontalAlignment="Right" Margin="0 0 0 5"
+                    <Button Grid.Column="4" Content="取得" HorizontalAlignment="Right" Margin="0 0 0 5"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="OnSend"/>
                 </Grid>
 
@@ -64,7 +64,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-                    <TextBlock Text="Instruction" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock Text="説明" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
                     <TextBlock x:Name="InstructionBox" TextAlignment="Justify" TextWrapping="Wrap" HorizontalAlignment="Center" />
                 </StackPanel>
 
@@ -77,9 +77,9 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="Expression" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Column="0" Text="取得するもの" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Column="2" Margin="0 0 0 5" Text="{Binding Path, Mode=TwoWay}" TextChanged="OnTextChanged" />
-                    <Button Grid.Column="4" Content="Test" HorizontalAlignment="Right" Margin="0 0 0 5"
+                    <Button Grid.Column="4" Content="取得" HorizontalAlignment="Right" Margin="0 0 0 5"
                             Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Click="OnTest"/>
                 </Grid>
 
@@ -106,9 +106,9 @@
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Expression Syntax" Click="OnSyntax" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="JSONの構文について" Click="OnSyntax" />
                 <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Online Evaluator" Click="OnEvaluator" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="オンライン実行環境" Click="OnEvaluator" />
             </Grid>
         </Border>
     </Grid>
