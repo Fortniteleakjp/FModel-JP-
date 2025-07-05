@@ -57,9 +57,9 @@ public enum ELoadingMode
     Multiple,
     [Description("すべてのファイル")]
     All,
-    [Description("All (New)")]
+    [Description("更新されたファイル")]
     AllButNew,
-    [Description("All (Modified)")]
+    [Description("追加・移動したファイル")]
     AllButModified
 }
 
