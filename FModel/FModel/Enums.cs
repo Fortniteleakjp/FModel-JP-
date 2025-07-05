@@ -53,13 +53,13 @@ public enum EDiscordRpc
 
 public enum ELoadingMode
 {
-    [Description("指定したアーカイブファイルのみ")]
+    [Description("指定したアーカイブ")]
     Multiple,
-    [Description("すべてのファイル")]
+    [Description("全てのアーカイブ")]
     All,
-    [Description("更新されたファイル")]
+    [Description("追加・移動されたアーカイブ")]
     AllButNew,
-    [Description("追加・移動したファイル")]
+    [Description("更新されたアーカイブ)")]
     AllButModified
 }
 
