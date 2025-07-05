@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
@@ -27,7 +27,7 @@ public static class Constants
     public const string YELLOW = "#E5C07B";
     public const string BLUE = "#528BCC";
 
-    public const string ISSUE_LINK = "https://github.com/4sval/FModel/discussions/categories/q-a";
+    public const string ISSUE_LINK = "https://github.com/Fortniteleakjp/FModel-JP-/issues";
     public const string GH_REPO = "https://api.github.com/repos/Fortniteleakjp/FModel-JP-";
     public const string GH_COMMITS_HISTORY = GH_REPO + "/commits";
     public const string GH_RELEASES = GH_REPO + "/releases";
