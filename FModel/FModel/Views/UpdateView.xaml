@@ -31,9 +31,9 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="10">
-            All releases listed below are available for download. They are sorted by date, with the latest release at the top.
-            We regularly remove old ones to keep the list clean and up to date with the latest UE releases.
-            If you wish to manually check for updates, this window is accessible via the Help > Releases menu.
+            以下のすべてのリリースはダウンロード可能です。最新のリリースが上に表示されるよう日付順に並んでいます。
+            古いアップデートは定期的に削除し、最新のUEリリースに合わせて一覧を整理しています。
+            手動でアップデートを確認したい場合は、[Help] > [Releases] メニューからこのウィンドウを開くことができます。
         </TextBlock>
 
         <Grid Grid.Row="1" HorizontalAlignment="Center">

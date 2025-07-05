@@ -139,13 +139,13 @@ public partial class App
 
         var messageBox = new MessageBoxModel
         {
-            Text = $"未処理の {e.Exception.GetBaseException().GetType()} 発生した: {e.Exception.Message}",
+            Text = $"An unhandled {e.Exception.GetBaseException().GetType()} occurred: {e.Exception.Message}",
             Caption = "Fatal Error",
             Icon = MessageBoxImage.Error,
             Buttons =
             [
-                MessageBoxButtons.Custom("設定をリセット", EErrorKind.ResetSettings),
-                MessageBoxButtons.Custom("再起動", EErrorKind.Restart),
+                MessageBoxButtons.Custom("Reset Settings", EErrorKind.ResetSettings),
+                MessageBoxButtons.Custom("Restart", EErrorKind.Restart),
                 MessageBoxButtons.Custom("OK", EErrorKind.Ignore)
             ],
             IsSoundEnabled = false

@@ -57,9 +57,9 @@ public enum ELoadingMode
     Multiple,
     [Description("すべてのファイル")]
     All,
-    [Description("追加・移動したファイル")]
+    [Description("更新されたファイル")]
     AllButNew,
-    [Description("更新されたファイル)")]
+    [Description("追加・移動したファイル")]
     AllButModified
 }
 
@@ -83,18 +83,18 @@ public enum ECompressedAudio
 
 public enum EIconStyle
 {
-    [Description("デフォルト")]
+    [Description("Default")]
     Default,
-    [Description("背景無し")]
+    [Description("No Background")]
     NoBackground,
-    [Description("テキスト無し")]
+    [Description("No Text")]
     NoText,
-    [Description("フラット")]
+    [Description("Flat")]
     Flat,
-    [Description("カタバ")]
+    [Description("Cataba")]
     Cataba,
-    [Description("Community")]
-    CommunityMade
+    // [Description("Community")]
+    // CommunityMade
 }
 
 public enum EEndpointType

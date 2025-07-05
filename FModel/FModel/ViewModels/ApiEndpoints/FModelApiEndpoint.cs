@@ -62,7 +62,7 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     public async Task<Backup[]> GetBackupsAsync(CancellationToken token, string gameName)
     {
-        var request = new FRestRequest($"https://api.fmodel.app/v1/backups/{gameName}");
+        var request = new FRestRequest($"https://www.laylaleaks.de/api/backups");
         var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
@@ -117,7 +117,7 @@ public class FModelApiEndpoint : AbstractApiProvider
             AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
         }
-        AutoUpdater.Start("https://api.fmodel.app/v1/infos/Qa");
+        AutoUpdater.Start("https://fljpapi2-sjnq.onrender.com/v1/infos/Qa");
     }
 
     private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)

@@ -79,19 +79,19 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Export Raw Data Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="生データの保存先 *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
                         <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding RawDataDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseRawData" Margin="0 0 0 5" />
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Save Properties Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="プロパティディレクトリの保存先 *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
                         <TextBox Grid.Row="1" Grid.Column="2" IsReadOnly="True" Text="{Binding PropertiesDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="1" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseProperties" Margin="0 0 0 5" />
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Save Texture Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="テクスチャの保存先 *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
                         <TextBox Grid.Row="2" Grid.Column="2" IsReadOnly="True" Text="{Binding TextureDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseTexture" Margin="0 0 0 5" />
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Save Audio Directory *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="音声の保存先 *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
                         <TextBox Grid.Row="3" Grid.Column="2" IsReadOnly="True" Text="{Binding AudioDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="3" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseAudio" Margin="0 0 0 5" />
                     </Grid>

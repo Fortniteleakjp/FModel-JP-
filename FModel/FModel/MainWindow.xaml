@@ -828,7 +828,7 @@
                     </StatusBarItem>
 
                     <StatusBarItem Margin="10 0 0 0">
-                        <TextBlock Text="{Binding LastUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=Last Refresh: {0}}" />
+                        <TextBlock Text="{Binding LastUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=最終更新: {0}}" />
                     </StatusBarItem>
                 </StackPanel>
             </StatusBarItem>
