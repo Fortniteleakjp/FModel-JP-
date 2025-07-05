@@ -6,6 +6,8 @@ namespace CUE4Parse.UE4.Versions
     {
         [Description("English")]
         English,
+        [Description("日本語 (Japanese)")]
+        Japanese,
         [Description("Australian English")]
         AustralianEnglish,
         [Description("British English")]
@@ -24,8 +26,6 @@ namespace CUE4Parse.UE4.Versions
         SpanishMexico,
         [Description("العربية (Arabic)")]
         Arabic,
-        [Description("日本語 (Japanese)")]
-        Japanese,
         [Description("한국어 (Korean)")]
         Korean,
         [Description("Polski")]

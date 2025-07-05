@@ -22,34 +22,34 @@ public class RelativeDateTimeConverter : IValueConverter
             if (timeSpan.TotalMinutes < 1)
             {
                 time = timeSpan.Seconds;
-                unit = "second";
+                unit = "秒";
             }
             else if (timeSpan.TotalHours < 1)
             {
                 time = timeSpan.Minutes;
-                unit = "minute";
+                unit = "分";
             }
             else switch (timeSpan.TotalDays)
             {
                 case < 1:
                     time = timeSpan.Hours;
-                    unit = "hour";
+                    unit = "時間";
                     break;
                 case < 7:
                     time = timeSpan.Days;
-                    unit = "day";
+                    unit = "日";
                     break;
                 case < 30:
                     time = timeSpan.Days / 7;
-                    unit = "week";
+                    unit = "週間";
                     break;
                 case < 365:
                     time = timeSpan.Days / 30;
-                    unit = "month";
+                    unit = "ヶ月";
                     break;
                 default:
                     time = timeSpan.Days / 365;
-                    unit = "year";
+                    unit = "年";
                     break;
             }
 
