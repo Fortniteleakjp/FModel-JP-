@@ -156,7 +156,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="ディレクトリ構造を維持" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="ゲームのディレクトリ構造のまま保存するか" />
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="保存時にディレクトリ構造を維持" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="ゲームのディレクトリ構造のまま保存するか" />
                     <CheckBox Grid.Row="9" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 0"/>
 
