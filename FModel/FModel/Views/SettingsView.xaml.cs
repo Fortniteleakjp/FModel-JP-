@@ -180,14 +180,14 @@ public partial class SettingsView
     private void OpenAesEndpoint(object sender, RoutedEventArgs e)
     {
         var editor = new EndpointEditor(
-            _applicationView.SettingsView.AesEndpoint, "Endpoint Configuration (AES)", EEndpointType.Aes);
+            _applicationView.SettingsView.AesEndpoint, "API設定 (AES)", EEndpointType.Aes);
         editor.ShowDialog();
     }
 
     private void OpenMappingEndpoint(object sender, RoutedEventArgs e)
     {
         var editor = new EndpointEditor(
-            _applicationView.SettingsView.MappingEndpoint, "Endpoint Configuration (Mapping)", EEndpointType.Mapping);
+            _applicationView.SettingsView.MappingEndpoint, "API設定 (マッピング)", EEndpointType.Mapping);
         editor.ShowDialog();
     }
 }

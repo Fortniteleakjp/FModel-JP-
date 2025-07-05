@@ -96,7 +96,7 @@
                         <Button Grid.Row="3" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseAudio" Margin="0 0 0 5" />
                     </Grid>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Discordにプレイ中として表示" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Discordにアクティビティを表示" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.DiscordRpcs}" SelectedItem="{Binding SettingsView.SelectedDiscordRpc, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <ComboBox.ItemTemplate>
@@ -108,7 +108,7 @@
 
                     <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="基本設定"></Separator>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Archive Directory *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="アーカイブのフォルダパス *" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True" Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="4" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" Margin="0 0 0 5" />
 
@@ -172,9 +172,9 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Content="Custom Versions" Click="OpenCustomVersions" />
-                        <Button Grid.Column="2" Content="Options" Click="OpenOptions" />
-                        <Button Grid.Column="4" Content="MapStructTypes" Click="OpenMapStructTypes" />
+                        <Button Grid.Column="0" Content="任意のバージョンを指定" Click="OpenCustomVersions" />
+                        <Button Grid.Column="2" Content="オプション" Click="OpenOptions" />
+                        <Button Grid.Column="4" Content="マップ" Click="OpenMapStructTypes" />
                     </Grid>
 
                     <TextBlock Grid.Row="12" Grid.Column="0" Text="起動時のAESの再読み込み" VerticalAlignment="Center" Margin="0 0 0 5"
@@ -191,7 +191,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="エンドポイント構成" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="13" Grid.Column="0" Text="データを自動取得" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <Grid Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                           DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <Grid.ColumnDefinitions>
@@ -201,7 +201,7 @@
                         </Grid.ColumnDefinitions>
 
                         <Button Grid.Column="0" Content="AES" Click="OpenAesEndpoint" />
-                        <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint" />
+                        <Button Grid.Column="2" Content="マッピング" Click="OpenMappingEndpoint" />
                     </Grid>
 
                     <TextBlock Grid.Row="14" Grid.Column="0" Text="マッピングファイルをローカルで指定" VerticalAlignment="Center" Margin="0 0 0 5" />
