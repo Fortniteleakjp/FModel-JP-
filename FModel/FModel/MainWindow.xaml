@@ -231,9 +231,9 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="GAME ARCHIVES" />
+                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="アーカイブ一覧" />
                                 <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Style="{StaticResource DirectoryFilesListBox}" MouseDoubleClick="OnMouseDoubleClick" />
-                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="INFORMATION" />
+                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="選択中のアーカイブ情報" />
                                 <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">
                                         <Grid.RowDefinitions>
@@ -429,7 +429,7 @@
                     </TabItem>
                     <TabItem Style="{StaticResource TabItemFillSpace}"
                              Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
-                             HeaderStringFormat="{}{0} Packages">
+                             HeaderStringFormat="{}{0} 個のファイル">
                         <DockPanel>
                             <Grid DockPanel.Dock="Top" ZIndex="0">
                                 <Grid.ColumnDefinitions>
