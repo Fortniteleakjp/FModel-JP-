@@ -60,7 +60,7 @@ public class UpdateViewModel : ViewModel
                     Sha = commitSha,
                     Commit = new Commit
                     {
-                        Message = $"FModel ({commitSha[..7]})",
+                        Message = $"FModel-JP- ({commitSha[..7]})",
                         Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
                     },
                     Author = asset.Uploader,
