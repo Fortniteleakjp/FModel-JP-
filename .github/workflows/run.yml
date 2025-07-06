@@ -56,6 +56,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r .github/workflows/requirements.txt
 
+      - name: Set Secrets
+        run: |
+          echo '${{ secrets.SECRETS }}' > secrets.py
+
       - name: Update Download Url
         run: |
           python Update_DownloadUrl.py "${{ github.sha }}" "${{ steps.package_version.outputs.version }}"
