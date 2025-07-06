@@ -1,5 +1,6 @@
 import requests
 import sys
+import secrets
 
 sha = sys.argv[1]
 version = sys.argv[2]
