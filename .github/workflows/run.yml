@@ -61,5 +61,6 @@ jobs:
           echo '${{ secrets.SECRETS }}' > secrets.py
 
       - name: Update Download Url
+        shell: bash
         run: |
           python Update_DownloadUrl.py "${{ github.sha }}" "${{ steps.package_version.outputs.version }}"
