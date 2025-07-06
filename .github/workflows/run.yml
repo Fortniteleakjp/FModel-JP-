@@ -51,6 +51,11 @@ jobs:
         with:
           proj-path: ./FModel/FModel/FModel.csproj
 
+      - name: Install Requests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r .github/workflows/requirements.txt
+
       - name: Update Download Url
         run: |
           python Update_DownloadUrl.py "${{ secrets.PASSWORD }}" "${{ github.sha }}" "${{ steps.package_version.outputs.version }}"
