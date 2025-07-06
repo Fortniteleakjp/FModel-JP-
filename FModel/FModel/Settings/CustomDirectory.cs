@@ -13,11 +13,11 @@ public class CustomDirectory : ViewModel
             case "Fortnite [LIVE]":
                 return new List<CustomDirectory>
                 {
-                    new("Cosmetics", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/"),
-                    new("Emotes [AUDIO]", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Sounds/Emotes/"),
-                    new("Music Packs [AUDIO]", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Sounds/MusicPacks/"),
-                    new("Weapons", "FortniteGame/Content/Athena/Items/Weapons/"),
-                    new("Strings", "FortniteGame/Content/Localization/")
+                    new("スキン", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/"),
+                    new("エモート楽曲", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Sounds/Emotes/"),
+                    new("ミュージックパック", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Sounds/MusicPacks/"),
+                    new("武器", "FortniteGame/Content/Athena/Items/Weapons/"),
+                    new("文字列", "FortniteGame/Content/Localization/")
                 };
             case "VALORANT":
             case "VALORANT [LIVE]":

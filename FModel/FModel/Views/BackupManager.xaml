@@ -36,7 +36,7 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Text="追加 / 更新 された アーカイブ を読み込む際、バックアップファイル が必要です。FModel は、選択された バックアップファイル と現在の アーカイブ を比較し、指定した条件に一致するファイルのみを表示します。ここでは、バックアップファイル が作成できます。これにより、現時点でのゲーム内すべてのファイル情報を保存し、後で使用できます。" />
+                   Text="バックアップファイルは、現在のアーカイブを記録するファイルです。&#x0a;選択されたバックアップファイルと現在のアーカイブを比較することで、指定した条件に一致するファイルのみを絞り込むことが出来ます。" />
 
         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="OnCreateBackupClick"
                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Content="最新の バックアップファイル を作成" />

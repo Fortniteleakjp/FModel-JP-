@@ -456,11 +456,11 @@ public class TabControlViewModel : ViewModel
         AddTab();
     }
 
-    public void AddTab() => AddTab("New Tab");
+    public void AddTab() => AddTab("新規タブ");
     public void AddTab(string title) => AddTab(new FakeGameFile(title));
     public void AddTab(GameFile entry, string parentExportType = null)
     {
-        if (SelectedTab?.Header == "New Tab")
+        if (SelectedTab?.Header == "新規タブ")
         {
             SelectedTab.Entry = entry;
             return;

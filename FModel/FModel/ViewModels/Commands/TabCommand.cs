@@ -59,7 +59,7 @@ public class TabCommand : ViewModelCommand<TabItem>
                 });
                 break;
             case "Open_Properties":
-                if (tabViewModel.Header == "New Tab" || tabViewModel.Document == null) return;
+                if (tabViewModel.Header == "新規タブ" || tabViewModel.Document == null) return;
                 Helper.OpenWindow<AdonisWindow>(tabViewModel.Header + " (Properties)", () =>
                 {
                     new PropertiesPopout(tabViewModel)

@@ -36,7 +36,7 @@
             </StackPanel>
         </Grid>
 
-        <Button Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Download"
+        <Button Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="このバージョンをダウンロード"
                 Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                 IsEnabled="{Binding IsCurrent, Converter={x:Static converters:InvertBooleanConverter.Instance}}"

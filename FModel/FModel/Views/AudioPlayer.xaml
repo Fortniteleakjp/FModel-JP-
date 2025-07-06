@@ -45,7 +45,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Devices" VerticalAlignment="Center" Margin="0 0 0 10" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="再生デバイス" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AudioPlayer.AudioDevicesView, IsAsync=True}"
                               SelectedItem="{Binding AudioPlayer.SelectedAudioDevice, Mode=TwoWay}" SelectionChanged="OnDeviceSwap">
                         <ComboBox.ItemTemplate>
@@ -55,21 +55,21 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Volume" VerticalAlignment="Center" Margin="0 0 0 10" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="音量" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <Slider Grid.Row="1" Grid.Column="2" TickPlacement="None" Minimum="0" Maximum="100" TickFrequency="1"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" ValueChanged="OnVolumeChange"
                             Value="{Binding AudioPlayerVolume, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Encoding" VerticalAlignment="Center" Margin="0 0 0 10" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="エンコード" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding AudioPlayer.PlayedFile.Encoding, Converter={x:Static converters:EnumToStringConverter.Instance}}" VerticalAlignment="Center" HorizontalAlignment="Right" />
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Length" VerticalAlignment="Center" Margin="0 0 0 10" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="長さ" VerticalAlignment="Center" Margin="0 0 0 10" />
                     <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding AudioPlayer.PlayedFile.Duration}" VerticalAlignment="Center" HorizontalAlignment="Right" />
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Bytes Per Second" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="１秒あたりの容量" VerticalAlignment="Center" />
                     <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding AudioPlayer.PlayedFile.BytesPerSecond}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                 </Grid>
-                <Separator DockPanel.Dock="Top" Tag="PLAYLIST" Style="{StaticResource CustomSeparator}" />
+                <Separator DockPanel.Dock="Top" Tag="読み込んでいるサウンド" Style="{StaticResource CustomSeparator}" />
                 <Grid DockPanel.Dock="Top" Height="24" Margin="0 0 0 5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -90,7 +90,7 @@
                 <ListBox DockPanel.Dock="Top" Style="{StaticResource AudioFilesListBox}" PreviewMouseDoubleClick="OnAudioFileMouseDoubleClick">
                     <ListBox.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Play" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="ForcePlayPause">
+                            <MenuItem Header="再生" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="ForcePlayPause">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -99,7 +99,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Remove" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Remove">
+                            <MenuItem Header="削除" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Remove">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -108,7 +108,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Save" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Save">
+                            <MenuItem Header="保存" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Save">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -117,7 +117,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Save Playlist" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Save_Playlist">
+                            <MenuItem Header="サウンドをつなげて保存" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Save_Playlist">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">

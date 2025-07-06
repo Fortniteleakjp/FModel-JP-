@@ -53,7 +53,7 @@ public class RelativeDateTimeConverter : IValueConverter
                     break;
             }
 
-            return $"{time}{unit}前";
+            return $"{time}{unit}";
         }
         return value;
     }

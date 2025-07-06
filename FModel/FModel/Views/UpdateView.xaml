@@ -30,13 +30,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="10">
-            以下のリリースがダウンロード可能です。リリースは上から順に、日付順に並んでいます。
-            <LineBreak/>
-            手動でアップデートを確認したい場合は、メニューの [Help] > [Releases] からこのウィンドウを開くことができます。
-            <LineBreak/>
-            注意 : 日本語バージョンを利用する場合、ダウンロードは行わないでください
-        </TextBlock>
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="10"
+            Text="以下のリリースがダウンロード可能です。リリースは上から順に、日付順に並んでいます。&#x0a;手動でアップデートを確認したい場合は、メニューの [Help] > [Releases] からこのウィンドウを開くことができます。&#x0a;注意 : 現在、最新バージョンでnew tabもアップデートがあると表示されます"/>
 
         <Grid Grid.Row="1" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
