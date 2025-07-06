@@ -56,7 +56,7 @@
                     </Ellipse>
                     <TextBlock Grid.Column="2" FontSize="11">
                         <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0} committed {1}">
+                            <MultiBinding StringFormat="{}{0} が {1} にコミット">
                                 <Binding Path="Author.Login" />
                                 <Binding Path="Commit.Author.Date" Converter="{x:Static converters:RelativeDateTimeConverter.Instance}" />
                             </MultiBinding>
