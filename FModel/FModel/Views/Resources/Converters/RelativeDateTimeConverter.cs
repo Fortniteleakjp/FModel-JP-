@@ -17,7 +17,7 @@ public class RelativeDateTimeConverter : IValueConverter
             int time;
             string unit;
             if (timeSpan.TotalSeconds < 30)
-                return "Just now";
+                return "今";
 
             if (timeSpan.TotalMinutes < 1)
             {
