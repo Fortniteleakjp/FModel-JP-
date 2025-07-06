@@ -1,13 +1,12 @@
 import requests
 import sys
 
-password = sys.argv[1]
-sha = sys.argv[2]
-version = sys.argv[3]
+sha = sys.argv[1]
+version = sys.argv[2]
 
 url = "https://fljpapi2-sjnq.onrender.com/qa/upload"
 headers = {
-    "Authorization": password
+    "Authorization": {secrets.password}
 }
 data = {
     "changelogUrl": "https://github.com/Fortniteleakjp/FModel-JP-/releases/tag/qa",

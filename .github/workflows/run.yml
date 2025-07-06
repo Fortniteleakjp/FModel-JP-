@@ -58,4 +58,4 @@ jobs:
 
       - name: Update Download Url
         run: |
-          python Update_DownloadUrl.py "${{ secrets.PASSWORD }}" "${{ github.sha }}" "${{ steps.package_version.outputs.version }}"
+          python Update_DownloadUrl.py "${{ github.sha }}" "${{ steps.package_version.outputs.version }}"
