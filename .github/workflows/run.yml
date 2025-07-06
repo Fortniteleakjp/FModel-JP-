@@ -43,7 +43,7 @@ jobs:
           tag: 'qa'
           artifacts: |
            ${{ github.sha }}.zip
-           FModel.exe
+           ./FModel/FModel/bin/Publish/FModel.exe
           allowUpdates: true
 
       - name: Get App Version
