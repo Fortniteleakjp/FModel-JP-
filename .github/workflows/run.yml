@@ -40,6 +40,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: 'FModel-JP- Release'
+          body: '初回の場合、FModel.exe をダウンロードしてください。\n実行した際にアップデート情報が表示されたら、アップデートを実行してください。'
           tag: 'qa'
           artifacts: |
            ${{ github.sha }}.zip
