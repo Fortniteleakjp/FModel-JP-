@@ -6,7 +6,7 @@ version = sys.argv[2]
 
 url = "https://fljpapi2-sjnq.onrender.com/qa/upload"
 headers = {
-    "Authorization": {secrets.password}
+    "Authorization": {secrets.PASSWORD}
 }
 data = {
     "changelogUrl": "https://github.com/Fortniteleakjp/FModel-JP-/releases/tag/qa",
