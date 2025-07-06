@@ -15,7 +15,7 @@ public class CustomDirectory : ViewModel
                 {
                     new("スキン", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/"),
                     new("エモート楽曲", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Sounds/Emotes/"),
-                    new("Music Packs [AUDIO]", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Sounds/MusicPacks/"),
+                    new("ミュージックパック", "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Sounds/MusicPacks/"),
                     new("武器", "FortniteGame/Content/Athena/Items/Weapons/"),
                     new("文字列", "FortniteGame/Content/Localization/")
                 };
