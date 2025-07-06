@@ -20,17 +20,17 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: .NET Restore
-        run: dotnet restore FModel/FModel.csproj
+        run: dotnet restore FModel/FModel/FModel.csproj
 
       - name: .NET Publish
-        run: dotnet publish "./FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
+        run: dotnet publish "./FModel/FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
 
       - name: Create ZIP File
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: zip
           filename: ${{ github.sha }}.zip
-          path: ./FModel/bin/Publish/FModel.exe
+          path: ./FModel/FModel/bin/Publish/FModel.exe
 
       - name: Add Release
         uses: ncipollo/release-action@v1.14.0
