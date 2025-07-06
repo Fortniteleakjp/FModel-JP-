@@ -54,7 +54,7 @@ jobs:
       - name: Update Download Url
         uses: fjogeleit/http-request-action@v1.15.5
         with:
-          url: "https://fljpapi2-sjnq.onrender.com/v1/infos/qa/upload"
+          url: "https://fljpapi2-sjnq.onrender.com/qa/upload"
           method: "PATCH"
           password: ${{ secrets.PASSWORD }}
           data: '{"changelogUrl" : "https://github.com/Fortniteleakjp/FModel-JP-/releases/tag/qa", "downloadUrl": "https://github.com/fortniteleakjp/FModel-JP-/releases/download/qa/${{ github.sha }}.zip", "version": ${{ steps.package_version.outputs.version }}}'
