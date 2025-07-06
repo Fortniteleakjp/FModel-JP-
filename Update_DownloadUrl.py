@@ -20,6 +20,6 @@ response = requests.patch(url, headers=headers, json=data)
 
 # 結果出力
 if response.status_code == 200:
-    print("URL更新完了")
+    print("completely updated Download Url for API")
 else:
-    print(f"URL更新失敗 : {response.status_code} - {response.text}")
+    print(f"updating Download Url for API failed : {response.status_code} - {response.text}")
