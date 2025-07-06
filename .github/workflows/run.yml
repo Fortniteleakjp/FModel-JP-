@@ -49,7 +49,7 @@ jobs:
         id: package_version
         uses: kzrnm/get-net-sdk-project-versions-action@v2
         with:
-          proj-path: ./FModel/FModel.csproj
+          proj-path: ./FModel/FModel/FModel.csproj
 
       - name: Update Download Url
         uses: fjogeleit/http-request-action@v1.15.5
