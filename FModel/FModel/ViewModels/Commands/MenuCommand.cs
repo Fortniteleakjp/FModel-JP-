@@ -54,14 +54,23 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Help_Donate":
                 Process.Start(new ProcessStartInfo { FileName = Constants.DONATE_LINK, UseShellExecute = true });
                 break;
+            case "Help_Donate_JP":
+                Process.Start(new ProcessStartInfo { FileName = Constants.DONATE_LINK_JP, UseShellExecute = true });
+                break;
             case "Help_Releases":
                 Helper.OpenWindow<AdonisWindow>("Releases", () => new UpdateView().Show());
                 break;
             case "Help_BugsReport":
                 Process.Start(new ProcessStartInfo { FileName = Constants.ISSUE_LINK, UseShellExecute = true });
                 break;
+            case "Help_BugsReport_JP":
+                Process.Start(new ProcessStartInfo { FileName = Constants.ISSUE_LINK_JP, UseShellExecute = true });
+                break;
             case "Help_Discord":
                 Process.Start(new ProcessStartInfo { FileName = Constants.DISCORD_LINK, UseShellExecute = true });
+                break;
+            case "Help_Discord_JP":
+                Process.Start(new ProcessStartInfo { FileName = Constants.DISCORD_LINK_JP, UseShellExecute = true });
                 break;
             case "ToolBox_Clear_Logs":
                 FLogger.Logger.Text = string.Empty;

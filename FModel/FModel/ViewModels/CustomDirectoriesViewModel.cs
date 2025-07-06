@@ -72,7 +72,7 @@ public class CustomDirectoriesViewModel : ViewModel
     {
         yield return new MenuItem
         {
-            Header = "ディレクトリを追加",
+            Header = "お気に入りのディレクトリを追加",
             Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/add_directory.png", UriKind.Relative)) },
             HorizontalContentAlignment = HorizontalAlignment.Left,
             VerticalContentAlignment = VerticalAlignment.Center,
@@ -100,7 +100,7 @@ public class CustomDirectoriesViewModel : ViewModel
     {
         yield return new MenuItem
         {
-            Header = "移動する",
+            Header = "フォルダに移動する",
             Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/go_to_directory.png", UriKind.Relative)) },
             HorizontalContentAlignment = HorizontalAlignment.Left,
             VerticalContentAlignment = VerticalAlignment.Center,
@@ -109,7 +109,7 @@ public class CustomDirectoriesViewModel : ViewModel
         };
         yield return new MenuItem
         {
-            Header = "パスを変更",
+            Header = "ディレクトリの設定を編集",
             Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/edit.png", UriKind.Relative)) },
             HorizontalContentAlignment = HorizontalAlignment.Left,
             VerticalContentAlignment = VerticalAlignment.Center,
@@ -118,7 +118,7 @@ public class CustomDirectoriesViewModel : ViewModel
         };
         yield return new MenuItem
         {
-            Header = "パスを削除",
+            Header = "このディレクトリを削除",
             StaysOpenOnClick = true,
             Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/delete.png", UriKind.Relative)) },
             HorizontalContentAlignment = HorizontalAlignment.Left,

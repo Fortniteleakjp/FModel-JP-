@@ -41,11 +41,11 @@
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
 
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="決定" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Reset" Click="OnReset" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="リセット" Click="OnReset" />
                 <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="True"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Cancel" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="キャンセル" />
             </Grid>
         </Border>
     </Grid>

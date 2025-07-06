@@ -261,7 +261,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No audio to play at the moment" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="再生できるサウンドがありません" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -568,7 +568,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="アーカイブにフォルダが見つかりません。少なくとも1つはロードされていることを確認してください。" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="アーカイブにフォルダが見つかりません。少なくとも1つは読み込まれていることを確認してください。" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -629,7 +629,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No package found in folder" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="フォルダ内にファイルが見つかりません" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -755,7 +755,7 @@
 
                             <Menu Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
                                   HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="1">
-                                <MenuItem Command="{Binding CUE4Parse.TabControl.AddTabCommand}" ToolTip="Add New Tab" Width="30">
+                                <MenuItem Command="{Binding CUE4Parse.TabControl.AddTabCommand}" ToolTip="新規タブを作成" Width="30">
                                     <MenuItem.Header>
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
