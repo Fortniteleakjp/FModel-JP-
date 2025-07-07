@@ -31,7 +31,7 @@
                            TextAlignment="Center"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,4" />
-                <TextBlock Text="あなたが選択したファイルに、変更された箇所はありません"
+                <TextBlock Text="あなたが選択したファイルに、変更はありません"
                            FontSize="13"
                            TextWrapping="Wrap"
                            TextAlignment="Center"
