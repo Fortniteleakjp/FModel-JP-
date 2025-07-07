@@ -83,10 +83,10 @@
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
-                                        <Setter Property="Text" Value="Latest" />
+                                        <Setter Property="Text" Value="最新のバージョン" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                        <Setter Property="Text" Value="Current" />
+                                        <Setter Property="Text" Value="現在のバージョン" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

@@ -136,7 +136,7 @@
                     </ListView.Style>
                     <ListView.ContextMenu>
                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <MenuItem Header="フォルダに飛ぶ" Click="OnAssetDoubleClick">
+                            <MenuItem Header="フォルダに移動する" Click="OnAssetDoubleClick">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
