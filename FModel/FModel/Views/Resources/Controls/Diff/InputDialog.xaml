@@ -1,0 +1,43 @@
+<controls:AdonisWindow x:Class="FModel.Views.Resources.Controls.InputDialog"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                       xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                       xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                       Title="{Binding Title}"
+                       ResizeMode="NoResize"
+                       Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.175'}"
+                       Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.225'}"
+                       WindowStartupLocation="CenterScreen">
+    <Border Padding="10" CornerRadius="6" MinWidth="300">
+        <StackPanel>
+
+            <TextBlock Text="{Binding DescriptionText}"
+                       TextWrapping="Wrap"
+                       Margin="10,0,10,10"
+                       FontSize="13" />
+
+            <TextBlock Text="バックアップファイルを保存するフォルダ名を記入してください。この名前の新規フォルダが作成され、バックアップが保存されます。"
+                       Margin="10,0,10,2"
+                       FontWeight="Bold"
+                       FontSize="12"/>
+
+            <TextBox Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                     MinWidth="250"
+                     Margin="10"
+                     Padding="6" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                <Button Content="決定"
+                        Width="80"
+                        IsDefault="True"
+                        Margin="0,0,10,0"
+                        Padding="6,2"
+                        Click="OnOk" />
+                <Button Content="キャンセル"
+                        Width="80"
+                        IsCancel="True"
+                        Padding="6,2" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</controls:AdonisWindow>

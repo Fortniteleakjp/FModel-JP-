@@ -38,6 +38,8 @@ namespace FModel.Settings
         {
             if (!_bSave || Default == null) return;
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
+            if (Default.DiffDir != null)
+                Default.PerDirectory[Default.DiffDir.GameDirectory] = Default.DiffDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
@@ -50,9 +52,9 @@ namespace FModel.Settings
             }
         }
 
-        public static bool IsEndpointValid(EEndpointType type, out EndpointSettings endpoint)
+        public static bool IsEndpointValid(DirectorySettings dir, EEndpointType type, out EndpointSettings endpoint)
         {
-            endpoint = Default.CurrentDir.Endpoints[(int) type];
+            endpoint = dir.Endpoints[(int) type];
             return endpoint.Overwrite || endpoint.IsValid;
         }
 
@@ -131,7 +133,12 @@ namespace FModel.Settings
             get => _gameDirectory;
             set => SetProperty(ref _gameDirectory, value);
         }
-
+        private string _diffGameDirectory;
+        public string DiffGameDirectory
+        {
+            get => _diffGameDirectory;
+            set => SetProperty(ref _diffGameDirectory, value);
+        }
         private int _lastOpenedSettingTab;
         public int LastOpenedSettingTab
         {
@@ -274,7 +281,8 @@ namespace FModel.Settings
 
         [JsonIgnore]
         public DirectorySettings CurrentDir { get; set; }
-
+        [JsonIgnore]
+        public DirectorySettings DiffDir { get; set; }
         /// <summary>
         /// TO DELETEEEEEEEEEEEEE
         /// </summary>
