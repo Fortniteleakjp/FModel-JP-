@@ -55,7 +55,12 @@ namespace CUE4Parse.Utils
             var index = s.IndexOf(delimiter, comparisonType);
             return index == -1 ? s : s.Substring(index + delimiter.Length, s.Length - index - delimiter.Length);
         }
-        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<char> SubstringAfter(this Span<char> s, ReadOnlySpan<char> delimiter)
+        {
+            var index = s.IndexOf(delimiter);
+            return index == -1 ? s : s[(index + delimiter.Length)..(s.Length - index - delimiter.Length)];
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string SubstringBeforeLast(this string s, char delimiter)
         {
