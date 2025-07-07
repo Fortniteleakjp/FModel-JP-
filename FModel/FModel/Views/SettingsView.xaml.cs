@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using CUE4Parse.UE4.Versions;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -44,18 +45,16 @@ public partial class SettingsView
             {
                 case SettingsOut.ReloadLocres:
                     _applicationView.CUE4Parse.LocalizedResourcesCount = 0;
-                    _applicationView.CUE4Parse.LocalResourcesDone = false;
-                    _applicationView.CUE4Parse.HotfixedResourcesDone = false;
+                    _applicationView.CUE4Parse.ResetLocalizationState();
                     await _applicationView.CUE4Parse.LoadLocalizedResources();
                     break;
                 case SettingsOut.ReloadMappings:
-                    await _applicationView.CUE4Parse.InitMappings();
+                    await _applicationView.CUE4Parse.InitAllMappings();
                     break;
             }
         }
 
-        _applicationView.CUE4Parse.Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
-        _applicationView.CUE4Parse.Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+        _applicationView.CUE4Parse.RefreshReadSettings();
     }
 
     private void OnBrowseOutput(object sender, RoutedEventArgs e)
@@ -74,6 +73,14 @@ public partial class SettingsView
     private void OnBrowseDirectories(object sender, RoutedEventArgs e)
     {
         if (TryBrowse(out var path)) UserSettings.Default.GameDirectory = path;
+    }
+
+    private void OnBrowseDiffDirectory(object sender, RoutedEventArgs e)
+    {
+        if (!TryBrowse(out var path)) return;
+
+        UserSettings.Default.DiffGameDirectory = path;
+        UserSettings.Default.DiffDir = ApplicationViewModel.ResolveDiffDirectory();
     }
 
     private void OnBrowseRawData(object sender, RoutedEventArgs e)
@@ -114,6 +121,21 @@ public partial class SettingsView
             return;
 
         _applicationView.SettingsView.MappingEndpoint.FilePath = openFileDialog.FileName;
+    }
+
+    private void OnBrowseDiffMappings(object sender, RoutedEventArgs e)
+    {
+        var openFileDialog = new OpenFileDialog
+        {
+            Title = "Select a compare mapping file",
+            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, ".data"),
+            Filter = "USMAP Files (*.usmap)|*.usmap|All Files (*.*)|*.*"
+        };
+
+        if (!openFileDialog.ShowDialog().GetValueOrDefault())
+            return;
+
+        _applicationView.SettingsView.DiffMappingEndpoint.FilePath = openFileDialog.FileName;
     }
 
     private bool TryBrowse(out string path)
@@ -189,5 +211,21 @@ public partial class SettingsView
         var editor = new EndpointEditor(
             _applicationView.SettingsView.MappingEndpoint, "API設定 (マッピング)", EEndpointType.Mapping);
         editor.ShowDialog();
+    }
+
+    private void OnResetCompareSettings(object sender, RoutedEventArgs e)
+    {
+        UserSettings.Default.DiffGameDirectory = string.Empty;
+
+        if (UserSettings.Default.DiffDir == null) return;
+
+        UserSettings.Default.DiffDir.UeVersion = default;
+
+        _applicationView.SettingsView.SelectedDiffUeGame = null;
+
+        if (_applicationView.SettingsView.DiffMappingEndpoint == null) return;
+
+        _applicationView.SettingsView.DiffMappingEndpoint.FilePath = string.Empty;
+        _applicationView.SettingsView.DiffMappingEndpoint.Overwrite = false;
     }
 }

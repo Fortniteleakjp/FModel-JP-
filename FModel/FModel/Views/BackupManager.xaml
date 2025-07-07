@@ -1,21 +1,27 @@
 ﻿<adonisControls:AdonisWindow x:Class="FModel.Views.BackupManager"
-         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
-         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-         WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="Height" Loaded="OnLoaded"
-         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.225'}">
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                             WindowStartupLocation="CenterScreen"
+                             ResizeMode="NoResize"
+                             IconVisibility="Collapsed"
+                             SizeToContent="Height"
+                             Loaded="OnLoaded"
+                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.225'}">
     <adonisControls:AdonisWindow.Style>
-        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="Backup file を生成" />
+        <Style TargetType="adonisControls:AdonisWindow"
+               BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
+            <Setter Property="Title"
+                    Value="バックアップファイルを管理" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Resources.xaml"/>
+                <ResourceDictionary Source="Resources/Resources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
@@ -35,13 +41,64 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Text="バックアップファイルは、現在のアーカイブを記録するファイルです。&#x0a;選択されたバックアップファイルと現在のアーカイブを比較することで、指定した条件に一致するファイルのみを絞り込むことが出来ます。" />
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="3"
+                   TextAlignment="Center"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="12">
+            <Run>
+                バックアップファイルは、現在のゲームのアーカイブ情報を保存するものです。
+                追加 / 更新 された アーカイブ を読み込む際に必要になります。
+                FModelは、選択されたバックアップファイルと現在のアーカイブを比較し、指定した条件に一致するファイルのみを表示します。
+            </Run>
+            <LineBreak /><LineBreak />
+            <Run FontWeight="Bold">バックアップファイルを保存 (小)</Run>
+            <Run>
+                ：従来のバックアップファイルです。
+                ファイルの追加・場所変更の確認に最適です
+            </Run>
+            <LineBreak /><LineBreak />
+            <Run FontWeight="Bold">バックアップファイルを保存 (大)</Run>
+            <Run>
+                ：ファイル内部のデータも含んだ巨大なバックアップファイルです。保存には、ゲームと同じ容量が必要です。
+            </Run>
+        </TextBlock>
 
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Click="OnCreateBackupClick"
-                Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" Content="最新の バックアップファイル を作成" />
+        <Grid Grid.Row="2"
+              Grid.Column="0"
+              Grid.ColumnSpan="3"
+              Margin="0,5,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Click="OnCreateBackupClick"
+                    Grid.Column="0"
+                    Cursor="Hand"
+                    Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                    Content="バックアップファイルを保存 (小)"
+                    Margin="4,0"
+                    Padding="10,5"
+                    IsEnabled="{Binding IsCreatingBackup, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
+            <Button Click="OnCreateBackupHeavyClick"
+                    Grid.Column="1"
+                    Cursor="Hand"
+                    Style="{StaticResource OrangeAccentButton}"
+                    Content="バックアップファイルを保存 (大)"
+                    Margin="4,0"
+                    Padding="10,5"
+                    Background="#FFF9A000"
+                    IsEnabled="{Binding IsCreatingBackup, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
+        </Grid>
 
-        <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" Tag="クラウドからダウンロード" />
+        <Separator Grid.Row="3"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="3"
+                   Style="{StaticResource CustomSeparator}"
+                   Tag="クラウド上のバックアップファイル (小)" />
 
         <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center"
                    Text="{Binding SelectedBackup.FileSize, Converter={x:Static converters:SizeToStringConverter.Instance}, FallbackValue='Backup', StringFormat={}Backup ({0})}" />
