@@ -57,6 +57,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -401,6 +402,9 @@
                     <TextBlock Grid.Row="24" Grid.Column="0" Text="インラインシェーダーマップのシリアル化" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="24" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadShaderMaps, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
+                    <TextBlock Grid.Row="25" Grid.Column="0" Text="復元したブループリントを表示" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="cpp形式で、復元されたブループリントを表示します" />
+                    <CheckBox Grid.Row="25" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding ShowDecompileOption, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">

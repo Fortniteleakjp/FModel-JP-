@@ -23,15 +23,21 @@ using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
+using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.IO;
+using CUE4Parse.UE4.Kismet;
 using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
+using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -45,6 +51,8 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
+using System.Linq;
+using System.Text;
 using UE4Config.Parsing;
 using Application = System.Windows.Application;
 
@@ -293,11 +301,13 @@ public partial class CUE4ParseViewModel : ViewModel
                     break;
                 }
             case "upluginmanifest":
+            case "projectstore":
             case "uproject":
             case "manifest":
             case "uplugin":
             case "archive":
             case "dnearchive": // Banishers: Ghosts of New Eden
+            case "gitignore":
             case "vmodule":
             case "uparam": // Steel Hunters
             case "verse":
@@ -323,6 +333,7 @@ public partial class CUE4ParseViewModel : ViewModel
             case "lua":
             case "js":
             case "po":
+            case "md":
             case "h":
                 {
                     var data = Provider.SaveAsset(entry);
@@ -653,9 +664,280 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
     }
 
+    public void Decompile(GameFile entry)
+    {
+        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
+        else TabControl.SelectedTab.SoftReset(entry);
+
+        TabControl.SelectedTab.TitleExtra = "復元";
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
+
+        var pkg = Provider.LoadPackage(entry);
+
+        var outputBuilder = new StringBuilder();
+        for (var i = 0; i < pkg.ExportMapLength; i++)
+        {
+            var pointer = new FPackageIndex(pkg, i + 1).ResolvedObject;
+            if (pointer?.Object is null)
+                continue;
+
+            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+            if (dummy is not UClass || pointer.Object.Value is not UClass blueprint)
+                continue;
+
+            var typePrefix = KismetExtensions.GetPrefix(blueprint.GetType().Name);
+            outputBuilder.AppendLine($"class {typePrefix}{blueprint.Name} : public {typePrefix}{blueprint?.SuperStruct?.Name ?? string.Empty}\n{{\npublic:");
+
+            if (!blueprint.ClassDefaultObject.TryLoad(out var bpObject))
+                continue;
+
+            var strings = new List<string>();
+            foreach (var property in bpObject.Properties)
+            {
+                var propertyName = property.Name.ToString();
+                var propertyValue = property.Tag?.GenericValue;
+                strings.Add(propertyName);
+                string placeholder = $"{propertyName}fmodelholder"; // spelling mistake is intended
+
+                void ShouldAppend(string value)
+                {
+                    if (outputBuilder.ToString().Contains(placeholder))
+                    {
+                        outputBuilder.Replace(placeholder, value);
+                    }
+                    else
+                    {
+                        outputBuilder.AppendLine($"\t{KismetExtensions.GetPropertyType(propertyValue)} {propertyName.Replace(" ", "")} = {value};");
+                    }
+                }
+
+                string GetLineOfText(object value)
+                {
+                    string text = null;
+                    switch (value)
+                    {
+                        case FScriptStruct structTag:
+                            switch (structTag.StructType)
+                            {
+                                case FVector vector:
+                                    text = $"FVector({vector.X}, {vector.Y}, {vector.Z})";
+                                    break;
+                                case FGuid guid:
+                                    text = $"FGuid({guid.A}, {guid.B}, {guid.C}, {guid.D})";
+                                    break;
+                                case TIntVector3<int> vector3:
+                                    text = $"FVector({vector3.X}, {vector3.Y}, {vector3.Z})";
+                                    break;
+                                case TIntVector3<float> floatVector3:
+                                    text = $"FVector({floatVector3.X}, {floatVector3.Y}, {floatVector3.Z})";
+                                    break;
+                                case TIntVector2<float> floatVector2:
+                                    text = $"FVector2D({floatVector2.X}, {floatVector2.Y})";
+                                    break;
+                                case FVector2D vector2d:
+                                    text = $"FVector2D({vector2d.X}, {vector2d.Y})";
+                                    break;
+                                case FRotator rotator:
+                                    text = $"FRotator({rotator.Pitch}, {rotator.Yaw}, {rotator.Roll})";
+                                    break;
+                                case FLinearColor linearColor:
+                                    text = $"FLinearColor({linearColor.R}, {linearColor.G}, {linearColor.B}, {linearColor.A})";
+                                    break;
+                                case FGameplayTagContainer gTag:
+                                    text = gTag.GameplayTags.Length switch
+                                    {
+                                        > 1 => "[\n" + string.Join(",\n", gTag.GameplayTags.Select(tag => $"\t\t\"{tag.TagName}\"")) + "\n\t]",
+                                        > 0 => $"\"{gTag.GameplayTags[0].TagName}\"",
+                                        _ => "[]"
+                                    };
+                                    break;
+                                case FStructFallback fallback:
+                                    if (fallback.Properties.Count > 0)
+                                    {
+                                        text = "[\n" + string.Join(",\n", fallback.Properties.Select(p => $"\t\"{GetLineOfText(p)}\"")) + "\n\t]";
+                                    }
+                                    else
+                                    {
+                                        text = "[]";
+                                    }
+                                    break;
+                            }
+                            break;
+                        case UScriptSet:
+                        case UScriptMap:
+                        case UScriptArray:
+                            IEnumerable<string> inner = value switch
+                            {
+                                UScriptSet set => set.Properties.Select(p => $"\t\"{p.GenericValue}\""),
+                                UScriptMap map => map.Properties.Select(kvp => $"\t{{\n\t\t\"{kvp.Key}\": \"{kvp.Value}\"\n\t}}"),
+                                UScriptArray array => array.Properties.Select(p => $"\t\"{GetLineOfText(p)}\""),
+                                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+                            };
+
+                            text = "[\n" + string.Join(",\n", inner) + "\n\t]";
+                            break;
+                        case FMulticastScriptDelegate multicast:
+                            text = multicast.InvocationList.Length == 0 ? "[]" : $"[{string.Join(", ", multicast.InvocationList.Select(x => $"\"{x.FunctionName}\""))}]";
+                            break;
+                        case bool:
+                            text = value.ToString()?.ToLowerInvariant();
+                            break;
+                    }
+
+                    return text ?? value.ToString();
+                }
+
+                ShouldAppend(GetLineOfText(propertyValue));
+            }
+
+            foreach (var field in blueprint.ChildProperties)
+            {
+                if (field is not FProperty property || strings.Contains(property.Name.Text)) continue;
+
+                var propertyName = property.Name.ToString().Replace(" ", "");
+                var type = KismetExtensions.GetPropertyType(property);
+                var prefix = KismetExtensions.GetPrefix(property.GetType().Name);
+
+                string pointerIdentifier;
+                if (property.PropertyFlags.HasFlag(EPropertyFlags.InstancedReference) ||
+                    property.PropertyFlags.HasFlag(EPropertyFlags.ReferenceParm) ||
+                    KismetExtensions.GetPropertyProperty(property))
+                {
+                    pointerIdentifier = "*";
+                }
+                else
+                {
+                    pointerIdentifier = string.Empty;
+                }
+
+                outputBuilder.AppendLine($"\t{prefix}{type}{pointerIdentifier} {propertyName} = {propertyName}fmodelholder;");
+            }
+
+            {
+                var funcMapOrder = blueprint?.FuncMap?.Keys.Select(fname => fname.ToString()).ToList();
+                var functions = pkg.ExportsLazy
+                .Where(e => e.Value is UFunction)
+                .Select(e => (UFunction) e.Value)
+                    .OrderBy(f =>
+                    {
+                        if (funcMapOrder != null)
+                        {
+                            var functionName = f.Name.ToString();
+                            int index = funcMapOrder.IndexOf(functionName);
+                            return index >= 0 ? index : int.MaxValue;
+                        }
+
+                        return int.MaxValue;
+                    })
+                    .ThenBy(f => f.Name.ToString())
+                    .ToList();
+
+                var jumpCodeOffsetsMap = new Dictionary<string, List<int>>();
+
+                foreach (var function in functions.AsEnumerable().Reverse())
+                {
+                    if (function?.ScriptBytecode == null)
+                        continue;
+
+                    foreach (var property in function.ScriptBytecode)
+                    {
+                        string? label = null;
+                        int? offset = null;
+
+                        switch (property.Token)
+                        {
+                            case EExprToken.EX_JumpIfNot:
+                                label = ((EX_JumpIfNot) property).ObjectPath?.ToString()?.Split('.').Last().Split('[')[0];
+                                offset = (int) ((EX_JumpIfNot) property).CodeOffset;
+                                break;
+
+                            case EExprToken.EX_Jump:
+                                label = ((EX_Jump) property).ObjectPath?.ToString()?.Split('.').Last().Split('[')[0];
+                                offset = (int) ((EX_Jump) property).CodeOffset;
+                                break;
+
+                            case EExprToken.EX_LocalFinalFunction:
+                                {
+                                    EX_FinalFunction op = (EX_FinalFunction) property;
+                                    label = op.StackNode?.Name?.ToString()?.Split('.').Last().Split('[')[0];
+
+                                    if (op.Parameters.Length == 1 && op.Parameters[0] is EX_IntConst intConst)
+                                        offset = intConst.Value;
+                                    break;
+                                }
+                        }
+
+                        if (!string.IsNullOrEmpty(label) && offset.HasValue)
+                        {
+                            if (!jumpCodeOffsetsMap.TryGetValue(label, out var list))
+                                jumpCodeOffsetsMap[label] = list = new List<int>();
+
+                            list.Add(offset.Value);
+                        }
+                    }
+                }
+
+                foreach (var function in functions)
+                {
+                    string argsList = "";
+                    string returnFunc = "void";
+                    if (function?.ChildProperties != null)
+                    {
+                        foreach (FProperty property in function.ChildProperties)
+                        {
+                            var name = property.Name.ToString();
+                            var plainName = property.Name.PlainText;
+                            var prefix = KismetExtensions.GetPrefix(property.GetType().Name);
+                            var type = KismetExtensions.GetPropertyType(property);
+                            var isConst = property.PropertyFlags.HasFlag(EPropertyFlags.ConstParm);
+                            var isOut = property.PropertyFlags.HasFlag(EPropertyFlags.OutParm);
+                            var isInstanced = property.PropertyFlags.HasFlag(EPropertyFlags.InstancedReference);
+                            var isEdit = property.PropertyFlags.HasFlag(EPropertyFlags.Edit);
+
+                            if (plainName == "ReturnValue")
+                            {
+                                returnFunc = $"{(isConst ? "const " : "")}{prefix}{type}{(isInstanced || prefix == "U" ? "*" : "")}";
+                                continue;
+                            }
+
+                            bool uselessIgnore = name.EndsWith("_ReturnValue") || name.StartsWith("CallFunc_") || name.StartsWith("K2Node_") || name.StartsWith("Temp_"); // read variable name
+
+                            if (uselessIgnore && !isEdit)
+                                continue;
+
+                            var strippedVerseName = Regex.Replace(name, @"^__verse_0x[0-9A-Fa-f]+_", "");
+                            argsList += $"{(isConst ? "const " : "")}{prefix}{type}{(isInstanced || prefix == "U" ? "*" : "")}{(isOut ? "&" : "")} {strippedVerseName}, ";
+                        }
+                    }
+                    argsList = argsList.TrimEnd(',', ' ');
+
+                    outputBuilder.AppendLine($"\n\t{returnFunc} {function.Name.Replace(" ", "")}({argsList})\n\t{{");
+                    if (function?.ScriptBytecode != null)
+                    {
+                        var jumpCodeOffsets = jumpCodeOffsetsMap.TryGetValue(function.Name, out var list) ? list : new List<int>();
+                        foreach (KismetExpression property in function.ScriptBytecode)
+                        {
+                            KismetExtensions.ProcessExpression(property.Token, property, outputBuilder, jumpCodeOffsets);
+                        }
+                    }
+                    else
+                    {
+                        outputBuilder.Append("\n\t // No Bytecode (Make sure \"Serialize Script Bytecode\" is enabled \n\n");
+                        outputBuilder.Append("\t}\n");
+                    }
+                }
+
+                outputBuilder.Append("\n\n}");
+            }
+        }
+
+        var cpp = Regex.Replace(outputBuilder.ToString(), @"\w+fmodelholder", "nullptr");
+        TabControl.SelectedTab.SetDocumentText(cpp, false, false);
+    }
+
     private void SaveAndPlaySound(string fullPath, string ext, byte[] data)
     {
-        if (fullPath.StartsWith("/"))
+        if (fullPath.StartsWith('/'))
             fullPath = fullPath[1..];
         var savedAudioPath = Path.Combine(UserSettings.Default.AudioDirectory,
             UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/')).Replace('\\', '/') + $".{ext.ToLowerInvariant()}";

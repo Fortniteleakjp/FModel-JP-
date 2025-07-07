@@ -33,7 +33,12 @@ public static partial class StringExtensions
         if (int.TryParse(lineToFind, out var index))
             return s.GetLineNumber(index);
 
-        lineToFind = $"    \"Name\": \"{lineToFind}\",";
+        return s.GetNameLineNumberText($"    \"Name\": \"{lineToFind}\",");
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetNameLineNumberText(this string s, string lineToFind)
+    {
         using var reader = new StringReader(s);
         var lineNum = 0;
         while (reader.ReadLine() is { } line)
