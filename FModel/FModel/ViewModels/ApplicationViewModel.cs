@@ -56,7 +56,7 @@ public class ApplicationViewModel : ViewModel
 
     public LoadingModesViewModel LoadingModes { get; }
     public CustomDirectoriesViewModel CustomDirectories { get; }
-    public CUE4ParseViewModel CUE4Parse { get; }
+    public CUE4Parse.CUE4ParseViewModel CUE4Parse { get; }
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
@@ -81,7 +81,9 @@ public class ApplicationViewModel : ViewModel
             Environment.Exit(0);
         }
 
-        CUE4Parse = new CUE4ParseViewModel();
+        UserSettings.Default.DiffDir = ResolveDiffDirectory();
+
+        CUE4Parse = new CUE4Parse.CUE4ParseViewModel();
         CUE4Parse.Provider.VfsRegistered += (sender, count) =>
         {
             if (sender is not IAesVfsReader reader) return;
@@ -107,7 +109,21 @@ public class ApplicationViewModel : ViewModel
 
         Status.SetStatus(EStatusKind.Ready);
     }
+    public static DirectorySettings ResolveDiffDirectory()
+    {
+        var diffPath = UserSettings.Default.DiffGameDirectory;
+        if (string.IsNullOrEmpty(diffPath))
+            return null;
 
+        if (UserSettings.Default.PerDirectory.TryGetValue(diffPath, out var existing))
+            return existing;
+
+        var vm = new GameSelectorViewModel(diffPath);
+
+        UserSettings.Default.DiffGameDirectory = vm.SelectedDirectory.GameDirectory;
+        UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory] = vm.SelectedDirectory;
+        return vm.SelectedDirectory;
+    }
     public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
     {
         var gameDirectory = UserSettings.Default.GameDirectory;
@@ -130,7 +146,7 @@ public class ApplicationViewModel : ViewModel
 
     public void RestartWithWarning()
     {
-        MessageBox.Show("It looks like you just changed something.\nFModel will restart to apply your changes.", "Uh oh, a restart is needed", MessageBoxButton.OK, MessageBoxImage.Warning);
+        MessageBox.Show("変更を適用するためには、 FModel を再起動する必要があります。", "再起動が必要です", MessageBoxButton.OK, MessageBoxImage.Warning);
         Restart();
     }
 
@@ -187,7 +203,21 @@ public class ApplicationViewModel : ViewModel
                 return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
             });
 
-            CUE4Parse.LoadVfs(aes);
+            IEnumerable<KeyValuePair<FGuid, FAesKey>> secondAes = [];
+            if (AesManager.DiffAesKeys != null)
+            {
+                secondAes = AesManager.DiffAesKeys.Select(x =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var k = x.Key.Trim();
+                    if (k.Length != 66)
+                        k = Constants.ZERO_64_CHAR;
+                    return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
+                });
+            }
+
+            CUE4Parse.LoadVfs(aes, secondAes);
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));

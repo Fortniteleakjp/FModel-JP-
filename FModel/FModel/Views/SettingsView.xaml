@@ -8,25 +8,30 @@
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-                             WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="Height"
+                             xmlns:settings="clr-namespace:FModel.Settings"
+                             WindowStartupLocation="CenterScreen"
+                             ResizeMode="NoResize"
+                             IconVisibility="Collapsed"
+                             SizeToContent="Height"
                              MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.10'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}">
     <adonisControls:AdonisWindow.Style>
-        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="Settings" />
+        <Style TargetType="adonisControls:AdonisWindow"
+               BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
+            <Setter Property="Title"
+                    Value="Settings" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Resources.xaml"/>
+                <ResourceDictionary Source="Resources/Resources.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="GeneralTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -126,7 +131,7 @@
                         </ComboBox.ItemTemplate>
                     </controls:FilterableComboBox>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="テクスチャプラットフォーム *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Override the game's platform to ensure texture compatibility" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="テクスチャプラットフォーム *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="プラットフォームによってテクスチャが異なります" />
                     <ComboBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.Platforms}" SelectedItem="{Binding SettingsView.SelectedUePlatform, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Margin="0 0 0 5">
@@ -137,7 +142,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="圧縮されたオーディオを再生するか" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="What to do when encountering a compressed audio file" />
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="サウンドの再生" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="圧縮されたサウンドファイルの読み込み方法" />
                     <ComboBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.CompressedAudios}" SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -147,7 +152,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="表示言語" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="Language used and shown when parsing packages" />
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="メインの表示言語" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="パッケージを解析するときに使用・表示される言語" />
                     <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.AssetLanguages}" SelectedItem="{Binding SettingsView.SelectedAssetLanguage, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -157,13 +162,13 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="ディレクトリ構造を維持するか" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="Auto-save packages following their game directory" />
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="保存時にディレクトリ構造を維持" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="ゲームのパス通りに保存する場合はチェックを入れてください" />
                     <CheckBox Grid.Row="9" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 0"/>
 
-                    <Separator Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="ADVANCED"></Separator>
+                    <Separator Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="詳細設定"></Separator>
 
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="バージョン管理設定 *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="バージョン管理の設定 *" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <Grid Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -178,10 +183,10 @@
                         <Button Grid.Column="4" Content="MapStruct型" Click="OpenMapStructTypes" />
                     </Grid>
 
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="いつAESを再読み込みするか" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="起動時のAESの再読み込み" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <ComboBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <ComboBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
                               Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -192,7 +197,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="エンドポイント構成" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="13" Grid.Column="0" Text="データを自動取得" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <Grid Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                           DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <Grid.ColumnDefinitions>
@@ -205,28 +210,28 @@
                         <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint" />
                     </Grid>
 
-                    <TextBlock Grid.Row="14" Grid.Column="0" Text="ファイルのマッピングファイルを使用するか" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="14" Grid.Column="0" Text="マッピングファイルをローカルで指定" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="14" Grid.Column="2" Margin="0 5 0 10"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SettingsView.MappingEndpoint.Overwrite, Mode=TwoWay}" />
 
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="マッピングファイルのパス" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="15" Grid.Column="0" Text="Mapping File Path" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <TextBox Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5" Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
+                    <TextBox Grid.Row="22" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5" Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                              Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <Button Grid.Row="15" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
+                    <Button Grid.Row="22" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                    <TextBlock Grid.Row="16" Grid.Column="0" Text="スクリプトバイトコードをシリアル化する" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="16" Grid.Column="0" Text="スクリプトバイトコードをシリアル化" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="16" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadScriptData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
-                    <TextBlock Grid.Row="17" Grid.Column="0" Text="インラインシェーダーマップのシリアル化" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="17" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="24" Grid.Column="0" Text="インラインシェーダーマップのシリアル化" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="24" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadShaderMaps, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
                     <TextBlock Grid.Row="18" Grid.Column="0" Text="最大 Wwise Bank (.BNK) プリフェッチ" VerticalAlignment="Center" Margin="0 0 0 5" />
