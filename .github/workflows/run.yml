@@ -25,18 +25,15 @@ jobs:
       - name: .NET Restore
         run: dotnet restore FModel/FModel/FModel.csproj
 
-      - name: .NET Workload Restore
-        run: dotnet workload restore FModel/FModel/FModel.csproj
-
       - name: .NET Publish
-        run: dotnet publish "FModel/FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "FModel/FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
+        run: dotnet publish "./FModel/FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
 
       - name: Create ZIP File
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: zip
           filename: ${{ github.sha }}.zip
-          path: ./FModel/FModel/bin/Publish
+          path: ./FModel/FModel/bin/Publish/FModel.exe
 
       - name: Add Release
         uses: ncipollo/release-action@v1.14.0
@@ -48,7 +45,7 @@ jobs:
             実行した際にアップデート情報が表示されたら、アップデートを実行してください。
           tag: 'qa'
           artifacts: |
-            ${{ github.sha }}.zip
+           ${{ github.sha }}.zip
           allowUpdates: true
 
       - name: Get App Version
@@ -64,7 +61,7 @@ jobs:
 
       - name: Set Secrets
         run: |
-          printf "%s" '${{ secrets.SECRETS }}' > secrets.py
+          echo '${{ secrets.SECRETS }}' > secrets.py
 
       - name: Update Download Url
         run: |
