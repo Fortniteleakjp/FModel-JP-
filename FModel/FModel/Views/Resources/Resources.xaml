@@ -858,7 +858,7 @@
                                 <Separator />
                                 <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data">
                                     <MenuItem.Header>
-                                        <TextBlock Text="{Binding Entry.Extension, FallbackValue='データを保存', StringFormat='{0}形式で保存'}" />
+                                        <TextBlock Text="{Binding Entry.Extension, FallbackValue='データを保存', StringFormat='{}{0}形式で保存'}" />
                                     </MenuItem.Header>
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
