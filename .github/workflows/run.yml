@@ -25,6 +25,9 @@ jobs:
       - name: .NET Restore
         run: dotnet restore FModel/FModel/FModel.csproj
 
+      - name: .NET Workload Restore
+        run: dotnet workload restore
+
       - name: .NET Publish
         run: dotnet publish "./FModel/FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
 
