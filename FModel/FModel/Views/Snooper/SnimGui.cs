@@ -94,11 +94,11 @@ public class SnimGui
     {
         ImGui.DockSpaceOverViewport(_dockspaceId, ImGui.GetMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
 
-        SectionWindow("マテリアルインスペクター", s.Renderer, DrawMaterialInspector, false);
-        AnimationWindow("タイムライン", s.Renderer, (icons, tracker, animations) =>
+        SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
+        AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) =>
             tracker.ImGuiTimeline(s, _saver, icons, animations, _outlinerSize, Controller.FontSemiBold));
 
-        Window("ワールド", () => DrawWorld(s), false);
+        Window("World", () => DrawWorld(s), false);
 
         DrawSockets(s);
         DrawOuliner(s);
@@ -178,11 +178,11 @@ public class SnimGui
 
             NoFramePaddingOnY(() =>
             {
-                Layout("レンダラー");ImGui.Text($" :  {_renderer}");
-                Layout("バージョン");ImGui.Text($" :  {_version}");
-                Layout("ロードしたモデル");ImGui.Text($" :  x{length}");ImGui.SameLine();
+                Layout("Renderer");ImGui.Text($" :  {_renderer}");
+                Layout("Version");ImGui.Text($" :  {_version}");
+                Layout("Loaded Models");ImGui.Text($" :  x{length}");ImGui.SameLine();
 
-                if (ImGui.SmallButton("全て保存"))
+                if (ImGui.SmallButton("Save All"))
                 {
                     foreach (var model in s.Renderer.Options.Models.Values)
                     {
@@ -215,27 +215,27 @@ public class SnimGui
             ImGui.EndTable();
         }
 
-        ImGui.SeparatorText("エディター");
-        if (ImGui.BeginTable("ワールドの編集", 2))
+        ImGui.SeparatorText("Editor");
+        if (ImGui.BeginTable("world_editor", 2))
         {
-            Layout("回転のみでアニメーション");ImGui.PushID(1);
+            Layout("Animate With Rotation Only");ImGui.PushID(1);
             ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
-            ImGui.PopID();Layout("時間倍率");ImGui.PushID(2);
+            ImGui.PopID();Layout("Time Multiplier");ImGui.PushID(2);
             ImGui.DragFloat("", ref s.Renderer.Options.Tracker.TimeMultiplier, 0.01f, 0.25f, 8f, "x%.2f", ImGuiSliderFlags.NoInput);
-            ImGui.PopID();Layout("頂点カラー");ImGui.PushID(3);
+            ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(3);
             var c = (int) s.Renderer.Color;
             ImGui.Combo("vertex_colors", ref c,
-                "デフォルト\0セクション\0カラー\0法線\0テクスチャ座標\0");
+                "Default\0Sections\0Colors\0Normals\0Texture Coordinates\0");
             s.Renderer.Color = (VertexColor) c;
             ImGui.PopID();
 
             ImGui.EndTable();
         }
 
-        ImGui.SeparatorText("カメラ");
+        ImGui.SeparatorText("Camera");
         s.Renderer.CameraOp.ImGuiCamera();
 
-        ImGui.SeparatorText("ライト");
+        ImGui.SeparatorText("Lights");
         for (int i = 0; i < s.Renderer.Options.Lights.Count; i++)
         {
             var light = s.Renderer.Options.Lights[i];
@@ -504,7 +504,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     private void DrawDetails(Snooper s)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        MeshWindow("詳細", s.Renderer, (icons, model) =>
+        MeshWindow("Details", s.Renderer, (icons, model) =>
         {
             if (ImGui.BeginTable("model_details", 2, ImGuiTableFlags.SizingStretchProp))
             {
@@ -521,7 +521,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     {
                         Layout("Two Sided");ImGui.Text($"  :  {model.IsTwoSided}");
                     }
-                    Layout("ソケット");ImGui.Text($"  :  x{model.Sockets.Count}");
+                    Layout("Sockets");ImGui.Text($"  :  x{model.Sockets.Count}");
 
                     ImGui.EndTable();
                 });
@@ -671,27 +671,27 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         var material = model.Materials[section.MaterialIndex];
 
         ImGui.Spacing();
-        ImGui.Image(icons["マテリアル"].GetPointer(), new Vector2(24));
+        ImGui.Image(icons["material"].GetPointer(), new Vector2(24));
         ImGui.SameLine(); ImGui.AlignTextToFramePadding(); ImGui.Text(material.Name);
         ImGui.Spacing();
 
-        ImGui.SeparatorText("パラメータ");
+        ImGui.SeparatorText("Parameters");
         material.ImGuiParameters();
 
-        ImGui.SeparatorText("テクスチャ");
+        ImGui.SeparatorText("Textures");
         if (material.ImGuiTextures(icons, model))
         {
             _tiOpen = true;
             ImGui.SetWindowFocus("Texture Inspector");
         }
 
-        ImGui.SeparatorText("プロパティ");
+        ImGui.SeparatorText("Properties");
         NoFramePaddingOnY(() =>
         {
             ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("ベース"))
+            if (ImGui.TreeNode("Base"))
             {
-                material.ImGuiBaseProperties("ベース");
+                material.ImGuiBaseProperties("base");
                 ImGui.TreePop();
             }
 
@@ -708,12 +708,12 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                 ImGui.TreePop();
             }
             ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("カラー"))
+            if (ImGui.TreeNode("Colors"))
             {
                 material.ImGuiColors(material.Parameters.Colors);
                 ImGui.TreePop();
             }
-            if (ImGui.TreeNode("全テクスチャ"))
+            if (ImGui.TreeNode("All Textures"))
             {
                 material.ImGuiDictionaries("textures", material.Parameters.Textures);
                 ImGui.TreePop();
@@ -837,7 +837,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             ImGui.SetCursorPos(size with { X = margin });
             ImGui.Text($"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)");
 
-            const string label = "映される3Dデータは、ゲーム内で保存、使用される物と異なる場合があります";
+            const string label = "Previewed content may differ from final version saved or used in-game.";
             ImGui.SetCursorPos(size with { X = size.X - ImGui.CalcTextSize(label).X - margin });
             ImGui.TextColored(new Vector4(0.50f, 0.50f, 0.50f, 1.00f), label);
 
@@ -942,8 +942,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.PopStyleVar();
     }
 
-    private void NoMeshSelected() => CenteredTextColored(_errorColor, "メッシュが選択されていません");
-    private void NoSectionSelected() => CenteredTextColored(_errorColor, "セクションが選択されていません");
+    private void NoMeshSelected() => CenteredTextColored(_errorColor, "No Mesh Selected");
+    private void NoSectionSelected() => CenteredTextColored(_errorColor, "No Section Selected");
     private void CenteredTextColored(Vector4 color, string text)
     {
         var region = ImGui.GetContentRegionAvail();
