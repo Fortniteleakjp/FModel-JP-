@@ -28,7 +28,6 @@ namespace FModel.Services
         private readonly Button[] _buttons =
         {
             new() {Label = "FModel公式サポートサーバー(英語)", Url = Constants.DISCORD_LINK},
-            new() {Label = "FModel公式サポートサーバー(日本語)", Url = Constants.DISCORD_LINK_JP},
             new() {Label = "FModelをサポート(寄付)", Url = Constants.DONATE_LINK}
         };
 
