@@ -2,8 +2,8 @@
 using DiscordRPC;
 using FModel.Extensions;
 using FModel.Settings;
+using FModel.ViewModels;
 using Serilog;
-using CUE4ParseViewModel = FModel.ViewModels.CUE4Parse.CUE4ParseViewModel;
 
 namespace FModel.Services
 {
@@ -27,8 +27,8 @@ namespace FModel.Services
 
         private readonly Button[] _buttons =
         {
-            new() {Label = "FModel公式サポートサーバー(英語)", Url = Constants.DISCORD_LINK},
-            new() {Label = "FModelをサポート(寄付)", Url = Constants.DONATE_LINK}
+            new() {Label = "Join FModel", Url = Constants.DISCORD_LINK},
+            new() {Label = "Support us", Url = Constants.DONATE_LINK}
         };
 
         public void Initialize(string gameName)
