@@ -17,7 +17,7 @@ public class RelativeDateTimeConverter : IValueConverter
             int time;
             string unit;
             if (timeSpan.TotalSeconds < 30)
-                return "今";
+                return "たった今";
 
             if (timeSpan.TotalMinutes < 1)
             {
@@ -53,7 +53,7 @@ public class RelativeDateTimeConverter : IValueConverter
                     break;
             }
 
-            return $"{time}{unit}";
+            return $"{time}{unit}前";
         }
         return value;
     }
