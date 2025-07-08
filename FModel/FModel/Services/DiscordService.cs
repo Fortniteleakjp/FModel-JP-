@@ -27,8 +27,8 @@ namespace FModel.Services
 
         private readonly Button[] _buttons =
         {
-            new() {Label = "Discordサーバー", Url = Constants.DISCORD_LINK},
-            new() {Label = "寄付", Url = Constants.DONATE_LINK}
+            new() {Label = "Discordサーバー", Url = Constants.DISCORD_LINK_JP},
+            new() {Label = "寄付", Url = Constants.DONATE_LINK_JP}
         };
 
         public void Initialize(string gameName)

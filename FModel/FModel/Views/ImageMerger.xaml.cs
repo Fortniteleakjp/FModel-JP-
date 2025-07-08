@@ -1,4 +1,4 @@
-﻿using AdonisUI.Controls;
+using AdonisUI.Controls;
 using FModel.Extensions;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
@@ -259,7 +259,7 @@ public partial class ImageMerger
             if (ImagePreview.Source == null) return;
             var saveFileDialog = new SaveFileDialog
             {
-                Title = "Save Image",
+                Title = "画像を保存",
                 FileName = FILENAME,
                 InitialDirectory = UserSettings.Default.OutputDirectory,
                 Filter = "Png Files (*.png)|*.png|All Files (*.*)|*.*"
@@ -280,7 +280,7 @@ public partial class ImageMerger
     {
         if (File.Exists(path))
         {
-            Log.Information("{FileName} successfully saved", fileName);
+            Log.Information("{FileName} を保存しました", fileName);
             FLogger.Append(ELog.Information, () =>
             {
                 FLogger.Text("Successfully saved ", Constants.WHITE);
@@ -289,7 +289,7 @@ public partial class ImageMerger
         }
         else
         {
-            Log.Error("{FileName} could not be saved", fileName);
+            Log.Error("{FileName} を保存できませんでした", fileName);
             FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));
         }
     }
@@ -297,5 +297,15 @@ public partial class ImageMerger
     private void OnCopyImage(object sender, RoutedEventArgs e)
     {
         ClipboardExtensions.SetImage(_imageBuffer, FILENAME);
+    }
+
+    private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+
+    }
+
+    private void SizeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+
     }
 }
