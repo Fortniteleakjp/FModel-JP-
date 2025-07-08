@@ -27,8 +27,9 @@ namespace FModel.Services
 
         private readonly Button[] _buttons =
         {
-            new() {Label = "Join FModel", Url = Constants.DISCORD_LINK},
-            new() {Label = "Support us", Url = Constants.DONATE_LINK}
+            new() {Label = "FModel公式サポートサーバー(英語)", Url = Constants.DISCORD_LINK},
+            new() {Label = "FModel公式サポートサーバー(日本語)", Url = Constants.DISCORD_LINK_JP},
+            new() {Label = "FModelをサポート(寄付)", Url = Constants.DONATE_LINK}
         };
 
         public void Initialize(string gameName)
