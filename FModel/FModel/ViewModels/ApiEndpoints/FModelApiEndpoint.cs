@@ -163,8 +163,8 @@ public class FModelApiEndpoint : AbstractApiProvider
         else
         {
             MessageBox.Show(
-                "There is a problem reaching the update server, please check your internet connection or try again later.",
-                "Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                "アップデートサーバーに接続できません。インターネット接続を確認するか、後でもう一度お試しください。",
+                "アップデートのチェックに失敗しました", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
