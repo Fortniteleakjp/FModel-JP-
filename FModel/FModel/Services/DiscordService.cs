@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using DiscordRPC;
 using FModel.Extensions;
 using FModel.Settings;
-using FModel.ViewModels;
+using FModel.ViewModels.CUE4Parse;
 using Serilog;
 
 namespace FModel.Services
@@ -27,8 +27,8 @@ namespace FModel.Services
 
         private readonly Button[] _buttons =
         {
-            new() {Label = "Join FModel", Url = Constants.DISCORD_LINK},
-            new() {Label = "Support us", Url = Constants.DONATE_LINK}
+            new() {Label = "Discordサーバー", Url = Constants.DISCORD_LINK},
+            new() {Label = "寄付", Url = Constants.DONATE_LINK}
         };
 
         public void Initialize(string gameName)
@@ -38,7 +38,7 @@ namespace FModel.Services
                 Assets = _staticAssets,
                 Timestamps = _timestamps,
                 Buttons = _buttons,
-                Details = $"{gameName} - Idling"
+                Details = $"{gameName} - 非アクティブ"
             };
 
             _client.OnReady += (_, args) => Log.Information("@{Username} ({UserId}) is now ready", args.User.Username, args.User.ID);
@@ -48,8 +48,8 @@ namespace FModel.Services
 
         public void UpdatePresence(CUE4ParseViewModel viewModel) =>
             UpdatePresence(
-                $"{viewModel.Provider.GameDisplayName ?? viewModel.Provider.ProjectName} - {viewModel.Provider.MountedVfs.Count}/{viewModel.Provider.MountedVfs.Count + viewModel.Provider.UnloadedVfs.Count} Packages",
-                $"Mode: {UserSettings.Default.LoadingMode.GetDescription()} - {viewModel.SearchVm.ResultsCount:### ### ###} Loaded Assets".Trim());
+                $"{viewModel.Provider.GameDisplayName ?? viewModel.Provider.ProjectName} - {viewModel.Provider.MountedVfs.Count}/{viewModel.Provider.MountedVfs.Count + viewModel.Provider.UnloadedVfs.Count} 個のフォルダ",
+                $"Mode: {UserSettings.Default.LoadingMode.GetDescription()} - {viewModel.SearchVm.ResultsCount:### ### ###} 個のファイル".Trim());
 
         public void UpdatePresence(string details, string state)
         {
