@@ -14,7 +14,7 @@ namespace FModel.Services
 
     public class DiscordHandler
     {
-        private const string _APP_ID = "684489366189768767";
+        private const string _APP_ID = "1392126547296522373";
 
         private RichPresence _currentPresence;
         private readonly DiscordRpcClient _client = new(_APP_ID);
@@ -49,7 +49,7 @@ namespace FModel.Services
         public void UpdatePresence(CUE4ParseViewModel viewModel) =>
             UpdatePresence(
                 $"{viewModel.Provider.GameDisplayName ?? viewModel.Provider.ProjectName} - {viewModel.Provider.MountedVfs.Count}/{viewModel.Provider.MountedVfs.Count + viewModel.Provider.UnloadedVfs.Count} 個のフォルダ",
-                $"Mode: {UserSettings.Default.LoadingMode.GetDescription()} - {viewModel.SearchVm.ResultsCount:### ### ###} 個のファイル".Trim());
+                $"{UserSettings.Default.LoadingMode.GetDescription()} - {viewModel.SearchVm.ResultsCount:### ### ###} 個のファイル".Trim());
 
         public void UpdatePresence(string details, string state)
         {
