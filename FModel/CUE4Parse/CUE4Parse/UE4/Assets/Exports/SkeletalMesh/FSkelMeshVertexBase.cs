@@ -24,7 +24,7 @@ public class FSkelMeshVertexBase
         Normal[0] = new FPackedNormal(Ar);
         Normal[2] = new FPackedNormal(Ar);
         if (FSkeletalMeshCustomVersion.Get(Ar) < FSkeletalMeshCustomVersion.Type.UseSeparateSkinWeightBuffer)
-    {
+        {
             // serialized as separate buffer starting with UE4.15
             Infs = new FSkinWeightInfo(Ar, bExtraBoneInfluences);
         }
@@ -37,18 +37,14 @@ public class FSkelMeshVertexBase
         Pos = Ar.Read<FVector>();
         if (FRenderingObjectVersion.Get(Ar) < FRenderingObjectVersion.Type.IncreaseNormalPrecision)
         {
-            Pos = Ar.Read<FVector>();
-            if (FRenderingObjectVersion.Get(Ar) < FRenderingObjectVersion.Type.IncreaseNormalPrecision)
-            {
-                Normal = new FPackedNormal[3];
-                Normal[0] = new FPackedNormal(Ar);
-                Normal[1] = new FPackedNormal(Ar);
-                Normal[2] = new FPackedNormal(Ar);
-            }
-
-            else
-                // New normals are stored with full floating point precision
-                Normal[0] = new FPackedNormal(Ar.Read<FVector>());
+            Normal[0] = new FPackedNormal(Ar);
+            Normal[1] = new FPackedNormal(Ar);
+            Normal[2] = new FPackedNormal(Ar);
+        }
+        else
+        {
+            // New normals are stored with full floating point precision
+            Normal[0] = new FPackedNormal(Ar.Read<FVector>());
             Normal[1] = new FPackedNormal(Ar.Read<FVector>());
             Normal[2] = new FPackedNormal(Ar.Read<FVector4>());
         }

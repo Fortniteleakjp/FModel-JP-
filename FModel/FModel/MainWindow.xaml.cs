@@ -127,7 +127,7 @@ public partial class MainWindow
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
     {
-        Helper.OpenWindow<AdonisWindow>("Search View", () => new SearchView().Show());
+        Helper.OpenWindow<AdonisWindow>("検索ウィンドウ", () => new SearchView().Show());
     }
 
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)

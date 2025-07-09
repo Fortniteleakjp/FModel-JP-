@@ -4,9 +4,9 @@ using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 
-namespace YourNamespace.OverrideComponents;
+namespace CUE4Parse.UE4.Assets.Exports.Component;
 
-public class MyPrimitiveComponent
+public class  UPrimitiveComponent
 {
     public FPackageIndex Model;
     /** The elements used to render the nodes. */
@@ -16,8 +16,9 @@ public class MyPrimitiveComponent
     /** The nodes which this component renders. */
     public ushort[] Nodes;
 
-    public void Deserialize(FAssetArchive Ar, long validPos)
+    public override void Deserialize(FAssetArchive Ar, long validPos)
     {
+        base.Deserialize(Ar, validPos);
         Model = new FPackageIndex(Ar);
         if (Ar.Ver <= EUnrealEngineObjectUE4Version.REMOVE_ZONES_FROM_MODEL)
             Ar.Position += 4; // DummyZoneIndex

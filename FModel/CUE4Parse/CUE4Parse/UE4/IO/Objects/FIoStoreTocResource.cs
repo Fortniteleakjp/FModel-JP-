@@ -56,6 +56,7 @@ namespace CUE4Parse.UE4.IO.Objects
             {
                 ChunkOffsetLengths[i] = new FIoOffsetAndLength(archive);
             }
+
             if (Ar.Game == EGame.GAME_NeedForSpeedMobile && !Ar.Name.EndsWith("global.utoc"))
             {
                 archive.Position -= Header.TocEntryCount * 10;
@@ -67,6 +68,7 @@ namespace CUE4Parse.UE4.IO.Objects
                     ChunkOffsetLengths[i] = new FIoOffsetAndLength(chunksAr);
                 }
             }
+
             // Chunk perfect hash map
             uint perfectHashSeedsCount = 0;
             uint chunksWithoutPerfectHashCount = 0;

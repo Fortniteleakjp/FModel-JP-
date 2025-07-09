@@ -4,9 +4,11 @@ using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Versions;
 
 namespace CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
+
 public class FSoftVertex : FSkelMeshVertexBase
 {
     private const int MAX_SKELETAL_UV_SETS_UE4 = 4;
+
     public FMeshUVFloat[] UV;
     public FColor Color;
 
@@ -24,6 +26,7 @@ public class FSoftVertex : FSkelMeshVertexBase
             new FSkinWeightInfo { BoneIndex = { [0] = Ar.Read<byte>() }, BoneWeight = { [0] = 255 } };
     }
 }
+
 public class FRigidVertex : FSoftVertex
 {
     public FRigidVertex(FArchive Ar) : base(Ar, true) { }

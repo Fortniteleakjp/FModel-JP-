@@ -1,7 +1,8 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.UpdateView"
+<adonisControls:AdonisWindow x:Class="FModel.Views.UpdateView"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:local="clr-namespace:FModel"
+                             xmlns:settings="clr-namespace:FModel.Settings"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
@@ -67,7 +68,7 @@
                     </adonisControls:SplitButton.SplitMenu>
                 </adonisControls:SplitButton>
                 <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="10" Margin="0 2.5 0 0"
-                           Text="{Binding NextUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, StringFormat=Next Refresh: {0:MMM d, yyyy}}" />
+                           Text="{Binding NextUpdateCheck, Source={x:Static settings:UserSettings.Default}, StringFormat=Next Refresh: {0:MMM d yyyy}}" />
             </StackPanel>
         </Grid>
 

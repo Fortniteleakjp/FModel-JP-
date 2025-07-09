@@ -1,7 +1,8 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.ImageMerger"
+<adonisControls:AdonisWindow x:Class="FModel.Views.ImageMerger"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:local="clr-namespace:FModel"
+                             xmlns:settings="clr-namespace:FModel.Settings"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
@@ -53,12 +54,15 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="1行あたりの画像数" VerticalAlignment="Center" Margin="0 0 10 0" />
-                    <Slider x:Name="SizeSlider" Grid.Row="0" Grid.Column="1" TickPlacement="None" AutoToolTipPlacement="BottomRight"
-                            IsMoveToPointEnabled="True" Minimum="1" Maximum="20" TickFrequency="1" MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview"/>
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="画像間の空白" VerticalAlignment="Center" Margin="0 0 10 0" />
-                    <Slider Grid.Row="2" Grid.Column="1" Value="{Binding ImageMergerMargin, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                    <Slider x:Name="SizeSlider" Grid.Row="0" Grid.Column="1"  Background="#4a4a5e" BorderBrush="#1f2029"
+                            TickPlacement="None" AutoToolTipPlacement="BottomRight"
+                            IsMoveToPointEnabled="True" Minimum="1" Maximum="20" TickFrequency="1"
+                            MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview" ValueChanged="SizeSlider_ValueChanged"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="画像間の空白" VerticalAlignment="Center" Margin="0 0 10 0"  />
+                    <Slider Grid.Row="2" Grid.Column="1"  Background="#4a4a5e" BorderBrush="#1f2029"
+                            Value="{Binding ImageMergerMargin, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                             TickPlacement="None" AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" Minimum="0" Maximum="50" TickFrequency="1"
-                            MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview" />
+                            MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview" ValueChanged="Slider_ValueChanged" />
                 </Grid>
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button x:Name="AddButton" Content="追加" MinWidth="80" Padding="1,3,1,3" Click="OnImageAdd"/>
