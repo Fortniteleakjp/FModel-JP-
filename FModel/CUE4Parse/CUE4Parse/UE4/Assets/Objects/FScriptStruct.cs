@@ -94,6 +94,8 @@ public class FScriptStruct
             "LevelSequenceObjectReferenceMap" => type == ReadType.ZERO ? new FLevelSequenceObjectReferenceMap() : new FLevelSequenceObjectReferenceMap(Ar),
             "LinearColor" => type == ReadType.ZERO ? new FLinearColor() : Ar.Read<FLinearColor>(),
             "NiagaraVariable" => new FNiagaraVariable(Ar),
+            "NiagaraVariableBase" or "NiagaraDataChannelVariable" => new FNiagaraVariableBase(Ar),
+            "NiagaraVariableWithOffset" => new FNiagaraVariableWithOffset(Ar),
             "NiagaraDataInterfaceGPUParamInfo" => new FNiagaraDataInterfaceGPUParamInfo(Ar),
             "MaterialOverrideNanite" => type == ReadType.ZERO ? new FMaterialOverrideNanite() : new FMaterialOverrideNanite(Ar),
             "MaterialLayersFunctionsTree" => type == ReadType.ZERO ? new FMaterialLayersFunctionsTree() : new FMaterialLayersFunctionsTree(Ar),
@@ -172,7 +174,7 @@ public class FScriptStruct
 
             // FortniteGame
             "ConnectivityCube" => new FConnectivityCube(Ar),
-            //"FortActorRecord" => new FFortActorRecord(Ar),
+            "FortActorRecord" => new FFortActorRecord(Ar),
 
             // Train Sim World
             "DistanceQuantity" => Ar.Read<FDistanceQuantity>(),

@@ -7,10 +7,12 @@ namespace CUE4Parse.GameTypes.MindsEye.Encryption.Aes;
 public static class MindsEyeAes
 {
     private const int AES_BLOCKBYTES = 16;
+
     private static readonly byte[] LookupTable = GenerateLookupTable();
     private static readonly object LockObj = new();
     private static FAesKey CachedKey;
     private static FAesKey OrigKey;
+
     private static void FlipEndian(byte[] arr)
     {
         for (int i = 0; i < arr.Length; i += 4)
@@ -31,7 +33,7 @@ public static class MindsEyeAes
         if (bytes.Length < beginOffset + count)
             throw new IndexOutOfRangeException("beginOffset + count is larger than the length of bytes");
         if (count % AES_BLOCKBYTES != 0)
-            throw new ArgumentException("count must be a multiple of 16");
+            throw new ArgumentException($"count must be a multiple of " + AES_BLOCKBYTES);
         if (reader.AesKey == null)
             throw new NullReferenceException("reader.AesKey");
 

@@ -51,6 +51,7 @@ public class FStaticLODModel
         MeshToImportVertexMap = [];
         ColorVertexBuffer = new FSkeletalMeshVertexColorBuffer();
     }
+
     // special version for reading from BulkData
     public FStaticLODModel(FArchive Ar, bool bHasVertexColors, bool isFilterEditorOnly) : this()
     {

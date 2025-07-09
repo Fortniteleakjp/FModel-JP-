@@ -63,6 +63,7 @@ public class UStaticMesh : UObject
             };
         }
 
+
         if (Ar.Game == EGame.GAME_WutheringWaves && GetOrDefault<bool>("bUseKuroLODDistance") && Ar.ReadBoolean())
         {
             Ar.Position += 64; // 8 per-platform floats
