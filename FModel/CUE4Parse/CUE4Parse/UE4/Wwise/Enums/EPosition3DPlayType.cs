@@ -1,11 +1,12 @@
-namespace CUE4Parse.UE4.Wwise.Enums;
-
-public enum EPosition3DPlayType : uint
+namespace CUE4Parse.UE4.Wwise.Enums
 {
-    SequenceStep,
-    RandomStep,
-    SequenceContinuous,
-    RandomContinuous,
-    SequenceStepNewPath,
-    RandomStepNewPath,
+    public enum EPosition3DPlayType : uint
+    {
+        SequenceStep,
+        RandomStep,
+        SequenceContinuous,
+        RandomContinuous,
+        SequenceStepNewPath,
+        RandomStepNewPath,
+    }
 }

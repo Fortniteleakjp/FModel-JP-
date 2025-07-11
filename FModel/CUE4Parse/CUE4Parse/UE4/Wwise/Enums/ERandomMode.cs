@@ -1,7 +1,8 @@
-namespace CUE4Parse.UE4.Wwise.Enums;
-
-public enum ERandomMode : byte
+﻿namespace CUE4Parse.UE4.Wwise.Enums
 {
-    Normal,
-    Shuffle
+    public enum ERandomMode : byte
+    {
+        Normal,
+        Shuffle
+    }
 }

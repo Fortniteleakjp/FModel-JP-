@@ -1,11 +1,12 @@
-using System;
+﻿using System;
 
-namespace CUE4Parse.UE4.Wwise.Enums;
-
-[Flags]
-public enum ESoundConversion : byte
+namespace CUE4Parse.UE4.Wwise.Enums
 {
-    PCM    = 1 << 0,   // 1
-    ADPCM  = 1 << 1,   // 2
-    Vorbis = 1 << 2    // 4
+    [Flags]
+    public enum ESoundConversion : byte
+    {
+        PCM    = 1 << 0,   // 1
+        ADPCM  = 1 << 1,   // 2
+        Vorbis = 1 << 2    // 4
+    }
 }

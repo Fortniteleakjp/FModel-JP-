@@ -1,32 +1,33 @@
-using System.Text;
+﻿using System.Text;
 using CUE4Parse.UE4.Readers;
 using Newtonsoft.Json;
 
-namespace CUE4Parse.UE4.Wwise.Objects;
-
-[JsonConverter(typeof(AkFolderConverter))]
-public class AkFolder
+namespace CUE4Parse.UE4.Wwise.Objects
 {
-    public readonly uint Offset;
-    public readonly uint Id;
-    public string? Name;
-    public AkEntry[] Entries = [];
-
-    public AkFolder(FArchive Ar)
+    [JsonConverter(typeof(AkFolderConverter))]
+    public class AkFolder
     {
-        Offset = Ar.Read<uint>();
-        Id = Ar.Read<uint>();
-    }
+        public readonly uint Offset;
+        public readonly uint Id;
+        public string Name;
+        public AkEntry[] Entries;
 
-    public void PopulateName(FArchive Ar)
-    {
-        var sb = new StringBuilder();
-        while (true)
+        public AkFolder(FArchive Ar)
         {
-            var c = Ar.Read<char>();
-            if (c == 0x00) break;
-            sb.Append(c);
+            Offset = Ar.Read<uint>();
+            Id = Ar.Read<uint>();
         }
-        Name = sb.ToString().Trim();
+
+        public void PopulateName(FArchive Ar)
+        {
+            var sb = new StringBuilder();
+            while (true)
+            {
+                var c = Ar.Read<char>();
+                if (c == 0x00) break;
+                sb.Append(c);
+            }
+            Name = sb.ToString().Trim();
+        }
     }
 }

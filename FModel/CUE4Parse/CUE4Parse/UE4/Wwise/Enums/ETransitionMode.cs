@@ -1,11 +1,7 @@
-namespace CUE4Parse.UE4.Wwise.Enums;
-
-public enum ETransitionMode : byte
+﻿namespace CUE4Parse.UE4.Wwise.Enums
 {
-    Disabled,
-    CrossFadeAmp,
-    CrossFadePower,
-    Delay,
-    SampleAccurate,
-    TriggerRate
+    public enum ETransitionMode : byte
+    {
+        Disabled
+    }
 }

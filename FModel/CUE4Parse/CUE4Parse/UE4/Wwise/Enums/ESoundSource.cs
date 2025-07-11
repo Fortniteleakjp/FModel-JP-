@@ -1,8 +1,9 @@
-namespace CUE4Parse.UE4.Wwise.Enums;
-
-public enum ESoundSource : byte
+namespace CUE4Parse.UE4.Wwise.Enums
 {
-    Embedded,
-    Streamed,
-    StreamedZeroLatency
+    public enum ESoundSource : byte
+    {
+        Embedded,
+        Streamed,
+        StreamedZeroLatency
+    }
 }
