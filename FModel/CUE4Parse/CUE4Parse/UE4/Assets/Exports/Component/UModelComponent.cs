@@ -6,7 +6,7 @@ using CUE4Parse.UE4.Versions;
 
 namespace CUE4Parse.UE4.Assets.Exports.Component;
 
-public class  UPrimitiveComponent
+public class UModelComponent : UPrimitiveComponent
 {
     public FPackageIndex Model;
     /** The elements used to render the nodes. */
