@@ -10,7 +10,7 @@
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.25'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="カスタムディレクトリ" />
+            <Setter Property="Title" Value="Custom Directory" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <Grid>
@@ -21,9 +21,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-            <TextBlock Text="説明" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="What is this?" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
             <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center"
-                       Text="フォルダを毎回開くのが面倒でも、カスタムディレクトリ機能を使用することですぐにお気に入りのフォルダを開けます。&#x0a;ここで作成するか、保存したいフォルダのうえで右クリックをすることで保存できます" />
+                       Text="Bored of opening folders? Save custom directories to quickly jump to your favorite folder. They are saved according to your current set game, so don't freak out too fast." />
         </StackPanel>
         
         <GroupBox Grid.Row="1" adonisExtensions:LayerExtension.Layer="2" Margin="10 10 10 18"
@@ -40,9 +40,9 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="タイトル" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Header" VerticalAlignment="Center" />
                 <TextBox x:Name="WpfSuckMyDick" Grid.Row="0" Grid.Column="2" Text="{Binding Header, Mode=TwoWay}" />
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="フォルダパス" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
                 <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding DirectoryPath, Mode=TwoWay}" />
             </Grid>
         </GroupBox>
@@ -58,9 +58,9 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="決定" Click="OnClick" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="True"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="キャンセル" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Cancel" />
             </Grid>
         </Border>
     </Grid>

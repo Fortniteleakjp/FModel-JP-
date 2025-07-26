@@ -50,13 +50,13 @@ public class ApplicationViewModel : ViewModel
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
 
-    public string InitialWindowTitle => $"FModel JP ({Constants.APP_SHORT_COMMIT_ID})";
+    public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID})";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
     public LoadingModesViewModel LoadingModes { get; }
     public CustomDirectoriesViewModel CustomDirectories { get; }
-    public CUE4Parse.CUE4ParseViewModel CUE4Parse { get; }
+    public CUE4ParseViewModel CUE4Parse { get; }
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
@@ -81,9 +81,7 @@ public class ApplicationViewModel : ViewModel
             Environment.Exit(0);
         }
 
-        UserSettings.Default.DiffDir = ResolveDiffDirectory();
-
-        CUE4Parse = new CUE4Parse.CUE4ParseViewModel();
+        CUE4Parse = new CUE4ParseViewModel();
         CUE4Parse.Provider.VfsRegistered += (sender, count) =>
         {
             if (sender is not IAesVfsReader reader) return;
@@ -109,21 +107,7 @@ public class ApplicationViewModel : ViewModel
 
         Status.SetStatus(EStatusKind.Ready);
     }
-    public static DirectorySettings ResolveDiffDirectory()
-    {
-        var diffPath = UserSettings.Default.DiffGameDirectory;
-        if (string.IsNullOrEmpty(diffPath))
-            return null;
 
-        if (UserSettings.Default.PerDirectory.TryGetValue(diffPath, out var existing))
-            return existing;
-
-        var vm = new GameSelectorViewModel(diffPath);
-
-        UserSettings.Default.DiffGameDirectory = vm.SelectedDirectory.GameDirectory;
-        UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory] = vm.SelectedDirectory;
-        return vm.SelectedDirectory;
-    }
     public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
     {
         var gameDirectory = UserSettings.Default.GameDirectory;
@@ -146,7 +130,7 @@ public class ApplicationViewModel : ViewModel
 
     public void RestartWithWarning()
     {
-        MessageBox.Show("変更を適用するには、 FModel の再起動が必要です。", "再起動が必要です", MessageBoxButton.OK, MessageBoxImage.Warning);
+        MessageBox.Show("It looks like you just changed something.\nFModel will restart to apply your changes.", "Uh oh, a restart is needed", MessageBoxButton.OK, MessageBoxImage.Warning);
         Restart();
     }
 
@@ -203,21 +187,7 @@ public class ApplicationViewModel : ViewModel
                 return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
             });
 
-            IEnumerable<KeyValuePair<FGuid, FAesKey>> secondAes = [];
-            if (AesManager.DiffAesKeys != null)
-            {
-                secondAes = AesManager.DiffAesKeys.Select(x =>
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    var k = x.Key.Trim();
-                    if (k.Length != 66)
-                        k = Constants.ZERO_64_CHAR;
-                    return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
-                });
-            }
-
-            CUE4Parse.LoadVfs(aes, secondAes);
+            CUE4Parse.LoadVfs(aes);
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));

@@ -65,8 +65,8 @@ public class EndpointSettings : ViewModel
 
     [JsonIgnore]
     public string Label => IsValid ?
-        "設定に問題はありません" :
-        "設定に問題があります。テストして修正してください";
+        "Your endpoint configuration is valid! Please, avoid any unnecessary modifications!" :
+        "Your endpoint configuration DOES NOT seem to be valid yet! Please, test it out!";
 
     public EndpointSettings() {}
     public EndpointSettings(string url, string path)

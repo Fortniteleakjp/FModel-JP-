@@ -53,11 +53,11 @@ public partial class MainWindow
         switch (UserSettings.Default.AesReload)
         {
             case EAesReload.Always:
-                await _applicationView.CUE4Parse.RefreshAesForAllAsync();
+                await _applicationView.CUE4Parse.RefreshAes();
                 break;
             case EAesReload.OncePerDay when UserSettings.Default.CurrentDir.LastAesReload != DateTime.Today:
                 UserSettings.Default.CurrentDir.LastAesReload = DateTime.Today;
-                await _applicationView.CUE4Parse.RefreshAesForAllAsync();
+                await _applicationView.CUE4Parse.RefreshAes();
                 break;
         }
 
@@ -72,7 +72,7 @@ public partial class MainWindow
         await Task.WhenAll(
             _applicationView.CUE4Parse.VerifyConsoleVariables(),
             _applicationView.CUE4Parse.VerifyOnDemandArchives(),
-            _applicationView.CUE4Parse.InitAllMappings(),
+            _applicationView.CUE4Parse.InitMappings(),
             ApplicationViewModel.InitDetex(),
             ApplicationViewModel.InitVgmStream(),
             ApplicationViewModel.InitImGuiSettings(newOrUpdated),
@@ -127,7 +127,7 @@ public partial class MainWindow
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
     {
-        Helper.OpenWindow<AdonisWindow>("検索ウィンドウ", () => new SearchView().Show());
+        Helper.OpenWindow<AdonisWindow>("Search View", () => new SearchView().Show());
     }
 
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)
@@ -140,12 +140,14 @@ public partial class MainWindow
 
     private async void OnMappingsReload(object sender, ExecutedRoutedEventArgs e)
     {
-        await _applicationView.CUE4Parse.InitAllMappings(true);
+        await _applicationView.CUE4Parse.InitMappings(true);
     }
 
     private void OnOpenAvalonFinder()
     {
         _applicationView.CUE4Parse.TabControl.SelectedTab.HasSearchOpen = true;
+        AvalonEditor.YesWeSearch.Focus();
+        AvalonEditor.YesWeSearch.SelectAll();
     }
 
     private void OnAssetsTreeMouseDoubleClick(object sender, MouseButtonEventArgs e)

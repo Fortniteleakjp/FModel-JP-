@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using ICSharpCode.AvalonEdit.Document;
@@ -33,12 +32,7 @@ public static partial class StringExtensions
         if (int.TryParse(lineToFind, out var index))
             return s.GetLineNumber(index);
 
-        return s.GetNameLineNumberText($"    \"Name\": \"{lineToFind}\",");
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int GetNameLineNumberText(this string s, string lineToFind)
-    {
+        lineToFind = $"    \"Name\": \"{lineToFind}\",";
         using var reader = new StringReader(s);
         var lineNum = 0;
         while (reader.ReadLine() is { } line)
@@ -117,12 +111,7 @@ public static partial class StringExtensions
 
         return -1;
     }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string RemoveInvalidFileNameChars(string input)
-    {
-        var invalidChars = Path.GetInvalidFileNameChars();
-        return new string(input.Where(c => !invalidChars.Contains(c)).ToArray());
-    }
+
     [GeneratedRegex(@"^(.+)\[(\d+)\]$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex KismetRegex();
 }

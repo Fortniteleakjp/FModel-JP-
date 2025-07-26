@@ -11,24 +11,24 @@ using FModel.ViewModels.ApiEndpoints.Models;
 
 namespace FModel.ViewModels;
 
-public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewModel
+public class AesManagerViewModel : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
 
     public FullyObservableCollection<FileItem> AesKeys { get; private set; } // holds all aes keys even the main one
     public ICollectionView AesKeysView { get; private set; } // holds all aes key ordered by name for the ui
-    public bool HasChange { get; set; } = false;
-
-    public FullyObservableCollection<FileItem> DiffAesKeys { get; private set; }
-    public ICollectionView DiffAesKeysView { get; private set; }
-    public bool IsDiffDirectoryAvailable => !string.IsNullOrEmpty(UserSettings.Default.DiffGameDirectory);
-    private AesResponse _diffKeysFromSettings;
-    private HashSet<FGuid> _diffUniqueGuids;
-    private readonly FileItem _diffMainKey = new("Compare Static Key", 0) { Guid = Constants.ZERO_GUID };
+    public bool HasChange { get; set; }
 
     private AesResponse _keysFromSettings;
     private HashSet<FGuid> _uniqueGuids;
+    private readonly CUE4ParseViewModel _cue4Parse;
     private readonly FileItem _mainKey = new("Main Static Key", 0) { Guid = Constants.ZERO_GUID }; // just so main key gets refreshed in the ui
+
+    public AesManagerViewModel(CUE4ParseViewModel cue4Parse)
+    {
+        _cue4Parse = cue4Parse;
+        HasChange = false;
+    }
 
     public async Task InitAes()
     {
@@ -36,41 +36,29 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
         {
             _keysFromSettings = UserSettings.Default.CurrentDir.AesKeys;
             _mainKey.Key = Helper.FixKey(_keysFromSettings.MainKey);
-            AesKeys = [];
-            _uniqueGuids = [];
-            EnumerateAesKeys(_keysFromSettings, cue4Parse.GameDirectory.DirectoryFiles, _mainKey, _uniqueGuids, AesKeys);
-            AesKeys.ItemPropertyChanged += (s, e) => AesKeysOnItemPropertyChanged(e, _keysFromSettings, AesKeys);
+            AesKeys = new FullyObservableCollection<FileItem>(EnumerateAesKeys());
+            AesKeys.ItemPropertyChanged += AesKeysOnItemPropertyChanged;
             AesKeysView = new ListCollectionView(AesKeys) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
-            if (IsDiffDirectoryAvailable)
-            {
-                _diffKeysFromSettings = UserSettings.Default.DiffDir.AesKeys;
-                _diffMainKey.Key = Helper.FixKey(_diffKeysFromSettings.MainKey);
-                DiffAesKeys = [];
-                _diffUniqueGuids = [];
-                EnumerateAesKeys(_diffKeysFromSettings, cue4Parse.DiffGameDirectory.DirectoryFiles, _diffMainKey, _diffUniqueGuids, DiffAesKeys);
-                DiffAesKeys.ItemPropertyChanged += (s, e) => AesKeysOnItemPropertyChanged(e, _diffKeysFromSettings, DiffAesKeys);
-                DiffAesKeysView = new ListCollectionView(DiffAesKeys) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
-            }
         });
     }
 
-    private void AesKeysOnItemPropertyChanged(ItemPropertyChangedEventArgs e, AesResponse settings, FullyObservableCollection<FileItem> collection)
+    private void AesKeysOnItemPropertyChanged(object sender, ItemPropertyChangedEventArgs e)
     {
-        if (e.PropertyName != "Key")
+        if (e.PropertyName != "Key" || sender is not FullyObservableCollection<FileItem> collection)
             return;
 
         var key = Helper.FixKey(collection[e.CollectionIndex].Key);
         if (e.CollectionIndex == 0)
         {
             if (!HasChange)
-                HasChange = Helper.FixKey(settings.MainKey) != key;
+                HasChange = Helper.FixKey(_keysFromSettings.MainKey) != key;
 
-            settings.MainKey = key;
+            _keysFromSettings.MainKey = key;
         }
-        else if (!settings.HasDynamicKeys)
+        else if (!_keysFromSettings.HasDynamicKeys)
         {
             HasChange = true;
-            settings.DynamicKeys = new List<DynamicKey>
+            _keysFromSettings.DynamicKeys = new List<DynamicKey>
             {
                 new()
                 {
@@ -80,7 +68,7 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
                 }
             };
         }
-        else if (settings.DynamicKeys.FirstOrDefault(x => x.Guid == collection[e.CollectionIndex].Guid.ToString()) is { } d)
+        else if (_keysFromSettings.DynamicKeys.FirstOrDefault(x => x.Guid == collection[e.CollectionIndex].Guid.ToString()) is { } d)
         {
             if (!HasChange)
                 HasChange = Helper.FixKey(d.Key) != key;
@@ -90,7 +78,7 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
         else
         {
             HasChange = true;
-            settings.DynamicKeys.Add(new DynamicKey
+            _keysFromSettings.DynamicKeys.Add(new DynamicKey
             {
                 Key = key,
                 Name = collection[e.CollectionIndex].Name,
@@ -102,30 +90,28 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
     public void SetAesKeys()
     {
         UserSettings.Default.CurrentDir.AesKeys = _keysFromSettings;
-        if (UserSettings.Default.DiffDir != null && _diffKeysFromSettings != null)
-            UserSettings.Default.DiffDir.AesKeys = _diffKeysFromSettings;
         // Log.Information("{@Json}", UserSettings.Default);
     }
 
-    private static void EnumerateAesKeys(AesResponse settings, IEnumerable<FileItem> files, FileItem mainKey, HashSet<FGuid> uniqueGuids, ICollection<FileItem> output)
+    private IEnumerable<FileItem> EnumerateAesKeys()
     {
-        uniqueGuids.Add(Constants.ZERO_GUID);
-        output.Add(mainKey);
+        yield return _mainKey;
+        _uniqueGuids = new HashSet<FGuid> { Constants.ZERO_GUID };
 
-        var hasDynamicKeys = settings.HasDynamicKeys;
-        foreach (var file in files)
+        var hasDynamicKeys = _keysFromSettings.HasDynamicKeys;
+        foreach (var file in _cue4Parse.GameDirectory.DirectoryFiles)
         {
-            if (file.Guid == Constants.ZERO_GUID || !uniqueGuids.Add(file.Guid))
+            if (file.Guid == Constants.ZERO_GUID || !_uniqueGuids.Add(file.Guid))
                 continue;
 
             var k = string.Empty;
-            if (hasDynamicKeys && settings.DynamicKeys.FirstOrDefault(x => x.Guid == file.Guid.ToString()) is { } dynamicKey)
+            if (hasDynamicKeys && _keysFromSettings.DynamicKeys.FirstOrDefault(x => x.Guid == file.Guid.ToString()) is { } dynamicKey)
             {
                 k = dynamicKey.Key;
             }
 
             file.Key = Helper.FixKey(k);
-            output.Add(file);
+            yield return file;
         }
     }
 }

@@ -53,14 +53,16 @@ public enum EDiscordRpc
 
 public enum ELoadingMode
 {
-    [Description("指定したファイル")]
+    [Description("Multiple")]
     Multiple,
-    [Description("全てのファイル")]
+    [Description("すべてのファイル")]
     All,
-    [Description("追加・移動されたファイル")]
+    [Description("追加・移動したファイル")]
     AllButNew,
     [Description("更新されたファイル")]
-    AllButModified
+    AllButModified,
+    [Description("すべて（パッチ適用済みアセットを除く）")]
+    AllButPatched,
 }
 
 // public enum EUpdateMode
@@ -75,26 +77,26 @@ public enum ELoadingMode
 
 public enum ECompressedAudio
 {
-    [Description("解凍して再生")]
+    [Description("Play the decompressed data")]
     PlayDecompressed,
-    [Description("解凍せず、圧縮された状態のまま再生(正常に再生されないことがあります)")]
+    [Description("Play the compressed data (might not always be a valid audio data)")]
     PlayCompressed
 }
 
 public enum EIconStyle
 {
-    [Description("デフォルト")]
+    [Description("Default")]
     Default,
-    [Description("背景無し")]
+    [Description("No Background")]
     NoBackground,
-    [Description("テキスト無し")]
+    [Description("No Text")]
     NoText,
-    [Description("フラット")]
+    [Description("Flat")]
     Flat,
-    [Description("カタバ")]
+    [Description("Cataba")]
     Cataba,
-    [Description("非公式")]
-    CommunityMade
+    // [Description("Community")]
+    // CommunityMade
 }
 
 public enum EEndpointType

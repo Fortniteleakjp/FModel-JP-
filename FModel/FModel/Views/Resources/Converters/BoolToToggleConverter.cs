@@ -12,8 +12,8 @@ public class BoolToToggleConverter : IValueConverter
     {
         return value switch
         {
-            true => "有効",
-            _ => "無効"
+            true => "Enabled",
+            _ => "Disabled"
         };
     }
 

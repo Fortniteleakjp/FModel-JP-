@@ -17,43 +17,43 @@ public class RelativeDateTimeConverter : IValueConverter
             int time;
             string unit;
             if (timeSpan.TotalSeconds < 30)
-                return "たった今";
+                return "Just now";
 
             if (timeSpan.TotalMinutes < 1)
             {
                 time = timeSpan.Seconds;
-                unit = "秒";
+                unit = "second";
             }
             else if (timeSpan.TotalHours < 1)
             {
                 time = timeSpan.Minutes;
-                unit = "分";
+                unit = "minute";
             }
             else switch (timeSpan.TotalDays)
             {
                 case < 1:
                     time = timeSpan.Hours;
-                    unit = "時間";
+                    unit = "hour";
                     break;
                 case < 7:
                     time = timeSpan.Days;
-                    unit = "日";
+                    unit = "day";
                     break;
                 case < 30:
                     time = timeSpan.Days / 7;
-                    unit = "週間";
+                    unit = "week";
                     break;
                 case < 365:
                     time = timeSpan.Days / 30;
-                    unit = "ヶ月";
+                    unit = "month";
                     break;
                 default:
                     time = timeSpan.Days / 365;
-                    unit = "年";
+                    unit = "year";
                     break;
             }
 
-            return $"{time}{unit}前";
+            return $"{time} {unit}{(time > 1 ? "s" : string.Empty)} ago";
         }
         return value;
     }

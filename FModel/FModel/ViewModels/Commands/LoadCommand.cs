@@ -56,11 +56,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         _applicationView.CUE4Parse.AssetsFolder.Folders.Clear();
         _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
         MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
-        Helper.CloseWindow<AdonisWindow>("検索ウィンドウ"); // close search window if opened
+        Helper.CloseWindow<AdonisWindow>("Search View"); // close search window if opened
 
         await Task.WhenAll(
             _applicationView.CUE4Parse.LoadLocalizedResources(), // load locres if not already loaded,
-            _applicationView.CUE4Parse.LoadAllVirtualPaths(), // load virtual paths if not already loaded
+            _applicationView.CUE4Parse.LoadVirtualPaths(), // load virtual paths if not already loaded
             _threadWorkerView.Begin(cancellationToken =>
             {
                 // filter what to show
@@ -85,6 +85,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                     case ELoadingMode.AllButModified:
                     {
                         FilterNewOrModifiedFilesToDisplay(cancellationToken);
+                        break;
+                    }
+                    case ELoadingMode.AllButPatched:
+                    {
+                        FilterPacthedFilesToDisplay(cancellationToken);
                         break;
                     }
                     default: throw new ArgumentOutOfRangeException();
@@ -143,7 +148,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
     {
         var openFileDialog = new OpenFileDialog
         {
-            Title = "現在のゲームバージョンより古いバックアップファイルを選択してください",
+            Title = "Select a backup file older than your current game version",
             InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Backups"),
             Filter = "FBKP Files (*.fbkp)|*.fbkp|All Files (*.*)|*.*",
             Multiselect = false
@@ -272,5 +277,27 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             return;
 
         entries.Add(asset);
+    }
+
+    private void FilterPacthedFilesToDisplay(CancellationToken cancellationToken)
+    {
+        var loaded = new Dictionary<string, GameFile>(_applicationView.CUE4Parse.Provider.PathComparer);
+
+        foreach (var (key, asset) in _applicationView.CUE4Parse.Provider.Files)
+        {
+            cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
+            if (asset.IsUePackagePayload) continue;
+
+            if (asset is VfsEntry entry && loaded.TryGetValue(key, out var file) &&
+                file is VfsEntry existingEntry && entry.Vfs.ReadOrder < existingEntry.Vfs.ReadOrder)
+            {
+                continue;
+            }
+
+            loaded[key] = asset;
+        }
+
+        _applicationView.Status.UpdateStatusLabel($"{loaded.Count:### ### ###} Packages");
+        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(loaded.Values);
     }
 }

@@ -54,7 +54,7 @@ namespace CUE4Parse.UE4.Pak
                 EGame.GAME_InfinityNikki or EGame.GAME_MeetYourMaker or EGame.GAME_DeadByDaylight or EGame.GAME_WutheringWaves
                     or EGame.GAME_Snowbreak or EGame.GAME_TorchlightInfinite or EGame.GAME_TowerOfFantasy
                     or EGame.GAME_TheDivisionResurgence or EGame.GAME_QQ or EGame.GAME_DreamStar
-                    or EGame.GAME_EtheriaRestart => true,
+                    or EGame.GAME_EtheriaRestart or EGame.GAME_DeadByDaylight_Old => true,
                 _ => false
             };
         }
@@ -180,6 +180,8 @@ namespace CUE4Parse.UE4.Pak
             }
 
             var fileCount = index.Read<int>();
+            if (Ar.Game == EGame.GAME_TransformersOnline) fileCount -= 100;
+            
             var files = new Dictionary<string, GameFile>(fileCount, pathComparer);
             for (var i = 0; i < fileCount; i++)
             {

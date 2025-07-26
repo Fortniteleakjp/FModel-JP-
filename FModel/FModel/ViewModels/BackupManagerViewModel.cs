@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
-using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -15,11 +14,7 @@ using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Views.Resources.Controls;
 using K4os.Compression.LZ4;
 using K4os.Compression.LZ4.Streams;
-using Ookii.Dialogs.Wpf;
 using Serilog;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace FModel.ViewModels;
 
@@ -39,13 +34,6 @@ public class BackupManagerViewModel : ViewModel
         set => SetProperty(ref _selectedBackup, value);
     }
 
-    private bool _isCreatingBackup;
-    public bool IsCreatingBackup
-    {
-        get => _isCreatingBackup;
-        set => SetProperty(ref _isCreatingBackup, value);
-    }
-
     public ObservableCollection<Backup> Backups { get; }
     public ICollectionView BackupsView { get; }
 
@@ -61,13 +49,11 @@ public class BackupManagerViewModel : ViewModel
         await _threadWorkerView.Begin(cancellationToken =>
         {
             var backups = _apiEndpointView.FModelApi.GetBackups(cancellationToken, _gameName);
-            if (backups == null)
-                return;
+            if (backups == null) return;
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var backup in backups)
-                    Backups.Add(backup);
+                foreach (var backup in backups) Backups.Add(backup);
                 SelectedBackup = Backups.LastOrDefault();
             });
         });
@@ -86,13 +72,12 @@ public class BackupManagerViewModel : ViewModel
             using var compressedStream = LZ4Stream.Encode(fileStream, LZ4Level.L00_FAST);
             using var writer = new BinaryWriter(compressedStream);
             writer.Write(FBKP_MAGIC);
-            writer.Write((byte)EBackupVersion.Latest);
+            writer.Write((byte) EBackupVersion.Latest);
             writer.Write(_applicationView.CUE4Parse.Provider.Files.Values.Count(func));
 
             foreach (var asset in _applicationView.CUE4Parse.Provider.Files.Values)
             {
-                if (!func(asset))
-                    continue;
+                if (!func(asset)) continue;
                 writer.Write(asset.Size);
                 writer.Write(asset.IsEncrypted);
                 writer.Write(asset.Path);
@@ -104,8 +89,7 @@ public class BackupManagerViewModel : ViewModel
 
     public async Task Download()
     {
-        if (SelectedBackup == null)
-            return;
+        if (SelectedBackup == null) return;
         await _threadWorkerView.Begin(_ =>
         {
             var fullPath = Path.Combine(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"), SelectedBackup.FileName);
@@ -130,99 +114,6 @@ public class BackupManagerViewModel : ViewModel
             Log.Error("{FileName} could not be {Type}", fileName, type1);
             FLogger.Append(ELog.Error, () => FLogger.Text($"Could not {type2} '{fileName}'", Constants.WHITE, true));
         }
-    }
-    public async Task CreateBackupHeavy()
-    {
-        var dialog = new VistaFolderBrowserDialog
-        {
-            Description = @"バックアップファイル (大) の保存先フォルダを指定してください。",
-            ShowNewFolderButton = true
-        };
-
-        if (dialog.ShowDialog() != true)
-            return;
-
-        var selectedFolder = dialog.SelectedPath;
-        var defaultFolderName = _applicationView.CUE4Parse.Provider.GameDisplayName ?? _gameName;
-        var sanitizedDefaultFolderName = StringExtensions.RemoveInvalidFileNameChars(defaultFolderName);
-        var targetPath = Path.Combine(selectedFolder, sanitizedDefaultFolderName);
-
-        var gameDirectory = UserSettings.Default.GameDirectory;
-        var allFiles = Directory
-            .EnumerateFiles(gameDirectory, "*", SearchOption.AllDirectories)
-            .ToList();
-
-        long totalSize = allFiles.Sum(f => new FileInfo(f).Length);
-
-        string sizeInfo = $"このバックアップファイルは、{StringExtensions.GetReadableSize(totalSize)}のディスク容量を使用します。\n";
-
-        bool? dialogResult = false;
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            var inputDialog = new InputDialog("Backup Folder Name", sanitizedDefaultFolderName, sizeInfo);
-            dialogResult = inputDialog.ShowDialog();
-            if (dialogResult != true)
-                return;
-
-            targetPath = Path.Combine(selectedFolder, StringExtensions.RemoveInvalidFileNameChars(inputDialog.InputText));
-        });
-
-        if (dialogResult != true)
-            return;
-
-        Directory.CreateDirectory(targetPath);
-
-        var drive = new DriveInfo(Path.GetPathRoot(targetPath)!);
-        long availableFreeSpace = drive.AvailableFreeSpace;
-
-        if (availableFreeSpace < totalSize)
-        {
-            MessageBox.Show(
-                $"ディスクには、バックアップファイルを作成するだけの空き容量がありません。\n" +
-                $"必要な空き容量 : {StringExtensions.GetReadableSize(totalSize)}\n" +
-                $"利用可能 : {StringExtensions.GetReadableSize(availableFreeSpace)}",
-                "容量不足",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
-            return;
-        }
-
-        FLogger.Append(ELog.Information, () =>
-        {
-            FLogger.Text("バックアップファイル (大)を作成中です。これには時間がかかります...", Constants.WHITE, true);
-        });
-
-        await _threadWorkerView.Begin(cancellationToken =>
-        {
-            var options = new ParallelOptions
-            {
-                MaxDegreeOfParallelism = Environment.ProcessorCount,
-                CancellationToken = cancellationToken
-            };
-
-            Parallel.ForEach(allFiles, options, file =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                try
-                {
-                    var relative = Path.GetRelativePath(gameDirectory, file);
-                    var dest = Path.Combine(targetPath, relative);
-                    Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
-                    File.Copy(file, dest, overwrite: true);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Error copying file: {File}", file);
-                }
-            });
-
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Heavy backup completed at ", Constants.WHITE);
-                FLogger.Link(targetPath, targetPath, true);
-            });
-        });
     }
 }
 

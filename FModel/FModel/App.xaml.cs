@@ -144,9 +144,9 @@ public partial class App
             Icon = MessageBoxImage.Error,
             Buttons =
             [
-                MessageBoxButtons.Custom("設定をリセット", EErrorKind.ResetSettings),
-                MessageBoxButtons.Custom("再起動", EErrorKind.Restart),
-                MessageBoxButtons.Custom("決定", EErrorKind.Ignore)
+                MessageBoxButtons.Custom("Reset Settings", EErrorKind.ResetSettings),
+                MessageBoxButtons.Custom("Restart", EErrorKind.Restart),
+                MessageBoxButtons.Custom("OK", EErrorKind.Ignore)
             ],
             IsSoundEnabled = false
         };

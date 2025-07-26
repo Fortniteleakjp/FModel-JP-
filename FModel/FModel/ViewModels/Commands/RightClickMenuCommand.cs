@@ -44,14 +44,6 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         contextViewModel.CUE4Parse.ShowMetadata(entry);
                     }
                     break;
-                case "Assets_Decompile":
-                    foreach (var entry in entries)
-                    {
-                        Thread.Yield();
-                        cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.Decompile(entry);
-                    }
-                    break;
                 case "Assets_Export_Data":
                     foreach (var entry in entries)
                     {
@@ -90,13 +82,6 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Animations | updateUi);
-                    }
-                    break;
-                case "Assets_View_Diff":
-                    var entry1 = entries.FirstOrDefault();
-                    if (entry1 != null)
-                    {
-                        contextViewModel.CUE4Parse.ShowAssetDiff(entry1.Path).GetAwaiter().GetResult();
                     }
                     break;
             }

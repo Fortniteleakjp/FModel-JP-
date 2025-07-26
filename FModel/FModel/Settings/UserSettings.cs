@@ -23,9 +23,9 @@ namespace FModel.Settings
     {
         public static UserSettings Default { get; set; }
 #if DEBUG
-        public static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel JP", "AppSettings_Debug.json");
+        public static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel", "AppSettings_Debug.json");
 #else
-        public static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel JP", "AppSettings.json");
+        public static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FModel", "AppSettings.json");
 #endif
 
         static UserSettings()
@@ -38,8 +38,6 @@ namespace FModel.Settings
         {
             if (!_bSave || Default == null) return;
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
-            if (Default.DiffDir != null)
-                Default.PerDirectory[Default.DiffDir.GameDirectory] = Default.DiffDir;
             File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
@@ -52,9 +50,9 @@ namespace FModel.Settings
             }
         }
 
-        public static bool IsEndpointValid(DirectorySettings dir, EEndpointType type, out EndpointSettings endpoint)
+        public static bool IsEndpointValid(EEndpointType type, out EndpointSettings endpoint)
         {
-            endpoint = dir.Endpoints[(int) type];
+            endpoint = Default.CurrentDir.Endpoints[(int) type];
             return endpoint.Overwrite || endpoint.IsValid;
         }
 
@@ -75,7 +73,8 @@ namespace FModel.Settings
             CompressionFormat = Default.CompressionFormat,
             Platform = Default.CurrentDir.TexturePlatform,
             ExportMorphTargets = Default.SaveMorphTargets,
-            ExportMaterials = Default.SaveEmbeddedMaterials
+            ExportMaterials = Default.SaveEmbeddedMaterials,
+            ExportHdrTexturesAsHdr = Default.SaveHdrTexturesAsHdr
         };
 
         private bool _showChangelog = true;
@@ -133,12 +132,7 @@ namespace FModel.Settings
             get => _gameDirectory;
             set => SetProperty(ref _gameDirectory, value);
         }
-        private string _diffGameDirectory;
-        public string DiffGameDirectory
-        {
-            get => _diffGameDirectory;
-            set => SetProperty(ref _diffGameDirectory, value);
-        }
+
         private int _lastOpenedSettingTab;
         public int LastOpenedSettingTab
         {
@@ -208,12 +202,7 @@ namespace FModel.Settings
             get => _keepDirectoryStructure;
             set => SetProperty(ref _keepDirectoryStructure, value);
         }
-        private bool _showDecompileOption = false;
-        public bool ShowDecompileOption
-        {
-            get => _showDecompileOption;
-            set => SetProperty(ref _showDecompileOption, value);
-        }
+
         private ECompressedAudio _compressedAudioMode = ECompressedAudio.PlayDecompressed;
         public ECompressedAudio CompressedAudioMode
         {
@@ -286,8 +275,7 @@ namespace FModel.Settings
 
         [JsonIgnore]
         public DirectorySettings CurrentDir { get; set; }
-        [JsonIgnore]
-        public DirectorySettings DiffDir { get; set; }
+
         /// <summary>
         /// TO DELETEEEEEEEEEEEEE
         /// </summary>
@@ -452,6 +440,13 @@ namespace FModel.Settings
             set => SetProperty(ref _cameraMode, value);
         }
 
+        private int _wwiseMaxBnkPrefetch;
+        public int WwiseMaxBnkPrefetch
+        {
+            get => _wwiseMaxBnkPrefetch;
+            set => SetProperty(ref _wwiseMaxBnkPrefetch, value);
+        }
+
         private int _previewMaxTextureSize = 1024;
         public int PreviewMaxTextureSize
         {
@@ -513,6 +508,13 @@ namespace FModel.Settings
         {
             get => _saveSkeletonAsMesh;
             set => SetProperty(ref _saveSkeletonAsMesh, value);
+        }
+
+        private bool _saveHdrTexturesAsHdr = true;
+        public bool SaveHdrTexturesAsHdr
+        {
+            get => _saveHdrTexturesAsHdr;
+            set => SetProperty(ref _saveHdrTexturesAsHdr, value);
         }
     }
 }

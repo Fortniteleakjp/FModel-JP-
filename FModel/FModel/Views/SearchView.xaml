@@ -1,4 +1,4 @@
-<adonisControls:AdonisWindow x:Class="FModel.Views.SearchView"
+﻿<adonisControls:AdonisWindow x:Class="FModel.Views.SearchView"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
@@ -11,7 +11,7 @@
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.65'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="検索ウィンドウ" />
+            <Setter Property="Title" Value="Search View" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -48,10 +48,10 @@
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                 <Setter Property="Text" Value="{Binding CUE4Parse.SearchVm.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="検索したいフォルダ/ファイル名を入力してください..." />
+                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your pattern and press enter..." />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CUE4Parse.SearchVm.HasRegexEnabled}" Value="True">
-                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="検索したいフォルダ/ファイル名を正規表現で入力してください..." />
+                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="Write your regex pattern and press enter..." />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -80,7 +80,7 @@
                             </Viewbox>
                         </Button>
                     </StackPanel>
-                    <TextBlock Grid.Column="2" Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat={}読み込まれたファイル : {0:### ### ###} 個}"
+                    <TextBlock Grid.Column="2" Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat={}{0:### ### ###} Loaded Packages}"
                                VerticalAlignment="Center" HorizontalAlignment="Right" FontStyle="Italic"/>
                 </Grid>
 
@@ -124,7 +124,7 @@
                                         <Setter.Value>
                                             <ControlTemplate>
                                                 <Grid>
-                                                    <TextBlock Text="アーカイブにフォルダが見つかりません。少なくとも1つは読み込まれていることを確認してください。" FontWeight="SemiBold" TextAlignment="Center"
+                                                    <TextBlock Text="No folder found in archives, make sure you loaded at least one" FontWeight="SemiBold" TextAlignment="Center"
                                                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" Margin="0 10 0 0" />
                                                 </Grid>
                                             </ControlTemplate>
@@ -136,7 +136,7 @@
                     </ListView.Style>
                     <ListView.ContextMenu>
                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <MenuItem Header="フォルダに移動する" Click="OnAssetDoubleClick">
+                            <MenuItem Header="Go To" Click="OnAssetDoubleClick">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -145,7 +145,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="新規タブで開く" Click="OnAssetExtract">
+                            <MenuItem Header="Extract in New Tab" Click="OnAssetExtract">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -159,8 +159,8 @@
                                 <MenuItem.Header>
                                     <TextBlock
                                         Text="{Binding DataContext.SelectedItem.Extension,
-                                                        FallbackValue='データを保存',
-                                                        StringFormat='{}{0}形式で保存',
+                                                        FallbackValue='Export Raw Data',
+                                                        StringFormat='Export Raw Data (.{0})',
                                                         RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                 </MenuItem.Header>
                                 <MenuItem.CommandParameter>
@@ -177,7 +177,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="json形式で保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="Save Properties (.json)" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Properties" />
@@ -192,7 +192,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="テクスチャを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="Save Texture" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Textures" />
@@ -207,7 +207,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="モデルを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="Save Model" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Models" />
@@ -222,7 +222,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="アニメーションを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="Save Animation" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Animations" />
@@ -238,7 +238,7 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <Separator />
-                            <MenuItem Header="コピー">
+                            <MenuItem Header="Copy">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -246,7 +246,7 @@
                                         </Canvas>
                                     </Viewbox>
                                 </MenuItem.Icon>
-                                <MenuItem Header="ファイルパス" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="Package Path" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Path" />
@@ -254,7 +254,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="ファイル名" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="Package Name" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Name" />
@@ -262,7 +262,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="フォルダパス" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="Directory Path" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="Directory_Path" />
@@ -270,7 +270,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="ファイルパス (拡張子なし)" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="Package Path w/o Extension" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Path_No_Extension" />
@@ -278,7 +278,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="ファイル名 (拡張子なし)" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="Package Name w/o Extension" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Name_No_Extension" />

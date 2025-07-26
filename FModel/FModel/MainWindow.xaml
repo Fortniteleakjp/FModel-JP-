@@ -9,9 +9,6 @@
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-        xmlns:vm="clr-namespace:FModel.ViewModels"
-        xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
-        xmlns:document="clr-namespace:ICSharpCode.AvalonEdit.Document;assembly=ICSharpCode.AvalonEdit"
         WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
         Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.85'}"
         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}">
@@ -77,7 +74,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="ファイル情報" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding Status.IsReady}">
+                <MenuItem Header="pakファイル情報" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -108,9 +105,9 @@
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="サウンドを自動で開く" IsCheckable="True" StaysOpenOnClick="True"
-                          IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
+                            IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
             </MenuItem>
-            <MenuItem Header="表示">
+            <MenuItem Header="Views">
                 <MenuItem Header="3Dビューアー" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
@@ -140,8 +137,8 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="設定" Command="{Binding MenuCommand}" CommandParameter="Settings" />
-            <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
             <MenuItem Header="ヘルプ" >
+                <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
                 <MenuItem Header="寄付 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
@@ -271,7 +268,7 @@
 
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=DirectoryFilesListBox, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="0" Grid.Column="1" Text="フォルダ位置" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FileCount, ElementName=DirectoryFilesListBox, FallbackValue='0', StringFormat={}{0} 個のファイル}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FileCount, ElementName=DirectoryFilesListBox, FallbackValue='0', StringFormat={}{0} Files}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="1" Grid.Column="1" Text="ファイル数" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
                                             <TextBlock.Style>
@@ -410,7 +407,7 @@
                                             </MenuItem.Icon>
                                         </MenuItem>
                                         <Separator />
-                                        <MenuItem Header="お気に入りのディレクトリに追加" Click="OnFavoriteDirectoryClick">
+                                        <MenuItem Header="お気に入りに追加" Click="OnFavoriteDirectoryClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -557,26 +554,6 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </MenuItem.Style>
-                                            </MenuItem>
-                                            <MenuItem Header="過去バージョンと比較"
-                                                      IsEnabled="{Binding DiffGameDirectory, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:StringNotEmptyToBoolConverter.Instance}}"
-                                                      Command="{Binding DataContext.RightClickMenuCommand}">
-                                                <MenuItem.CommandParameter>
-                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                        <Binding Source="Assets_View_Diff" />
-                                                        <Binding Path="SelectedItems" />
-                                                    </MultiBinding>
-                                                </MenuItem.CommandParameter>
-                                                <MenuItem.Icon>
-                                                    <Viewbox Width="16"
-                                                             Height="16">
-                                                        <Canvas Width="24"
-                                                                Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
-                                                                  Data="{StaticResource DiffIcon}" />
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </MenuItem.Icon>
                                             </MenuItem>
                                             <Separator />
                                             <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
@@ -770,9 +747,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TabControl Grid.Row="0"
-                                x:Name="TabControlName"
-                                Style="{StaticResource GameFilesTabControl}" />
+                    <TabControl Grid.Row="0" x:Name="TabControlName" Style="{StaticResource GameFilesTabControl}" />
                     <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down"
                               IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}">
                         <Grid>
@@ -918,7 +893,7 @@
                     </StatusBarItem>
 
                     <StatusBarItem Margin="10 0 0 0">
-                        <TextBlock Text="{Binding LastUpdateCheck, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=Last Refresh: {0}}" />
+                        <TextBlock Text="{Binding LastUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=Last Refresh: {0}}" />
                     </StatusBarItem>
                 </StackPanel>
             </StatusBarItem>

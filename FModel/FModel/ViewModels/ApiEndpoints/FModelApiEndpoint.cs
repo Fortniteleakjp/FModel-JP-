@@ -62,7 +62,7 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     public async Task<Backup[]> GetBackupsAsync(CancellationToken token, string gameName)
     {
-        var request = new FRestRequest($"https://www.laylaleaks.de/api/backups");
+        var request = new FRestRequest($"https://api.fmodel.app/v1/backups/{gameName}");
         var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
@@ -156,7 +156,7 @@ public class FModelApiEndpoint : AbstractApiProvider
             var currentVersion = new System.Version(args.CurrentVersion);
             UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
 
-            const string message = "新しいバージョンが利用可能です";
+            const string message = "新しいバージョンが利用可能です!";
             Log.Warning("{message} Version {CurrentVersion} ({Hash})", message, currentVersion, targetHash);
             Helper.OpenWindow<AdonisWindow>(message, () => new UpdateView { Title = message, ResizeMode = ResizeMode.NoResize }.ShowDialog());
         }
@@ -174,7 +174,7 @@ public class FModelApiEndpoint : AbstractApiProvider
         var response = _client.Execute(request);
         if (!response.IsSuccessful || string.IsNullOrEmpty(response.Content)) return;
 
-        _applicationView.CUE4Parse.TabControl.AddTab($"リリースノート : {args.CurrentVersion}");
+        _applicationView.CUE4Parse.TabControl.AddTab($"リリースノート: {args.CurrentVersion}");
         _applicationView.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("changelog");
         _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false, false);
         UserSettings.Default.ShowChangelog = false;

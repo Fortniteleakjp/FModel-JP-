@@ -31,12 +31,12 @@
                 </Canvas>
             </Viewbox>
             <StackPanel Grid.Column="2">
-                <TextBlock Text="ファイル容量" FontSize="10" />
+                <TextBlock Text="Size" FontSize="10" />
                 <TextBlock FontSize="10" Text="{Binding Asset.Size, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
             </StackPanel>
         </Grid>
 
-        <Button Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="このバージョンをダウンロード"
+        <Button Grid.Column="2" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Download"
                 Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}"
                 Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
                 IsEnabled="{Binding IsCurrent, Converter={x:Static converters:InvertBooleanConverter.Instance}}"
