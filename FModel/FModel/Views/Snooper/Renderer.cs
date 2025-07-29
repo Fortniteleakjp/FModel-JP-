@@ -123,7 +123,7 @@ public class Renderer : IDisposable
 
     public void Animate(UObject anim)
     {
-        if (!Services.ApplicationService.ApplicationView.CUE4Parse.ModelIsWaitingAnimation)
+        if (!Options.ModelIsWaitingAnimation)
         {
             if (anim is UAnimSequenceBase animBase)
             {
