@@ -56,7 +56,7 @@
                     </Ellipse>
                     <TextBlock Grid.Column="2" FontSize="11">
                         <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0} committed {1}">
+                            <MultiBinding StringFormat="{}{0} が {1} にコミット">
                                 <Binding Path="Author.Login" />
                                 <Binding Path="Commit.Author.Date" Converter="{x:Static converters:RelativeDateTimeConverter.Instance}" />
                             </MultiBinding>
@@ -83,10 +83,10 @@
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
-                                        <Setter Property="Text" Value="Latest" />
+                                        <Setter Property="Text" Value="最新のバージョン" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                        <Setter Property="Text" Value="Current" />
+                                        <Setter Property="Text" Value="現在のバージョン" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -128,4 +128,3 @@
         </Grid>
     </Border>
 </UserControl>
-

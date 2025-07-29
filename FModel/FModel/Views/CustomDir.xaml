@@ -21,9 +21,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-            <TextBlock Text="What is this?" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="これは何？" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
             <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center"
-                       Text="Bored of opening folders? Save custom directories to quickly jump to your favorite folder. They are saved according to your current set game, so don't freak out too fast." />
+                       Text="フォルダを開くのが面倒ですか？ファイルをお気に入りに保存しておけば、すぐにアクセスできます。設定済みのゲームに応じて保存されるので、慌てずに済みます。" />
         </StackPanel>
         
         <GroupBox Grid.Row="1" adonisExtensions:LayerExtension.Layer="2" Margin="10 10 10 18"
@@ -40,9 +40,9 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Header" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="名前" VerticalAlignment="Center" />
                 <TextBox x:Name="WpfSuckMyDick" Grid.Row="0" Grid.Column="2" Text="{Binding Header, Mode=TwoWay}" />
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Directory" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="お気に入り登録するファイルパス" VerticalAlignment="Center" />
                 <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding DirectoryPath, Mode=TwoWay}" />
             </Grid>
         </GroupBox>

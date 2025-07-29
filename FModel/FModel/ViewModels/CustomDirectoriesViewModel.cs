@@ -72,7 +72,7 @@ public class CustomDirectoriesViewModel : ViewModel
     {
         yield return new MenuItem
         {
-            Header = "Add Directory",
+            Header = "お気に入り登録",
             Icon = new Image { Source = new BitmapImage(new Uri("/FModel;component/Resources/add_directory.png", UriKind.Relative)) },
             HorizontalContentAlignment = HorizontalAlignment.Left,
             VerticalContentAlignment = VerticalAlignment.Center,

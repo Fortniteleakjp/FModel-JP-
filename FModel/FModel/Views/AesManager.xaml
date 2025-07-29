@@ -6,6 +6,7 @@
          xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
          xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
          xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+         xmlns:settings="clr-namespace:FModel.Settings"
          WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="WidthAndHeight" Closing="OnClosing"
          MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.20'}"
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.30'}">
@@ -26,15 +27,16 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-            <TextBlock Text="Instruction" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Text="説明" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
             <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" MaxWidth="576"
-                       Text="In order to decipher archives' information, an AES key, in most cases, is needed. Here you can set the key for your static and dynamic archives. If you don't know what key to use for your set game, simply Google it. Keys must start with &quot;0x&quot; and contains 64 more characters." />
+                       Text="アーカイブの情報を解析するには、ほとんどの場合 AESキーが必要です。ここでは、復号化および暗号化アーカイブに使用するキーを設定できます。使用するキーが分からない場合は、 Google で 'fortnite-aes-archive' と検索してください。キーは「0x」で始まり、その後に64文字の英数字が続く必要があります。" />
         </StackPanel>
 
-        <GroupBox Grid.Row="1" adonisExtensions:LayerExtension.Layer="2" Margin="10 10 10 18"
+        <GroupBox Grid.Row="1" adonisExtensions:LayerExtension.Layer="2" Margin="10 10 10 10"
                   Padding="{adonisUi:Space 0}" Background="Transparent">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -67,7 +69,52 @@
             </Grid>
         </GroupBox>
 
-        <Border Grid.Row="2"
+        <GroupBox Grid.Row="2"
+                  adonisExtensions:LayerExtension.Layer="2"
+                  Margin="10 10 10 18"
+                  Padding="{adonisUi:Space 0}"
+                  Background="Transparent"
+                  Visibility="{Binding IsDiffDirectoryAvailable}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="Name"
+                                      Width="Auto" />
+                    <ColumnDefinition SharedSizeGroup="Key"
+                                      Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <ScrollViewer MaxHeight="350"
+                              adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode="NeverExpand"
+                              adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement="Docked">
+                    <ItemsControl Grid.IsSharedSizeScope="True"
+                                  ItemsSource="{Binding AesManager.DiffAesKeysView, UpdateSourceTrigger=PropertyChanged}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0 2.5 0 2.5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="Name" />
+                                        <ColumnDefinition Width="10" />
+                                        <ColumnDefinition SharedSizeGroup="Key" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right"
+                                               Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBox Grid.Column="2"
+                                             HorizontalContentAlignment="Left"
+                                             HorizontalAlignment="Stretch"
+                                             Text="{Binding Key, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             MinWidth="450" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </GroupBox>
+
+        <Border Grid.Row="3"
                 Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                 adonisExtensions:LayerExtension.IncreaseLayer="True">
             <Grid Margin="30, 12, 6, 12">
@@ -78,9 +125,9 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="決定" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Refresh" Click="OnRefreshAes"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="再読み込み" Click="OnRefreshAes"
                         Visibility="{Binding Converter={x:Static converters:EndpointToTypeConverter.Instance}, ConverterParameter={x:Static local:EEndpointType.Aes}}">
                 </Button>
             </Grid>
