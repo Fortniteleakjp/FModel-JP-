@@ -218,7 +218,7 @@ public partial class CUE4ParseViewModel
     {
         AssetsFolder.Folders.Clear();
         SearchVm.SearchResults.Clear();
-        Helper.CloseWindow<AdonisWindow>("Search View");
+        Helper.CloseWindow<AdonisWindow>("検索ウィンドウ");
 
         ForEachProvider(provider => provider.UnloadNonStreamedVfs());
 
