@@ -102,6 +102,17 @@ public class ApplicationViewModel : ViewModel
             CUE4Parse.GameDirectory.Disable(reader);
         };
 
+        if (CUE4Parse.DiffProvider != null)
+        {
+            CUE4Parse.DiffProvider.VfsRegistered += (sender, count) =>
+            {
+                if (sender is not IAesVfsReader reader)
+                    return;
+
+                CUE4Parse.DiffGameDirectory.Add(reader);
+            };
+        }
+
         CustomDirectories = new CustomDirectoriesViewModel();
         SettingsView = new SettingsViewModel();
         AesManager = new AesManagerViewModel(CUE4Parse);
@@ -124,18 +135,21 @@ public class ApplicationViewModel : ViewModel
         UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory] = vm.SelectedDirectory;
         return vm.SelectedDirectory;
     }
-    public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
+    public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched, bool allowDiffSelection = false)
     {
         var gameDirectory = UserSettings.Default.GameDirectory;
         if (!bAlreadyLaunched && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
             return currentDir;
 
-        var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory);
+        var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory, allowDiffSelection)
+        {
+            SelectedDiffDirectory = (DirectorySettings) UserSettings.Default.DiffDir?.Clone()
+        };
         var result = new DirectorySelector(gameLauncherViewModel).ShowDialog();
         if (!result.HasValue || !result.Value) return null;
 
         UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
-        if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory))
+        if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory) && (allowDiffSelection && UserSettings.Default.DiffDir != null && UserSettings.Default.DiffDir.Equals(gameLauncherViewModel.SelectedDiffDirectory)))
             return gameLauncherViewModel.SelectedDirectory;
 
         // UserSettings.Save(); // ??? change key then change game, key saved correctly what?
