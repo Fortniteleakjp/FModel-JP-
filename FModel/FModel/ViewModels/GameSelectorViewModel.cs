@@ -40,16 +40,32 @@ public class GameSelectorViewModel : ViewModel
         set => SetProperty(ref _selectedDirectory, value);
     }
 
+    private DirectorySettings _selectedDiffDirectory;
+    public DirectorySettings SelectedDiffDirectory
+    {
+        get => _selectedDiffDirectory;
+        set => SetProperty(ref _selectedDiffDirectory, value);
+    }
+
+    private bool _allowDiffSelection;
+    public bool AllowDiffSelection
+    {
+        get => _allowDiffSelection;
+        set => SetProperty(ref _allowDiffSelection, value);
+    }
+
     private readonly ObservableCollection<DirectorySettings> _detectedDirectories;
     public ReadOnlyObservableCollection<DirectorySettings> DetectedDirectories { get; }
     public ReadOnlyObservableCollection<EGame> UeGames { get; }
+    public ReadOnlyObservableCollection<EGame> DiffUeGames { get; }
 
-    public GameSelectorViewModel(string gameDirectory)
+    public GameSelectorViewModel(string gameDirectory, bool allowDiffSelection = false)
     {
+        _allowDiffSelection = allowDiffSelection;
         _detectedDirectories = new ObservableCollection<DirectorySettings>(EnumerateDetectedGames().Where(x => x != null));
         foreach (var dir in UserSettings.Default.PerDirectory.Values.Where(x => x.IsManual))
         {
-            _detectedDirectories.Add((DirectorySettings) dir.Clone());
+            _detectedDirectories.Add((DirectorySettings)dir.Clone());
         }
 
         DetectedDirectories = new ReadOnlyObservableCollection<DirectorySettings>(_detectedDirectories);
@@ -60,17 +76,24 @@ public class GameSelectorViewModel : ViewModel
             AddUndetectedDir(gameDirectory);
         else
             SelectedDirectory = DetectedDirectories.FirstOrDefault();
-
-        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
+        var games = EnumerateUeGames().ToList();
+        UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(games));
+        DiffUeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(games));
     }
-
-    public void AddUndetectedDir(string gameDirectory) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory);
-    public void AddUndetectedDir(string gameName, string gameDirectory)
+    public void AddUndetectedDir(string gameDirectory, bool isDiff = false) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory, isDiff);
+    public void AddUndetectedDir(string gameName, string gameDirectory, bool isDiff = false)
     {
         var setting = DirectorySettings.Default(gameName, gameDirectory, true);
         UserSettings.Default.PerDirectory[gameDirectory] = setting;
         _detectedDirectories.Add(setting);
-        SelectedDirectory = DetectedDirectories.Last();
+        if (isDiff)
+        {
+            SelectedDiffDirectory = setting;
+        }
+        else
+        {
+            SelectedDirectory = setting;
+        }
     }
 
     public void DeleteSelectedGame()
