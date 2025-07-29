@@ -33,23 +33,23 @@ public class RelativeDateTimeConverter : IValueConverter
             {
                 case < 1:
                     time = timeSpan.Hours;
-                    unit = "hour";
+                    unit = "時間";
                     break;
                 case < 7:
                     time = timeSpan.Days;
-                    unit = "day";
+                    unit = "日";
                     break;
                 case < 30:
                     time = timeSpan.Days / 7;
-                    unit = "week";
+                    unit = "週";
                     break;
                 case < 365:
                     time = timeSpan.Days / 30;
-                    unit = "month";
+                    unit = "月";
                     break;
                 default:
                     time = timeSpan.Days / 365;
-                    unit = "year";
+                    unit = "年";
                     break;
             }
 

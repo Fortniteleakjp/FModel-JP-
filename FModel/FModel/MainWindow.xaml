@@ -139,8 +139,8 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
             <MenuItem Header="設定" Command="{Binding MenuCommand}" CommandParameter="Settings" />
+            <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
             <MenuItem Header="ヘルプ" >
                 <MenuItem Header="寄付 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
                     <MenuItem.Icon>
@@ -534,7 +534,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="View Diff"
+                                            <MenuItem Header="ファイルを比較する"
                                                       IsEnabled="{Binding DiffGameDirectory, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:StringNotEmptyToBoolConverter.Instance}}"
                                                       Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>

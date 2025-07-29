@@ -144,7 +144,7 @@
                               Grid.ColumnSpan="7"
                               Margin="0,4,0,0"
                               Style="{StaticResource ExpanderButtonLikeHeader}"
-                              Header="Show Compare Game Options"
+                              Header="バージョン比較の設定"
                               IsEnabled="{Binding GameDirectory, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:StringNotEmptyToBoolConverter.Instance}}">
                         <Expander.Resources>
                             <Style TargetType="TextBlock">
@@ -176,7 +176,7 @@
                                        Grid.Column="0"
                                        Grid.ColumnSpan="7"
                                        Style="{StaticResource CustomSeparator}"
-                                       Tag="COMPARE GAME BUILD"></Separator>
+                                       Tag="バージョンを比較"></Separator>
 
                             <TextBlock Grid.Row="1"
                                        Grid.Column="0"
@@ -185,13 +185,13 @@
                                        Margin="0 0 0 10"
                                        TextAlignment="Center"
                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}">
-                                The options below allow you to compare game assets between two builds of the same game. Please select a<LineBreak />
-                                comparison build that matches the current game, but is from an earlier version.
+                                この機能を使用すると、現在のバージョンと選択したバージョンの比較ができます。<LineBreak />
+                                ここで、比較の対象を選択してください。(事前にバックアップファイルを作成している必要があります)
                             </TextBlock>
 
                             <TextBlock Grid.Row="2"
                                        Grid.Column="0"
-                                       Text="Compare Archive Directory *"
+                                       Text="アーカイブフォルダ *"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5" />
                             <TextBox Grid.Row="2"
@@ -209,10 +209,10 @@
 
                             <TextBlock Grid.Row="3"
                                        Grid.Column="0"
-                                       Text="Compare UE Version *"
+                                       Text="比較に使用するUEバージョン *"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5"
-                                       ToolTip="Override the UE version to use when parsing compare packages" />
+                                       ToolTip="比較に使用するUEのバージョンを指定してください。最新はUE5_7です。" />
                             <controls:FilterableComboBox Grid.Row="3"
                                                          Grid.Column="2"
                                                          Grid.ColumnSpan="5"
@@ -230,7 +230,7 @@
 
                             <TextBlock Grid.Row="4"
                                        Grid.Column="0"
-                                       Text="Compare Mapping File"
+                                       Text="比較するマッピングファイル"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5" />
                             <CheckBox Grid.Row="4"
@@ -252,7 +252,7 @@
 
                             <TextBlock Grid.Row="5"
                                        Grid.Column="0"
-                                       Text="Compare Mapping File Path"
+                                       Text="比較するマッピングファイルのパス"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5"
                                        DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
@@ -275,7 +275,7 @@
                             <Button Grid.Row="6"
                                     Grid.Column="0"
                                     Grid.ColumnSpan="7"
-                                    Content="Reset Compare Game Settings"
+                                    Content="バージョン比較の設定をリセット"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Padding="8,4"
