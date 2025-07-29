@@ -14,6 +14,7 @@ using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.BinaryConfig;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -23,21 +24,15 @@ using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
-using CUE4Parse.UE4.Assets.Objects.Properties;
-using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.IO;
-using CUE4Parse.UE4.Kismet;
 using CUE4Parse.UE4.Localization;
-using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
-using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Oodle.Objects;
 using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
-using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -51,8 +46,6 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
-using System.Linq;
-using System.Text;
 using UE4Config.Parsing;
 using Application = System.Windows.Application;
 
@@ -70,6 +63,13 @@ public partial class CUE4ParseViewModel : ViewModel
     {
         get => _modelIsOverwritingMaterial;
         set => SetProperty(ref _modelIsOverwritingMaterial, value);
+    }
+
+    private bool _modelIsWaitingAnimation;
+    public bool ModelIsWaitingAnimation
+    {
+        get => _modelIsWaitingAnimation;
+        set => SetProperty(ref _modelIsWaitingAnimation, value);
     }
 
     public bool IsSnooperOpen => _snooper is { Exists: true, IsVisible: true };
@@ -114,6 +114,8 @@ public partial class CUE4ParseViewModel : ViewModel
     public SearchViewModel SearchVm { get; }
     public TabControlViewModel TabControl { get; }
     public ConfigIni IoStoreOnDemand { get; }
+    private Lazy<WwiseProvider> _wwiseProviderLazy;
+    public WwiseProvider WwiseProvider => _wwiseProviderLazy.Value;
 
     public CUE4ParseViewModel()
     {
@@ -248,6 +250,8 @@ public partial class CUE4ParseViewModel : ViewModel
             ExportFolder(cancellationToken, f);
     }
 
+    private static string Serialize<T>(T obj) => JsonConvert.SerializeObject(obj, Formatting.Indented);
+
     public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs));
 
@@ -271,13 +275,15 @@ public partial class CUE4ParseViewModel : ViewModel
             TabControl.AddTab(entry);
         else
             TabControl.SelectedTab.SoftReset(entry);
+
         TabControl.SelectedTab.DiffContent = null;
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(entry.Extension);
 
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
-        switch (entry.Extension)
+
+        switch (entry.Extension.ToLowerInvariant())
         {
             case "uasset":
             case "umap":
@@ -287,7 +293,7 @@ public partial class CUE4ParseViewModel : ViewModel
 
                     if (saveProperties || updateUi)
                     {
-                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
+                        TabControl.SelectedTab.SetDocumentText(Serialize(result.GetDisplayData(saveProperties)), saveProperties, updateUi);
                         if (saveProperties)
                             break; // do not search for viewable exports if we are dealing with jsons
                     }
@@ -300,109 +306,12 @@ public partial class CUE4ParseViewModel : ViewModel
 
                     break;
                 }
-            case "upluginmanifest":
-            case "projectstore":
-            case "uproject":
-            case "manifest":
-            case "uplugin":
-            case "archive":
-            case "dnearchive": // Banishers: Ghosts of New Eden
-            case "gitignore":
-            case "vmodule":
-            case "uparam": // Steel Hunters
-            case "verse":
-            case "html":
-            case "json":
-            case "ini":
-            case "txt":
-            case "log":
-            case "lsd": // Days Gone
-            case "bat":
-            case "dat":
-            case "cfg":
-            case "ddr":
-            case "ide":
-            case "ipl":
-            case "zon":
-            case "xml":
-            case "css":
-            case "csv":
-            case "pem":
-            case "tps":
-            case "tgc": // State of Decay 2
-            case "lua":
-            case "js":
-            case "po":
-            case "md":
-            case "h":
+            case "ini" when entry.Name.Contains("BinaryConfig"):
                 {
-                    var data = Provider.SaveAsset(entry);
-                    using var stream = new MemoryStream(data) { Position = 0 };
-                    using var reader = new StreamReader(stream);
+                    var configCache = new FConfigCacheIni(entry.CreateReader());
 
-                    TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
-
-                    break;
-                }
-            case "locmeta":
-                {
-                    var archive = entry.CreateReader();
-                    var metadata = new FTextLocalizationMetaDataResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "locres":
-                {
-                    var archive = entry.CreateReader();
-                    var locres = new FTextLocalizationResource(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "bin" when entry.Name.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
-                {
-                    var archive = entry.CreateReader();
-                    var registry = new FAssetRegistryState(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "bin" when entry.Name.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
-                {
-                    var archive = entry.CreateReader();
-                    var registry = new FGlobalShaderCache(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "bnk":
-            case "pck":
-                {
-                    var archive = entry.CreateReader();
-                    var wwise = new WwiseReader(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
-                    foreach (var (name, data) in wwise.WwiseEncodedMedias)
-                    {
-                        SaveAndPlaySound(entry.Path.SubstringBeforeWithLast('/') + name, "WEM", data);
-                    }
-
-                    break;
-                }
-            case "xvag":
-            case "at9":
-            case "wem":
-                {
-                    var data = Provider.SaveAsset(entry);
-                    SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data);
-
-                    break;
-                }
-            case "udic":
-                {
-                    var archive = entry.CreateReader();
-                    var header = new FOodleDictionaryArchive(archive).Header;
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), saveProperties, updateUi);
+                    TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+                    TabControl.SelectedTab.SetDocumentText(Serialize(configCache), saveProperties, updateUi);
 
                     break;
                 }
@@ -411,54 +320,188 @@ public partial class CUE4ParseViewModel : ViewModel
             case "bmp":
                 {
                     var data = Provider.SaveAsset(entry);
-                    using var stream = new MemoryStream(data) { Position = 0 };
+                    using var stream = new MemoryStream(data);
                     TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, SKBitmap.Decode(stream), saveTextures, updateUi);
-
                     break;
                 }
             case "svg":
                 {
                     var data = Provider.SaveAsset(entry);
-                    using var stream = new MemoryStream(data) { Position = 0 };
-                    var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
+                    using var stream = new MemoryStream(data);
                     var bitmap = RenderSvg(stream);
-
                     TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
+                    break;
+                }
+            // Audio
+            case "xvag":
+            case "at9":
+            case "wem":
+                {
+                    var data = Provider.SaveAsset(entry);
+                    SaveAndPlaySound(entry.PathWithoutExtension, entry.Extension, data);
+                    break;
+                }
+            // Wwise
+            case "bnk":
+            case "pck":
+                {
+                    var archive = entry.CreateReader();
+                    var wwise = new WwiseReader(archive);
+                    TabControl.SelectedTab.SetDocumentText(Serialize(wwise), saveProperties, updateUi);
+
+                    foreach (var (name, data) in wwise.WwiseEncodedMedias)
+                    {
+                        SaveAndPlaySound(entry.Path.SubstringBeforeWithLast('/') + name, "WEM", data);
+                    }
 
                     break;
                 }
+            // Fonts
             case "ufont":
             case "otf":
             case "ttf":
-                FLogger.Append(ELog.Warning, () =>
-                    FLogger.Text($"Export '{entry.Name}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true));
-                break;
-            case "ushaderbytecode":
-            case "ushadercode":
                 {
-                    var archive = entry.CreateReader();
-                    var ar = new FShaderCodeArchive(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
-
-                    break;
-                }
-            case "upipelinecache":
-                {
-                    var archive = entry.CreateReader();
-                    var ar = new FPipelineCacheFile(archive);
-                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
-
+                    FLogger.Append(ELog.Warning, () =>
+                        FLogger.Text($"Export '{entry.Name}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true));
                     break;
                 }
             case "res": // just skip
+            case "luac": // compiled lua
+            case "bytes": // wuthering waves
                 break;
+
             default:
                 {
-                    FLogger.Append(ELog.Warning, () =>
-                        FLogger.Text($"The package '{entry.Name}' is of an unknown type.", Constants.WHITE, true));
+                    if (TryExtractStructuredText(entry, Provider, out var text))
+                    {
+                        TabControl.SelectedTab.SetDocumentText(text, saveProperties, updateUi);
+                    }
+                    else
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text($"The package '{entry.Name}' is of an unknown type.", Constants.WHITE, true));
+                    }
+
                     break;
                 }
         }
+    }
+
+    private static bool TryExtractStructuredText(GameFile entry, AbstractVfsFileProvider provider, out string resultText)
+    {
+        resultText = string.Empty;
+        switch (entry.Extension.ToLowerInvariant())
+        {
+            // UE
+            case "uasset":
+            case "umap":
+                {
+                    var package = provider.GetLoadPackageResult(entry);
+                    resultText = Serialize(package.GetDisplayData());
+                    return true;
+                }
+
+            // Localization
+            case "locmeta":
+                resultText = Serialize(new FTextLocalizationMetaDataResource(entry.CreateReader()));
+                return true;
+            case "locres":
+                resultText = Serialize(new FTextLocalizationResource(entry.CreateReader()));
+                return true;
+
+            case "bin" when entry.Name.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
+                resultText = Serialize(new FAssetRegistryState(entry.CreateReader()));
+                return true;
+            case "bin" when entry.Name.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
+                resultText = Serialize(new FGlobalShaderCache(entry.CreateReader()));
+                return true;
+
+            // Wwise
+            case "bnk":
+            case "pck":
+                {
+                    var archive = entry.CreateReader();
+                    var wwise = new WwiseReader(archive);
+                    resultText = Serialize(wwise);
+                    return true;
+                }
+
+            case "udic":
+                resultText = Serialize(new FOodleDictionaryArchive(entry.CreateReader()).Header);
+                return true;
+            case "ushaderbytecode":
+            case "ushadercode":
+                resultText = Serialize(new FShaderCodeArchive(entry.CreateReader()));
+                return true;
+            case "upipelinecache":
+                resultText = Serialize(new FPipelineCacheFile(entry.CreateReader()));
+                return true;
+
+            // Common text-based formats
+            case "archive":
+            case "dnearchive": // Banishers: Ghosts of New Eden
+            case "stumeta": // LIS: Double Exposure
+            case "json":
+            case "manifest":
+            case "uproject":
+            case "uplugin":
+            case "upluginmanifest":
+            case "uparam": // Steel Hunters
+            case "xml":
+            case "ini":
+            case "txt":
+            case "log":
+            case "bat":
+            case "cfg":
+            case "csv":
+            case "pem":
+            case "tps":
+            case "tgc": // State of Decay 2
+            case "lua":
+            case "js":
+            case "po":
+            case "h":
+            case "cpp":
+            case "c":
+            case "hpp":
+            case "cs":
+            case "vb":
+            case "py":
+            case "md":
+            case "markdown":
+            case "yml":
+            case "yaml":
+            case "sh":
+            case "cmd":
+            case "sql":
+            case "css":
+            case "scss":
+            case "less":
+            case "ts":
+            case "tsx":
+            case "jsx":
+            case "html":
+            case "htm":
+            case "lsd": // Days Gone
+            case "dat":
+            case "ddr":
+            case "ide":
+            case "ipl":
+            case "zon":
+            case "verse":
+            case "vmodule":
+                {
+                    var data = provider.SaveAsset(entry);
+                    using var stream = new MemoryStream(data) { Position = 0 };
+                    using var reader = new StreamReader(stream);
+                    resultText = reader.ReadToEnd();
+                    return true;
+                }
+            default:
+                break;
+        }
+
+        return false;
     }
 
     public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName, string parentExportType)
@@ -473,7 +516,7 @@ public partial class CUE4ParseViewModel : ViewModel
 
         TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
-        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
+        TabControl.SelectedTab.SetDocumentText(Serialize(result.GetDisplayData()), false, false);
 
         for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
         {
@@ -551,24 +594,12 @@ public partial class CUE4ParseViewModel : ViewModel
                     TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
                     return false;
                 }
-            case UAkAudioEvent when isNone && pointer.Object.Value is UAkAudioEvent { EventCookedData: { } wwiseData }:
+            case UAkAudioEvent when isNone && pointer.Object.Value is UAkAudioEvent audioEvent:
                 {
-                    foreach (var kvp in wwiseData.EventLanguageMap)
+                    var extractedSounds = WwiseProvider.ExtractAudioEventSounds(audioEvent);
+                    foreach (var sound in extractedSounds)
                     {
-                        if (!kvp.Value.HasValue)
-                            continue;
-
-                        foreach (var media in kvp.Value.Value.Media)
-                        {
-                            if (!Provider.TrySaveAsset(Path.Combine("Game/WwiseAudio/", media.MediaPathName.Text), out var data))
-                                continue;
-
-                            var namedPath = string.Concat(
-                                Provider.ProjectName, "/Content/WwiseAudio/",
-                                media.DebugName.Text.SubstringBeforeLast('.').Replace('\\', '/'),
-                                " (", kvp.Key.LanguageName.Text, ")");
-                            SaveAndPlaySound(namedPath, media.MediaPathName.Text.SubstringAfterLast('.'), data);
-                        }
+                        SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data);
                     }
                     return false;
                 }
@@ -616,7 +647,7 @@ public partial class CUE4ParseViewModel : ViewModel
                     SnooperViewer.Run();
                     return true;
                 }
-            case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || SnooperViewer.Renderer.Options.ModelIsWaitingAnimation:
+            case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || ModelIsWaitingAnimation:
                 {
                     // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
                     SnooperViewer.Renderer.Animate(pointer.Object.Value);
@@ -661,278 +692,7 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.TitleExtra = "Metadata";
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("");
 
-        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
-    }
-
-    public void Decompile(GameFile entry)
-    {
-        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
-        else TabControl.SelectedTab.SoftReset(entry);
-
-        TabControl.SelectedTab.TitleExtra = "復元";
-        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
-
-        var pkg = Provider.LoadPackage(entry);
-
-        var outputBuilder = new StringBuilder();
-        for (var i = 0; i < pkg.ExportMapLength; i++)
-        {
-            var pointer = new FPackageIndex(pkg, i + 1).ResolvedObject;
-            if (pointer?.Object is null)
-                continue;
-
-            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
-            if (dummy is not UClass || pointer.Object.Value is not UClass blueprint)
-                continue;
-
-            var typePrefix = KismetExtensions.GetPrefix(blueprint.GetType().Name);
-            outputBuilder.AppendLine($"class {typePrefix}{blueprint.Name} : public {typePrefix}{blueprint?.SuperStruct?.Name ?? string.Empty}\n{{\npublic:");
-
-            if (!blueprint.ClassDefaultObject.TryLoad(out var bpObject))
-                continue;
-
-            var strings = new List<string>();
-            foreach (var property in bpObject.Properties)
-            {
-                var propertyName = property.Name.ToString();
-                var propertyValue = property.Tag?.GenericValue;
-                strings.Add(propertyName);
-                string placeholder = $"{propertyName}fmodelholder"; // spelling mistake is intended
-
-                void ShouldAppend(string value)
-                {
-                    if (outputBuilder.ToString().Contains(placeholder))
-                    {
-                        outputBuilder.Replace(placeholder, value);
-                    }
-                    else
-                    {
-                        outputBuilder.AppendLine($"\t{KismetExtensions.GetPropertyType(propertyValue)} {propertyName.Replace(" ", "")} = {value};");
-                    }
-                }
-
-                string GetLineOfText(object value)
-                {
-                    string text = null;
-                    switch (value)
-                    {
-                        case FScriptStruct structTag:
-                            switch (structTag.StructType)
-                            {
-                                case FVector vector:
-                                    text = $"FVector({vector.X}, {vector.Y}, {vector.Z})";
-                                    break;
-                                case FGuid guid:
-                                    text = $"FGuid({guid.A}, {guid.B}, {guid.C}, {guid.D})";
-                                    break;
-                                case TIntVector3<int> vector3:
-                                    text = $"FVector({vector3.X}, {vector3.Y}, {vector3.Z})";
-                                    break;
-                                case TIntVector3<float> floatVector3:
-                                    text = $"FVector({floatVector3.X}, {floatVector3.Y}, {floatVector3.Z})";
-                                    break;
-                                case TIntVector2<float> floatVector2:
-                                    text = $"FVector2D({floatVector2.X}, {floatVector2.Y})";
-                                    break;
-                                case FVector2D vector2d:
-                                    text = $"FVector2D({vector2d.X}, {vector2d.Y})";
-                                    break;
-                                case FRotator rotator:
-                                    text = $"FRotator({rotator.Pitch}, {rotator.Yaw}, {rotator.Roll})";
-                                    break;
-                                case FLinearColor linearColor:
-                                    text = $"FLinearColor({linearColor.R}, {linearColor.G}, {linearColor.B}, {linearColor.A})";
-                                    break;
-                                case FGameplayTagContainer gTag:
-                                    text = gTag.GameplayTags.Length switch
-                                    {
-                                        > 1 => "[\n" + string.Join(",\n", gTag.GameplayTags.Select(tag => $"\t\t\"{tag.TagName}\"")) + "\n\t]",
-                                        > 0 => $"\"{gTag.GameplayTags[0].TagName}\"",
-                                        _ => "[]"
-                                    };
-                                    break;
-                                case FStructFallback fallback:
-                                    if (fallback.Properties.Count > 0)
-                                    {
-                                        text = "[\n" + string.Join(",\n", fallback.Properties.Select(p => $"\t\"{GetLineOfText(p)}\"")) + "\n\t]";
-                                    }
-                                    else
-                                    {
-                                        text = "[]";
-                                    }
-                                    break;
-                            }
-                            break;
-                        case UScriptSet:
-                        case UScriptMap:
-                        case UScriptArray:
-                            IEnumerable<string> inner = value switch
-                            {
-                                UScriptSet set => set.Properties.Select(p => $"\t\"{p.GenericValue}\""),
-                                UScriptMap map => map.Properties.Select(kvp => $"\t{{\n\t\t\"{kvp.Key}\": \"{kvp.Value}\"\n\t}}"),
-                                UScriptArray array => array.Properties.Select(p => $"\t\"{GetLineOfText(p)}\""),
-                                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
-                            };
-
-                            text = "[\n" + string.Join(",\n", inner) + "\n\t]";
-                            break;
-                        case FMulticastScriptDelegate multicast:
-                            text = multicast.InvocationList.Length == 0 ? "[]" : $"[{string.Join(", ", multicast.InvocationList.Select(x => $"\"{x.FunctionName}\""))}]";
-                            break;
-                        case bool:
-                            text = value.ToString()?.ToLowerInvariant();
-                            break;
-                    }
-
-                    return text ?? value.ToString();
-                }
-
-                ShouldAppend(GetLineOfText(propertyValue));
-            }
-
-            foreach (var field in blueprint.ChildProperties)
-            {
-                if (field is not FProperty property || strings.Contains(property.Name.Text)) continue;
-
-                var propertyName = property.Name.ToString().Replace(" ", "");
-                var type = KismetExtensions.GetPropertyType(property);
-                var prefix = KismetExtensions.GetPrefix(property.GetType().Name);
-
-                string pointerIdentifier;
-                if (property.PropertyFlags.HasFlag(EPropertyFlags.InstancedReference) ||
-                    property.PropertyFlags.HasFlag(EPropertyFlags.ReferenceParm) ||
-                    KismetExtensions.GetPropertyProperty(property))
-                {
-                    pointerIdentifier = "*";
-                }
-                else
-                {
-                    pointerIdentifier = string.Empty;
-                }
-
-                outputBuilder.AppendLine($"\t{prefix}{type}{pointerIdentifier} {propertyName} = {propertyName}fmodelholder;");
-            }
-
-            {
-                var funcMapOrder = blueprint?.FuncMap?.Keys.Select(fname => fname.ToString()).ToList();
-                var functions = pkg.ExportsLazy
-                .Where(e => e.Value is UFunction)
-                .Select(e => (UFunction) e.Value)
-                    .OrderBy(f =>
-                    {
-                        if (funcMapOrder != null)
-                        {
-                            var functionName = f.Name.ToString();
-                            int index = funcMapOrder.IndexOf(functionName);
-                            return index >= 0 ? index : int.MaxValue;
-                        }
-
-                        return int.MaxValue;
-                    })
-                    .ThenBy(f => f.Name.ToString())
-                    .ToList();
-
-                var jumpCodeOffsetsMap = new Dictionary<string, List<int>>();
-
-                foreach (var function in functions.AsEnumerable().Reverse())
-                {
-                    if (function?.ScriptBytecode == null)
-                        continue;
-
-                    foreach (var property in function.ScriptBytecode)
-                    {
-                        string? label = null;
-                        int? offset = null;
-
-                        switch (property.Token)
-                        {
-                            case EExprToken.EX_JumpIfNot:
-                                label = ((EX_JumpIfNot) property).ObjectPath?.ToString()?.Split('.').Last().Split('[')[0];
-                                offset = (int) ((EX_JumpIfNot) property).CodeOffset;
-                                break;
-
-                            case EExprToken.EX_Jump:
-                                label = ((EX_Jump) property).ObjectPath?.ToString()?.Split('.').Last().Split('[')[0];
-                                offset = (int) ((EX_Jump) property).CodeOffset;
-                                break;
-
-                            case EExprToken.EX_LocalFinalFunction:
-                                {
-                                    EX_FinalFunction op = (EX_FinalFunction) property;
-                                    label = op.StackNode?.Name?.ToString()?.Split('.').Last().Split('[')[0];
-
-                                    if (op.Parameters.Length == 1 && op.Parameters[0] is EX_IntConst intConst)
-                                        offset = intConst.Value;
-                                    break;
-                                }
-                        }
-
-                        if (!string.IsNullOrEmpty(label) && offset.HasValue)
-                        {
-                            if (!jumpCodeOffsetsMap.TryGetValue(label, out var list))
-                                jumpCodeOffsetsMap[label] = list = new List<int>();
-
-                            list.Add(offset.Value);
-                        }
-                    }
-                }
-
-                foreach (var function in functions)
-                {
-                    string argsList = "";
-                    string returnFunc = "void";
-                    if (function?.ChildProperties != null)
-                    {
-                        foreach (FProperty property in function.ChildProperties)
-                        {
-                            var name = property.Name.ToString();
-                            var plainName = property.Name.PlainText;
-                            var prefix = KismetExtensions.GetPrefix(property.GetType().Name);
-                            var type = KismetExtensions.GetPropertyType(property);
-                            var isConst = property.PropertyFlags.HasFlag(EPropertyFlags.ConstParm);
-                            var isOut = property.PropertyFlags.HasFlag(EPropertyFlags.OutParm);
-                            var isInstanced = property.PropertyFlags.HasFlag(EPropertyFlags.InstancedReference);
-                            var isEdit = property.PropertyFlags.HasFlag(EPropertyFlags.Edit);
-
-                            if (plainName == "ReturnValue")
-                            {
-                                returnFunc = $"{(isConst ? "const " : "")}{prefix}{type}{(isInstanced || prefix == "U" ? "*" : "")}";
-                                continue;
-                            }
-
-                            bool uselessIgnore = name.EndsWith("_ReturnValue") || name.StartsWith("CallFunc_") || name.StartsWith("K2Node_") || name.StartsWith("Temp_"); // read variable name
-
-                            if (uselessIgnore && !isEdit)
-                                continue;
-
-                            var strippedVerseName = Regex.Replace(name, @"^__verse_0x[0-9A-Fa-f]+_", "");
-                            argsList += $"{(isConst ? "const " : "")}{prefix}{type}{(isInstanced || prefix == "U" ? "*" : "")}{(isOut ? "&" : "")} {strippedVerseName}, ";
-                        }
-                    }
-                    argsList = argsList.TrimEnd(',', ' ');
-
-                    outputBuilder.AppendLine($"\n\t{returnFunc} {function.Name.Replace(" ", "")}({argsList})\n\t{{");
-                    if (function?.ScriptBytecode != null)
-                    {
-                        var jumpCodeOffsets = jumpCodeOffsetsMap.TryGetValue(function.Name, out var list) ? list : new List<int>();
-                        foreach (KismetExpression property in function.ScriptBytecode)
-                        {
-                            KismetExtensions.ProcessExpression(property.Token, property, outputBuilder, jumpCodeOffsets);
-                        }
-                    }
-                    else
-                    {
-                        outputBuilder.Append("\n\t // No Bytecode (Make sure \"Serialize Script Bytecode\" is enabled \n\n");
-                        outputBuilder.Append("\t}\n");
-                    }
-                }
-
-                outputBuilder.Append("\n\n}");
-            }
-        }
-
-        var cpp = Regex.Replace(outputBuilder.ToString(), @"\w+fmodelholder", "nullptr");
-        TabControl.SelectedTab.SetDocumentText(cpp, false, false);
+        TabControl.SelectedTab.SetDocumentText(Serialize(package), false, false);
     }
 
     private void SaveAndPlaySound(string fullPath, string ext, byte[] data)

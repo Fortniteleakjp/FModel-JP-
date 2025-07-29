@@ -86,7 +86,7 @@ public class BackupManagerViewModel : ViewModel
             using var compressedStream = LZ4Stream.Encode(fileStream, LZ4Level.L00_FAST);
             using var writer = new BinaryWriter(compressedStream);
             writer.Write(FBKP_MAGIC);
-            writer.Write((byte)EBackupVersion.Latest);
+            writer.Write((byte) EBackupVersion.Latest);
             writer.Write(_applicationView.CUE4Parse.Provider.Files.Values.Count(func));
 
             foreach (var asset in _applicationView.CUE4Parse.Provider.Files.Values)
