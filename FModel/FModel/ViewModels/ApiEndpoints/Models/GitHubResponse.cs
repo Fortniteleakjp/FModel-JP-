@@ -73,7 +73,7 @@ public class GitHubCommit : ViewModel
         {
             MessageBox.Show(new MessageBoxModel
             {
-                Text = "You are already on the latest version.",
+                Text = "あなたは最新バージョンをインストール済みです",
                 Caption = "Update FModel",
                 Icon = MessageBoxImage.Information,
                 Buttons = [MessageBoxButtons.Ok()],
@@ -84,7 +84,7 @@ public class GitHubCommit : ViewModel
 
         var messageBox = new MessageBoxModel
         {
-            Text = $"Are you sure you want to update to version '{ShortSha}'?{(!Asset.IsLatest ? "\nThis is not the latest version." : "")}",
+            Text = $"FModelを '{ShortSha}' にアップデートしますか？?{(!Asset.IsLatest ? "\n※ 最新バージョンではありません" : "")}",
             Caption = "Update FModel",
             Icon = MessageBoxImage.Question,
             Buttons = MessageBoxButtons.YesNo(),

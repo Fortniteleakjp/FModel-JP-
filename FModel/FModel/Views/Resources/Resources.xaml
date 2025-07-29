@@ -294,7 +294,7 @@
                                 <ToolTip>
                                     <TextBlock>
                                         <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}{0} has {1} folders and {2} packages">
+                                            <MultiBinding StringFormat="{}'{0}' 直下には {1} 個のフォルダと {2} つのファイルがあります">
                                                 <Binding Path="Header" />
                                                 <Binding Path="FoldersView.Count" />
                                                 <Binding Path="AssetsList.Assets.Count" />
@@ -568,7 +568,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No folder found in archives, make sure you loaded at least one" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="アーカイブにフォルダが見つかりません。少なくとも1つはロードされていることを確認してください。" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
