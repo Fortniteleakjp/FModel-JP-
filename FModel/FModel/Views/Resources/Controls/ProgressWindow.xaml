@@ -13,7 +13,7 @@
                 <TextBlock Text="{Binding Message}"
                         FontSize="15"
                         FontWeight="SemiBold"
-                        Foreground="{DynamicResource PrimaryTextBrush}"
+                        Foreground="White"
                         Margin="0,0,0,10" />
                 <ProgressBar Height="24"
                             Value="{Binding Progress}"
@@ -21,7 +21,7 @@
                             Margin="0,0,0,10" />
                 <TextBlock Text="{Binding ETA}"
                         FontSize="12"
-                        Foreground="{DynamicResource SecondaryTextBrush}"
+                        Foreground="White"
                         HorizontalAlignment="Right"
                         Margin="0,0,0,15" />
                 <Button Content="キャンセル"

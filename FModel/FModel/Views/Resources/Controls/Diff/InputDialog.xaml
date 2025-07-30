@@ -5,8 +5,8 @@
                        xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                        Title="{Binding Title}"
                        ResizeMode="NoResize"
-                       Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.175'}"
                        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.225'}"
+                       SizeToContent="Height"
                        WindowStartupLocation="CenterScreen">
     <Border Padding="10" CornerRadius="6" MinWidth="300">
         <StackPanel>
