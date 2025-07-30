@@ -54,9 +54,9 @@
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="1行あたりの画像数" VerticalAlignment="Center" Margin="0 0 10 0" />
                     <Slider x:Name="SizeSlider" Grid.Row="0" Grid.Column="1" TickPlacement="None" AutoToolTipPlacement="BottomRight"
-                            IsMoveToPointEnabled="True" Minimum="1" Maximum="20" TickFrequency="1" MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview"/>
+                            IsMoveToPointEnabled="True" Minimum="1" Maximum="20" TickFrequency="1" Background="#4a4a5e" BorderBrush="#1f2029" MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview"/>
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="画像間の空白" VerticalAlignment="Center" Margin="0 0 10 0" />
-                    <Slider Grid.Row="2" Grid.Column="1" Value="{Binding ImageMergerMargin, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                    <Slider Grid.Row="2" Grid.Column="1" Background="#4a4a5e" BorderBrush="#1f2029" Value="{Binding ImageMergerMargin, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                             TickPlacement="None" AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" Minimum="0" Maximum="50" TickFrequency="1"
                             MouseUp="Click_DrawPreview" Thumb.DragCompleted="DrawPreview" />
                 </Grid>
