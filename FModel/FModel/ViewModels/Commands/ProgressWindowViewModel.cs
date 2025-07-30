@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
+using FModel.Framework;
 
 namespace FModel.ViewModels
 {
