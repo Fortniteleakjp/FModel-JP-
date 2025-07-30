@@ -1,12 +1,14 @@
 // Views/Resources/Controls/ProgressWindow.xaml.cs
 using System.Windows;
+using AdonisUI.Controls;
 
-namespace FModel.Views.Resources.Controls;
-
-public partial class ProgressWindow : Window
+namespace FModel.Views.Resources.Controls
 {
-    public ProgressWindow()
+    public partial class ProgressWindow : AdonisWindow
     {
-        InitializeComponent();
+        public ProgressWindow()
+        {
+            InitializeComponent();
+        }
     }
 }
