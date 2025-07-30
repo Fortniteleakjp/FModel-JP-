@@ -223,7 +223,7 @@ public class BackupManagerViewModel : ViewModel
             {
                 FLogger.Append(ELog.Warning, () =>
                 {
-                    FLogger.Text("バックアップはユーザーによってキャンセルされました。", Constants.YELLOW, true);
+                    FLogger.Text("バックアップファイル(大)の作成はユーザーによってキャンセルされました。", Constants.YELLOW, true);
                 });
             }
             finally
