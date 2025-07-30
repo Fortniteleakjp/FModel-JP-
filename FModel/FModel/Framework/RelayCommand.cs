@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Input;
 
-namespace FModel.ViewModels.Commands
+namespace FModel.Framework
 {
     public class RelayCommand : ICommand
     {
@@ -21,7 +21,6 @@ namespace FModel.ViewModels.Commands
         }
 
         public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
-
         public void Execute(object? parameter) => _execute(parameter);
     }
 }
