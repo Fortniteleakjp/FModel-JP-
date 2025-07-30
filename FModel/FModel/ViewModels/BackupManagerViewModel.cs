@@ -16,6 +16,7 @@ using FModel.Views.Resources.Controls;
 using K4os.Compression.LZ4;
 using K4os.Compression.LZ4.Streams;
 using Ookii.Dialogs.Wpf;
+using System.Threading;
 using Serilog;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
