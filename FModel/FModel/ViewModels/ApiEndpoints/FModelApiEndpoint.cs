@@ -132,7 +132,7 @@ public class FModelApiEndpoint : AbstractApiProvider
                 DownloadURL = _infos.DownloadUrl,
                 Mandatory = new CustomMandatory
                 {
-                    CommitHash = _infos.Version.SubstringAfter('+')
+                    CommitHash = _infos.Version.SubstringAfter('-')
                 }
             };
         }
