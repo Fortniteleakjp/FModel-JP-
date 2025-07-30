@@ -17,17 +17,17 @@ public class RelativeDateTimeConverter : IValueConverter
             int time;
             string unit;
             if (timeSpan.TotalSeconds < 30)
-                return "Just now";
+                return "たった今";
 
             if (timeSpan.TotalMinutes < 1)
             {
                 time = timeSpan.Seconds;
-                unit = "second";
+                unit = "秒";
             }
             else if (timeSpan.TotalHours < 1)
             {
                 time = timeSpan.Minutes;
-                unit = "minute";
+                unit = "分";
             }
             else switch (timeSpan.TotalDays)
             {
@@ -53,7 +53,7 @@ public class RelativeDateTimeConverter : IValueConverter
                     break;
             }
 
-            return $"{time} {unit}{(time > 1 ? "s" : string.Empty)} ago";
+            return $"{time} {unit} 前";
         }
         return value;
     }

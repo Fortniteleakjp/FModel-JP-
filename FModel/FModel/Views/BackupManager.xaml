@@ -15,7 +15,7 @@
         <Style TargetType="adonisControls:AdonisWindow"
                BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
             <Setter Property="Title"
-                    Value="Backup Manager" />
+                    Value="バックアップファイルを管理" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -53,17 +53,20 @@
                    VerticalAlignment="Center"
                    FontSize="12">
             <Run>
-                Backups capture the state of the game's packages at a specific moment, enabling you to track and compare changes over time.
+                バックアップファイルは、現在のゲームのアーカイブ情報を保存するものです。
+                追加 / 更新 された アーカイブ を読み込む際に必要になります。
+                FModelは、選択されたバックアップファイルと現在のアーカイブを比較し、指定した条件に一致するファイルのみを表示します。
             </Run>
             <LineBreak /><LineBreak />
-            <Run FontWeight="Bold">Create Backup Lite:</Run>
+            <Run FontWeight="Bold">バックアップファイルを保存 (小)</Run>
             <Run>
-                A fast, lightweight backup storing only essential metadata. It supports filtering assets by new or modified status but does not allow loading older game build for deeper comparison.
+                ：従来のバックアップファイルです。
+                ファイルの追加・場所変更の確認に最適です
             </Run>
             <LineBreak /><LineBreak />
-            <Run FontWeight="Bold">Create Backup Heavy:</Run>
+            <Run FontWeight="Bold">バックアップファイルを保存 (大)</Run>
             <Run>
-                A full backup including all currently selected packages. This backup lets you load older game build alongside newer one, enabling detailed comparison of asset changes across versions. Although it requires more time and storage.
+                ：ファイル内部のデータも含んだ巨大なバックアップファイルです。保存には、ゲームと同じ容量が必要です。
             </Run>
         </TextBlock>
 
@@ -79,7 +82,7 @@
                     Grid.Column="0"
                     Cursor="Hand"
                     Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
-                    Content="Create Lite Backup"
+                    Content="バックアップファイルを保存 (小)"
                     Margin="4,0"
                     Padding="10,5"
                     IsEnabled="{Binding IsCreatingBackup, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
@@ -87,7 +90,7 @@
                     Grid.Column="1"
                     Cursor="Hand"
                     Style="{StaticResource OrangeAccentButton}"
-                    Content="Create Heavy Backup"
+                    Content="バックアップファイルを保存 (大)"
                     Margin="4,0"
                     Padding="10,5"
                     Background="#FFF9A000"
@@ -98,7 +101,7 @@
                    Grid.Column="0"
                    Grid.ColumnSpan="3"
                    Style="{StaticResource CustomSeparator}"
-                   Tag="PRE-CREATED BACKUP FILES" />
+                   Tag="クラウド上のバックアップファイル (小)" />
 
         <TextBlock Grid.Row="4"
                    Grid.Column="0"
@@ -132,7 +135,7 @@
         <Button Grid.Row="6"
                 Grid.Column="0"
                 Grid.ColumnSpan="3"
-                Content="Download"
+                Content="ダウンロード"
                 Click="OnDownloadClick">
             <Button.Style>
                 <Style TargetType="Button"

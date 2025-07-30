@@ -71,7 +71,7 @@
             </StackPanel>
         </Grid>
 
-        <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="History" />
+        <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="バージョン履歴" />
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <ItemsControl ItemsSource="{Binding CommitsView}">
                 <ItemsControl.GroupStyle>

@@ -140,7 +140,7 @@
 
                         <TextBlock Grid.Row="1"
                                    Grid.Column="0"
-                                   Text="UE Version"
+                                   Text="UEバージョン"
                                    VerticalAlignment="Center"
                                    Margin="0 0 0 5" />
                         <controls:FilterableComboBox Grid.Row="1"

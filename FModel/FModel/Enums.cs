@@ -77,9 +77,9 @@ public enum ELoadingMode
 
 public enum ECompressedAudio
 {
-    [Description("Play the decompressed data")]
+    [Description("解凍して再生")]
     PlayDecompressed,
-    [Description("Play the compressed data (might not always be a valid audio data)")]
+    [Description("圧縮されたまま再生 (再生できない場合があります)")]
     PlayCompressed
 }
 

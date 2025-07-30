@@ -110,7 +110,7 @@
                 <MenuItem Header="サウンドを自動で開く" IsCheckable="True" StaysOpenOnClick="True"
                             IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
             </MenuItem>
-            <MenuItem Header="Views">
+            <MenuItem Header="表示">
                 <MenuItem Header="3Dビューアー" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
@@ -139,8 +139,8 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="設定" Command="{Binding MenuCommand}" CommandParameter="Settings" />
             <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
+            <MenuItem Header="設定" Command="{Binding MenuCommand}" CommandParameter="Settings" />
             <MenuItem Header="ヘルプ" >
                 <MenuItem Header="寄付 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
                     <MenuItem.Icon>
