@@ -1,40 +1,34 @@
 <!-- Views/Resources/Controls/ProgressWindow.xaml -->
-<Window x:Class="FModel.Views.Resources.Controls.ProgressWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="バックアッファイル大を作成中" Height="240" Width="450"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize" WindowStyle="None"
-        AllowsTransparency="True" Background="#CC1E1E1E" Topmost="True">
-    <Border Background="White" Padding="20" CornerRadius="10" BorderBrush="#DDD" BorderThickness="1">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <TextBlock Text="{Binding Message}"
-                        FontSize="16" FontWeight="Bold"
-                        Foreground="#222" Margin="0,0,0,15" />
-
-            <ProgressBar Grid.Row="1" Height="24"
-                        Minimum="0" Maximum="100"
-                        Value="{Binding Progress}"
+<controls:AdonisWindow x:Class="FModel.Views.Resources.Controls.ProgressWindow"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                    Title="{Binding Title}"
+                    ResizeMode="NoResize"
+                    Width="440" Height="200"
+                    WindowStartupLocation="CenterScreen">
+    <Border Padding="20" CornerRadius="8" Background="{DynamicResource ApplicationBackgroundBrush}">
+        <DockPanel>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                <TextBlock Text="{Binding Message}"
+                        FontSize="15"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource PrimaryTextBrush}"
                         Margin="0,0,0,10" />
-
-            <TextBlock Grid.Row="2" Text="{Binding ETA}"
+                <ProgressBar Height="24"
+                            Value="{Binding Progress}"
+                            Maximum="100"
+                            argin="0,0,0,10" />
+                <TextBlock Text="{Binding ETA}"
+                        FontSize="12"
+                        Foreground="{DynamicResource SecondaryTextBrush}"
                         HorizontalAlignment="Right"
-                        FontSize="12" Foreground="#666"
-                        Margin="0,0,0,10" />
-
-            <Button Grid.Row="3" Content="キャンセル"
-                    Width="100" Height="32"
-                    Background="#FF5555" Foreground="White"
-                    FontWeight="SemiBold"
-                    Command="{Binding CancelCommand}"
-                    HorizontalAlignment="Center" />
-        </Grid>
+                        Margin="0,0,0,15" />
+                <Button Content="キャンセル"
+                        Width="100" Height="30"
+                        HorizontalAlignment="Center"
+                        Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </DockPanel>
     </Border>
-</Window>
+</controls:AdonisWindow>

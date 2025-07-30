@@ -23,40 +23,33 @@ using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace FModel.ViewModels;
-
 public class BackupManagerViewModel : ViewModel
 {
     public const uint FBKP_MAGIC = 0x504B4246;
-
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private readonly string _gameName;
-
     private Backup _selectedBackup;
     public Backup SelectedBackup
     {
         get => _selectedBackup;
         set => SetProperty(ref _selectedBackup, value);
     }
-
     private bool _isCreatingBackup;
     public bool IsCreatingBackup
     {
         get => _isCreatingBackup;
         set => SetProperty(ref _isCreatingBackup, value);
     }
-
     public ObservableCollection<Backup> Backups { get; }
     public ICollectionView BackupsView { get; }
-
     public BackupManagerViewModel(string gameName)
     {
         _gameName = gameName;
         Backups = new ObservableCollection<Backup>();
         BackupsView = new ListCollectionView(Backups) { SortDescriptions = { new SortDescription("FileName", ListSortDirection.Ascending) } };
     }
-
     public async Task Initialize()
     {
         await _threadWorkerView.Begin(cancellationToken =>
@@ -64,7 +57,6 @@ public class BackupManagerViewModel : ViewModel
             var backups = _apiEndpointView.FModelApi.GetBackups(cancellationToken, _gameName);
             if (backups == null)
                 return;
-
             Application.Current.Dispatcher.Invoke(() =>
             {
                 foreach (var backup in backups)
@@ -73,7 +65,6 @@ public class BackupManagerViewModel : ViewModel
             });
         });
     }
-
     public async Task CreateBackup()
     {
         await _threadWorkerView.Begin(_ =>
@@ -82,14 +73,12 @@ public class BackupManagerViewModel : ViewModel
             var fileName = $"{_gameName}_{DateTime.Now:MM'_'dd'_'yyyy}.fbkp";
             var fullPath = Path.Combine(backupFolder, fileName);
             var func = new Func<GameFile, bool>(x => !x.IsUePackagePayload);
-
             using var fileStream = new FileStream(fullPath, FileMode.Create);
             using var compressedStream = LZ4Stream.Encode(fileStream, LZ4Level.L00_FAST);
             using var writer = new BinaryWriter(compressedStream);
             writer.Write(FBKP_MAGIC);
             writer.Write((byte)EBackupVersion.Latest);
             writer.Write(_applicationView.CUE4Parse.Provider.Files.Values.Count(func));
-
             foreach (var asset in _applicationView.CUE4Parse.Provider.Files.Values)
             {
                 if (!func(asset))
@@ -98,11 +87,9 @@ public class BackupManagerViewModel : ViewModel
                 writer.Write(asset.IsEncrypted);
                 writer.Write(asset.Path);
             }
-
             SaveCheck(fullPath, fileName, "created", "create");
         });
     }
-
     public async Task Download()
     {
         if (SelectedBackup == null)
@@ -114,7 +101,6 @@ public class BackupManagerViewModel : ViewModel
             SaveCheck(fullPath, SelectedBackup.FileName, "downloaded", "download");
         });
     }
-
     private void SaveCheck(string fullPath, string fileName, string type1, string type2)
     {
         if (new FileInfo(fullPath).Length > 0)
@@ -139,21 +125,16 @@ public class BackupManagerViewModel : ViewModel
             Description = @"バックアップファイル (大) の保存先フォルダを指定してください。",
             ShowNewFolderButton = true
         };
-
         if (dialog.ShowDialog() != true)
             return;
-
         var selectedFolder = dialog.SelectedPath;
         var defaultFolderName = _applicationView.CUE4Parse.Provider.GameDisplayName ?? _gameName;
         var sanitizedDefaultFolderName = StringExtensions.RemoveInvalidFileNameChars(defaultFolderName);
         var targetPath = Path.Combine(selectedFolder, sanitizedDefaultFolderName);
-
         var gameDirectory = UserSettings.Default.GameDirectory;
         var allFiles = Directory.EnumerateFiles(gameDirectory, "*", SearchOption.AllDirectories).ToList();
         long totalSize = allFiles.Sum(f => new FileInfo(f).Length);
-
         string sizeInfo = $"このバックアップファイルは、{StringExtensions.GetReadableSize(totalSize)}のディスク容量を使用します。\n";
-
         bool? dialogResult = false;
         Application.Current.Dispatcher.Invoke(() =>
         {
@@ -164,12 +145,9 @@ public class BackupManagerViewModel : ViewModel
                 targetPath = Path.Combine(selectedFolder, StringExtensions.RemoveInvalidFileNameChars(inputDialog.InputText));
             }
         });
-
         if (dialogResult != true)
             return;
-
         Directory.CreateDirectory(targetPath);
-
         var drive = new DriveInfo(Path.GetPathRoot(targetPath)!);
         if (drive.AvailableFreeSpace < totalSize)
         {
@@ -180,11 +158,9 @@ public class BackupManagerViewModel : ViewModel
                 "容量不足", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-
-        // --- 新しい進捗ウィンドウとVMのセットアップ
         var progressViewModel = new ProgressWindowViewModel
         {
-            Message = "バックアッファイル大を作成しています...",
+            Message = "バックアップファイル（大）を作成しています...",
             Progress = 0
         };
         var progressWindow = new ProgressWindow
@@ -192,26 +168,23 @@ public class BackupManagerViewModel : ViewModel
             DataContext = progressViewModel
         };
         progressWindow.Show();
-
         await Task.Run(() =>
         {
             var cancellationToken = progressViewModel.Token;
             var totalFiles = allFiles.Count;
             int completedFiles = 0;
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
+            var stopwatch = Stopwatch.StartNew();
             var options = new ParallelOptions
             {
                 MaxDegreeOfParallelism = Environment.ProcessorCount,
                 CancellationToken = cancellationToken
             };
-
             try
             {
+                var fileCount = 0;
                 Parallel.ForEach(allFiles, options, file =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-
                     try
                     {
                         var relative = Path.GetRelativePath(gameDirectory, file);
@@ -223,20 +196,21 @@ public class BackupManagerViewModel : ViewModel
                     {
                         Log.Error(ex, "Error copying file: {File}", file);
                     }
-
-                    var done = Interlocked.Increment(ref completedFiles);
-                    double percent = (double)done / totalFiles * 100;
-
-                    Application.Current.Dispatcher.Invoke(() =>
+                    int done = Interlocked.Increment(ref completedFiles);
+                    Interlocked.Increment(ref fileCount);
+                    if (done % 1 == 0 || done == totalFiles)
                     {
-                        progressViewModel.Progress = percent;
+                        var percent = (double)done / totalFiles * 100;
                         var elapsed = stopwatch.Elapsed;
                         var etaSeconds = (elapsed.TotalSeconds / done) * (totalFiles - done);
                         var eta = TimeSpan.FromSeconds(etaSeconds);
-                        progressViewModel.ETA = $"推定残り時間 : {eta:mm\\:ss}";
-                    });
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            progressViewModel.Progress = percent;
+                            progressViewModel.ETA = $"推定残り時間 : {eta:hh\\:mm\\:ss}";
+                        });
+                    }
                 });
-
                 FLogger.Append(ELog.Information, () =>
                 {
                     FLogger.Text("Heavy backup completed at ", Constants.WHITE);
@@ -261,13 +235,11 @@ public class BackupManagerViewModel : ViewModel
         });
     }
 }
-
     public enum EBackupVersion : byte
     {
         BeforeVersionWasAdded = 0,
         Initial,
         PerfectPath, // no more leading slash and ToLower
-
         LatestPlusOne,
         Latest = LatestPlusOne - 1
     }
