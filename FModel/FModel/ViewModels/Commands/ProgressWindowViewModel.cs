@@ -1,48 +1,46 @@
-// ProgressWindowViewModel.cs
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Input;
-using FModel.Framework;
 
-public class ProgressWindowViewModel : ViewModel
+namespace FModel.ViewModels
 {
-    private DateTime _startTime;
-    private double _progress;
-    private int _totalSteps;
-    private int _currentStep;
-    public string Message { get; set; } = "バックアップを作成中...";
-    public string ETA { get; private set; } = "残り時間を計測中...";
-    public double Progress
+    public class ProgressWindowViewModel : INotifyPropertyChanged
     {
-        get => _progress;
-        set
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private string _message = string.Empty;
+        public string Message
         {
-            SetProperty(ref _progress, value);
-            UpdateETA();
+            get => _message;
+            set => SetField(ref _message, value);
         }
-    }
-    public ICommand CancelCommand { get; }
-    private readonly CancellationTokenSource _cts = new();
-    public CancellationToken Token => _cts.Token;
-    public ProgressWindowViewModel(int totalSteps)
-    {
-        _totalSteps = totalSteps;
-        _startTime = DateTime.Now;
-        CancelCommand = new RelayCommand(() => _cts.Cancel());
-    }
-    public void StepForward()
-    {
-        _currentStep++;
-        Progress = (_currentStep / (double)_totalSteps) * 100;
-    }
-    private void UpdateETA()
-    {
-        if (_currentStep == 0) return;
-        var elapsed = DateTime.Now - _startTime;
-        var timePerStep = elapsed.TotalSeconds / _currentStep;
-        var remainingSteps = _totalSteps - _currentStep;
-        var remainingTime = TimeSpan.FromSeconds(timePerStep * remainingSteps);
-        ETA = $"残り時間: {remainingTime:hh\\:mm\\:ss}";
-        OnPropertyChanged(nameof(ETA));
+        private double _progress;
+        public double Progress
+        {
+            get => _progress;
+            set => SetField(ref _progress, value);
+        }
+        private string _eta = "推定残り時間 : 計測中...";
+        public string ETA
+        {
+            get => _eta;
+            set => SetField(ref _eta, value);
+        }
+        private readonly CancellationTokenSource _cts = new();
+        public CancellationToken Token => _cts.Token;
+        public ICommand CancelCommand { get; }
+        public ProgressWindowViewModel()
+        {
+            CancelCommand = new RelayCommand(_ => _cts.Cancel(), _ => !_cts.IsCancellationRequested);
+        }
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value))
+                return false;
+            field = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            return true;
+        }
     }
 }
