@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Input;
 
-namespace FModel.Commands
+namespace FModel.ViewModels.Commands
 {
     public class RelayCommand : ICommand
     {
