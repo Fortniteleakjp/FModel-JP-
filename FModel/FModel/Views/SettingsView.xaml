@@ -186,7 +186,7 @@
                                        TextAlignment="Center"
                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}">
                                 この機能を使用すると、現在のバージョンと選択したバージョンの比較ができます。<LineBreak />
-                                ここで、比較の対象を選択してください。(事前にバックアップファイルを作成している必要があります)
+                                ここで、比較の対象を選択してください。(事前にバックアップファイル(大)を作成している必要があります)
                             </TextBlock>
 
                             <TextBlock Grid.Row="2"
