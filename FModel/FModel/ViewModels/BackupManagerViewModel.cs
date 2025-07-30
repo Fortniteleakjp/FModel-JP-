@@ -184,7 +184,7 @@ public class BackupManagerViewModel : ViewModel
         // --- 新しい進捗ウィンドウとVMのセットアップ
         var progressViewModel = new ProgressWindowViewModel
         {
-            Message = "バックアップを作成しています...",
+            Message = "バックアッファイル大を作成しています...",
             Progress = 0
         };
         var progressWindow = new ProgressWindow
@@ -233,7 +233,7 @@ public class BackupManagerViewModel : ViewModel
                         var elapsed = stopwatch.Elapsed;
                         var etaSeconds = (elapsed.TotalSeconds / done) * (totalFiles - done);
                         var eta = TimeSpan.FromSeconds(etaSeconds);
-                        progressViewModel.ETA = $"残り時間 : {eta:mm\\:ss}";
+                        progressViewModel.ETA = $"推定残り時間 : {eta:mm\\:ss}";
                     });
                 });
 

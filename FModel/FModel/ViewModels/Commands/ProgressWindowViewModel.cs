@@ -1,4 +1,4 @@
-// ViewModels/Common/ProgressWindowViewModel.cs
+// ProgressWindowViewModel.cs
 using System;
 using System.Threading;
 using System.Windows.Input;
@@ -6,7 +6,7 @@ using FModel.Framework;
 
 public class ProgressWindowViewModel : ViewModel
 {
-    private string _message = "進行中...";
+    private string _message = "バックアップを作成中...";
     public string Message
     {
         get => _message;
@@ -29,13 +29,11 @@ public class ProgressWindowViewModel : ViewModel
 
     public ICommand CancelCommand { get; }
 
-    private readonly CancellationTokenSource _cts;
-
+    private readonly CancellationTokenSource _cts = new();
     public CancellationToken Token => _cts.Token;
 
     public ProgressWindowViewModel()
     {
-        _cts = new CancellationTokenSource();
         CancelCommand = new RelayCommand(() => _cts.Cancel());
     }
 }
