@@ -1,5 +1,7 @@
 using System;
 using System.Windows.Input;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 public class RelayCommand : ICommand
 {

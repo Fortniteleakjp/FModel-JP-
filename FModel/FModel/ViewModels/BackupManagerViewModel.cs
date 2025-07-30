@@ -17,6 +17,8 @@ using K4os.Compression.LZ4;
 using K4os.Compression.LZ4.Streams;
 using Ookii.Dialogs.Wpf;
 using System.Threading;
+using System.Diagnostics;
+using System.Collections.Generic;
 using Serilog;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
