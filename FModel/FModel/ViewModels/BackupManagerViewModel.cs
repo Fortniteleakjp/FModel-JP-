@@ -200,7 +200,8 @@ public class BackupManagerViewModel : ViewModel
                         Log.Error(ex, "Error copying file: {File}", file);
                     }
                     int done = Interlocked.Increment(ref completedFiles);
-                    if (done - lastReported >= 75 || done == totalFiles) //呼び出しを75ファイルに1回程度に制限してCPU使用率を削減
+                    if (done - lastReported >= 5 || done == totalFiles) //呼び出しを5ファイルに1回程度に制限してCPU使用率を削減
+                    //作成するファイルは75個も無いから計算されない＾＾
                     {
                         Interlocked.Exchange(ref lastReported, done);
                         var percent = (double)done / totalFiles * 100;
