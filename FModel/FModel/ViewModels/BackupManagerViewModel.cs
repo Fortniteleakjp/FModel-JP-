@@ -25,6 +25,7 @@ using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace FModel.ViewModels;
+
 public class BackupManagerViewModel : ViewModel
 {
     public const uint FBKP_MAGIC = 0x504B4246;
@@ -181,9 +182,9 @@ public class BackupManagerViewModel : ViewModel
                 MaxDegreeOfParallelism = Environment.ProcessorCount,
                 CancellationToken = cancellationToken
             };
+            int lastReported = 0;
             try
             {
-                var fileCount = 0;
                 Parallel.ForEach(allFiles, options, file =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -199,9 +200,9 @@ public class BackupManagerViewModel : ViewModel
                         Log.Error(ex, "Error copying file: {File}", file);
                     }
                     int done = Interlocked.Increment(ref completedFiles);
-                    Interlocked.Increment(ref fileCount);
-                    if (done % 1 == 0 || done == totalFiles)
+                    if (done - lastReported >= 75 || done == totalFiles) //呼び出しを75ファイルに1回程度に制限してCPU使用率を削減
                     {
+                        Interlocked.Exchange(ref lastReported, done);
                         var percent = (double)done / totalFiles * 100;
                         var elapsed = stopwatch.Elapsed;
                         var etaSeconds = (elapsed.TotalSeconds / done) * (totalFiles - done);
