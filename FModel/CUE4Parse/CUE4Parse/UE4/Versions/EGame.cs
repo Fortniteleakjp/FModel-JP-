@@ -92,7 +92,7 @@ public enum EGame : uint
         GAME_HYENAS = GAME_UE4_27 + 2,
         GAME_HogwartsLegacy = GAME_UE4_27 + 3,
         GAME_OutlastTrials = GAME_UE4_27 + 4,
-        GAME_Valorant = GAME_UE4_27 + 5,
+        GAME_Valorant_PRE_11_2 = GAME_UE4_27 + 5,
         GAME_Gollum = GAME_UE4_27 + 6,
         GAME_Grounded = GAME_UE4_27 + 7,
         GAME_DeltaForceHawkOps = GAME_UE4_27 + 8,
@@ -109,6 +109,7 @@ public enum EGame : uint
         GAME_AshEchoes = GAME_UE4_27 + 19,
         GAME_NeedForSpeedMobile = GAME_UE4_27 + 20,
         GAME_TonyHawkProSkater34 = GAME_UE4_27 + 21,
+        GAME_OnePieceAmbition = GAME_UE4_27 + 22,
     GAME_UE4_28 = GameUtils.GameUe4Base + (28 << 16),
 
     GAME_UE4_LATEST = GAME_UE4_28,
@@ -134,8 +135,8 @@ public enum EGame : uint
         GAME_DuneAwakening = GAME_UE5_2 + 6,
     GAME_UE5_3 = GameUtils.GameUe5Base + (3 << 16),
         GAME_MarvelRivals = GAME_UE5_3 + 1,
-        GAME_Placeholder = GAME_UE5_3 + 2, // Placeholder for a game that hasn't been added yet
-        GAME_NobodyWantsToDie = GAME_UE5_3 + 3, // no use
+        GAME_BlackStigma = GAME_UE5_3 + 2,
+        GAME_Valorant = GAME_UE5_3 + 3,
         GAME_MonsterJamShowdown = GAME_UE5_3 + 4,
         GAME_Rennsport = GAME_UE5_3 + 5,
         GAME_AshesOfCreation = GAME_UE5_3 + 6,
@@ -151,6 +152,7 @@ public enum EGame : uint
         GAME_TempestRising = GAME_UE5_4 + 8,
         GAME_MindsEye = GAME_UE5_4 + 9,
         GAME_DeadByDaylight = GAME_UE5_4 + 10,
+        GAME_Grounded2 = GAME_UE5_4 + 11,
     GAME_UE5_5 = GameUtils.GameUe5Base + (5 << 16),
         GAME_Brickadia = GAME_UE5_5 + 1,
         GAME_Splitgate2 = GAME_UE5_5 + 2,
@@ -159,6 +161,7 @@ public enum EGame : uint
         GAME_Wildgate = GAME_UE5_5 + 5,
         GAME_ARKSurvivalAscended = GAME_UE5_5 + 6,
         GAME_NevernessToEverness = GAME_UE5_5 + 7,
+        GAME_FateTrigger = GAME_UE5_5 + 8,
     GAME_UE5_6 = GameUtils.GameUe5Base + (6 << 16),
     GAME_UE5_7 = GameUtils.GameUe5Base + (7 << 16),
 
