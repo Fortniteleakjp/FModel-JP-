@@ -10,7 +10,7 @@ headers = {
     "Authorization": f"{secrets.PASSWORD}"
 }
 data = {
-    "changelogUrl": "https://github.com/Fortniteleakjp/FModel-JP-/releases/tag/qa",
+    "changelogUrl": "",
     "downloadUrl": f"https://github.com/Fortniteleakjp/FModel-JP-/releases/download/qa/{sha}.zip",
     "version": version
 }
