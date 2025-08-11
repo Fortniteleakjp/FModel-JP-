@@ -267,7 +267,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No audio to play at the moment" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="再生できる音声ファイルがありません" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
