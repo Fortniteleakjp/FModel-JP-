@@ -5,9 +5,6 @@ import secrets
 sha = sys.argv[1]
 version = f"{sys.argv[2]}-{sha}"
 
-print (f"sha: {sha}")
-print (f"version: {version}")
-
 url = "https://fljpapi2-sjnq.onrender.com/qa/upload"
 headers = {
     "Authorization": f"{secrets.PASSWORD}"
