@@ -5,6 +5,8 @@
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                             xmlns:vm="clr-namespace:FModel.ViewModels"
+                             xmlns:sys="clr-namespace:System;assembly=mscorlib"
                              WindowStartupLocation="CenterScreen" ResizeMode="CanResize" ShowInTaskbar="True"
                              IconVisibility="Collapsed" KeyDown="OnWindowKeyDown" StateChanged="OnStateChanged"
                              Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
@@ -19,6 +21,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <ObjectDataProvider x:Key="SortModeEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="vm:ESortMode"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid Margin="5 5">
@@ -72,6 +79,28 @@
                                 </Canvas>
                             </Viewbox>
                         </ToggleButton>
+                        <ComboBox ItemsSource="{Binding Source={StaticResource SortModeEnum}}"
+                                  SelectedItem="{Binding CUE4Parse.SearchVm.SortMode}"
+                                  VerticalAlignment="Center" Margin="5,0,0,0">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding}" Value="Asc">
+                                                        <Setter Property="Text" Value="アルファベット順"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding}" Value="Desc">
+                                                        <Setter Property="Text" Value="Zから順"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                         <Button ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
