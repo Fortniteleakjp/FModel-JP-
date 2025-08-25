@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel; // ObservableCollection を使用するために追加
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -523,6 +524,13 @@ namespace FModel.Settings
         {
             get => _saveHdrTexturesAsHdr;
             set => SetProperty(ref _saveHdrTexturesAsHdr, value);
+        }
+
+        private ObservableCollection<string> _recentFiles = new();
+        public ObservableCollection<string> RecentFiles
+        {
+            get => _recentFiles;
+            set => SetProperty(ref _recentFiles, value);
         }
     }
 }

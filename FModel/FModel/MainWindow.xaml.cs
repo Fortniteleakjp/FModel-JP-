@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic; // List<> を使用するために追加
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
+using FModel.Framework; // RelayCommand を使用するためのやつ
+using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
 
 namespace FModel;
 
@@ -26,16 +29,31 @@ public partial class MainWindow
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
+    public ICommand OpenRecentFileCommand { get; }
+    public ICommand ClearRecentFilesCommand { get; }
+
     public MainWindow()
     {
         CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection { new KeyGesture(Key.F12) }), OnMappingsReload));
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (_, _) => OnOpenAvalonFinder()));
+
+        OpenRecentFileCommand = new RelayCommand(OnOpenRecentFile);
+        ClearRecentFilesCommand = new RelayCommand(OnClearRecentFiles);
 
         DataContext = _applicationView;
         InitializeComponent();
 
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
+
+        // 閲覧履歴メニューの初期化と更新
+        UpdateRecentFilesMenu();
+        UserSettings.Default.RecentFiles.CollectionChanged += RecentFiles_CollectionChanged;
+    }
+
+    private void RecentFiles_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateRecentFilesMenu();
     }
 
     private void OnClosing(object sender, CancelEventArgs e)
@@ -161,6 +179,10 @@ public partial class MainWindow
 
         var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
+        foreach (var item in selectedItems)
+        {
+            AddFileToRecent(item.Path);
+        }
     }
 
     private async void OnFolderExtractClick(object sender, RoutedEventArgs e)
@@ -282,7 +304,100 @@ public partial class MainWindow
             case Key.Enter:
                 var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
                 await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
+                foreach (var item in selectedItems)
+                {
+                    AddFileToRecent(item.Path);
+                }
                 break;
         }
+    }
+
+    private async void OnOpenRecentFile(object? parameter)
+    {
+        if (parameter is not string filePath || string.IsNullOrEmpty(filePath)) return;
+
+        if (_applicationView.CUE4Parse.Provider.TryGetGameFile(filePath, out var gameFile))
+        {
+            var selectedItems = new List<GameFile> { gameFile };
+            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
+            FLogger.Append(ELog.Information, () => FLogger.Text($"Opening recent file: {filePath}", Constants.WHITE, true));
+        }
+        else
+        {
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Failed to open recent file: {filePath}. File not found in provider.", Constants.RED, true));
+        }
+
+        // Add to recent files (and ensure no duplicates, limit size)
+        AddFileToRecent(filePath);
+    }
+
+    private void OnClearRecentFiles(object? parameter)
+    {
+        FLogger.Append(ELog.Information, () => FLogger.Text("Attempting to clear recent files.", Constants.WHITE, true));
+        UserSettings.Default.RecentFiles.Clear();
+        UserSettings.Save();
+        FLogger.Append(ELog.Information, () => FLogger.Text("Recent files cleared and settings saved.", Constants.WHITE, true));
+    }
+
+    private void UpdateRecentFilesMenu()
+    {
+        // 「履歴をクリア」メニュー項目を一時的に保存
+        var clearMenuItem = RecentFilesMenuItem.Items.OfType<MenuItem>().FirstOrDefault(item => item.Command == ClearRecentFilesCommand);
+        
+        // 既存の履歴アイテムをクリア
+        RecentFilesMenuItem.Items.Clear();
+
+        foreach (var filePath in UserSettings.Default.RecentFiles)
+        {
+            var menuItem = new MenuItem
+            {
+                Header = filePath,
+                Command = OpenRecentFileCommand,
+                CommandParameter = filePath
+            };
+            RecentFilesMenuItem.Items.Add(menuItem);
+        }
+
+        // 「履歴をクリア」メニュー項目を最後に追加
+        if (clearMenuItem != null)
+        {
+            if (RecentFilesMenuItem.Items.Count > 0)
+            {
+                RecentFilesMenuItem.Items.Add(new Separator());
+            }
+            RecentFilesMenuItem.Items.Add(clearMenuItem);
+        }
+        else // もしクリアメニュー項目が見つからなかった場合、新しく作成して追加
+        {
+            if (RecentFilesMenuItem.Items.Count > 0)
+            {
+                RecentFilesMenuItem.Items.Add(new Separator());
+            }
+            RecentFilesMenuItem.Items.Add(new MenuItem
+            {
+                Header = "履歴をクリア",
+                Command = ClearRecentFilesCommand
+            });
+        }
+    }
+
+    private void AddFileToRecent(string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath)) return;
+
+        // Remove if already exists to move it to the top
+        UserSettings.Default.RecentFiles.Remove(filePath);
+
+        // Add to the top
+        UserSettings.Default.RecentFiles.Insert(0, filePath);
+
+        // Limit the number of recent files (e.g., to 10)
+        const int maxRecentFiles = 10;
+        while (UserSettings.Default.RecentFiles.Count > maxRecentFiles)
+        {
+            UserSettings.Default.RecentFiles.RemoveAt(UserSettings.Default.RecentFiles.Count - 1);
+        }
+
+        UserSettings.Save();
     }
 }
