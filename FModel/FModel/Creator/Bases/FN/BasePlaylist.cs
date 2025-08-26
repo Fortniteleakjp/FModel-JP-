@@ -34,7 +34,7 @@ public class BasePlaylist : UCreator
             return;
 
         var playlist = _apiEndpointView.FortniteApi.GetPlaylist(playlistName.Text);
-        if (!playlist.IsSuccess || playlist.Data.Images is not { HasShowcase: true } ||
+        if (!playlist.IsSuccess || playlist.Data == null || playlist.Data.Images == null || !playlist.Data.Images.HasShowcase ||
             !_apiEndpointView.FortniteApi.TryGetBytes(playlist.Data.Images.Showcase, out var image))
             return;
 
