@@ -195,7 +195,9 @@ public class BaseIcon : UCreator
     {
         if (!Utils.TryLoadObject("FortniteGame/Content/Balance/RarityData.RarityData", out UObject export)) return;
 
-        if (export.GetByIndex<FStructFallback>((int) r) is { } data &&
+        var rarityIndex = (int)r;
+        if (rarityIndex >= 0 && rarityIndex < export.Properties.Count &&
+            export.GetByIndex<FStructFallback>(rarityIndex) is { } data &&
             data.TryGetValue(out FLinearColor color1, "Color1") &&
             data.TryGetValue(out FLinearColor color2, "Color2") &&
             data.TryGetValue(out FLinearColor color3, "Color3"))
