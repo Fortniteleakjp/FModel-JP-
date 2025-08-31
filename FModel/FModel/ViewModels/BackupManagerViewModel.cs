@@ -208,7 +208,7 @@ public class BackupManagerViewModel : ViewModel
                         Log.Error(ex, "Error copying file: {File}", file);
                     }
                     int done = Interlocked.Increment(ref completedFiles);
-                    if (done - lastReported >= 5 || done == totalFiles)
+                    if (done - lastReported >= 2 || done == totalFiles)
                     {
                         Interlocked.Exchange(ref lastReported, done);
                         var percent = (double)done / totalFiles * 100;
