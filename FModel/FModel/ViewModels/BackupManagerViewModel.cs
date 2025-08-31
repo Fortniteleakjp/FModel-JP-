@@ -171,7 +171,7 @@ public class BackupManagerViewModel : ViewModel
             DataContext = progressViewModel
         };
         progressWindow.Show();
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
             var cancellationToken = progressViewModel.Token;
             var totalFiles = allFiles.Count;
@@ -185,30 +185,37 @@ public class BackupManagerViewModel : ViewModel
             int lastReported = 0;
             try
             {
-                Parallel.ForEach(allFiles, options, file =>
+                await Parallel.ForEachAsync(allFiles, options, async (file, innerCancellationToken) =>
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    innerCancellationToken.ThrowIfCancellationRequested();
                     try
                     {
                         var relative = Path.GetRelativePath(gameDirectory, file);
                         var dest = Path.Combine(targetPath, relative);
                         Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
-                        File.Copy(file, dest, true);
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            FLogger.Append(ELog.Information, () => FLogger.Text($"コピー中: {Path.GetFileName(file)}", Constants.WHITE, true));
+                        });
+                        await using (var sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.Asynchronous | FileOptions.SequentialScan))
+                        await using (var destinationStream = new FileStream(dest, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.Asynchronous | FileOptions.SequentialScan))
+                        {
+                            await sourceStream.CopyToAsync(destinationStream, innerCancellationToken);
+                        }
                     }
                     catch (Exception ex)
                     {
                         Log.Error(ex, "Error copying file: {File}", file);
                     }
                     int done = Interlocked.Increment(ref completedFiles);
-                    if (done - lastReported >= 5 || done == totalFiles) //呼び出しを5ファイルに1回程度に制限してCPU使用率を削減
-                    //作成するファイルは75個も無いから計算されない＾＾
+                    if (done - lastReported >= 5 || done == totalFiles)
                     {
                         Interlocked.Exchange(ref lastReported, done);
                         var percent = (double)done / totalFiles * 100;
                         var elapsed = stopwatch.Elapsed;
                         var etaSeconds = (elapsed.TotalSeconds / done) * (totalFiles - done);
                         var eta = TimeSpan.FromSeconds(etaSeconds);
-                        Application.Current.Dispatcher.Invoke(() =>
+                        await Application.Current.Dispatcher.InvokeAsync(() =>
                         {
                             progressViewModel.Progress = percent;
                             progressViewModel.ETA = $"推定残り時間 : {eta:hh\\:mm\\:ss}";
@@ -217,7 +224,7 @@ public class BackupManagerViewModel : ViewModel
                 });
                 FLogger.Append(ELog.Information, () =>
                 {
-                    FLogger.Text("Heavy backup completed at ", Constants.WHITE);
+                    FLogger.Text("バックアップファイル(大)の生成が完了しました ", Constants.WHITE);
                     FLogger.Link(targetPath, targetPath, true);
                 });
             }
@@ -231,7 +238,7 @@ public class BackupManagerViewModel : ViewModel
             finally
             {
                 stopwatch.Stop();
-                Application.Current.Dispatcher.Invoke(() =>
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
                     progressWindow.Close();
                 });
