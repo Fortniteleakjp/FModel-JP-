@@ -20,7 +20,7 @@ public class FStaticMeshRenderData
     public FNaniteResources? NaniteResources;
     public FBoxSphereBounds? Bounds;
     public bool bLODsShareStaticLighting;
-    public float[]? ScreenSize;
+    public float[] ScreenSize = [];
 
     public FStaticMeshRenderData() { }
 
@@ -116,6 +116,22 @@ public class FStaticMeshRenderData
                             _ = new FDistanceFieldVolumeData(Ar);
                         }
                     }
+                }
+            }
+        }
+
+        if (Ar.Game == EGame.GAME_ArenaBreakoutInifinite)
+        {
+            var flags = new FStripDataFlags(Ar);
+            if (Ar.ReadBoolean())
+            {
+                _ = new FBox(Ar);
+                Ar.Position += 4+3*56;
+                Ar.SkipFixedArray(1); // SDF array??
+                for (var i = 0; i < LODs.Length; i++)
+                {
+                    var idk2 = Ar.Read<int>(); // some flags
+                    if (idk2 != 0) _ = new FByteBulkData(Ar);
                 }
             }
         }
