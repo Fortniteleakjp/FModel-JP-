@@ -101,10 +101,42 @@ public partial class CUE4ParseViewModel
                             };
                             timer.Start();
 
+                            var monitorCts = new CancellationTokenSource();
+                            var cacheDirInfo = new DirectoryInfo(cacheDir);
+                            long initialSize = cacheDirInfo.Exists ? cacheDirInfo.GetFiles("*", SearchOption.AllDirectories).Sum(f => f.Length) : 0;
+                            var monitorTask = Task.Run(async () =>
+                            {
+                                while (!monitorCts.Token.IsCancellationRequested)
+                                {
+                                    try
+                                    {
+                                        long currentSize = new DirectoryInfo(cacheDir).GetFiles("*", SearchOption.AllDirectories).Sum(f => f.Length);
+                                        long downloaded = currentSize - initialSize;
+                                        Application.Current.Dispatcher.Invoke(() =>
+                                        {
+                                            loadingVm.DownloadSize = StringExtensions.GetReadableSize(downloaded);
+
+                                            var elapsedSeconds = stopwatch.Elapsed.TotalSeconds;
+                                            if (elapsedSeconds < 1 || downloaded == 0)
+                                            {
+                                                loadingVm.EstimatedTime = "計算中...";
+                                                return;
+                                            }
+
+                                            var bytesPerSecond = downloaded / elapsedSeconds;
+                                            loadingVm.EstimatedTime = $"{StringExtensions.GetReadableSize((long)bytesPerSecond)}/s";
+                                        });
+                                    }
+                                    catch (Exception) { /* ignored */ }
+                                    await Task.Delay(250, monitorCts.Token);
+                                }
+                            }, monitorCts.Token);
+
                             FBuildPatchAppManifest manifest;
                             try
                             {
                                 loadingVm.StatusText = "マニフェストをダウンロード中...";
+                                loadingVm.DownloadSize = "0 B";
                                 (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
                                     cancellationToken: cancellationToken,
                                     elementManifestPredicate: static x => x.Uri.Host == "download.epicgames.com"
@@ -113,7 +145,7 @@ public partial class CUE4ParseViewModel
                                 loadingVm.StatusText = "マニフェストを解析中...";
                                 var totalSize = manifest.Files.Sum(x => (long)x.FileSize);
                                 loadingVm.DownloadSize = StringExtensions.GetReadableSize(totalSize);
-                                loadingVm.EstimatedTime = "不明";
+                                loadingVm.EstimatedTime = "完了";
                                 loadingVm.ProgressText = "";
                                 loadingVm.IsIndeterminate = true;
 
@@ -140,6 +172,8 @@ public partial class CUE4ParseViewModel
                             }
                             finally
                             {
+                                monitorCts.Cancel();
+                                monitorCts.Dispose();
                                 stopwatch.Stop();
                                 timer.Stop();
                                 Application.Current.Dispatcher.Invoke(() => loadingWindow?.Close());
