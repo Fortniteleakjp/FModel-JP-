@@ -42,7 +42,7 @@ public partial class DirectorySelector
 
     private void OnBrowseManualDirectories(object sender, RoutedEventArgs e)
     {
-        var folderBrowser = new VistaFolderBrowserDialog {ShowNewFolderButton = false};
+        var folderBrowser = new VistaFolderBrowserDialog { ShowNewFolderButton = false };
         if (folderBrowser.ShowDialog() == true)
         {
             HelloGameMyNameIsDirectory.Text = folderBrowser.SelectedPath;

@@ -2174,6 +2174,12 @@ public class FStaticMeshSectionConverter : JsonConverter<FStaticMeshSection>
         writer.WritePropertyName("bVisibleInRayTracing");
         writer.WriteValue(value.bVisibleInRayTracing);
 
+        if (value.CustomData.HasValue)
+        {
+            writer.WritePropertyName("CustomData");
+            writer.WriteValue(value.CustomData.Value);
+        }
+
         writer.WriteEndObject();
     }
 
@@ -2594,6 +2600,9 @@ public class FTextLocalizationMetaDataResourceConverter : JsonConverter<FTextLoc
 
         writer.WritePropertyName("CompiledCultures");
         serializer.Serialize(writer, value.CompiledCultures);
+
+        writer.WritePropertyName("bIsUGC");
+        writer.WriteValue(value.bIsUGC);
 
         writer.WriteEndObject();
     }

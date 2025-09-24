@@ -124,7 +124,7 @@ public partial class CUE4ParseViewModel
                                             }
 
                                             var bytesPerSecond = downloaded / elapsedSeconds;
-                                            loadingVm.EstimatedTime = $"{StringExtensions.GetReadableSize((long)bytesPerSecond)}/s";
+                                            loadingVm.EstimatedTime = $"{StringExtensions.GetReadableSize((long) bytesPerSecond)}/s";
                                         });
                                     }
                                     catch (Exception) { /* ignored */ }
@@ -143,7 +143,7 @@ public partial class CUE4ParseViewModel
                                 ).GetAwaiter().GetResult();
 
                                 loadingVm.StatusText = "マニフェストを解析中...";
-                                var totalSize = manifest.Files.Sum(x => (long)x.FileSize);
+                                var totalSize = manifest.Files.Sum(x => (long) x.FileSize);
                                 loadingVm.DownloadSize = StringExtensions.GetReadableSize(totalSize);
                                 loadingVm.EstimatedTime = "完了";
                                 loadingVm.ProgressText = "";
@@ -202,16 +202,16 @@ public partial class CUE4ParseViewModel
                 }
                 break;
             case DefaultFileProvider:
-            {
-                // ローカルインストール版のIoStoreOnDemand設定を読み込む
-                var ioStoreOnDemandPath = Path.Combine(dir.GameDirectory, "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
-                if (File.Exists(ioStoreOnDemandPath))
                 {
-                    using var s = new StreamReader(ioStoreOnDemandPath);
-                    IoStoreOnDemand.Read(s);
+                    // ローカルインストール版のIoStoreOnDemand設定を読み込む
+                    var ioStoreOnDemandPath = Path.Combine(dir.GameDirectory, "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
+                    if (File.Exists(ioStoreOnDemandPath))
+                    {
+                        using var s = new StreamReader(ioStoreOnDemandPath);
+                        IoStoreOnDemand.Read(s);
+                    }
+                    break;
                 }
-                break;
-            }
         }
         provider.Initialize();
     }
@@ -261,7 +261,8 @@ public partial class CUE4ParseViewModel
         Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
         Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
 
-        if (UserSettings.Default.DiffDir == null || DiffProvider == null) return;
+        if (UserSettings.Default.DiffDir == null || DiffProvider == null)
+            return;
 
         DiffProvider.ReadScriptData = UserSettings.Default.ReadScriptData;
         DiffProvider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;

@@ -1,3 +1,5 @@
+using CUE4Parse.GameTypes._2XKO.Assets.Exports;
+using CUE4Parse.GameTypes.Borderlands4.Assets.Objects;
 using CUE4Parse.GameTypes.Brickadia.Objects;
 using CUE4Parse.GameTypes.DuneAwakening.Assets.Objects;
 using CUE4Parse.GameTypes.FN.Objects;
@@ -19,6 +21,7 @@ using CUE4Parse.UE4.Assets.Exports.Engine.Font;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.UE4.Assets.Objects.Unversioned;
 using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Objects.ChaosCaching;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -57,6 +60,7 @@ public class FScriptStruct
             "Box" => type == ReadType.ZERO ? new FBox() : new FBox(Ar),
             "Box2D" => type == ReadType.ZERO ? new FBox2D() : new FBox2D(Ar),
             "Box2f" => type == ReadType.ZERO ? new TBox2<float>() : new TBox2<float>(Ar),
+            "Box3f" => type == ReadType.ZERO ? new TBox3<float>() : new TBox3<float>(Ar),
             "Color" => type == ReadType.ZERO ? new FColor() : Ar.Read<FColor>(),
             "ColorMaterialInput" when FFortniteMainBranchObjectVersion.Get(Ar) < FFortniteMainBranchObjectVersion.Type.MaterialInputUsesLinearColor
                 => type == ReadType.ZERO ? new FMaterialInput<FColor>() : new FMaterialInput<FColor>(Ar),
@@ -174,6 +178,7 @@ public class FScriptStruct
             "PCGPoint" => FFortniteReleaseBranchCustomObjectVersion.Get(Ar) < FFortniteReleaseBranchCustomObjectVersion.Type.PCGPointStructuredSerializer ? new FStructFallback(Ar, "PCGPoint") : new FPCGPoint(Ar),
             "CacheEventTrack" => type == ReadType.ZERO ? new FStructFallback() : new FCacheEventTrack(Ar),
             "StateTreeInstanceData" => type == ReadType.ZERO ? new FStructFallback() : new FStateTreeInstanceData(Ar),
+            "DataCacheDuplicatedObjectData" => new FDataCacheDuplicatedObjectData(Ar),
             
             // FortniteGame
             "ConnectivityCube" => new FConnectivityCube(Ar),
@@ -248,12 +253,6 @@ public class FScriptStruct
             // State of Decay 2
             "ItemsBitArray" when Ar.Game == EGame.GAME_StateOfDecay2 => type == ReadType.ZERO ? new FItemsBitArray() : new FItemsBitArray(Ar),
 
-            // Dune Awakening
-            "BodyInstance" when Ar.Game == EGame.GAME_DuneAwakening => new FBodyInstance(Ar),
-            "GenericTeamId" when Ar.Game == EGame.GAME_DuneAwakening => new FGenericTeamId(Ar),
-            "UniqueID" when Ar.Game == EGame.GAME_DuneAwakening => new FUniqueID(Ar),
-            "BotAutoBorderCrossingConfig" when Ar.Game == EGame.GAME_DuneAwakening => new FBotAutoBorderCrossingConfig(Ar),
-
             // MindsEye
             "UgcData" when Ar.Game == EGame.GAME_MindsEye => new FUgcData(Ar),
             "JsonObjectWrapper" when Ar.Game == EGame.GAME_MindsEye => new FJsonObjectWrapper(Ar),
@@ -287,10 +286,20 @@ public class FScriptStruct
             "GameplayEffectApplicationDataHandle" => new FGameplayEffectApplicationDataHandle(Ar),
             "PMTimelineRelevancy" => new FPMTimelineRelevancy(Ar),
 
-            // Titan Quest 2
-            _ when Ar.Game is EGame.GAME_TitanQuest2 => TQ2Structs.ParseTQ2Struct(Ar, structName, struc, type),
+            // Lost Soul Aside
+            "LSAAudioSectionkey" => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
 
+            // 2XKO
+            "FixedPoint" => new FFixedPoint(Ar),
+
+            _ => Ar.Game switch
+            {
+                EGame.GAME_TitanQuest2 => TQ2Structs.ParseTQ2Struct(Ar, structName, struc, type),
+                EGame.GAME_DuneAwakening => DAStructs.ParseDAStruct(Ar, structName, struc, type),
+                EGame.GAME_Borderlands4 => Borderlands4Structs.ParseBl4Struct(Ar, structName, struc, type),
+            _ when type == ReadType.RAW => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
             _ => type == ReadType.ZERO ? new FStructFallback() : struc != null ? new FStructFallback(Ar, struc) : new FStructFallback(Ar, structName)
+            },
         };
     }
 

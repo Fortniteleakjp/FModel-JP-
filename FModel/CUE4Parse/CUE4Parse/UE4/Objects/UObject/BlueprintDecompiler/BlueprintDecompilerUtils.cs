@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using CUE4Parse.GameTypes._2XKO.Kismet;
 using CUE4Parse.MappingsProvider.Usmap;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Kismet;
@@ -287,8 +288,7 @@ public static class BlueprintDecompilerUtils
                     customStringBuilder.OpenBlock();
                     foreach (var property in scriptArray.Properties)
                     {
-                        if (!GetPropertyTagVariable(
-                                new FPropertyTag(new FName(scriptArray.InnerType), property, scriptArray.InnerTagData),
+                        if (!GetPropertyTagVariable(new FPropertyTag(new FName(scriptArray.InnerType), property, scriptArray.InnerTagData),
                                 out type, out var innerValue))
                         {
                             Log.Warning("Failed to get ArrayElement of type {type}", scriptArray.InnerType);
@@ -489,8 +489,7 @@ public static class BlueprintDecompilerUtils
                             "ObjectProperty" or "ClassProperty" => "UObject*",
                             "StructProperty" => $"F{tagType.StructType}",
                             "InterfaceProperty" => $"F{tagType.StructType}", // check
-                            _ => throw new NotSupportedException(
-                                $"PropertyType {tagType?.Type} is currently not supported")
+                            _ => throw new NotSupportedException($"PropertyType {tagType?.Type} is currently not supported")
                         };
                     }
 
@@ -1333,6 +1332,10 @@ public static class BlueprintDecompilerUtils
             case EX_PropertyConst propertyConst:
             {
                 return propertyConst.Property.ToString();
+            }
+            case EX_FixedPointConst fp:
+            {
+                return fp.Value.ToString();
             }
 
             // good enough?

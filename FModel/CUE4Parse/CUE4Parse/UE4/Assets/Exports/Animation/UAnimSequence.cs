@@ -50,7 +50,7 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
         public override void Deserialize(FAssetArchive Ar, long validPos)
         {
             base.Deserialize(Ar, validPos);
-
+            if (Ar.Game == EGame.GAME_WorldofJadeDynasty) Ar.Position += 28;
             NumFrames = GetOrDefault<int>(nameof(NumFrames));
             BoneCompressionSettings = GetOrDefault<ResolvedObject>(nameof(BoneCompressionSettings));
             CurveCompressionSettings = GetOrDefault<ResolvedObject>(nameof(CurveCompressionSettings));
@@ -342,6 +342,8 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
         {
             var numBytes = Ar.Read<int>();
             var bUseBulkDataForLoad = Ar.ReadBoolean();
+            if (Ar.Game == EGame.GAME_WorldofJadeDynasty)
+                numBytes = (numBytes << 24) | (numBytes & 0xFFFF00) | (byte)(numBytes >> 24);
 
             // In UE4.23 CompressedByteStream field exists in FUECompressedAnimData (as TArrayView) and in
             // FCompressedAnimSequence (as byte array). Serialization is done in FCompressedAnimSequence,
@@ -367,7 +369,7 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
             if (AdditiveAnimType == EAdditiveAnimationType.AAT_None) return false;
             return RefPoseType switch
             {
-                EAdditiveBasePoseType.ABPT_RefPose => RefPoseSeq.Name.Text != Name,
+                EAdditiveBasePoseType.ABPT_RefPose => RefPoseSeq != null && RefPoseSeq.Name.Text != Name,
                 EAdditiveBasePoseType.ABPT_AnimScaled => RefPoseSeq != null && RefPoseSeq.Name.Text != Name,
                 EAdditiveBasePoseType.ABPT_AnimFrame => RefPoseSeq != null && RefPoseSeq.Name.Text != Name && RefFrameIndex >= 0,
                 EAdditiveBasePoseType.ABPT_LocalAnimFrame => RefFrameIndex >= 0,
