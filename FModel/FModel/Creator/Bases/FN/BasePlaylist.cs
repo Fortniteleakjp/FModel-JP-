@@ -28,17 +28,24 @@ public class BasePlaylist : UCreator
         if (Object.TryGetValue(out FText description, "UIDescription", "Description"))
             Description = description.Text;
         if (Object.TryGetValue(out UTexture2D missionIcon, "MissionIcon"))
-            _missionIcon = Utils.GetBitmap(missionIcon).Resize(25);
+        {
+            var missionBitmap = Utils.GetBitmap(missionIcon);
+            if (missionBitmap != null)
+                _missionIcon = missionBitmap.Resize(25);
+        }
 
         if (!Object.TryGetValue(out FName playlistName, "PlaylistName") || string.IsNullOrWhiteSpace(playlistName.Text))
             return;
 
         var playlist = _apiEndpointView.FortniteApi.GetPlaylist(playlistName.Text);
-        if (!playlist.IsSuccess || playlist.Data == null || playlist.Data.Images == null || !playlist.Data.Images.HasShowcase ||
+        if (playlist == null || !playlist.IsSuccess || playlist.Data == null || playlist.Data.Images == null || !playlist.Data.Images.HasShowcase ||
             !_apiEndpointView.FortniteApi.TryGetBytes(playlist.Data.Images.Showcase, out var image))
             return;
 
-        Preview = Utils.GetBitmap(image).ResizeWithRatio(1024, 512);
+        var previewBitmap = Utils.GetBitmap(image);
+        if (previewBitmap == null) return;
+
+        Preview = previewBitmap.ResizeWithRatio(1024, 512);
         Width = Preview.Width;
         Height = Preview.Height;
     }
