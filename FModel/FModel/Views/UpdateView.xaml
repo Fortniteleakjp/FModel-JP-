@@ -31,7 +31,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="10"
-            Text="以下のリリースがダウンロード可能です。リリースは上から順に、日付順に並んでいます。&#x0a;手動でアップデートを確認したい場合は、メニューの [ヘルプ] > [バージョン管理] からこのウィンドウを開くことができます"/>
+            Text="以下のバージョンがダウンロード可能です。バージョンは上から順に、日付順に並んでいます。&#x0a;手動でアップデートを確認したい場合は、メニューの [ヘルプ] > [バージョン管理] からこのウィンドウを開くことができます。注意：ウイルス対策ソフトをダウンロードしている方はアップデートする際はOFFにしてください"/>
 
         <Grid Grid.Row="1" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
