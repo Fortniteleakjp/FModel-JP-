@@ -1,24 +1,32 @@
-﻿<UserControl x:Class="FModel.Views.Resources.Controls.CommitControl"
+<UserControl x:Class="FModel.Views.Resources.Controls.CommitControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             xmlns:controls="clr-namespace:FModel.Views.Resources.Controls">
+             xmlns:adonis="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:local="clr-namespace:FModel.Views.Resources.Controls">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Resources.xaml"/>
+                <ResourceDictionary Source="/FModel;component/Views/Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <converters:CommitMessageConverter x:Key="CommitMessageConverter" />
+            <converters:RelativeDateTimeConverter x:Key="RelativeDateTimeConverter" />
+            <converters:InvertBooleanConverter x:Key="InvertBooleanConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
+
+    <!-- Borderは1つの子要素しか持てないので、Gridを1つにまとめる -->
     <Border BorderThickness="1" CornerRadius="0.5"
-            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}">
+            BorderBrush="{DynamicResource {x:Static adonis:Brushes.Layer4BackgroundBrush}}">
+
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
+            <!-- 左カラム -->
             <Grid Grid.Column="0" Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -27,12 +35,22 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Title}" FontWeight="Bold" TextWrapping="Wrap" />
-                <TextBlock Grid.Row="1" Text="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Description}" TextWrapping="Wrap">
+                <!-- コミットタイトル -->
+                <TextBlock Grid.Row="0"
+                           Text="{Binding Commit.Message, Converter={StaticResource CommitMessageConverter}, ConverterParameter=Title}"
+                           FontWeight="Bold"
+                           TextWrapping="Wrap" />
+
+                <!-- 説明部 -->
+                <TextBlock Grid.Row="1"
+                           Text="{Binding Commit.Message, Converter={StaticResource CommitMessageConverter}, ConverterParameter=Description}"
+                           FontSize="12"
+                           Foreground="{DynamicResource {x:Static adonis:Brushes.ForegroundBrush}}"
+                           TextWrapping="Wrap">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Description}" Value="">
+                                <DataTrigger Binding="{Binding Commit.Message, Converter={StaticResource CommitMessageConverter}, ConverterParameter=Description}" Value="">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -40,6 +58,7 @@
                     </TextBlock.Style>
                 </TextBlock>
 
+                <!-- 作者・日時 -->
                 <Grid Grid.Row="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="16"/>
@@ -54,17 +73,19 @@
                             <ImageBrush ImageSource="{Binding Author.AvatarUrl}" />
                         </Ellipse.Fill>
                     </Ellipse>
+
                     <TextBlock Grid.Column="2" FontSize="11">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0} が {1} にコミット">
                                 <Binding Path="Author.Login" />
-                                <Binding Path="Commit.Author.Date" Converter="{x:Static converters:RelativeDateTimeConverter.Instance}" />
+                                <Binding Path="Commit.Author.Date" Converter="{StaticResource RelativeDateTimeConverter}" />
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
                 </Grid>
             </Grid>
 
+            <!-- 右カラム -->
             <Grid Grid.Column="1" MaxHeight="96">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -72,6 +93,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
+                <!-- バージョン表示 -->
                 <Border Grid.Column="0"
                         BorderThickness="1"
                         CornerRadius="2.5"
@@ -112,9 +134,12 @@
                     </Border.Style>
                 </Border>
 
-                <controls:CommitDownloaderControl Grid.Column="2" Commit="{Binding}">
-                    <controls:CommitDownloaderControl.Style>
-                        <Style TargetType="controls:CommitDownloaderControl">
+                <!-- ダウンロードボタン -->
+                <local:CommitDownloaderControl Grid.Column="2"
+                                               x:Name="CommitDownloader"
+                                               Commit="{Binding}">
+                    <local:CommitDownloaderControl.Style>
+                        <Style TargetType="local:CommitDownloaderControl">
                             <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsDownloadable}" Value="True">
@@ -122,8 +147,8 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </controls:CommitDownloaderControl.Style>
-                </controls:CommitDownloaderControl>
+                    </local:CommitDownloaderControl.Style>
+                </local:CommitDownloaderControl>
             </Grid>
         </Grid>
     </Border>

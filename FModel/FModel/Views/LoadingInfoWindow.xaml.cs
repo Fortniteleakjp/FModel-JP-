@@ -8,7 +8,7 @@ namespace FModel.Views
         public LoadingInfoWindow(LoadingInfoWindowViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = viewModel;
+            this.DataContext = viewModel;
         }
     }
 }

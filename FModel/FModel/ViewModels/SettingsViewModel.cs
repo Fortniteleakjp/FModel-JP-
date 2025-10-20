@@ -10,6 +10,25 @@ using CUE4Parse_Conversion.Meshes;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
 using CUE4Parse.UE4.Assets.Exports.Nanite;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Nanite;
+using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.Objects.Core.Serialization;
+using CUE4Parse.UE4.Versions;
+using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Textures;
+using CUE4Parse_Conversion.UEFormat.Enums;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -18,7 +37,30 @@ namespace FModel.ViewModels;
 
 public class SettingsViewModel : ViewModel
 {
+    private static readonly HttpClient http = new HttpClient();
+    private const string ClientAuth = "Basic OThmN2U0MmMyZTNhNGY4NmE3NGViNDNmYmI0MWVkMzk6MGEyNDQ5YTItMDAxYS00NTFlLWFmZWMtM2U4MTI5MDFjNGQ3";
+
+    private static readonly string DeviceAuthPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "FModel",
+        "deviceAuth.json"
+    );
+
     private readonly DiscordHandler _discordHandler = DiscordService.DiscordHandler;
+
+    private string _authenticationStatus;
+    public string AuthenticationStatus
+    {
+        get => _authenticationStatus;
+        set => SetProperty(ref _authenticationStatus, value);
+    }
+
+    private string _authenticationUrl;
+    public string AuthenticationUrl
+    {
+        get => _authenticationUrl;
+        set => SetProperty(ref _authenticationUrl, value);
+    }
 
     private bool _useCustomOutputFolders;
     public bool UseCustomOutputFolders
@@ -232,6 +274,8 @@ public class SettingsViewModel : ViewModel
 
     public void Initialize()
     {
+        UpdateAuthenticationStatus();
+
         _outputSnapshot = UserSettings.Default.OutputDirectory;
         _rawDataSnapshot = UserSettings.Default.RawDataDirectory;
         _propertiesSnapshot = UserSettings.Default.PropertiesDirectory;
@@ -390,4 +434,139 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<EMaterialFormat> EnumerateMaterialExportFormat() => Enum.GetValues<EMaterialFormat>();
     private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
     private IEnumerable<ETexturePlatform> EnumerateUePlatforms() => Enum.GetValues<ETexturePlatform>();
+
+    private void UpdateAuthenticationStatus()
+    {
+        var authData = LoadDeviceAuth();
+        AuthenticationStatus = authData != null ? $"認証済み: {authData.DisplayName}" : "未認証";
+    }
+
+    public async Task Login()
+    {
+        try
+        {
+            AuthenticationUrl = string.Empty;
+            var authData = await LoginAsync();
+            if (authData != null)
+            {
+                await File.WriteAllTextAsync(DeviceAuthPath, JsonSerializer.Serialize(authData, new JsonSerializerOptions { WriteIndented = true }));
+                UpdateAuthenticationStatus();
+            }
+        }
+        catch (Exception e)
+        {
+            // Handle login failure
+            AuthenticationStatus = $"認証失敗: {e.Message}";
+        }
+    }
+
+    public void Logout()
+    {
+        if (File.Exists(DeviceAuthPath))
+        {
+            File.Delete(DeviceAuthPath);
+        }
+        UpdateAuthenticationStatus();
+    }
+
+    private AuthData? LoadDeviceAuth()
+    {
+        if (!File.Exists(DeviceAuthPath))
+            return null;
+
+        try
+        {
+            var json = File.ReadAllText(DeviceAuthPath);
+            return JsonSerializer.Deserialize<AuthData>(json);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    async Task<AuthData?> LoginAsync()
+    {
+        var tokenReq = new HttpRequestMessage(HttpMethod.Post, "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token")
+        {
+            Content = new StringContent("grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded")
+        };
+        tokenReq.Headers.Add("Authorization", ClientAuth);
+        var tokenResponse = await SendJsonAsync<JsonElement>(tokenReq);
+        var accessToken = tokenResponse.GetProperty("access_token").ToString();
+
+        var deviceReq = new HttpRequestMessage(HttpMethod.Post, "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/deviceAuthorization")
+        {
+            Content = new StringContent("prompt=login", Encoding.UTF8, "application/x-www-form-urlencoded")
+        };
+        deviceReq.Headers.Add("Authorization", $"Bearer {accessToken}");
+        var device = await SendJsonAsync<JsonElement>(deviceReq);
+
+        AuthenticationUrl = device.GetProperty("verification_uri_complete").ToString();
+
+        JsonElement token;
+        var deadline = DateTimeOffset.UtcNow.AddSeconds(int.Parse(device.GetProperty("expires_in").ToString()));
+        var interval = int.Parse(device.GetProperty("interval").ToString());
+
+        while (DateTimeOffset.UtcNow < deadline)
+        {
+            await Task.Delay(interval * 1000);
+
+            try
+            {
+                var body = $"grant_type=device_code&device_code={device.GetProperty("device_code").ToString()}";
+                var req = new HttpRequestMessage(HttpMethod.Post, "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token")
+                {
+                    Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded")
+                };
+                req.Headers.Add("Authorization", ClientAuth);
+                token = await SendJsonAsync<JsonElement>(req);
+
+                if (!token.TryGetProperty("displayName", out var displayName))
+                    continue;
+
+                var accountId = token.GetProperty("account_id").ToString();
+                var authReq = new HttpRequestMessage(HttpMethod.Post, $"https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{accountId}/deviceAuth");
+                authReq.Headers.Add("Authorization", $"Bearer {token.GetProperty("access_token").ToString()}");
+                var deviceAuth = await SendJsonAsync<JsonElement>(authReq);
+
+                return new AuthData
+                {
+                    DisplayName = displayName.ToString(),
+                    AccountId = accountId,
+                    DeviceId = deviceAuth.GetProperty("deviceId").ToString(),
+                    Secret = deviceAuth.GetProperty("secret").ToString(),
+                    AccessToken = token.GetProperty("access_token").ToString()
+                };
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        throw new Exception("Login timed out.");
+    }
+
+    async Task<T> SendJsonAsync<T>(HttpRequestMessage req)
+    {
+        var res = await http.SendAsync(req);
+        var str = await res.Content.ReadAsStringAsync();
+
+        if (!res.IsSuccessStatusCode)
+        {
+            throw new Exception($"HTTP {(int)res.StatusCode} {res.ReasonPhrase}\n{str}");
+        }
+        return JsonSerializer.Deserialize<T>(str)
+            ?? throw new JsonException($"Failed to deserialize JSON to {typeof(T).Name}");
+    }
+}
+
+public class AuthData
+{
+    [JsonPropertyName("displayName")] public string DisplayName { get; set; } = string.Empty;
+    [JsonPropertyName("accountId")] public string AccountId { get; set; } = string.Empty;
+    [JsonPropertyName("deviceId")] public string DeviceId { get; set; } = string.Empty;
+    [JsonPropertyName("secret")] public string Secret { get; set; } = string.Empty;
+    [JsonPropertyName("access_token")] public string AccessToken { get; set; } = string.Empty;
 }

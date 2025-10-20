@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using FModel.ViewModels.ApiEndpoints.Models;
 
@@ -16,13 +16,12 @@ public partial class CommitDownloaderControl : UserControl
 
     public GitHubCommit Commit
     {
-        get { return (GitHubCommit)GetValue(CommitProperty); }
-        set { SetValue(CommitProperty, value); }
+        get => (GitHubCommit)GetValue(CommitProperty);
+        set => SetValue(CommitProperty, value);
     }
 
     private void OnDownload(object sender, RoutedEventArgs e)
     {
-        Commit.Download();
+        Commit?.Download();
     }
 }
-

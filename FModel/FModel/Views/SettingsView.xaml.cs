@@ -8,6 +8,12 @@ using FModel.ViewModels;
 using FModel.Views.Resources.Controls;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
+using System.Diagnostics;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace FModel.Views;
 
@@ -227,5 +233,23 @@ public partial class SettingsView
 
         _applicationView.SettingsView.DiffMappingEndpoint.FilePath = string.Empty;
         _applicationView.SettingsView.DiffMappingEndpoint.Overwrite = false;
+    }
+
+    private async void OnLogin(object sender, RoutedEventArgs e)
+    {
+        await _applicationView.SettingsView.Login();
+    }
+
+    private void OnLogout(object sender, RoutedEventArgs e)
+    {
+        _applicationView.SettingsView.Logout();
+    }
+
+    private void OnCopyUrl(object sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(_applicationView.SettingsView.AuthenticationUrl))
+        {
+            Clipboard.SetText(_applicationView.SettingsView.AuthenticationUrl);
+        }
     }
 }
