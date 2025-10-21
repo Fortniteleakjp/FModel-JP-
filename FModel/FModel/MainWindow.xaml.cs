@@ -16,13 +16,6 @@ using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
 using FModel.Framework; // RelayCommand を使用するためのやつ
 using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
-using System.IO;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using FModel.Framework; // InvalidTokenException を使用するためのやつ
 
 namespace FModel;
 
@@ -407,13 +400,4 @@ public partial class MainWindow
 
         UserSettings.Save();
     }
-}
-
-public class AuthData
-{
-    [JsonPropertyName("displayName")] public string DisplayName { get; set; } = string.Empty;
-    [JsonPropertyName("accountId")] public string AccountId { get; set; } = string.Empty;
-    [JsonPropertyName("deviceId")] public string DeviceId { get; set; } = string.Empty;
-    [JsonPropertyName("secret")] public string Secret { get; set; } = string.Empty;
-    [JsonPropertyName("access_token")] public string AccessToken { get; set; } = string.Empty;
 }

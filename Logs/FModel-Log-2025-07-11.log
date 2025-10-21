@@ -1,0 +1,594 @@
+2025-07-11 10:55:24 [INF] FModel.App.OnStartup: Version 4.0.0.1 (06960ae0e1e3fb74fbd2137a6cc0cfd8d525a709)
+2025-07-11 10:55:24 [INF] FModel.App.OnStartup: Windows 11 Home (64-bit)
+2025-07-11 10:55:24 [INF] FModel.App.OnStartup: .NET 8.0.17
+2025-07-11 10:55:24 [INF] FModel.App.OnStartup: Culture ja-JP
+2025-07-11 10:55:24 [WRN] FModel.ViewModels.ApiEndpoints.FModelApiEndpoint.CheckForUpdateEvent: 新しいバージョンが利用可能です Version 1.0.2 (1.0.2-jp)
+2025-07-11 10:55:25 [INF] CUE4Parse.Compression.OodleHelper+<DownloadOodleDllAsync>d__14.MoveNext: Successfully downloaded oodle dll at "C:\Users\Owner\Downloads\FModelJP\.data\oo2core_9_win64.dll"
+2025-07-11 10:55:26 [INF] CUE4Parse.Compression.ZlibHelper+<DownloadDllAsync>d__10.MoveNext: Successfully downloaded zlib-ng dll at "C:\Users\Owner\Downloads\FModelJP\.data\zlib-ng2.dll"
+2025-07-11 10:55:26 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel+<>c.<Initialize>b__84_1: GAME_UE5_7 (DesktopMobile) | Archives: x123 | AES: x18 | Loose Files: x0
+2025-07-11 10:55:26 [WRN] CUE4Parse.UE4.VirtualFileSystem.AbstractVfsReader.ValidateMountPoint: "pakchunk0ondemand-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4651-WindowsClient.o.utoc": 7 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/DM_404_S2_B/Content/", order 3, version 8 in 00:00:00.0109826
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk0ondemand-WindowsClient.pak": 0 files, order 3, version 11 in 00:00:00.0112157
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk100-WindowsClient.pak": 94 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0123590
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakChunkEarly-WindowsClient.utoc": 3 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0108433
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk70-WindowsClient.o.utoc": 6 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/", order 3, version 8 in 00:00:00.0109516
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk80-WindowsClient.utoc": 8651 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0333517
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4642-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002839
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4633-WindowsClient.o.utoc": 16 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0001208
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4644-WindowsClient.utoc": 10 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0010320
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4640-WindowsClient.o.utoc": 6 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/Alpine/Content/", order 3, version 8 in 00:00:00.0000805
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4651-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002464
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4643-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001229
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk90-WindowsClient.pak": 40 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003000
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4650-WindowsClient.utoc": 13 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001174
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk8-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Content/L10N/ru/Environments/Helios/Props/Commerce/Commerce_HangingLights_A/Materials/", order 3, version 8 in 00:00:00.0001080
+2025-07-11 10:55:26 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4650-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002453
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk10-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0184456
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk50-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0185504
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_Unlock_P.pak": 2 files, order 103, version 3 in 00:00:00.0196221
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4645-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Table_A/", order 3, version 8 in 00:00:00.0000810
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_4.pak": 4 files, order 3, version 3 in 00:00:00.0000385
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4637-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Terrain/", order 3, version 8 in 00:00:00.0000526
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4636-WindowsClient.o.utoc": 18 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0001209
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4647-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/", order 3, version 8 in 00:00:00.0000788
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk40-WindowsClient.pak": 544 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0210368
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4644-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001988
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4651-WindowsClient.utoc": 61 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001635
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk70-WindowsClient.utoc": 189 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0009763
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100iad-WindowsClient.utoc": 24807 files, mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.0723467
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk90-WindowsClient.utoc": 3722 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0069816
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0-WindowsClient.o.utoc": 3289 files, order 3, version 8 in 00:00:00.0225713
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk13-WindowsClient.pak": 3713 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0674533
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4646-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Rubble_A/", order 3, version 8 in 00:00:00.0002005
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk20-WindowsClient.o.utoc": 6498 files, order 3, version 8 in 00:00:00.0974090
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10-WindowsClient.o.utoc": 3049 files, order 3, version 8 in 00:00:00.0328639
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "UEFNFortniteGame-WindowsUEFN.o.utoc": 5181 files, order 3, version 8 in 00:00:00.0778560
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk60-WindowsClient.pak": 7492 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.1116675
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4635-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0001938
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4641-WindowsClient.utoc": 15 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001438
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4643-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003831
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4634-WindowsClient.o.utoc": 24 files, mount point: "FortniteGame/Content/Environments/Asteria/", order 3, version 8 in 00:00:00.0001057
+2025-07-11 10:55:27 [WRN] CUE4Parse.UE4.VirtualFileSystem.AbstractVfsReader.ValidateMountPoint: "pakchunk100iad-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk100iad-WindowsClient.pak": 0 files, order 3, version 11 in 00:00:00.0002961
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk80-WindowsClient.o.utoc": 2126 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0046768
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk50-WindowsClient.o.utoc": 6335 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0427864
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4642-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001190
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0000478
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk0-WindowsClient.pak": 9921 files (1906 encrypted), order 3, version 11 in 00:00:00.1308237
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10-WindowsClient.utoc": 12787 files, order 3, version 8 in 00:00:00.1323373
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk90-WindowsClient.o.utoc": 957 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0147824
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4641-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/Borealis/Content/", order 3, version 8 in 00:00:00.0000862
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4640-WindowsClient.utoc": 29 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0002045
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk20-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0004257
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_AthenaHUD.pak": 2 files, order 3, version 3 in 00:00:00.0000554
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4641-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002458
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4640-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002210
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4644-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/GoldRush/Content/", order 3, version 8 in 00:00:00.0000768
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk80-WindowsClient.pak": 310 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0101618
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk70-WindowsClient.pak": 91 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0007433
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_HUDs.pak": 2 files, order 3, version 3 in 00:00:00.0000613
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4614-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/Artemis/Sets/Celebration/Materials/Graffiti_Decals/", order 3, version 8 in 00:00:00.0000577
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1000-WindowsClient.o.utoc": 84 files (84 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0006253
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1000-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002451
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1000-WindowsClient.utoc": 634 files (634 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0124059
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk30-WindowsClient.pak": 1708 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0281815
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1001-WindowsClient.o.utoc": 13 files (13 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/CosmeticShoes/Content/Assets/FORT_Shoes/", order 3, version 8 in 00:00:00.0001702
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1001-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002005
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1001-WindowsClient.utoc": 242 files (242 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0013049
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1002-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001809
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1002-WindowsClient.utoc": 6 files (6 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0001822
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1003-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001669
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1003-WindowsClient.utoc": 22 files (22 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0002588
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1005-WindowsClient.o.utoc": 6 files (6 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001553
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1005-WindowsClient.utoc": 88 files (88 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0004816
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1005-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0004516
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1007-WindowsClient.o.utoc": 18 files (18 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.0002037
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1008-WindowsClient.o.utoc": 3 files (3 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001422
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1007-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003985
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1007-WindowsClient.utoc": 287 files (287 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0169661
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1008-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003315
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1008-WindowsClient.utoc": 50 files (50 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0003938
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1010-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001920
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1010-WindowsClient.o.utoc": 48 files (48 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0003153
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1012-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002851
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1012-WindowsClient.utoc": 26 files (26 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0002542
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1010-WindowsClient.utoc": 334 files (334 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0009553
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1013-WindowsClient.pak": 2 files (2 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001853
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1015-WindowsClient.utoc": 4 files (4 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0001698
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1016-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001794
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1015-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003817
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1016-WindowsClient.utoc": 4 files (4 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0000799
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1013-WindowsClient.utoc": 50 files (50 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0002779
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "UEFNFortniteGame-WindowsUEFN.utoc": 24446 files, order 3, version 8 in 00:00:00.2365901
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0-WindowsClient.utoc": 30804 files, order 3, version 8 in 00:00:00.2405188
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk50-WindowsClient.utoc": 31726 files, order 3, version 8 in 00:00:00.2980979
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakChunkEarly-WindowsClient.pak": 21840 files (1906 encrypted), order 3, version 11 in 00:00:00.1983468
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60-WindowsClient.o.utoc": 29552 files, order 3, version 8 in 00:00:00.3991240
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk20-WindowsClient.utoc": 33847 files, order 3, version 8 in 00:00:00.3798276
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13-WindowsClient.o.utoc": 23663 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.3160537
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk11-WindowsClient.o.utoc": 21210 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.3901824
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40-WindowsClient.o.utoc": 45566 files, order 3, version 8 in 00:00:00.5317757
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30-WindowsClient.o.utoc": 30091 files, order 3, version 8 in 00:00:00.4502998
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100-WindowsClient.o.utoc": 64030 files, order 3, version 8 in 00:00:00.6715409
+2025-07-11 10:55:27 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN.pak": 133411 files (81 encrypted), order 3, version 11 in 00:00:00.8130272
+2025-07-11 10:55:28 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30-WindowsClient.utoc": 151850 files, order 3, version 8 in 00:00:01.2046189
+2025-07-11 10:55:28 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60-WindowsClient.utoc": 152050 files, order 3, version 8 in 00:00:01.2389224
+2025-07-11 10:55:28 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13-WindowsClient.utoc": 227063 files, order 3, version 8 in 00:00:01.4130474
+2025-07-11 10:55:28 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40-WindowsClient.utoc": 238960 files, order 3, version 8 in 00:00:01.4953477
+2025-07-11 10:55:28 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100-WindowsClient.utoc": 400063 files, order 3, version 8 in 00:00:02.0386669
+2025-07-11 10:55:29 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.LoadVfs: Project: FortniteGame | Mounted: 108/123 | AES: 13/18 | Files: x1764324
+2025-07-11 10:55:30 [INF] FModel.ViewModels.ApiEndpoints.FModelApiEndpoint+<GetNewsAsync>d__9.MoveNext: ["Get"] [Bad Request(400)] 'https://api.fmodel.app/v1/news/4.0.0.1?game=FortniteGame'
+2025-07-11 10:55:30 [INF] CUE4Parse_Conversion.Textures.BC.DetexHelper+<LoadDllAsync>d__10.MoveNext: Successfully loaded Detex DLL from embedded resources to "C:\Users\Owner\Downloads\FModelJP\.data\Detex.dll"
+2025-07-11 10:55:30 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel+<>c__DisplayClass83_0.<InitMappingsForProvider>b__0: Mappings pulled from '++Fortnite+Release-36.10-CL-43486998-Windows_zs.usmap'
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/Juno/JunoGame/Content/Effects/CameraFX/Textures/", order 3, version 8 in 00:00:00.0150514
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0262789
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13ondemand-WindowsClient.utoc": 27 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0378466
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10ondemandoptional-WindowsClient.utoc": 14 files, mount point: "FortniteGame/Content/Characters/Player/Male/Medium/M_MED_Tactical_Fisherman_Oil/Textures/", order 3, version 8 in 00:00:00.0507352
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30ondemandoptional-WindowsClient.utoc": 5205 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0507922
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40ondemandoptional-WindowsClient.utoc": 5 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0405097
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13ondemandoptional-WindowsClient.utoc": 26 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0404811
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40ondemand-WindowsClient.utoc": 5 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0416114
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemandoptional-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0419336
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60ondemandoptional-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/Juno/JunoGame/Content/Effects/CameraFX/Textures/", order 3, version 8 in 00:00:00.0500287
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10ondemand-WindowsClient.utoc": 14 files, mount point: "FortniteGame/Content/Characters/Player/Male/Medium/M_MED_Tactical_Fisherman_Oil/Textures/", order 3, version 8 in 00:00:00.0502619
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30ondemand-WindowsClient.utoc": 5390 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0625391
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100ondemand-WindowsClient.utoc": 67400 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.4608743
+2025-07-11 10:55:33 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100ondemandoptional-WindowsClient.utoc": 68405 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.4612363
+2025-07-11 10:55:35 [INF] FModel.Services.DiscordHandler+<>c.<Initialize>b__6_0: @fljpnews (798815947350999061) is now ready
+2025-07-11 10:55:37 [INF] FModel.ViewModels.ApiEndpoints.FortniteCentralApiEndpoint+<GetHotfixesAsync>d__1.MoveNext: ["Get"] [OK(200)] 'https://fortnitecentral.genxgames.gg/api/v1/hotfixes?lang=ja'
+2025-07-11 10:55:37 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/MSS_Emote_Music_ChelseaHotel_1p.uasset'
+2025-07-11 10:55:38 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/Emote_ChelseaHotel_Music_Loop.uasset'
+2025-07-11 11:01:05 [INF] FModel.App.AppExit: ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+2025-07-11 11:01:11 [INF] FModel.App.OnStartup: Version 4.0.0.1 (06960ae0e1e3fb74fbd2137a6cc0cfd8d525a709)
+2025-07-11 11:01:11 [INF] FModel.App.OnStartup: Windows 11 Home (64-bit)
+2025-07-11 11:01:11 [INF] FModel.App.OnStartup: .NET 8.0.17
+2025-07-11 11:01:11 [INF] FModel.App.OnStartup: Culture ja-JP
+2025-07-11 11:01:13 [WRN] FModel.ViewModels.ApiEndpoints.FModelApiEndpoint.CheckForUpdateEvent: 新しいバージョンが利用可能です Version 1.0.2 (1.0.2-jp)
+2025-07-11 11:01:13 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel+<>c.<Initialize>b__84_1: GAME_UE5_7 (DesktopMobile) | Archives: x123 | AES: x18 | Loose Files: x0
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_HUDs.pak": 2 files, order 3, version 3 in 00:00:00.0026896
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4643-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0128909
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakChunkEarly-WindowsClient.utoc": 3 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0065881
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk50-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0119037
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4614-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/Artemis/Sets/Celebration/Materials/Graffiti_Decals/", order 3, version 8 in 00:00:00.0123096
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4644-WindowsClient.utoc": 10 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0122911
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4651-WindowsClient.utoc": 61 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0002875
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk80-WindowsClient.pak": 310 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0006975
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk8-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Content/L10N/ru/Environments/Helios/Props/Commerce/Commerce_HangingLights_A/Materials/", order 3, version 8 in 00:00:00.0125423
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk70-WindowsClient.o.utoc": 6 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/", order 3, version 8 in 00:00:00.0122138
+2025-07-11 11:01:13 [WRN] CUE4Parse.UE4.VirtualFileSystem.AbstractVfsReader.ValidateMountPoint: "pakchunk0ondemand-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk70-WindowsClient.pak": 91 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0136499
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk40-WindowsClient.pak": 544 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0140267
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk0ondemand-WindowsClient.pak": 0 files, order 3, version 11 in 00:00:00.0003510
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4642-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001249
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4637-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Terrain/", order 3, version 8 in 00:00:00.0001074
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk10-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0128275
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk90-WindowsClient.pak": 40 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002538
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4634-WindowsClient.o.utoc": 24 files, mount point: "FortniteGame/Content/Environments/Asteria/", order 3, version 8 in 00:00:00.0135389
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4641-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/Borealis/Content/", order 3, version 8 in 00:00:00.0096125
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0001095
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4651-WindowsClient.o.utoc": 7 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/DM_404_S2_B/Content/", order 3, version 8 in 00:00:00.0226400
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4647-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/", order 3, version 8 in 00:00:00.0247520
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4651-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002021
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4642-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001483
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4635-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0000534
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_Unlock_P.pak": 2 files, order 103, version 3 in 00:00:00.0000372
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_4.pak": 4 files, order 3, version 3 in 00:00:00.0000304
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4640-WindowsClient.utoc": 29 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0236594
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4636-WindowsClient.o.utoc": 18 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0000922
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4646-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Rubble_A/", order 3, version 8 in 00:00:00.0000634
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4644-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/GoldRush/Content/", order 3, version 8 in 00:00:00.0000559
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4643-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001571
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4633-WindowsClient.o.utoc": 16 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0000975
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4650-WindowsClient.utoc": 13 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0000872
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4640-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001778
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4641-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0004224
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk90-WindowsClient.utoc": 3722 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0134759
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10-WindowsClient.o.utoc": 3049 files, order 3, version 8 in 00:00:00.0237534
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk30-WindowsClient.pak": 1708 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0261312
+2025-07-11 11:01:13 [WRN] CUE4Parse.UE4.VirtualFileSystem.AbstractVfsReader.ValidateMountPoint: "pakchunk100iad-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk100iad-WindowsClient.pak": 0 files, order 3, version 11 in 00:00:00.0002880
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0-WindowsClient.o.utoc": 3289 files, order 3, version 8 in 00:00:00.0511705
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk20-WindowsClient.o.utoc": 6498 files, order 3, version 8 in 00:00:00.0625656
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk80-WindowsClient.o.utoc": 2126 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0231892
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk60-WindowsClient.pak": 7492 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0769377
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4645-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Table_A/", order 3, version 8 in 00:00:00.0001202
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk100-WindowsClient.pak": 94 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0073264
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "UEFNFortniteGame-WindowsUEFN.o.utoc": 5181 files, order 3, version 8 in 00:00:00.0810748
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk80-WindowsClient.utoc": 8651 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0834929
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk70-WindowsClient.utoc": 189 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0212219
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_AthenaHUD.pak": 2 files, order 3, version 3 in 00:00:00.0001177
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk50-WindowsClient.o.utoc": 6335 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.1145768
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4650-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0001862
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4644-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001903
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4641-WindowsClient.utoc": 15 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0000944
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk20-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0001375
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10-WindowsClient.utoc": 12787 files, order 3, version 8 in 00:00:00.1363314
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk90-WindowsClient.o.utoc": 957 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0482793
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4640-WindowsClient.o.utoc": 6 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/Alpine/Content/", order 3, version 8 in 00:00:00.0001221
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk13-WindowsClient.pak": 3713 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0578076
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakChunkEarly-WindowsClient.pak": 21840 files (1906 encrypted), order 3, version 11 in 00:00:00.1699357
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1000-WindowsClient.o.utoc": 84 files (84 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0322616
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1000-WindowsClient.utoc": 634 files (634 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0085787
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100iad-WindowsClient.utoc": 24807 files, mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.3206661
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1000-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003705
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1001-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002920
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1001-WindowsClient.o.utoc": 13 files (13 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/CosmeticShoes/Content/Assets/FORT_Shoes/", order 3, version 8 in 00:00:00.0002091
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk0-WindowsClient.pak": 9921 files (1906 encrypted), order 3, version 11 in 00:00:00.0932444
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1001-WindowsClient.utoc": 242 files (242 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0010097
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1002-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002975
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1002-WindowsClient.utoc": 6 files (6 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0001658
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1003-WindowsClient.utoc": 22 files (22 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001938
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "UEFNFortniteGame-WindowsUEFN.utoc": 24446 files, order 3, version 8 in 00:00:00.3420240
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk20-WindowsClient.utoc": 33847 files, order 3, version 8 in 00:00:00.3524079
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1003-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0145245
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1005-WindowsClient.utoc": 88 files (88 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0004541
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0-WindowsClient.utoc": 30804 files, order 3, version 8 in 00:00:00.3338615
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1005-WindowsClient.o.utoc": 6 files (6 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001684
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1007-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001876
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1005-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001807
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1007-WindowsClient.o.utoc": 18 files (18 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.0002991
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1008-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002268
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1008-WindowsClient.o.utoc": 3 files (3 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001751
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1008-WindowsClient.utoc": 50 files (50 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0003585
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1010-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0006956
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1010-WindowsClient.o.utoc": 48 files (48 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0187335
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1010-WindowsClient.utoc": 334 files (334 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0197463
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1007-WindowsClient.utoc": 287 files (287 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0215399
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1012-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001370
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1012-WindowsClient.utoc": 26 files (26 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001857
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1013-WindowsClient.pak": 2 files (2 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0000965
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1013-WindowsClient.utoc": 50 files (50 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0002415
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1015-WindowsClient.utoc": 4 files (4 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0000696
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1015-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001335
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1016-WindowsClient.utoc": 4 files (4 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0000738
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1016-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001160
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60-WindowsClient.o.utoc": 29552 files, order 3, version 8 in 00:00:00.3902103
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk11-WindowsClient.o.utoc": 21210 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.3256373
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30-WindowsClient.o.utoc": 30091 files, order 3, version 8 in 00:00:00.4162935
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk50-WindowsClient.utoc": 31726 files, order 3, version 8 in 00:00:00.3462525
+2025-07-11 11:01:13 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13-WindowsClient.o.utoc": 23663 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.3288241
+2025-07-11 11:01:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40-WindowsClient.o.utoc": 45566 files, order 3, version 8 in 00:00:00.7215144
+2025-07-11 11:01:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100-WindowsClient.o.utoc": 64030 files, order 3, version 8 in 00:00:00.9498167
+2025-07-11 11:01:14 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN.pak": 133411 files (81 encrypted), order 3, version 11 in 00:00:00.9741741
+2025-07-11 11:01:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30-WindowsClient.utoc": 151850 files, order 3, version 8 in 00:00:01.1460374
+2025-07-11 11:01:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60-WindowsClient.utoc": 152050 files, order 3, version 8 in 00:00:01.0757971
+2025-07-11 11:01:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13-WindowsClient.utoc": 227063 files, order 3, version 8 in 00:00:01.4281140
+2025-07-11 11:01:15 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40-WindowsClient.utoc": 238960 files, order 3, version 8 in 00:00:01.5242514
+2025-07-11 11:01:15 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100-WindowsClient.utoc": 400063 files, order 3, version 8 in 00:00:02.3613545
+2025-07-11 11:01:16 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.LoadVfs: Project: FortniteGame | Mounted: 108/123 | AES: 13/18 | Files: x1764324
+2025-07-11 11:01:17 [INF] FModel.ViewModels.ApiEndpoints.FModelApiEndpoint+<GetNewsAsync>d__9.MoveNext: ["Get"] [Bad Request(400)] 'https://api.fmodel.app/v1/news/4.0.0.1?game=FortniteGame'
+2025-07-11 11:01:17 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel+<>c__DisplayClass83_0.<InitMappingsForProvider>b__0: Mappings pulled from '++Fortnite+Release-36.10-CL-43486998-Windows_zs.usmap'
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemandoptional-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0001945
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40ondemand-WindowsClient.utoc": 5 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0000824
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0006242
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40ondemandoptional-WindowsClient.utoc": 5 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0000960
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10ondemand-WindowsClient.utoc": 14 files, mount point: "FortniteGame/Content/Characters/Player/Male/Medium/M_MED_Tactical_Fisherman_Oil/Textures/", order 3, version 8 in 00:00:00.0000923
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13ondemand-WindowsClient.utoc": 27 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001492
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10ondemandoptional-WindowsClient.utoc": 14 files, mount point: "FortniteGame/Content/Characters/Player/Male/Medium/M_MED_Tactical_Fisherman_Oil/Textures/", order 3, version 8 in 00:00:00.0013701
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13ondemandoptional-WindowsClient.utoc": 26 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0000902
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60ondemandoptional-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/Juno/JunoGame/Content/Effects/CameraFX/Textures/", order 3, version 8 in 00:00:00.0000892
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/Juno/JunoGame/Content/Effects/CameraFX/Textures/", order 3, version 8 in 00:00:00.0001391
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30ondemandoptional-WindowsClient.utoc": 5205 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0103544
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30ondemand-WindowsClient.utoc": 5390 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0109642
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100ondemandoptional-WindowsClient.utoc": 68405 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0904961
+2025-07-11 11:01:18 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100ondemand-WindowsClient.utoc": 67400 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0948195
+2025-07-11 11:01:19 [INF] FModel.Services.DiscordHandler+<>c.<Initialize>b__6_0: @fljpnews (798815947350999061) is now ready
+2025-07-11 11:01:30 [INF] FModel.ViewModels.ApiEndpoints.FortniteCentralApiEndpoint+<GetHotfixesAsync>d__1.MoveNext: ["Get"] [OK(200)] 'https://fortnitecentral.genxgames.gg/api/v1/hotfixes?lang=ja'
+2025-07-11 11:01:31 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/Emote_ChelseaHotel_Music_Loop.uasset'
+2025-07-11 11:01:31 [ERR] FModel.ViewModels.ThreadWorkerViewModel+<ProcessQueues>d__24.MoveNext: System.ComponentModel.Win32Exception (225): An error occurred trying to start process 'C:\Users\Owner\Downloads\FModelJP\.data\radadec.exe' with working directory 'C:\Users\Owner\Downloads\FModelJP'. ファイルにウイルスまたは望ましくない可能性のあるソフトウェアが含まれているため、操作は正常に完了しませんでした。
+   at System.Diagnostics.Process.StartWithCreateProcess(ProcessStartInfo startInfo)
+   at System.Diagnostics.Process.Start(ProcessStartInfo startInfo)
+   at FModel.ViewModels.AudioPlayerViewModel.TryDecode(String extension, String& rawFilePath)
+   at FModel.ViewModels.AudioPlayerViewModel.ConvertIfNeeded()
+   at FModel.ViewModels.AudioPlayerViewModel.<Load>b__49_0()
+   at System.Windows.Threading.Dispatcher.Invoke(Action callback, DispatcherPriority priority, CancellationToken cancellationToken, TimeSpan timeout)
+   at System.Windows.Threading.Dispatcher.Invoke(Action callback)
+   at FModel.ViewModels.AudioPlayerViewModel.Load()
+   at FModel.ViewModels.AudioPlayerViewModel.<>c__DisplayClass50_0.<AddToPlaylist>b__0()
+   at System.Windows.Threading.Dispatcher.Invoke(Action callback, DispatcherPriority priority, CancellationToken cancellationToken, TimeSpan timeout)
+   at System.Windows.Threading.Dispatcher.Invoke(Action callback)
+   at FModel.ViewModels.AudioPlayerViewModel.AddToPlaylist(Byte[] data, String filePath)
+   at FModel.Views.AudioPlayer.Load(Byte[] data, String filePath)
+   at FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.<>c__DisplayClass57_0.<SaveAndPlaySound>b__0()
+   at System.Windows.Threading.DispatcherOperation.InvokeDelegateCore()
+   at System.Windows.Threading.DispatcherOperation.InvokeImpl()
+--- End of stack trace from previous location ---
+   at System.Windows.Threading.DispatcherOperation.Wait(TimeSpan timeout)
+   at System.Windows.Threading.Dispatcher.InvokeImpl(DispatcherOperation operation, CancellationToken cancellationToken, TimeSpan timeout)
+   at System.Windows.Threading.Dispatcher.Invoke(Action callback, DispatcherPriority priority, CancellationToken cancellationToken, TimeSpan timeout)
+   at System.Windows.Threading.Dispatcher.Invoke(Action callback)
+   at FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.SaveAndPlaySound(String fullPath, String ext, Byte[] data)
+   at FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.CheckExport(CancellationToken cancellationToken, IPackage pkg, Int32 index, EBulkType bulk)
+   at FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract(CancellationToken cancellationToken, GameFile entry, Boolean addNewTab, EBulkType bulk)
+   at FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.ExtractSelected(CancellationToken cancellationToken, IEnumerable`1 assetItems)
+   at FModel.MainWindow.<>c__DisplayClass17_0.<OnAssetsListMouseDoubleClick>b__0(CancellationToken cancellationToken)
+   at FModel.ViewModels.ThreadWorkerViewModel.<>c__DisplayClass24_0.<ProcessQueues>b__0()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at FModel.ViewModels.ThreadWorkerViewModel.ProcessQueues()
+2025-07-11 11:01:37 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/Emote_ChelseaHotel_Music_Intro.uasset'
+2025-07-11 11:01:56 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/Emote_ChelseaHotel_Music_Loop.uasset'
+2025-07-11 11:04:26 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/NewDisplayAssets/S36/DAv2_EID_Chelseahotel.uasset'
+2025-07-11 11:04:28 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.ExtractAndScroll: User CTRL-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/Textures/BattleRoyale/FeaturedItems/Emotes/S36/T_AthenaEmotes_ChelseaHotel.uasset'
+2025-07-11 11:04:32 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/Emote_ChelseaHotel_Music_Loop.uasset'
+2025-07-11 11:04:35 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/Emote_ChelseaHotel_Music_Intro.uasset'
+2025-07-11 11:04:38 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/MSS_Emote_Music_ChelseaHotel_1p.uasset'
+2025-07-11 11:04:38 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/MSS_Emote_Music_ChelseaHotel_3p.uasset'
+2025-07-11 11:04:42 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Dances/EID_ChelseaHotel.uasset'
+2025-07-11 11:04:44 [INF] FModel.ViewModels.ApiEndpoints.FModelApiEndpoint+<GetDesignAsync>d__17.MoveNext: ["Get"] [OK(200)] 'https://api.fmodel.app/v1/designs/Cataba'
+2025-07-11 11:04:49 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.ExtractAndScroll: User CTRL-CLICKED to extract 'FortniteGame/Content/Athena/Items/Cosmetics/Series/CreatorCollabSeries.uasset'
+2025-07-11 11:04:56 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.ExtractAndScroll: User CTRL-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Animation/Game/MainPlayer/Emotes/ChelseaHotel/Emote_ChelseaHotel_CMM_M.uasset'
+2025-07-11 11:05:07 [INF] FModel.ViewModels.CUE4Parse.CUE4ParseViewModel.Extract: User DOUBLE-CLICKED to extract 'FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Sounds/Emotes/ChelseaHotel/Emote_ChelseaHotel_Music_Intro.uasset'
+2025-07-11 11:57:55 [INF] FModel.App.AppExit: ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+2025-07-11 14:02:51 [INF] FModel.App.OnStartup: Version 4.4.4.0 (1f1d2ae3c2cf3a47fadfe0fefd11c0e161fa57db)
+2025-07-11 14:02:51 [INF] FModel.App.OnStartup: Windows 11 Home (64-bit)
+2025-07-11 14:02:51 [INF] FModel.App.OnStartup: .NET 8.0.17
+2025-07-11 14:02:51 [INF] FModel.App.OnStartup: Culture ja-JP
+2025-07-11 14:02:52 [INF] FModel.ViewModels.CUE4ParseViewModel.<Initialize>b__33_0: GAME_UE5_7 (DesktopMobile) | Archives: x123 | AES: x18 | Loose Files: x0
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_4.pak": 4 files, order 3, version 3 in 00:00:00.0019063
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk80-WindowsClient.pak": 310 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0124310
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4633-WindowsClient.o.utoc": 16 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0117594
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4640-WindowsClient.o.utoc": 6 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/Alpine/Content/", order 3, version 8 in 00:00:00.0001864
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk8-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Content/L10N/ru/Environments/Helios/Props/Commerce/Commerce_HangingLights_A/Materials/", order 3, version 8 in 00:00:00.0121191
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4641-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/Borealis/Content/", order 3, version 8 in 00:00:00.0129131
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4642-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002220
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4614-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/Artemis/Sets/Celebration/Materials/Graffiti_Decals/", order 3, version 8 in 00:00:00.0000551
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk70-WindowsClient.utoc": 189 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0005310
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk100-WindowsClient.pak": 94 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0135720
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk90-WindowsClient.o.utoc": 957 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0145494
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4643-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0003312
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0154063
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4650-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002602
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4644-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/GoldRush/Content/", order 3, version 8 in 00:00:00.0000752
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_Unlock_P.pak": 2 files, order 103, version 3 in 00:00:00.0066953
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4635-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0001092
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4650-WindowsClient.utoc": 13 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001782
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4646-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Rubble_A/", order 3, version 8 in 00:00:00.0000737
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_AthenaHUD.pak": 2 files, order 3, version 3 in 00:00:00.0000429
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4634-WindowsClient.o.utoc": 24 files, mount point: "FortniteGame/Content/Environments/Asteria/", order 3, version 8 in 00:00:00.0001371
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4636-WindowsClient.o.utoc": 18 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0001404
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0-WindowsClient.o.utoc": 3289 files, order 3, version 8 in 00:00:00.0185773
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4651-WindowsClient.utoc": 61 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0246514
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk70-WindowsClient.o.utoc": 6 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/", order 3, version 8 in 00:00:00.0000788
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4644-WindowsClient.utoc": 10 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001428
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk50-WindowsClient.o.utoc": 6335 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0431602
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "UEFNFortniteGame-WindowsUEFN.o.utoc": 5181 files, order 3, version 8 in 00:00:00.0496725
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk20-WindowsClient.o.utoc": 6498 files, order 3, version 8 in 00:00:00.0354345
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk90-WindowsClient.pak": 40 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003582
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakChunkEarly-WindowsClient.utoc": 3 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0001329
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10-WindowsClient.o.utoc": 3049 files, order 3, version 8 in 00:00:00.0163653
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10-WindowsClient.utoc": 12787 files, order 3, version 8 in 00:00:00.1179203
+2025-07-11 14:02:52 [WRN] CUE4Parse.UE4.VirtualFileSystem.AbstractVfsReader.ValidateMountPoint: "pakchunk0ondemand-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk0ondemand-WindowsClient.pak": 0 files, order 3, version 11 in 00:00:00.0005376
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4644-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003215
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk40-WindowsClient.pak": 544 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0193884
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4647-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/", order 3, version 8 in 00:00:00.0000955
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk13-WindowsClient.pak": 3713 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0720356
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_HUDs.pak": 2 files, order 3, version 3 in 00:00:00.0091501
+2025-07-11 14:02:52 [WRN] CUE4Parse.UE4.VirtualFileSystem.AbstractVfsReader.ValidateMountPoint: "pakchunk100iad-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk100iad-WindowsClient.pak": 0 files, order 3, version 11 in 00:00:00.0003878
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk60-WindowsClient.pak": 7492 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0672255
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4640-WindowsClient.utoc": 29 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001689
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4651-WindowsClient.o.utoc": 7 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/DM_404_S2_B/Content/", order 3, version 8 in 00:00:00.0000573
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk70-WindowsClient.pak": 91 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0006023
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4641-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001935
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "UEFNFortniteGame-WindowsUEFN.utoc": 24446 files, order 3, version 8 in 00:00:00.2465479
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk0-WindowsClient.pak": 9921 files (1906 encrypted), order 3, version 11 in 00:00:00.1272566
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4637-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Terrain/", order 3, version 8 in 00:00:00.0001201
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk20-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002679
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4642-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0000978
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4641-WindowsClient.utoc": 15 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0000892
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4643-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001789
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk11-WindowsClient.o.utoc": 21210 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2581426
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk90-WindowsClient.utoc": 3722 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0381844
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13-WindowsClient.o.utoc": 23663 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.3026155
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100iad-WindowsClient.utoc": 24807 files, mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.2827597
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60-WindowsClient.o.utoc": 29552 files, order 3, version 8 in 00:00:00.3137408
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk30-WindowsClient.pak": 1708 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0281314
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30-WindowsClient.o.utoc": 30091 files, order 3, version 8 in 00:00:00.3459951
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk80-WindowsClient.o.utoc": 2126 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0240327
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0-WindowsClient.utoc": 30804 files, order 3, version 8 in 00:00:00.3374094
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk20-WindowsClient.utoc": 33847 files, order 3, version 8 in 00:00:00.3561496
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk50-WindowsClient.utoc": 31726 files, order 3, version 8 in 00:00:00.3722028
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4651-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002421
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk50-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0001499
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakChunkEarly-WindowsClient.pak": 21840 files (1906 encrypted), order 3, version 11 in 00:00:00.2290330
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk10-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002851
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4640-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003010
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4645-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Table_A/", order 3, version 8 in 00:00:00.0000716
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1000-WindowsClient.o.utoc": 84 files (84 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0004941
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1000-WindowsClient.utoc": 634 files (634 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0011087
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1000-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001648
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1001-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001703
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1001-WindowsClient.o.utoc": 13 files (13 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/CosmeticShoes/Content/Assets/FORT_Shoes/", order 3, version 8 in 00:00:00.0001311
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1002-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001488
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1001-WindowsClient.utoc": 242 files (242 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0004770
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1002-WindowsClient.utoc": 6 files (6 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0091919
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1003-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001906
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1003-WindowsClient.utoc": 22 files (22 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001223
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1005-WindowsClient.o.utoc": 6 files (6 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0000846
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1005-WindowsClient.utoc": 88 files (88 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0002792
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1005-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001255
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1007-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001465
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1007-WindowsClient.o.utoc": 18 files (18 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.0001732
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1008-WindowsClient.utoc": 50 files (50 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001892
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk80-WindowsClient.utoc": 8651 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0657467
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1008-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001292
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1008-WindowsClient.o.utoc": 3 files (3 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0000823
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1010-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001273
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1010-WindowsClient.o.utoc": 48 files (48 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0002453
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1007-WindowsClient.utoc": 287 files (287 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0010660
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1012-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001000
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1012-WindowsClient.utoc": 26 files (26 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0197550
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1010-WindowsClient.utoc": 334 files (334 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0205689
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1013-WindowsClient.utoc": 50 files (50 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001613
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1013-WindowsClient.pak": 2 files (2 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001226
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1015-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001008
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1016-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0000944
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1015-WindowsClient.utoc": 4 files (4 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0001315
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1016-WindowsClient.utoc": 4 files (4 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0000914
+2025-07-11 14:02:52 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40-WindowsClient.o.utoc": 45566 files, order 3, version 8 in 00:00:00.6837856
+2025-07-11 14:02:53 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100-WindowsClient.o.utoc": 64030 files, order 3, version 8 in 00:00:00.6459922
+2025-07-11 14:02:53 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN.pak": 133411 files (81 encrypted), order 3, version 11 in 00:00:00.9488139
+2025-07-11 14:02:53 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60-WindowsClient.utoc": 152050 files, order 3, version 8 in 00:00:01.1348400
+2025-07-11 14:02:53 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30-WindowsClient.utoc": 151850 files, order 3, version 8 in 00:00:01.1487132
+2025-07-11 14:02:53 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13-WindowsClient.utoc": 227063 files, order 3, version 8 in 00:00:01.6179808
+2025-07-11 14:02:53 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40-WindowsClient.utoc": 238960 files, order 3, version 8 in 00:00:01.6327491
+2025-07-11 14:02:54 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100-WindowsClient.utoc": 400063 files, order 3, version 8 in 00:00:02.0092143
+2025-07-11 14:02:55 [INF] FModel.ViewModels.CUE4ParseViewModel.LoadVfs: Project: FortniteGame | Mounted: 108/123 | AES: 13/18 | Files: x1764324
+2025-07-11 14:02:55 [INF] FModel.ViewModels.ApiEndpoints.FModelApiEndpoint+<GetNewsAsync>d__9.MoveNext: ["Get"] [OK(200)] 'https://api.fmodel.app/v1/news/4.4.4.0?game=FortniteGame'
+2025-07-11 14:02:56 [INF] FModel.ViewModels.CUE4ParseViewModel+<>c__DisplayClass38_0.<InitMappings>b__0: Mappings pulled from '++Fortnite+Release-36.10-CL-43486998-Windows_zs.usmap'
+2025-07-11 14:02:56 [INF] FModel.ViewModels.ApiEndpoints.EpicApiEndpoint+<GetAuthAsync>d__7.MoveNext: ["Post"] [OK(200)] 'https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/token'
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40ondemandoptional-WindowsClient.utoc": 5 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0007800
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0009393
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/Juno/JunoGame/Content/Effects/CameraFX/Textures/", order 3, version 8 in 00:00:00.0010976
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemandoptional-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0013321
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40ondemand-WindowsClient.utoc": 5 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0014031
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10ondemandoptional-WindowsClient.utoc": 14 files, mount point: "FortniteGame/Content/Characters/Player/Male/Medium/M_MED_Tactical_Fisherman_Oil/Textures/", order 3, version 8 in 00:00:00.0013985
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13ondemandoptional-WindowsClient.utoc": 26 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0012856
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10ondemand-WindowsClient.utoc": 14 files, mount point: "FortniteGame/Content/Characters/Player/Male/Medium/M_MED_Tactical_Fisherman_Oil/Textures/", order 3, version 8 in 00:00:00.0016449
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60ondemandoptional-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/Juno/JunoGame/Content/Effects/CameraFX/Textures/", order 3, version 8 in 00:00:00.0018120
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13ondemand-WindowsClient.utoc": 27 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0020652
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30ondemand-WindowsClient.utoc": 5390 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0101789
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30ondemandoptional-WindowsClient.utoc": 5205 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0103480
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100ondemand-WindowsClient.utoc": 67400 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.1378798
+2025-07-11 14:02:56 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100ondemandoptional-WindowsClient.utoc": 68405 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.1430136
+2025-07-11 14:02:57 [INF] FModel.Services.DiscordHandler+<>c.<Initialize>b__6_0: @fljpnews (798815947350999061) is now ready
+2025-07-11 14:03:04 [INF] FModel.App.AppExit: ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+2025-07-11 14:03:08 [INF] FModel.App.OnStartup: Version 4.4.4.0 (1f1d2ae3c2cf3a47fadfe0fefd11c0e161fa57db)
+2025-07-11 14:03:08 [INF] FModel.App.OnStartup: Windows 11 Home (64-bit)
+2025-07-11 14:03:08 [INF] FModel.App.OnStartup: .NET 8.0.17
+2025-07-11 14:03:08 [INF] FModel.App.OnStartup: Culture ja-JP
+2025-07-11 14:03:09 [INF] FModel.ViewModels.CUE4ParseViewModel.<Initialize>b__33_0: GAME_UE5_7 (DesktopMobile) | Archives: x123 | AES: x18 | Loose Files: x0
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_HUDs.pak": 2 files, order 3, version 3 in 00:00:00.0022092
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_AthenaHUD.pak": 2 files, order 3, version 3 in 00:00:00.0016042
+2025-07-11 14:03:09 [WRN] CUE4Parse.UE4.VirtualFileSystem.AbstractVfsReader.ValidateMountPoint: "pakchunk100iad-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk100iad-WindowsClient.pak": 0 files, order 3, version 11 in 00:00:00.0113646
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4640-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0116004
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk90-WindowsClient.pak": 40 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002227
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk10-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0112055
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk90-WindowsClient.o.utoc": 957 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0127581
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4637-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Terrain/", order 3, version 8 in 00:00:00.0112397
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakChunkEarly-WindowsClient.utoc": 3 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0196251
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4636-WindowsClient.o.utoc": 18 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0200838
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk70-WindowsClient.utoc": 189 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0188687
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4651-WindowsClient.utoc": 61 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0191218
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4650-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0142921
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4641-WindowsClient.utoc": 15 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001545
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4643-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0198901
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4650-WindowsClient.utoc": 13 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0199950
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4640-WindowsClient.utoc": 29 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001940
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4640-WindowsClient.o.utoc": 6 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/Alpine/Content/", order 3, version 8 in 00:00:00.0001138
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk70-WindowsClient.o.utoc": 6 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/", order 3, version 8 in 00:00:00.0000894
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4633-WindowsClient.o.utoc": 16 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0002402
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0011953
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk80-WindowsClient.o.utoc": 2126 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0229074
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk8-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Content/L10N/ru/Environments/Helios/Props/Commerce/Commerce_HangingLights_A/Materials/", order 3, version 8 in 00:00:00.0012068
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10-WindowsClient.o.utoc": 3049 files, order 3, version 8 in 00:00:00.0198495
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk50-WindowsClient.o.utoc": 6335 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0407340
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk30-WindowsClient.pak": 1708 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0215286
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk20-WindowsClient.o.utoc": 6498 files, order 3, version 8 in 00:00:00.0604951
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "UEFNFortniteGame-WindowsUEFN.o.utoc": 5181 files, order 3, version 8 in 00:00:00.0424215
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk13-WindowsClient.pak": 3713 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0632943
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk0-WindowsClient.pak": 9921 files (1906 encrypted), order 3, version 11 in 00:00:00.0732527
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk80-WindowsClient.utoc": 8651 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0815150
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10-WindowsClient.utoc": 12787 files, order 3, version 8 in 00:00:00.0944938
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk50-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002734
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk20-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002811
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4614-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/Artemis/Sets/Celebration/Materials/Graffiti_Decals/", order 3, version 8 in 00:00:00.0001233
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk100-WindowsClient.pak": 94 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0007783
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4642-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001217
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_4.pak": 4 files, order 3, version 3 in 00:00:00.0000627
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4635-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0001003
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4643-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0004729
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4641-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002418
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4641-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/Borealis/Content/", order 3, version 8 in 00:00:00.0001062
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4634-WindowsClient.o.utoc": 24 files, mount point: "FortniteGame/Content/Environments/Asteria/", order 3, version 8 in 00:00:00.0002150
+2025-07-11 14:03:09 [WRN] CUE4Parse.UE4.VirtualFileSystem.AbstractVfsReader.ValidateMountPoint: "pakchunk0ondemand-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4644-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003550
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4646-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Rubble_A/", order 3, version 8 in 00:00:00.0001170
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4647-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/", order 3, version 8 in 00:00:00.0001392
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk0ondemand-WindowsClient.pak": 0 files, order 3, version 11 in 00:00:00.0003025
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4644-WindowsClient.utoc": 10 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001789
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk80-WindowsClient.pak": 310 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0018359
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4645-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Table_A/", order 3, version 8 in 00:00:00.0000664
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4642-WindowsClient.pak": 22 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002023
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk40-WindowsClient.pak": 544 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0027739
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4651-WindowsClient.o.utoc": 7 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/DM_404_S2_B/Content/", order 3, version 8 in 00:00:00.0000685
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk90-WindowsClient.utoc": 3722 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0148867
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0-WindowsClient.o.utoc": 3289 files, order 3, version 8 in 00:00:00.0287646
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk4644-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/GoldRush/Content/", order 3, version 8 in 00:00:00.0002430
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk4651-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 11 in 00:00:00.0002951
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN_Unlock_P.pak": 2 files, order 103, version 3 in 00:00:00.0000603
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100iad-WindowsClient.utoc": 24807 files, mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.2422871
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30-WindowsClient.o.utoc": 30091 files, order 3, version 8 in 00:00:00.2754812
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk11-WindowsClient.o.utoc": 21210 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.3000113
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk60-WindowsClient.pak": 7492 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.1278525
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk70-WindowsClient.pak": 91 files, mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0005363
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1000-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001663
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1000-WindowsClient.utoc": 634 files (634 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0013512
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1000-WindowsClient.o.utoc": 84 files (84 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0006978
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1001-WindowsClient.o.utoc": 13 files (13 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/CosmeticShoes/Content/Assets/FORT_Shoes/", order 3, version 8 in 00:00:00.0002684
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1001-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003510
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1001-WindowsClient.utoc": 242 files (242 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0100368
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1002-WindowsClient.utoc": 6 files (6 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0001207
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1002-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002292
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1003-WindowsClient.utoc": 22 files (22 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001760
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1003-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001518
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1005-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001695
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1005-WindowsClient.utoc": 88 files (88 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0003213
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1005-WindowsClient.o.utoc": 6 files (6 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001053
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "UEFNFortniteGame-WindowsUEFN.utoc": 24446 files, order 3, version 8 in 00:00:00.2095863
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1007-WindowsClient.utoc": 287 files (287 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0007289
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1007-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001906
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1007-WindowsClient.o.utoc": 18 files (18 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.0001403
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1008-WindowsClient.utoc": 50 files (50 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0001959
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1008-WindowsClient.o.utoc": 3 files (3 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0000739
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1008-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001470
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1010-WindowsClient.o.utoc": 48 files (48 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001828
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1010-WindowsClient.utoc": 334 files (334 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0011827
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakChunkEarly-WindowsClient.pak": 21840 files (1906 encrypted), order 3, version 11 in 00:00:00.2229149
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1010-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0002068
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1012-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001623
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1012-WindowsClient.utoc": 26 files (26 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001836
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1013-WindowsClient.pak": 2 files (2 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0000961
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1013-WindowsClient.utoc": 50 files (50 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0001935
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1015-WindowsClient.utoc": 4 files (4 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0001765
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1015-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0003500
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk1016-WindowsClient.utoc": 4 files (4 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/", order 3, version 8 in 00:00:00.0001129
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "pakchunk1016-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 11 in 00:00:00.0001565
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk20-WindowsClient.utoc": 33847 files, order 3, version 8 in 00:00:00.3646089
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13-WindowsClient.o.utoc": 23663 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2610901
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0-WindowsClient.utoc": 30804 files, order 3, version 8 in 00:00:00.2626293
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40-WindowsClient.o.utoc": 45566 files, order 3, version 8 in 00:00:00.4518081
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60-WindowsClient.o.utoc": 29552 files, order 3, version 8 in 00:00:00.3218365
+2025-07-11 14:03:09 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk50-WindowsClient.utoc": 31726 files, order 3, version 8 in 00:00:00.3423053
+2025-07-11 14:03:10 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100-WindowsClient.o.utoc": 64030 files, order 3, version 8 in 00:00:00.7641834
+2025-07-11 14:03:10 [INF] CUE4Parse.UE4.Pak.PakFileReader.Mount: Pak "UEFNFortniteGame-WindowsUEFN.pak": 133411 files (81 encrypted), order 3, version 11 in 00:00:01.0673653
+2025-07-11 14:03:10 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30-WindowsClient.utoc": 151850 files, order 3, version 8 in 00:00:01.1116966
+2025-07-11 14:03:10 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60-WindowsClient.utoc": 152050 files, order 3, version 8 in 00:00:01.1735260
+2025-07-11 14:03:10 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40-WindowsClient.utoc": 238960 files, order 3, version 8 in 00:00:01.7426744
+2025-07-11 14:03:10 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13-WindowsClient.utoc": 227063 files, order 3, version 8 in 00:00:01.6321231
+2025-07-11 14:03:11 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100-WindowsClient.utoc": 400063 files, order 3, version 8 in 00:00:02.2149727
+2025-07-11 14:03:12 [INF] FModel.ViewModels.CUE4ParseViewModel.LoadVfs: Project: FortniteGame | Mounted: 108/123 | AES: 13/18 | Files: x1764324
+2025-07-11 14:03:13 [INF] FModel.ViewModels.ApiEndpoints.FModelApiEndpoint+<GetNewsAsync>d__9.MoveNext: ["Get"] [OK(200)] 'https://api.fmodel.app/v1/news/4.4.4.0?game=FortniteGame'
+2025-07-11 14:03:13 [INF] FModel.ViewModels.CUE4ParseViewModel+<>c__DisplayClass38_0.<InitMappings>b__0: Mappings pulled from '++Fortnite+Release-36.10-CL-43486998-Windows_zs.usmap'
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13ondemand-WindowsClient.utoc": 27 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0006456
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60ondemandoptional-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/Juno/JunoGame/Content/Effects/CameraFX/Textures/", order 3, version 8 in 00:00:00.0007558
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemandoptional-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0001057
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10ondemand-WindowsClient.utoc": 14 files, mount point: "FortniteGame/Content/Characters/Player/Male/Medium/M_MED_Tactical_Fisherman_Oil/Textures/", order 3, version 8 in 00:00:00.0022847
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk60ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/Juno/JunoGame/Content/Effects/CameraFX/Textures/", order 3, version 8 in 00:00:00.0024230
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40ondemand-WindowsClient.utoc": 5 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0028273
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", order 3, version 8 in 00:00:00.0034718
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk40ondemandoptional-WindowsClient.utoc": 5 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0001359
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk10ondemandoptional-WindowsClient.utoc": 14 files, mount point: "FortniteGame/Content/Characters/Player/Male/Medium/M_MED_Tactical_Fisherman_Oil/Textures/", order 3, version 8 in 00:00:00.0002453
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk13ondemandoptional-WindowsClient.utoc": 26 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0002031
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30ondemand-WindowsClient.utoc": 5390 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0123935
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk30ondemandoptional-WindowsClient.utoc": 5205 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0191027
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100ondemandoptional-WindowsClient.utoc": 68405 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.1545281
+2025-07-11 14:03:14 [INF] CUE4Parse.UE4.IO.IoStoreReader.Mount: IoStore "pakchunk100ondemand-WindowsClient.utoc": 67400 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.1802120
+2025-07-11 14:03:14 [INF] FModel.Services.DiscordHandler+<>c.<Initialize>b__6_0: @fljpnews (798815947350999061) is now ready
+2025-07-11 14:03:32 [INF] FModel.App.AppExit: ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

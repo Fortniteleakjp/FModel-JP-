@@ -1,0 +1,110 @@
+2025-07-11 14:01:48 [FModel] [INF] Version 4.4.4.0 (c6c8cf201e1aed3413f72cd8d2386fdaf5a676eb)
+2025-07-11 14:01:48 [FModel] [INF] Windows 11 Home (64-bit)
+2025-07-11 14:01:48 [FModel] [INF] .NET 8.0.17
+2025-07-11 14:01:48 [FModel] [INF] Culture ja-JP
+2025-07-11 14:01:48 [FModel] [INF] 84344832 (DesktopMobile) | Archives: x123 | AES: x18
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4647-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/", version 8 in 00:00:00.0018417
+2025-07-11 14:01:48 [FModel] [INF] Pak "UEFNFortniteGame-WindowsUEFN_HUDs.pak": 2 files, version 3 in 00:00:00.0019244
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk40-WindowsClient.pak": 544 files, mount point: "FortniteGame/", version 11 in 00:00:00.0035926
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk70-WindowsClient.pak": 91 files, mount point: "FortniteGame/", version 11 in 00:00:00.0029405
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk50-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", version 11 in 00:00:00.0023521
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk8-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Content/L10N/ru/Environments/Helios/Props/Commerce/Commerce_HangingLights_A/Materials/", version 8 in 00:00:00.0014465
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk70-WindowsClient.o.utoc": 6 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/", version 8 in 00:00:00.0003762
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk4644-WindowsClient.pak": 22 files, mount point: "FortniteGame/", version 11 in 00:00:00.0017759
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk4643-WindowsClient.pak": 22 files, mount point: "FortniteGame/", version 11 in 00:00:00.0029301
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4614-WindowsClient.o.utoc": 4 files, mount point: "FortniteGame/Content/Environments/Artemis/Sets/Celebration/Materials/Graffiti_Decals/", version 8 in 00:00:00.0013166
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4644-WindowsClient.utoc": 10 files, mount point: "FortniteGame/", version 8 in 00:00:00.0009366
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4651-WindowsClient.o.utoc": 7 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/DM_404_S2_B/Content/", version 8 in 00:00:00.0001016
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4640-WindowsClient.utoc": 29 files, mount point: "FortniteGame/", version 8 in 00:00:00.0017073
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk10-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", version 11 in 00:00:00.0040234
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4634-WindowsClient.o.utoc": 24 files, mount point: "FortniteGame/Content/Environments/Asteria/", version 8 in 00:00:00.0012048
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakChunkEarly-WindowsClient.utoc": 3 files, mount point: "FortniteGame/Content/", version 8 in 00:00:00.0000270
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4651-WindowsClient.utoc": 61 files, mount point: "FortniteGame/", version 8 in 00:00:00.0000909
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk90-WindowsClient.pak": 40 files, mount point: "FortniteGame/", version 11 in 00:00:00.0004023
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk80-WindowsClient.pak": 310 files, mount point: "FortniteGame/", version 11 in 00:00:00.0011153
+2025-07-11 14:01:48 [FModel] [WRN] "pakchunk0ondemand-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk0ondemand-WindowsClient.pak": 0 files, version 11 in 00:00:00.0003358
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk4650-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", version 11 in 00:00:00.0001670
+2025-07-11 14:01:48 [FModel] [INF] Pak "UEFNFortniteGame-WindowsUEFN_AthenaHUD.pak": 2 files, version 3 in 00:00:00.0000345
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4642-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", version 8 in 00:00:00.0000723
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk4651-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", version 11 in 00:00:00.0002355
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/UI/Foundation/Textures/Banner/Standard/", version 8 in 00:00:00.0000226
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4636-WindowsClient.o.utoc": 18 files, mount point: "FortniteGame/Content/", version 8 in 00:00:00.0000695
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk70-WindowsClient.utoc": 189 files, mount point: "FortniteGame/", version 8 in 00:00:00.0067973
+2025-07-11 14:01:48 [FModel] [ERR] System.AggregateException: One or more errors occurred. (Couldn't find LoaderGlobalNameHashes chunk in IoStore global.utoc)
+ ---> System.Collections.Generic.KeyNotFoundException: Couldn't find LoaderGlobalNameHashes chunk in IoStore global.utoc
+   at CUE4Parse.UE4.IO.IoGlobalData..ctor(IoStoreReader globalReader)
+   at CUE4Parse.FileProvider.Vfs.AbstractVfsFileProvider.VerifyGlobalData(IAesVfsReader reader)
+   at CUE4Parse.FileProvider.Vfs.AbstractVfsFileProvider.SubmitKeysAsync(IEnumerable`1 keys)
+   --- End of inner exception stack trace ---
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at FModel.ViewModels.CUE4ParseViewModel.LoadVfs(IEnumerable`1 aesKeys)
+   at FModel.ViewModels.ApplicationViewModel.<UpdateProvider>b__45_0(CancellationToken cancellationToken)
+   at FModel.ViewModels.ThreadWorkerViewModel.<>c__DisplayClass24_0.<ProcessQueues>b__0()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at FModel.ViewModels.ThreadWorkerViewModel.ProcessQueues()
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4641-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/Borealis/Content/", version 8 in 00:00:00.0000601
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4637-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Terrain/", version 8 in 00:00:00.0000610
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4646-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Rubble_A/", version 8 in 00:00:00.0000372
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4635-WindowsClient.o.utoc": 3 files, mount point: "FortniteGame/Content/", version 8 in 00:00:00.0000223
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk4642-WindowsClient.pak": 22 files, mount point: "FortniteGame/", version 11 in 00:00:00.0002248
+2025-07-11 14:01:48 [FModel] [INF] Pak "UEFNFortniteGame-WindowsUEFN_Unlock_P.pak": 2 files, version 3 in 00:00:00.0000448
+2025-07-11 14:01:48 [FModel] [INF] Pak "UEFNFortniteGame-WindowsUEFN_4.pak": 4 files, version 3 in 00:00:00.0000299
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk4640-WindowsClient.pak": 22 files, mount point: "FortniteGame/", version 11 in 00:00:00.0001629
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4643-WindowsClient.utoc": 14 files, mount point: "FortniteGame/", version 8 in 00:00:00.0000369
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4644-WindowsClient.o.utoc": 1 files, mount point: "FortniteGame/Plugins/GameFeatures/DelMar/Levels/GoldRush/Content/", version 8 in 00:00:00.0000081
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4633-WindowsClient.o.utoc": 16 files, mount point: "FortniteGame/Content/", version 8 in 00:00:00.0000722
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4650-WindowsClient.utoc": 13 files, mount point: "FortniteGame/", version 8 in 00:00:00.0000972
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk10-WindowsClient.o.utoc": 3049 files, version 8 in 00:00:00.0258565
+2025-07-11 14:01:48 [FModel] [INF] IoStore "UEFNFortniteGame-WindowsUEFN.o.utoc": 5181 files, version 8 in 00:00:00.0280975
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk0-WindowsClient.o.utoc": 3289 files, version 8 in 00:00:00.0214078
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk30-WindowsClient.pak": 1708 files, mount point: "FortniteGame/", version 11 in 00:00:00.0112361
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk4641-WindowsClient.pak": 22 files, mount point: "FortniteGame/", version 11 in 00:00:00.0002092
+2025-07-11 14:01:48 [FModel] [WRN] "pakchunk100iad-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk100iad-WindowsClient.pak": 0 files, version 11 in 00:00:00.0056088
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk90-WindowsClient.utoc": 3722 files, mount point: "FortniteGame/", version 8 in 00:00:00.0453607
+2025-07-11 14:01:48 [FModel] [INF] IoStore "pakchunk4645-WindowsClient.o.utoc": 2 files, mount point: "FortniteGame/Content/Environments/Asteria/Props/Ancients/Ancients_Table_A/", version 8 in 00:00:00.0000407
+2025-07-11 14:01:48 [FModel] [INF] Pak "pakchunk100-WindowsClient.pak": 94 files, mount point: "FortniteGame/", version 11 in 00:00:00.0003500
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk20-WindowsClient.o.utoc": 6498 files, version 8 in 00:00:00.0745726
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk50-WindowsClient.o.utoc": 6335 files, mount point: "FortniteGame/", version 8 in 00:00:00.0562505
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk80-WindowsClient.o.utoc": 2126 files, mount point: "FortniteGame/", version 8 in 00:00:00.0336857
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk80-WindowsClient.utoc": 8651 files, mount point: "FortniteGame/", version 8 in 00:00:00.0866435
+2025-07-11 14:01:49 [FModel] [INF] Pak "pakchunk60-WindowsClient.pak": 7492 files, mount point: "FortniteGame/", version 11 in 00:00:00.1151280
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk10-WindowsClient.utoc": 12787 files, version 8 in 00:00:00.1380574
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk100iad-WindowsClient.utoc": 24807 files, mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", version 8 in 00:00:00.2141718
+2025-07-11 14:01:49 [FModel] [INF] IoStore "UEFNFortniteGame-WindowsUEFN.utoc": 24446 files, version 8 in 00:00:00.2368675
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk20-WindowsClient.utoc": 33847 files, version 8 in 00:00:00.2763166
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk11-WindowsClient.o.utoc": 21210 files, mount point: "FortniteGame/", version 8 in 00:00:00.2706924
+2025-07-11 14:01:49 [FModel] [INF] Pak "pakChunkEarly-WindowsClient.pak": 21840 files (1906 encrypted), version 11 in 00:00:00.2412647
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk60-WindowsClient.o.utoc": 29552 files, version 8 in 00:00:00.3261550
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk0-WindowsClient.utoc": 30804 files, version 8 in 00:00:00.3429070
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk30-WindowsClient.o.utoc": 30091 files, version 8 in 00:00:00.3801670
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk40-WindowsClient.o.utoc": 45566 files, version 8 in 00:00:00.5154900
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk50-WindowsClient.utoc": 31726 files, version 8 in 00:00:00.4148495
+2025-07-11 14:01:49 [FModel] [INF] IoStore "pakchunk100-WindowsClient.o.utoc": 64030 files, version 8 in 00:00:00.7218506
+2025-07-11 14:01:49 [FModel] [INF] Pak "UEFNFortniteGame-WindowsUEFN.pak": 133411 files (81 encrypted), version 11 in 00:00:00.9591380
+2025-07-11 14:01:50 [FModel] [INF] IoStore "pakchunk30-WindowsClient.utoc": 151850 files, version 8 in 00:00:01.0722264
+2025-07-11 14:01:50 [FModel] [INF] IoStore "pakchunk13-WindowsClient.utoc": 227063 files, version 8 in 00:00:01.3101250
+2025-07-11 14:01:50 [FModel] [INF] IoStore "pakchunk40-WindowsClient.utoc": 238960 files, version 8 in 00:00:01.3270446
+2025-07-11 14:01:50 [FModel] [INF] ["Get"] [OK(200)] 'https://api.fmodel.app/v1/news/4.4.4.0?game=fortnitegame'
+2025-07-11 14:01:50 [FModel] [INF] IoStore "pakchunk100-WindowsClient.utoc": 400063 files, version 8 in 00:00:01.6330938
+2025-07-11 14:01:51 [FModel] [INF] Mappings pulled from '++Fortnite+Release-36.10-CL-43486998-Windows_zs.usmap'
+2025-07-11 14:01:52 [FModel] [INF] ["Post"] [Bad Request(400)] 'https://account-public-service-prod03.ol.epicgames.com/account/api/oauth/token'
+2025-07-11 14:01:52 [FModel] [ERR] CUE4Parse.UE4.Exceptions.ParserException: Invalid FString length '-1160314880'
+   at CUE4Parse.UE4.Readers.FArchive.ReadFString()
+   at CUE4Parse.UE4.IO.Objects.FOnDemandTocContainerEntry..ctor(FArchive Ar, EOnDemandTocVersion version)
+   at CUE4Parse.UE4.IO.IoChunkToc.<>c__DisplayClass7_0.<.ctor>b__0()
+   at CUE4Parse.UE4.IO.IoChunkToc..ctor(FArchive Ar)
+   at CUE4Parse.UE4.IO.IoChunkToc..ctor(FileInfo file)
+   at CUE4Parse.UE4.IO.IoChunkToc..ctor(String file)
+   at FModel.ViewModels.CUE4ParseViewModel.<VerifyOnDemandArchives>b__48_0()
+   at FModel.MainWindow.OnLoaded(Object sender, RoutedEventArgs e)
+   at System.Threading.Tasks.Task.<>c.<ThrowAsync>b__128_0(Object state)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-07-11 14:01:52 [FModel] [INF] @fljpnews (798815947350999061) is now ready
+2025-07-11 14:02:50 [FModel] [INF] ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
