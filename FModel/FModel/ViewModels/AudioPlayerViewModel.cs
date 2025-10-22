@@ -240,7 +240,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         Application.Current.Dispatcher.Invoke(() =>
         {
             _audioFiles.Add(new AudioFile(_audioFiles.Count, data, filePath));
-            if (_audioFiles.Count > 1) return;
+            if (_audioFiles.Count > 1)
+                return;
 
             SelectedAudioFile = _audioFiles.Last();
             Load();
@@ -253,7 +254,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         Application.Current.Dispatcher.Invoke(() =>
         {
             _audioFiles.Add(new AudioFile(_audioFiles.Count, new FileInfo(filePath)));
-            if (_audioFiles.Count > 1) return;
+            if (_audioFiles.Count > 1)
+                return;
 
             SelectedAudioFile = _audioFiles.Last();
             Load();
@@ -263,7 +265,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Remove()
     {
-        if (_audioFiles.Count < 1) return;
+        if (_audioFiles.Count < 1)
+            return;
         Application.Current.Dispatcher.Invoke(() =>
         {
             _audioFiles.RemoveAt(SelectedAudioFile.Id);
@@ -276,7 +279,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Replace(AudioFile newAudio)
     {
-        if (_audioFiles.Count < 1) return;
+        if (_audioFiles.Count < 1)
+            return;
         Application.Current.Dispatcher.Invoke(() =>
         {
             _audioFiles.Insert(SelectedAudioFile.Id, newAudio);
@@ -287,7 +291,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void SavePlaylist()
     {
-        if (_audioFiles.Count < 1) return;
+        if (_audioFiles.Count < 1)
+            return;
         Application.Current.Dispatcher.Invoke(() =>
         {
             foreach (var a in _audioFiles)
@@ -295,14 +300,27 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 Save(a, true);
             }
 
-            FLogger.Append(ELog.Information, () => FLogger.Text($"Successfully saved {_audioFiles.Count} audio files", Constants.WHITE, true));
+            FLogger.Append(ELog.Information, () =>
+                        {
+                            FLogger.Text("Successfully saved audio from ", Constants.WHITE);
+                            FLogger.Link(_audioFiles.First().FileName, _audioFiles.First().FilePath, true);
+                        });
+            if (_audioFiles.Count > 1)
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved audio from ", Constants.WHITE);
+                    FLogger.Link(_audioFiles.First().FileName, _audioFiles.First().FilePath, true);
+                });
+            if (_audioFiles.Count > 1)
+                FLogger.Append(ELog.Information, () => FLogger.Text($"Successfully saved {_audioFiles.Count} audio files", Constants.WHITE, true));
         });
     }
 
     public void Save(AudioFile file = null, bool auto = false)
     {
         var fileToSave = file ?? SelectedAudioFile;
-        if (_audioFiles.Count < 1 || fileToSave?.Data == null) return;
+        if (_audioFiles.Count < 1 || fileToSave?.Data == null)
+            return;
         var path = fileToSave.FilePath;
 
         if (!auto)
@@ -313,7 +331,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
                 FileName = fileToSave.FileName,
                 InitialDirectory = UserSettings.Default.AudioDirectory
             };
-            if (!saveFileDialog.ShowDialog().GetValueOrDefault()) return;
+            if (!saveFileDialog.ShowDialog().GetValueOrDefault())
+                return;
             path = saveFileDialog.FileName;
         }
         else
@@ -369,7 +388,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void PlayPauseOnForce()
     {
-        if (_audioFiles.Count < 1 || SelectedAudioFile.Id == PlayedFile.Id) return;
+        if (_audioFiles.Count < 1 || SelectedAudioFile.Id == PlayedFile.Id)
+            return;
 
         Stop();
         Load();
@@ -378,7 +398,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Next()
     {
-        if (_audioFiles.Count < 1) return;
+        if (_audioFiles.Count < 1)
+            return;
 
         Stop();
         SelectedAudioFile = _audioFiles.Next(PlayedFile.Id);
@@ -388,7 +409,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Previous()
     {
-        if (_audioFiles.Count < 1) return;
+        if (_audioFiles.Count < 1)
+            return;
 
         Stop();
         SelectedAudioFile = _audioFiles.Previous(PlayedFile.Id);
@@ -398,51 +420,59 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public void Play()
     {
-        if (_soundOut == null || IsPlaying) return;
+        if (_soundOut == null || IsPlaying)
+            return;
         _discordHandler.UpdateButDontSavePresence(null, $"Audio Player: {PlayedFile.FileName} ({PlayedFile.Duration:g})");
         _soundOut.Play();
     }
 
     public void Pause()
     {
-        if (_soundOut == null || IsPaused) return;
+        if (_soundOut == null || IsPaused)
+            return;
         _soundOut.Pause();
     }
 
     public void Resume()
     {
-        if (_soundOut == null || !IsPaused) return;
+        if (_soundOut == null || !IsPaused)
+            return;
         _soundOut.Resume();
     }
 
     public void Stop()
     {
-        if (_soundOut == null || IsStopped) return;
+        if (_soundOut == null || IsStopped)
+            return;
         _soundOut.Stop();
     }
 
     public void HideToggle()
     {
-        if (!IsPlaying) return;
+        if (!IsPlaying)
+            return;
         _hideToggle = !_hideToggle;
         RaiseSourcePropertyChangedEvent(ESourceProperty.HideToggle, _hideToggle);
     }
 
     public void SkipTo(double percentage)
     {
-        if (_soundOut == null || _waveSource == null) return;
+        if (_soundOut == null || _waveSource == null)
+            return;
         _waveSource.Position = (long) (_waveSource.Length * percentage);
     }
 
     public void Volume()
     {
-        if (_soundOut == null) return;
+        if (_soundOut == null)
+            return;
         _soundOut.Volume = UserSettings.Default.AudioPlayerVolume / 100;
     }
 
     public void Device()
     {
-        if (_soundOut == null) return;
+        if (_soundOut == null)
+            return;
 
         Pause();
         LoadSoundOut();
@@ -480,7 +510,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     private void TimerTick(object state)
     {
-        if (_waveSource == null || _soundOut == null) return;
+        if (_waveSource == null || _soundOut == null)
+            return;
 
         if (_position != PlayedFile.Position)
         {
@@ -504,7 +535,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     private void LoadSoundOut()
     {
-        if (_waveSource == null) return;
+        if (_waveSource == null)
+            return;
         _soundOut = new WasapiOut(true, AudioClientShareMode.Shared, 100, ThreadPriority.Highest) { Device = SelectedAudioDevice };
         _soundOut.Initialize(_waveSource.ToSampleSource().ToWaveSource(16));
         _soundOut.Volume = UserSettings.Default.AudioPlayerVolume / 100;
@@ -527,16 +559,17 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public event EventHandler<SourcePropertyChangedEventArgs> SourcePropertyChangedEvent = (sender, args) =>
     {
-        if (sender is not AudioPlayerViewModel viewModel) return;
+        if (sender is not AudioPlayerViewModel viewModel)
+            return;
         switch (args.Property)
         {
             case ESourceProperty.PlaybackState:
-            {
-                if (viewModel._position == viewModel._length && (PlaybackState) args.Value == PlaybackState.Stopped)
-                    viewModel.Next();
+                {
+                    if (viewModel._position == viewModel._length && (PlaybackState) args.Value == PlaybackState.Stopped)
+                        viewModel.Next();
 
-                break;
-            }
+                    break;
+                }
         }
     };
 
@@ -563,28 +596,28 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             case "wem":
             case "at9":
             case "raw":
-            {
-                if (TryConvert(out var wavFilePath))
                 {
-                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
-                    Replace(newAudio);
-                    return true;
-                }
+                    if (TryConvert(out var wavFilePath))
+                    {
+                        var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(wavFilePath));
+                        Replace(newAudio);
+                        return true;
+                    }
 
-                return false;
-            }
+                    return false;
+                }
             case "rada":
             case "binka":
-            {
-                if (TryDecode(SelectedAudioFile.Extension, out var rawFilePath))
                 {
-                    var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(rawFilePath));
-                    Replace(newAudio);
-                    return true;
-                }
+                    if (TryDecode(SelectedAudioFile.Extension, out var rawFilePath))
+                    {
+                        var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(rawFilePath));
+                        Replace(newAudio);
+                        return true;
+                    }
 
-                return false;
-            }
+                    return false;
+                }
         }
 
         return true;
@@ -598,7 +631,8 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         if (!File.Exists(vgmFilePath))
         {
             vgmFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-cli.exe");
-            if (!File.Exists(vgmFilePath)) return false;
+            if (!File.Exists(vgmFilePath))
+                return false;
         }
 
         Directory.CreateDirectory(inputFilePath.SubstringBeforeLast("/"));

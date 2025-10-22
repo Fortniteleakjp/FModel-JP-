@@ -9,6 +9,7 @@ using CUE4Parse.GameTypes.MA.Objects;
 using CUE4Parse.GameTypes.MindsEye.Objects;
 using CUE4Parse.GameTypes.NetEase.MAR.Objects;
 using CUE4Parse.GameTypes.OtherGames.Objects;
+using CUE4Parse.GameTypes.PUBG.Assets.Objects;
 using CUE4Parse.GameTypes.SG2.Objects;
 using CUE4Parse.GameTypes.SOD2.Assets.Objects;
 using CUE4Parse.GameTypes.SuicideSquad.Objects;
@@ -31,6 +32,7 @@ using CUE4Parse.UE4.Objects.Engine.Ai;
 using CUE4Parse.UE4.Objects.Engine.Animation;
 using CUE4Parse.UE4.Objects.Engine.ComputeFramework;
 using CUE4Parse.UE4.Objects.Engine.Curves;
+using CUE4Parse.UE4.Objects.Engine.EdGraph;
 using CUE4Parse.UE4.Objects.Engine.GameFramework;
 using CUE4Parse.UE4.Objects.Engine.Material;
 using CUE4Parse.UE4.Objects.GameplayTags;
@@ -176,9 +178,12 @@ public class FScriptStruct
             "AnimationAttributeIdentifier" => new FAnimationAttributeIdentifier(Ar),
             "AttributeCurve" => new FAttributeCurve(Ar),
             "PCGPoint" => FFortniteReleaseBranchCustomObjectVersion.Get(Ar) < FFortniteReleaseBranchCustomObjectVersion.Type.PCGPointStructuredSerializer ? new FStructFallback(Ar, "PCGPoint") : new FPCGPoint(Ar),
+            "PCGDataPtrWrapper" => new FPCGDataPtrWrapper(Ar),
+            "PCGPointArray" => new FPCGPointArray(Ar),
             "CacheEventTrack" => type == ReadType.ZERO ? new FStructFallback() : new FCacheEventTrack(Ar),
             "StateTreeInstanceData" => type == ReadType.ZERO ? new FStructFallback() : new FStateTreeInstanceData(Ar),
             "DataCacheDuplicatedObjectData" => new FDataCacheDuplicatedObjectData(Ar),
+            "EdGraphPinType" => new FEdGraphPinType(Ar),
             
             // FortniteGame
             "ConnectivityCube" => new FConnectivityCube(Ar),
@@ -291,6 +296,31 @@ public class FScriptStruct
 
             // 2XKO
             "FixedPoint" => new FFixedPoint(Ar),
+
+            // PUBG
+            "TslSomeSKStruct" => new FTslSomeSKStruct(Ar),
+
+            // Train Sim World 6
+            "PowerQuantity" or "ForceQuantity" or "TimeUnit" or "PressureQuantity" or "VolumeQuantity" => new FStructFallback(Ar, structName, FRawHeader.FullRead),
+
+            // Daimon Blades
+            "SOS_GDValue" => new FStructFallback(Ar, structName, new FRawHeader([(1,1)]), ReadType.RAW),
+
+            // Little Nightmares 3
+            "SoftEnumName" when Ar.Game is EGame.GAME_LittleNightmares3 => new FStructFallback(Ar, structName, new FRawHeader([(1,1)]), ReadType.RAW),
+            "KosmosHangTraversalData" when Ar.Game is EGame.GAME_LittleNightmares3 => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+
+            // Reanimal
+            "EnumName" when Ar.Game is EGame.GAME_Reanimal => new FStructFallback(Ar, structName, new FRawHeader([(1,1)]), ReadType.RAW),
+            "AbstractEnum" or "EnumName" or "JumpParams" when Ar.Game is EGame.GAME_Reanimal => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+            "ChalkboardSectionKey" when Ar.Game is EGame.GAME_Reanimal => new FStructFallback(Ar, structName, new FRawHeader([(0,2), (2, 2)]), ReadType.RAW),
+            "LedgeMetaData" when Ar.Game is EGame.GAME_Reanimal => new FFixedSizeStruct(Ar, 1),
+
+            //VEIN
+            "ItemDataContainer" when Ar.Game is EGame.GAME_VEIN => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+
+            //SpongeBob SquarePants: Titans of the Tide
+            "GG_CrowdGeneratorLocations" => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
 
             _ => Ar.Game switch
             {

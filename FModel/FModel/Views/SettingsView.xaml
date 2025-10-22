@@ -13,15 +13,9 @@
                              ResizeMode="NoResize"
                              IconVisibility="Collapsed"
                              SizeToContent="Height"
+                             Title="設定"
                              MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.10'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}">
-    <adonisControls:AdonisWindow.Style>
-        <Style TargetType="adonisControls:AdonisWindow"
-               BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
-            <Setter Property="Title"
-                    Value="Settings" />
-        </Style>
-    </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -404,7 +398,7 @@
                               IsChecked="{Binding ReadShaderMaps, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
                     <TextBlock Grid.Row="25" Grid.Column="0" Text="最大 Wwise Bank (.BNK) プリフェッチ" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="25" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="512" Ticks="0,2,4,8,16,32,64,128,256,512"
+                    <Slider Grid.Row="25" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
                             Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
                 </Grid>
