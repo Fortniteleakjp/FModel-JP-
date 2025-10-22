@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using FModel.ViewModels.ApiEndpoints.Models; // AuthResponse を使用するために追加
 using CUE4Parse.UE4.Assets.Exports.Texture;
+using System.Windows.Input; // For ICommand
+using System.Windows.Media; // For Brush
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
@@ -13,11 +17,39 @@ using CUE4Parse.UE4.Assets.Exports.Nanite;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using FModel.Views.Resources.Controls;
 
 namespace FModel.ViewModels;
 
-public class SettingsViewModel : ViewModel
+public partial class SettingsViewModel : ViewModel
 {
+    // Private snapshot fields to track changes for restart logic
+    private string _outputSnapshot;
+    private string _rawDataSnapshot;
+    private string _propertiesSnapshot;
+    private string _textureSnapshot;
+    private string _audioSnapshot;
+    private string _modelSnapshot;
+    private string _gameSnapshot;
+    private ETexturePlatform _uePlatformSnapshot;
+    private EGame _ueGameSnapshot;
+    private IList<FCustomVersion> _customVersionsSnapshot;
+    private IDictionary<string, bool> _optionsSnapshot;
+    private IDictionary<string, KeyValuePair<string, string>> _mapStructTypesSnapshot;
+    private string _diffGameSnapshot;
+    private EGame? _diffUeGameSnapshot;
+    private ELanguage _assetLanguageSnapshot;
+    private ECompressedAudio _compressedAudioSnapshot;
+    private EIconStyle _cosmeticStyleSnapshot;
+    private EMeshFormat _meshExportFormatSnapshot;
+    private ESocketFormat _socketExportFormatSnapshot;
+    private EFileCompressionFormat _compressionFormatSnapshot;
+    private ELodFormat _lodExportFormatSnapshot;
+    private ENaniteMeshFormat _naniteMeshExportFormatSnapshot;
+    private EMaterialFormat _materialExportFormatSnapshot;
+    private ETextureFormat _textureExportFormatSnapshot;
+    private bool _mappingsUpdate;
+
     private readonly DiscordHandler _discordHandler = DiscordService.DiscordHandler;
 
     private bool _useCustomOutputFolders;
@@ -202,41 +234,47 @@ public class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
 
-    private string _outputSnapshot;
-    private string _rawDataSnapshot;
-    private string _propertiesSnapshot;
-    private string _textureSnapshot;
-    private string _audioSnapshot;
-    private string _modelSnapshot;
-    private string _gameSnapshot;
-    private string _diffGameSnapshot;
-    private ETexturePlatform _uePlatformSnapshot;
-    private EGame _ueGameSnapshot;
-    private IList<FCustomVersion> _customVersionsSnapshot;
-    private IDictionary<string, bool> _optionsSnapshot;
-    private IDictionary<string, KeyValuePair<string, string>> _mapStructTypesSnapshot;
-    private ELanguage _assetLanguageSnapshot;
+    // New properties for Epic Games API authentication and AES Key retrieval
+    private string _epicAuthStatusText = "Not Authenticated";
+    public string EpicAuthStatusText
+    {
+        get => _epicAuthStatusText;
+        set => SetProperty(ref _epicAuthStatusText, value);
+    }
 
-    private EGame _diffUeGameSnapshot;
-    private ECompressedAudio _compressedAudioSnapshot;
-    private EIconStyle _cosmeticStyleSnapshot;
-    private EMeshFormat _meshExportFormatSnapshot;
-    private ESocketFormat _socketExportFormatSnapshot;
-    private EFileCompressionFormat _compressionFormatSnapshot;
-    private ELodFormat _lodExportFormatSnapshot;
-    private ENaniteMeshFormat _naniteMeshExportFormatSnapshot;
-    private EMaterialFormat _materialExportFormatSnapshot;
-    private ETextureFormat _textureExportFormatSnapshot;
+    private Brush _epicAuthStatusForeground = Brushes.Red;
+    public Brush EpicAuthStatusForeground
+    {
+        get => _epicAuthStatusForeground;
+        set => SetProperty(ref _epicAuthStatusForeground, value);
+    }
 
-    private bool _mappingsUpdate;
+    private string _mapCodeInput;
+    public string MapCodeInput
+    {
+        get => _mapCodeInput;
+        set => SetProperty(ref _mapCodeInput, value);
+    }
 
+    private string _retrievedAesKey;
+    public string RetrievedAesKey
+    {
+        get => _retrievedAesKey;
+        set => SetProperty(ref _retrievedAesKey, value);
+    }
+
+    // Commands
+    public ICommand AuthenticateEpicGamesCommand { get; }
+    public ICommand GetAesKeyCommand { get; }
+    public ICommand CopyAesKeyCommand { get; }
+    public ICommand SaveAesKeyCommand { get; }
     public void Initialize()
     {
         _outputSnapshot = UserSettings.Default.OutputDirectory;
-        _rawDataSnapshot = UserSettings.Default.RawDataDirectory;
-        _propertiesSnapshot = UserSettings.Default.PropertiesDirectory;
-        _textureSnapshot = UserSettings.Default.TextureDirectory;
-        _audioSnapshot = UserSettings.Default.AudioDirectory;
+        _rawDataSnapshot = UserSettings.Default.RawDataDirectory; // _rawDataSnapshot の初期化
+        _propertiesSnapshot = UserSettings.Default.PropertiesDirectory; // _propertiesSnapshot の初期化
+        _textureSnapshot = UserSettings.Default.TextureDirectory; // _textureSnapshot の初期化
+        _audioSnapshot = UserSettings.Default.AudioDirectory; // _audioSnapshot の初期化
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
@@ -315,6 +353,20 @@ public class SettingsViewModel : ViewModel
         Platforms = new ReadOnlyObservableCollection<ETexturePlatform>(new ObservableCollection<ETexturePlatform>(EnumerateUePlatforms()));
     }
 
+    public SettingsViewModel()
+    {
+        // Initialize commands
+        AuthenticateEpicGamesCommand = new RelayCommand(AuthenticateEpicGames, CanAuthenticateEpicGames);
+        GetAesKeyCommand = new RelayCommand(GetAesKey, CanGetAesKey);
+        CopyAesKeyCommand = new RelayCommand(CopyAesKey, CanCopyAesKey);
+        SaveAesKeyCommand = new RelayCommand(SaveAesKey, CanSaveAesKey);
+
+        // Initialize settings and UI elements
+        Initialize();
+        InitializeAuthStatus();
+    }
+
+
     public bool Save(out List<SettingsOut> whatShouldIDo)
     {
         var restart = false;
@@ -390,4 +442,129 @@ public class SettingsViewModel : ViewModel
     private IEnumerable<EMaterialFormat> EnumerateMaterialExportFormat() => Enum.GetValues<EMaterialFormat>();
     private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
     private IEnumerable<ETexturePlatform> EnumerateUePlatforms() => Enum.GetValues<ETexturePlatform>();
+}
+
+// Placeholder implementations for Epic Games API authentication and AES Key retrieval
+public partial class SettingsViewModel // partial 修飾子を追加
+{
+    private void InitializeAuthStatus()
+    {
+        // This method would typically check if a valid authentication token already exists
+        // and update EpicAuthStatusText and EpicAuthStatusForeground accordingly.
+        // For now, it defaults to "Not Authenticated".
+        if (UserSettings.Default.LastAuthResponse != null && UserSettings.Default.LastAuthResponse.ExpiresAt > DateTime.Now)
+        {
+            EpicAuthStatusText = "Authenticated";
+            EpicAuthStatusForeground = Brushes.Green;
+        }
+        else
+        {
+            EpicAuthStatusText = "Not Authenticated";
+            EpicAuthStatusForeground = Brushes.Red;
+        }
+    }
+
+    private void AuthenticateEpicGames(object? parameter)
+    {
+        // Placeholder: In a real application, this would initiate an OAuth flow,
+        // likely opening a browser window for the user to log in to Epic Games.
+        // Upon successful authentication, an access token would be received.
+        EpicAuthStatusText = "Authenticating...";
+        EpicAuthStatusForeground = Brushes.Orange;
+
+        // Simulate authentication success (replace with actual OAuth logic)
+        // For demonstration, let's assume authentication is successful after a delay
+        // and a dummy token is obtained.
+        // This would typically involve calling an external service or opening a browser.
+        // Example:
+        // var authResult = await EpicGamesAuthService.Authenticate();
+        // if (authResult.IsSuccess)
+        // {
+        //     UserSettings.Default.LastAuthResponse = authResult.AuthResponse;
+        //     EpicAuthStatusText = "Authenticated";
+        //     EpicAuthStatusForeground = Brushes.Green;
+        //     Append(Information, () => Text("Epic Games authenticated successfully."));
+        // }
+        // else
+        // {
+        //     EpicAuthStatusText = "Authentication Failed";
+        //     EpicAuthStatusForeground = Brushes.Red;
+        //     Append(Error, () => Text($"Epic Games authentication failed: {authResult.ErrorMessage}"));
+        // }
+        // For now, just update status:
+        EpicAuthStatusText = "Authenticated (Placeholder)";
+        EpicAuthStatusForeground = Brushes.Green;
+        UserSettings.Default.LastAuthResponse = new AuthResponse { AccessToken = "DUMMY_TOKEN", ExpiresAt = DateTime.Now.AddHours(1) };
+        ((RelayCommand)AuthenticateEpicGamesCommand).RaiseCanExecuteChanged();
+        ((RelayCommand)GetAesKeyCommand).RaiseCanExecuteChanged();
+    }
+
+    private bool CanAuthenticateEpicGames(object? parameter)
+    {
+        return UserSettings.Default.LastAuthResponse == null || UserSettings.Default.LastAuthResponse.ExpiresAt <= DateTime.Now;
+    }
+
+    private void GetAesKey(object? parameter)
+    {
+        // Placeholder: This would call an API (e.g., from AES-Grabber's backend or a public API)
+        // using the MapCodeInput and the authentication token.
+        RetrievedAesKey = "Retrieving AES Key...";
+        // Example:
+        // var aesKey = await AesRetrievalService.GetAesKeyFromMapCode(MapCodeInput, UserSettings.Default.LastAuthResponse.AccessToken);
+        // if (!string.IsNullOrEmpty(aesKey))
+        // {
+        //     RetrievedAesKey = aesKey;
+        //     Append(Information, () => Text($"AES Key retrieved for map code '{MapCodeInput}'."));
+        // }
+        // else
+        // {
+        //     RetrievedAesKey = "Failed to retrieve AES Key. Check map code or authentication.";
+        //     Append(Error, () => Text($"Failed to retrieve AES Key for map code '{MapCodeInput}'."));
+        // }
+        // For now, simulate retrieval:
+        RetrievedAesKey = $"0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF (for map: {MapCodeInput})";
+        ((RelayCommand)CopyAesKeyCommand).RaiseCanExecuteChanged();
+        ((RelayCommand)SaveAesKeyCommand).RaiseCanExecuteChanged();
+    }
+
+    private bool CanGetAesKey(object? parameter)
+    {
+        return !string.IsNullOrWhiteSpace(MapCodeInput) &&
+               UserSettings.Default.LastAuthResponse != null &&
+               UserSettings.Default.LastAuthResponse.ExpiresAt > DateTime.Now;
+    }
+
+    private void CopyAesKey(object? parameter)
+
+    {
+        if (CanCopyAesKey(parameter))
+        {
+            System.Windows.Clipboard.SetText(RetrievedAesKey);
+            FLogger.Append(ELog.Information, () => FLogger.Text("AES Key copied to clipboard.", Constants.WHITE, true));
+        }
+    }
+    
+    private bool CanCopyAesKey(object? parameter)
+    {
+        return !string.IsNullOrWhiteSpace(RetrievedAesKey) &&
+               !RetrievedAesKey.StartsWith("Retrieving") &&
+               !RetrievedAesKey.StartsWith("Failed");
+    }
+
+    private void SaveAesKey(object? parameter)
+    {
+        if (CanSaveAesKey(parameter))
+        {
+            // Placeholder: Logic to save the AES key, e.g., to a file or UserSettings.Default.CurrentDir.AesKeys
+            // For now, just log it.
+            FLogger.Append(ELog.Information, () => FLogger.Text($"AES Key saved: {RetrievedAesKey}", Constants.WHITE, true));
+        }
+    }
+
+    private bool CanSaveAesKey(object? parameter)
+    {
+        return !string.IsNullOrWhiteSpace(RetrievedAesKey) &&
+               !RetrievedAesKey.StartsWith("Retrieving") &&
+               !RetrievedAesKey.StartsWith("Failed");
+    }
 }
