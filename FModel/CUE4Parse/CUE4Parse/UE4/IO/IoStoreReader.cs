@@ -470,12 +470,6 @@ public partial class IoStoreReader : AbstractAesVfsReader
         return new FIoContainerHeader(Ar);
     }
 
-    public override void MountPointCheck(FileProviderDictionary files)
-    {
-        if (ContainerHeader?.OptionalSegmentPackageIds is { Length: > 0 } optionalIds)
-            files.AddFiles(new Dictionary<FPackageId, GameFile>(optionalIds.Select(id => new KeyValuePair<FPackageId, GameFile>(id, new FIoStoreEntry(this, id)))));
-    }
-
     public override byte[] MountPointCheckBytes() => TocResource.DirectoryIndexBuffer ?? new byte[MAX_MOUNTPOINT_TEST_LENGTH];
     protected override byte[] ReadAndDecrypt(int length) => throw new InvalidOperationException("IoStore can't read bytes without context"); //ReadAndDecrypt(length, Ar, IsEncrypted);
 
