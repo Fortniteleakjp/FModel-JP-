@@ -93,14 +93,6 @@ namespace CUE4Parse.FileProvider.Vfs
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddFiles(IReadOnlyDictionary<FPackageId, GameFile> newFiles)
-        {
-            foreach (var kvp in newFiles)
-            {
-                _byId[kvp.Key] = kvp.Value;
-            }
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear()
         {
             _indicesBag.Clear();
