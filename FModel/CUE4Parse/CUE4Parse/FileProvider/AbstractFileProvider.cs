@@ -584,6 +584,10 @@ namespace CUE4Parse.FileProvider
                 case FPakEntry or OsGameFile:
                     return new Package(uasset, uexp?.CreateReader(), lazyUbulk, lazyUptnl, this, UseLazyPackageSerialization);
                 case FIoStoreEntry ioStoreEntry when this is IVfsFileProvider vfsFileProvider:
+                    if (vfsFileProvider.GlobalData == null)
+                    {
+                        vfsFileProvider.Initialize();
+                    }
                     return new IoPackage(uasset, ioStoreEntry.IoStoreReader.ContainerHeader, lazyUbulk, lazyUptnl, vfsFileProvider);
                 default:
                     throw new NotImplementedException($"type {file.GetType()} is not supported");
@@ -607,6 +611,10 @@ namespace CUE4Parse.FileProvider
                     var uexpAr = uexp != null ? await uexp.CreateReaderAsync().ConfigureAwait(false) : null;
                     return new Package(uasset, uexpAr, lazyUbulk, lazyUptnl, this, UseLazyPackageSerialization);
                 case FIoStoreEntry ioStoreEntry when this is IVfsFileProvider vfsFileProvider:
+                    if (vfsFileProvider.GlobalData == null)
+                    {
+                        vfsFileProvider.Initialize();
+                    }
                     return new IoPackage(uasset, ioStoreEntry.IoStoreReader.ContainerHeader, lazyUbulk, lazyUptnl, vfsFileProvider);
                 default:
                     throw new NotImplementedException($"type {file.GetType()} is not supported");
