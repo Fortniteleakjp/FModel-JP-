@@ -1,4 +1,4 @@
-<adonisControls:AdonisWindow x:Class="FModel.Views.SettingsView"
+<adonisControls:AdonisWindow x:Class="FModel.Views.SettingsView" x:Name="SettingsWindow"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:local="clr-namespace:FModel"
@@ -414,7 +414,12 @@
                         <RowDefinition Height="Auto" /> <!-- Row 3: AESKeyRetrieval Separator -->
                         <RowDefinition Height="Auto" /> <!-- Row 4: Map Code Label/TextBox/Button -->
                         <RowDefinition Height="Auto" /> <!-- Row 5: AES Key Label/TextBox/Copy/Save Buttons -->
-                        <RowDefinition Height="Auto" /> <!-- Row 6: Placeholder for potential future use or spacing -->
+                        <RowDefinition Height="Auto" /> <!-- Row 6: Pac化 Separator -->
+                        <RowDefinition Height="Auto" /> <!-- Row 7: InstalledBundles Path -->
+                        <RowDefinition Height="Auto" /> <!-- Row 8: Island Project Selection -->
+                        <RowDefinition Height="Auto" /> <!-- Row 9: PIE Mode Checkbox -->
+                        <RowDefinition Height="Auto" /> <!-- Row 10: Pac化 Button -->
+
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -458,6 +463,35 @@
                     <Button Grid.Row="5" Grid.Column="6" Content="キーを保存"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.SaveAesKeyCommand}" Margin="0 0 0 5" />
+
+                    <!-- pac化セクション -->
+                    <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="pac化"></Separator>
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="InstalledBundlesフォルダ:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True"
+                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                             Text="{Binding SettingsView.InstalledBundlesPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
+                    <Button Grid.Row="7" Grid.Column="6" Content="..." HorizontalAlignment="Right"
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                            Command="{Binding SettingsView.BrowseInstalledBundlesCommand}" Margin="0 0 0 5" />
+
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="プロジェクト:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="5"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              ItemsSource="{Binding SettingsView.IslandProjects}"
+                              SelectedItem="{Binding SettingsView.SelectedIslandProject, Mode=TwoWay}"
+                              DisplayMemberPath="DisplayName"
+                              Margin="0 0 0 5" />
+
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="PIEモードで起動:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="9" Grid.Column="2" Margin="0 5 0 10"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding SettingsView.IsPieMode, Mode=TwoWay}" />
+
+                    <Button Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="5" Content="pac化を実行"
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                            Command="{Binding SettingsView.ExecutePacCommand}" Margin="0 5 0 5" />
+
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">

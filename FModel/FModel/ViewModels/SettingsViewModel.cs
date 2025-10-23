@@ -7,11 +7,15 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using System.Windows.Input; // For ICommand
 using System.Windows.Media; // For Brush
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Meshes;
@@ -22,6 +26,7 @@ using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Services;
 using FModel.Settings;
+using FModel.Views;
 using FModel.Views.Resources.Controls;
 
 namespace FModel.ViewModels;
@@ -274,6 +279,13 @@ public partial class SettingsViewModel : ViewModel
     public ICommand GetAesKeyCommand { get; }
     public ICommand CopyAesKeyCommand { get; }
     public ICommand SaveAesKeyCommand { get; }
+
+    // Pac化
+    public ICommand BrowseInstalledBundlesCommand { get; private set; }
+    public ICommand ExecutePacCommand { get; private set; }
+
+
+
     public void Initialize()
     {
         _outputSnapshot = UserSettings.Default.OutputDirectory;
@@ -362,14 +374,19 @@ public partial class SettingsViewModel : ViewModel
     public SettingsViewModel()
     {
         _epicGamesAuthService = new EpicGamesAuthService(new HttpClient());
+
+        // Initialize settings and UI elements first
+        Initialize();
+
         // Initialize commands
         AuthenticateEpicGamesCommand = new RelayCommand(AuthenticateEpicGames, CanAuthenticateEpicGames);
         GetAesKeyCommand = new RelayCommand(GetAesKey, CanGetAesKey);
+        BrowseInstalledBundlesCommand = new RelayCommand(BrowseInstalledBundles);
+        ExecutePacCommand = new RelayCommand(ExecutePac, CanExecutePac);
         CopyAesKeyCommand = new RelayCommand(CopyAesKey, CanCopyAesKey);
         SaveAesKeyCommand = new RelayCommand(SaveAesKey, CanSaveAesKey);
 
-        // Initialize settings and UI elements
-        Initialize();
+        // This needs to run after commands are initialized
         InitializeAuthStatus();
     }
 
@@ -671,5 +688,218 @@ public partial class SettingsViewModel // partial 修飾子を追加
                !RetrievedAesKey.Contains("Retrieving") &&
                !RetrievedAesKey.Contains("Failed") &&
                !RetrievedAesKey.Contains("error");
+    }
+
+    #region Pac化
+    private string _installedBundlesPath;
+    public string InstalledBundlesPath
+    {
+        get => _installedBundlesPath;
+        set
+        {
+            if (SetProperty(ref _installedBundlesPath, value))
+            {
+                UpdateIslandProjects();
+                ((RelayCommand)ExecutePacCommand).RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    public ObservableCollection<IslandProject> IslandProjects { get; } = new();
+
+    private IslandProject _selectedIslandProject;
+    public IslandProject SelectedIslandProject
+    {
+        get => _selectedIslandProject;
+        set
+        {
+            if (SetProperty(ref _selectedIslandProject, value))
+            {
+                ((RelayCommand)ExecutePacCommand).RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    private bool _isPieMode;
+    public bool IsPieMode { get => _isPieMode; set => SetProperty(ref _isPieMode, value); }
+
+    private void BrowseInstalledBundles(object? parameter)
+    {
+        var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+        if (dialog.ShowDialog() == true)
+        {
+            InstalledBundlesPath = dialog.SelectedPath;
+        }
+    }
+
+    private async void ExecutePac(object? parameter)
+    {
+        var progressVM = new PacProgressWindowViewModel("pac化を実行中...", "準備しています...");
+        var progressWindow = new PacProgressWindow(progressVM)
+        {
+            Owner = Application.Current.Windows.OfType<SettingsView>().FirstOrDefault()
+        };
+
+        var cancellationTokenSource = new CancellationTokenSource();
+        progressVM.CancelCommand = new RelayCommand(_ => cancellationTokenSource.Cancel());
+
+        progressWindow.Show();
+
+        try
+        {
+            await Task.Run(() =>
+            {
+                var islandFolder = SelectedIslandProject.FullPath;
+                var gamePath = UserSettings.Default.GameDirectory;
+
+                // Find the root of the FortniteGame directory to prevent path duplication
+                int fortniteGameIndex = gamePath.IndexOf("FortniteGame", StringComparison.OrdinalIgnoreCase);
+                if (fortniteGameIndex == -1)
+                {
+                    throw new DirectoryNotFoundException("ゲームフォルダ内に'FortniteGame'ディレクトリが見つかりません。設定を確認してください。");
+                }
+                string fortniteRootPath = gamePath.Substring(0, fortniteGameIndex);
+
+                var contentPaksPath = Path.Combine(fortniteRootPath, "FortniteGame", "Content", "Paks");
+                var uefnIslandsExe = Path.Combine(fortniteRootPath, "FortniteGame", "Binaries", "Win64", "UEFN-Islands.exe");
+                string[] pluginExtensions = { ".pak", ".sig", ".utoc", ".ucas" };
+
+                // 1. Rename files
+                progressVM.Update(10, "プラグインファイルを改名しています...");
+                cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                foreach (var ext in pluginExtensions)
+                {
+                    var sourceFile = Path.Combine(islandFolder, "plugin" + ext);
+                    var destFile = Path.Combine(islandFolder, "pakchunk99Island-WindowsClient" + ext);
+                    if (File.Exists(sourceFile))
+                    {
+                        if (File.Exists(destFile)) File.Delete(destFile);
+                        File.Move(sourceFile, destFile);
+                    }
+                }
+
+                // 2. Extract island name from .utoc
+                progressVM.Update(30, ".utocから島名を抽出しています...");
+                cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                var utocPath = Path.Combine(islandFolder, "pakchunk99Island-WindowsClient.utoc");
+                if (!File.Exists(utocPath))
+                {
+                    throw new FileNotFoundException("改名された.utocファイルが見つかりません。InstalledBundlesフォルダが正しいか確認してください。", utocPath);
+                }
+                var extractedPluginName = ExtractIslandNameFromUtoc(utocPath);
+
+                // 3. Copy files to Paks folder
+                progressVM.Update(50, "Paksフォルダにファイルをコピーしています...");
+                cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                foreach (var ext in pluginExtensions)
+                {
+                    var sourceFile = Path.Combine(islandFolder, "pakchunk99Island-WindowsClient" + ext);
+                    var destFile = Path.Combine(contentPaksPath, "pakchunk99Island-WindowsClient" + ext);
+                    if (File.Exists(sourceFile))
+                    {
+                        if (File.Exists(destFile)) File.Delete(destFile);
+                        File.Copy(sourceFile, destFile, true);
+                    }
+                }
+
+                // 4. Start UEFN-Islands.exe
+                if (File.Exists(uefnIslandsExe))
+                {
+                    progressVM.Update(80, "UEFN-Islandsを起動しています...");
+                    cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                    var pieArg = IsPieMode ? ",ValkyriePIE" : "";
+                    var arguments = $"-disableplugins=\"ValkyrieFortnite,AtomVK\" -enableplugins=\"{extractedPluginName}{pieArg}\"";
+                    Process.Start(uefnIslandsExe, arguments);
+                }
+                else
+                {
+                    progressVM.Update(80, "UEFN-Islands.exeが見つかりません。起動をスキップします。");
+                    Thread.Sleep(2000); // ユーザーがメッセージを読めるように少し待機
+                }
+                
+                progressVM.Update(100, "完了しました！");
+                Thread.Sleep(1000); // Show "Completed" for a moment
+            }, cancellationTokenSource.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            progressVM.Update(0, "キャンセルされました。");
+            await Task.Delay(1500);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"エラーが発生しました: {ex.Message}", "pak化エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            progressWindow.Close();
+        }
+    }
+
+    private bool CanExecutePac(object? parameter)
+    {
+        return SelectedIslandProject != null && !string.IsNullOrEmpty(UserSettings.Default.GameDirectory);
+    }
+
+    private void UpdateIslandProjects()
+    {
+        Application.Current.Dispatcher.Invoke(() => IslandProjects.Clear());
+        if (string.IsNullOrEmpty(InstalledBundlesPath) || !Directory.Exists(InstalledBundlesPath)) return;
+
+        try
+        {
+            var directories = Directory.GetDirectories(InstalledBundlesPath);
+            var projects = new List<IslandProject>();
+            foreach (var dir in directories)
+            {
+                var dirInfo = new DirectoryInfo(dir);
+                projects.Add(new IslandProject(dirInfo.Name, dirInfo.LastWriteTime, dir));
+            }
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (var p in projects.OrderByDescending(p => p.LastModified))
+                {
+                    IslandProjects.Add(p);
+                }
+                SelectedIslandProject = IslandProjects.FirstOrDefault();
+            });
+        }
+        catch (Exception e)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"プロジェクトの読み込みに失敗しました: {e.Message}", Constants.RED, true));
+        }
+    }
+
+    private string ExtractIslandNameFromUtoc(string utocPath)
+    {
+        // This is a direct port of the logic from MIddleMan's ExtractIslandNameFromPak.cs
+        // It's fragile but should work for its intended purpose.
+        var fileBytes = File.ReadAllBytes(utocPath);
+        var pattern = Encoding.UTF8.GetBytes("/FortniteGame/Plugins/GameFeatures/");
+        int index = fileBytes.AsSpan().IndexOf(pattern);
+
+        if (index == -1) throw new Exception(".utocファイルからGameFeaturesプラグインのパスが見つかりませんでした。");
+
+        int startIndex = index + pattern.Length;
+        int endIndex = fileBytes.AsSpan(startIndex).IndexOf((byte)'/');
+        if (endIndex == -1) throw new Exception(".utocファイルからプラグイン名を抽出できませんでした。");
+
+        return Encoding.UTF8.GetString(fileBytes, startIndex, endIndex);
+    }
+    #endregion
+}
+
+public class IslandProject
+{
+    public string Name { get; }
+    public DateTime LastModified { get; }
+    public string FullPath { get; }
+    public string DisplayName => $"{Name} - {LastModified:yyyy/MM/dd HH:mm}";
+
+    public IslandProject(string name, DateTime lastModified, string fullPath)
+    {
+        Name = name;
+        LastModified = lastModified;
+        FullPath = fullPath;
     }
 }

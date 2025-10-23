@@ -1,0 +1,33 @@
+<controls:AdonisWindow x:Class="FModel.Views.Resources.Controls.PacProgressWindow"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                    Title="{Binding Title}"
+                    ResizeMode="NoResize"
+                    Width="440" Height="200"
+                    WindowStartupLocation="CenterOwner"
+                    ShowInTaskbar="False">
+    <Border Padding="20">
+        <DockPanel>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                <TextBlock Text="{Binding Message}"
+                        FontSize="15"
+                        FontWeight="SemiBold"
+                        Margin="0,0,0,10"
+                        TextWrapping="Wrap"/>
+                <ProgressBar Height="24"
+                            Value="{Binding Progress}"
+                            Maximum="100"
+                            Margin="0,0,0,10" />
+                <TextBlock Text="{Binding ETA, StringFormat='残り時間: {0}'}"
+                        FontSize="12"
+                        HorizontalAlignment="Right"
+                        Margin="0,0,0,15" />
+                <Button Content="キャンセル"
+                        Width="100" Height="30"
+                        HorizontalAlignment="Center"
+                        Command="{Binding CancelCommand}" />
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</controls:AdonisWindow>
