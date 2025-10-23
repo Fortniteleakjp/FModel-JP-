@@ -669,15 +669,24 @@ public partial class SettingsViewModel // partial 修飾子を追加
     {
         if (CanSaveAesKey(parameter))
         {
-            var aesManager = ApplicationService.ApplicationView.AesManager;
-            if (aesManager != null)
+            try
             {
-                aesManager.AddKey(RetrievedAesKey);
-                FLogger.Append(ELog.Information, () => FLogger.Text($"AES Key saved: {RetrievedAesKey}", Constants.WHITE, true));
+                var mapCode = MapCodeInput.Trim();
+                var key = RetrievedAesKey.Trim();
+                var directory = Path.Combine(UserSettings.Default.OutputDirectory, "MapAES");
+                Directory.CreateDirectory(directory);
+
+                var fileName = $"{mapCode}.txt";
+                var fullPath = Path.Combine(directory, fileName);
+
+                File.WriteAllText(fullPath, key);
+
+                FLogger.Append(ELog.Information, () => FLogger.Text($"AESキーを保存しました: ", Constants.WHITE, false));
+                FLogger.Append(ELog.Information, () => FLogger.Link(fileName, fullPath, true));
             }
-            else
+            catch (Exception ex)
             {
-                FLogger.Append(ELog.Error, () => FLogger.Text("Could not find AES Manager to save the key.", Constants.WHITE, true));
+                FLogger.Append(ELog.Error, () => FLogger.Text($"AESキーの保存に失敗しました: {ex.Message}", Constants.RED, true));
             }
         }
     }

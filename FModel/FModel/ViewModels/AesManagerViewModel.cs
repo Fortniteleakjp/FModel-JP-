@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Framework;
 using FModel.Services;
@@ -150,7 +151,7 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
 
         var newKey = new DynamicKey { Key = key, Name = "New Dynamic Key", Guid = Guid.NewGuid().ToString() };
         _keysFromSettings.DynamicKeys.Add(newKey);
-        AesKeys.Add(new FileItem(newKey.Name, 0) { Guid = new FGuid(newKey.Guid), Key = newKey.Key });
+        Application.Current.Dispatcher.Invoke(() => AesKeys.Add(new FileItem(newKey.Name, 0) { Guid = new FGuid(newKey.Guid.Replace("-", "")), Key = newKey.Key }));
         HasChange = true;
     }
 }
