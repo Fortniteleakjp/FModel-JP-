@@ -786,7 +786,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 {
                     throw new FileNotFoundException("改名された.utocファイルが見つかりません。InstalledBundlesフォルダが正しいか確認してください。", utocPath);
                 }
-                var extractedPluginName = ExtractIslandNameFromUtoc(utocPath);
+                var extractedPluginName = ExtractIslandNameFromUtoc(utocPath, progressVM);
 
                 // 3. Copy files to Paks folder
                 progressVM.Update(50, "Paksフォルダにファイルをコピーしています...");
@@ -803,12 +803,12 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 }
 
                 // 4. Start UEFN-Islands.exe
-                if (File.Exists(uefnIslandsExe))
+                if (File.Exists(uefnIslandsExe) && !string.IsNullOrEmpty(extractedPluginName))
                 {
                     progressVM.Update(80, "UEFN-Islandsを起動しています...");
                     cancellationTokenSource.Token.ThrowIfCancellationRequested();
                     var pieArg = IsPieMode ? ",ValkyriePIE" : "";
-                    var arguments = $"-disableplugins=\"ValkyrieFortnite,AtomVK\" -enableplugins=\"{extractedPluginName}{pieArg}\"";
+                    var arguments = $"-disableplugins=\"ValkyrieFortnite,AtomVK\" -enableplugins=\"{extractedPluginName}{pieArg}\""; // extractedPluginName is used here
                     Process.Start(uefnIslandsExe, arguments);
                 }
                 else
@@ -870,19 +870,26 @@ public partial class SettingsViewModel // partial 修飾子を追加
         }
     }
 
-    private string ExtractIslandNameFromUtoc(string utocPath)
+    private string ExtractIslandNameFromUtoc(string utocPath, PacProgressWindowViewModel progressVM)
     {
         // This is a direct port of the logic from MIddleMan's ExtractIslandNameFromPak.cs
         // It's fragile but should work for its intended purpose.
         var fileBytes = File.ReadAllBytes(utocPath);
         var pattern = Encoding.UTF8.GetBytes("/FortniteGame/Plugins/GameFeatures/");
         int index = fileBytes.AsSpan().IndexOf(pattern);
-
-        if (index == -1) throw new Exception(".utocファイルからGameFeaturesプラグインのパスが見つかりませんでした。");
+        if (index == -1)
+        {
+            progressVM.Update(40, "警告: .utocからプラグイン名を抽出できませんでした。");
+            Thread.Sleep(2000); // ユーザーがメッセージを読めるように少し待機
+            return null;
+        }
 
         int startIndex = index + pattern.Length;
         int endIndex = fileBytes.AsSpan(startIndex).IndexOf((byte)'/');
-        if (endIndex == -1) throw new Exception(".utocファイルからプラグイン名を抽出できませんでした。");
+        if (endIndex == -1)
+        {
+            throw new Exception(".utocファイルからプラグイン名を抽出できませんでした。");
+        }
 
         return Encoding.UTF8.GetString(fileBytes, startIndex, endIndex);
     }
