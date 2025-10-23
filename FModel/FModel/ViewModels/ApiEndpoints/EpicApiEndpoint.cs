@@ -61,7 +61,7 @@ public class EpicApiEndpoint : AbstractApiProvider
 
     private async Task<bool> IsExpired()
     {
-        if (string.IsNullOrEmpty(UserSettings.Default.LastAuthResponse.AccessToken)) return true;
+        if (UserSettings.Default.LastAuthResponse?.AccessToken is null or "") return true;
         var request = new FRestRequest("https://account-public-service-prod.ol.epicgames.com/account/api/oauth/verify");
         request.AddHeader("Authorization", $"bearer {UserSettings.Default.LastAuthResponse.AccessToken}");
         var response = await _client.ExecuteGetAsync(request).ConfigureAwait(false);

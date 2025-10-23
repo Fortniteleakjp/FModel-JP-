@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Windows;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using FModel.ViewModels.ApiEndpoints.Models; // AuthResponse を使用するために追加
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using System.Windows.Input; // For ICommand
 using System.Windows.Media; // For Brush
@@ -15,6 +19,7 @@ using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
 using CUE4Parse.UE4.Assets.Exports.Nanite;
 using FModel.Framework;
+using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Services;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
@@ -50,6 +55,7 @@ public partial class SettingsViewModel : ViewModel
     private ETextureFormat _textureExportFormatSnapshot;
     private bool _mappingsUpdate;
 
+    private readonly EpicGamesAuthService _epicGamesAuthService;
     private readonly DiscordHandler _discordHandler = DiscordService.DiscordHandler;
 
     private bool _useCustomOutputFolders;
@@ -355,6 +361,7 @@ public partial class SettingsViewModel : ViewModel
 
     public SettingsViewModel()
     {
+        _epicGamesAuthService = new EpicGamesAuthService(new HttpClient());
         // Initialize commands
         AuthenticateEpicGamesCommand = new RelayCommand(AuthenticateEpicGames, CanAuthenticateEpicGames);
         GetAesKeyCommand = new RelayCommand(GetAesKey, CanGetAesKey);
@@ -447,90 +454,179 @@ public partial class SettingsViewModel : ViewModel
 // Placeholder implementations for Epic Games API authentication and AES Key retrieval
 public partial class SettingsViewModel // partial 修飾子を追加
 {
-    private void InitializeAuthStatus()
+    private async void InitializeAuthStatus()
     {
-        // This method would typically check if a valid authentication token already exists
-        // and update EpicAuthStatusText and EpicAuthStatusForeground accordingly.
-        // For now, it defaults to "Not Authenticated".
-        if (UserSettings.Default.LastAuthResponse != null && UserSettings.Default.LastAuthResponse.ExpiresAt > DateTime.Now)
+        var authData = await EpicGamesAuthService.LoadDeviceAuthAsync();
+        if (authData != null)
         {
-            EpicAuthStatusText = "Authenticated";
-            EpicAuthStatusForeground = Brushes.Green;
-        }
-        else
-        {
-            EpicAuthStatusText = "Not Authenticated";
-            EpicAuthStatusForeground = Brushes.Red;
-        }
-    }
+            if (authData.ExpiresAt > DateTime.Now)
+            {
+                UserSettings.Default.LastAuthResponse = new AuthResponse
+                {
+                    AccessToken = authData.AccessToken,
+                    ExpiresAt = authData.ExpiresAt
+                };
+                EpicAuthStatusText = $"{authData.DisplayName}でログイン中";
+                EpicAuthStatusForeground = Brushes.Green;
+                ((RelayCommand)AuthenticateEpicGamesCommand).RaiseCanExecuteChanged();
+                ((RelayCommand)GetAesKeyCommand).RaiseCanExecuteChanged();
+                return;
+            }
 
-    private void AuthenticateEpicGames(object? parameter)
-    {
-        // Placeholder: In a real application, this would initiate an OAuth flow,
-        // likely opening a browser window for the user to log in to Epic Games.
-        // Upon successful authentication, an access token would be received.
-        EpicAuthStatusText = "Authenticating...";
-        EpicAuthStatusForeground = Brushes.Orange;
+            // Token expired, try to refresh
+            var refreshedAuth = await _epicGamesAuthService.RefreshTokenAsync(authData);
+            if (refreshedAuth != null)
+            {
+                UserSettings.Default.LastAuthResponse = new AuthResponse
+                {
+                    AccessToken = refreshedAuth.AccessToken,
+                    ExpiresAt = refreshedAuth.ExpiresAt
+                };
+                EpicAuthStatusText = $"{refreshedAuth.DisplayName}でログイン中";
+                EpicAuthStatusForeground = Brushes.Green;
+                ((RelayCommand)AuthenticateEpicGamesCommand).RaiseCanExecuteChanged();
+                ((RelayCommand)GetAesKeyCommand).RaiseCanExecuteChanged();
+                return;
+            }
+        }
 
-        // Simulate authentication success (replace with actual OAuth logic)
-        // For demonstration, let's assume authentication is successful after a delay
-        // and a dummy token is obtained.
-        // This would typically involve calling an external service or opening a browser.
-        // Example:
-        // var authResult = await EpicGamesAuthService.Authenticate();
-        // if (authResult.IsSuccess)
-        // {
-        //     UserSettings.Default.LastAuthResponse = authResult.AuthResponse;
-        //     EpicAuthStatusText = "Authenticated";
-        //     EpicAuthStatusForeground = Brushes.Green;
-        //     Append(Information, () => Text("Epic Games authenticated successfully."));
-        // }
-        // else
-        // {
-        //     EpicAuthStatusText = "Authentication Failed";
-        //     EpicAuthStatusForeground = Brushes.Red;
-        //     Append(Error, () => Text($"Epic Games authentication failed: {authResult.ErrorMessage}"));
-        // }
-        // For now, just update status:
-        EpicAuthStatusText = "Authenticated (Placeholder)";
-        EpicAuthStatusForeground = Brushes.Green;
-        UserSettings.Default.LastAuthResponse = new AuthResponse { AccessToken = "DUMMY_TOKEN", ExpiresAt = DateTime.Now.AddHours(1) };
+        // No valid auth found
+        UserSettings.Default.LastAuthResponse = null;
+        EpicAuthStatusText = "Not Authenticated";
+        EpicAuthStatusForeground = Brushes.Red;
         ((RelayCommand)AuthenticateEpicGamesCommand).RaiseCanExecuteChanged();
         ((RelayCommand)GetAesKeyCommand).RaiseCanExecuteChanged();
     }
 
-    private bool CanAuthenticateEpicGames(object? parameter)
+    private async void AuthenticateEpicGames(object? parameter)
     {
-        return UserSettings.Default.LastAuthResponse == null || UserSettings.Default.LastAuthResponse.ExpiresAt <= DateTime.Now;
+        FLogger.Append(ELog.Information, () => FLogger.Text("AuthenticateEpicGames command executed.", Constants.WHITE, true));
+        EpicAuthStatusText = "Authenticating...";
+        EpicAuthStatusForeground = Brushes.Orange;
+
+        try
+        {
+            FLogger.Append(ELog.Information, () => FLogger.Text("Attempting to call _epicGamesAuthService.LoginAsync()", Constants.WHITE, true)); // Added log
+            var authData = await _epicGamesAuthService.LoginAsync();
+            if (authData != null)
+            {
+                UserSettings.Default.LastAuthResponse = new AuthResponse
+                {
+                    AccessToken = authData.AccessToken,
+                    ExpiresAt = authData.ExpiresAt
+                };
+                EpicAuthStatusText = $"{authData.DisplayName}でログイン中";
+                EpicAuthStatusForeground = Brushes.Green;
+            }
+            else
+            {
+                EpicAuthStatusText = "Authentication Failed";
+                EpicAuthStatusForeground = Brushes.Red;
+            }
+        }
+        catch (Exception ex)
+        {
+            EpicAuthStatusText = "Authentication Error";
+            EpicAuthStatusForeground = Brushes.Red;
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Epic Games authentication failed: {ex}", Constants.RED, true));
+        }
+        finally
+        {
+            ((RelayCommand)AuthenticateEpicGamesCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)GetAesKeyCommand).RaiseCanExecuteChanged();
+        }
     }
 
-    private void GetAesKey(object? parameter)
+    private bool CanAuthenticateEpicGames(object? parameter)
     {
-        // Placeholder: This would call an API (e.g., from AES-Grabber's backend or a public API)
-        // using the MapCodeInput and the authentication token.
+        // Always allow re-authentication attempt
+        return true;
+    }
+
+    private async void GetAesKey(object? parameter)
+    {
         RetrievedAesKey = "Retrieving AES Key...";
-        // Example:
-        // var aesKey = await AesRetrievalService.GetAesKeyFromMapCode(MapCodeInput, UserSettings.Default.LastAuthResponse.AccessToken);
-        // if (!string.IsNullOrEmpty(aesKey))
-        // {
-        //     RetrievedAesKey = aesKey;
-        //     Append(Information, () => Text($"AES Key retrieved for map code '{MapCodeInput}'."));
-        // }
-        // else
-        // {
-        //     RetrievedAesKey = "Failed to retrieve AES Key. Check map code or authentication.";
-        //     Append(Error, () => Text($"Failed to retrieve AES Key for map code '{MapCodeInput}'."));
-        // }
-        // For now, simulate retrieval:
-        RetrievedAesKey = $"0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF (for map: {MapCodeInput})";
-        ((RelayCommand)CopyAesKeyCommand).RaiseCanExecuteChanged();
-        ((RelayCommand)SaveAesKeyCommand).RaiseCanExecuteChanged();
+        FLogger.Append(ELog.Information, () => FLogger.Text($"Attempting to get AES key for map code: {MapCodeInput}", Constants.WHITE, true));
+
+        if (UserSettings.Default.LastAuthResponse?.AccessToken is null)
+        {
+            RetrievedAesKey = "Authentication is required.";
+            FLogger.Append(ELog.Warning, () => FLogger.Text(RetrievedAesKey, Constants.RED, true));
+            return;
+        }
+        try
+        {
+            using var httpClient = new HttpClient();
+
+            // Get latest build version
+            var mappingsData = await httpClient.GetFromJsonAsync<JsonElement?>("https://fortnitecentral.genxgames.gg/api/v1/mappings");
+            string versionStr = mappingsData?.GetProperty("version").GetString() ?? throw new Exception("Failed to get version from mappings data.");
+            FLogger.Append(ELog.Information, () => FLogger.Text($"Latest version: {versionStr}", Constants.WHITE, true));
+
+            var match = Regex.Match(versionStr, @"Release-(\d+)\.(\d+)-CL-(\d+)");
+            if (!match.Success) throw new Exception($"Failed to parse version string: {versionStr}");
+
+            var major = match.Groups[1].Value;
+            var minor = match.Groups[2].Value;
+            var cl = match.Groups[3].Value;
+
+            // Get map content info
+            var contentUrl = $"https://content-service.bfda.live.use1a.on.epicgames.com/api/content/v2/link/{MapCodeInput}/cooked-content-package?role=client&platform=windows&major={major}&minor={minor}&patch={cl}";
+            var request = new HttpRequestMessage(HttpMethod.Get, contentUrl);
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken);
+            var contentResponse = await httpClient.SendAsync(request);
+            contentResponse.EnsureSuccessStatusCode();
+            var contentData = await contentResponse.Content.ReadFromJsonAsync<JsonElement?>();
+
+            if (contentData.HasValue && contentData.Value.TryGetProperty("errorCode", out var errorCode) &&
+                errorCode.GetString() == "errors.com.epicgames.content-service.unexpected_link_type")
+            {
+                RetrievedAesKey = "1.0 maps have no encryption.";
+                FLogger.Append(ELog.Warning, () => FLogger.Text(RetrievedAesKey, Constants.YELLOW, true));
+                return;
+            }
+
+            if (contentData?.GetProperty("isEncrypted").GetBoolean() == true)
+            {
+                var moduleId = contentData.Value.GetProperty("resolved").GetProperty("root").GetProperty("moduleId").ToString();
+                var version = contentData.Value.GetProperty("resolved").GetProperty("root").GetProperty("version").ToString();
+
+                var payload = new[] { new { moduleId, version } };
+                var keyReq = new HttpRequestMessage(HttpMethod.Post, "https://content-service.bfda.live.use1a.on.epicgames.com/api/content/v4/module/key/batch")
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(payload), System.Text.Encoding.UTF8, "application/json")
+                };
+                keyReq.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken);
+                var payloadString = await keyReq.Content.ReadAsStringAsync();
+                var keyResponse = await httpClient.SendAsync(keyReq);
+                keyResponse.EnsureSuccessStatusCode();
+                var keyData = await keyResponse.Content.ReadFromJsonAsync<JsonElement[]?>();
+                var key = keyData?[0].GetProperty("key").GetProperty("Key").GetString() ?? throw new Exception("Failed to get key from key data.");
+                RetrievedAesKey = "0x" + BitConverter.ToString(Convert.FromBase64String(key)).Replace("-", "");
+                FLogger.Append(ELog.Information, () => FLogger.Text($"AES Key retrieved: {RetrievedAesKey}", Constants.GREEN, true));
+            }
+            else
+            {
+                RetrievedAesKey = "Map is not encrypted.";
+                FLogger.Append(ELog.Information, () => FLogger.Text(RetrievedAesKey, Constants.WHITE, true));
+            }
+        }
+        catch (Exception ex)
+        {
+            RetrievedAesKey = "An error occurred while retrieving the AES key.";
+            FLogger.Append(ELog.Error, () => FLogger.Text($"{RetrievedAesKey} Details: {ex}", Constants.RED, true));
+        }
+        finally
+        {
+            ((RelayCommand)CopyAesKeyCommand).RaiseCanExecuteChanged();
+            ((RelayCommand)SaveAesKeyCommand).RaiseCanExecuteChanged();
+        }
     }
 
     private bool CanGetAesKey(object? parameter)
     {
         return !string.IsNullOrWhiteSpace(MapCodeInput) &&
-               UserSettings.Default.LastAuthResponse != null &&
+               UserSettings.Default.LastAuthResponse?.AccessToken != null &&
                UserSettings.Default.LastAuthResponse.ExpiresAt > DateTime.Now;
     }
 
@@ -547,24 +643,33 @@ public partial class SettingsViewModel // partial 修飾子を追加
     private bool CanCopyAesKey(object? parameter)
     {
         return !string.IsNullOrWhiteSpace(RetrievedAesKey) &&
-               !RetrievedAesKey.StartsWith("Retrieving") &&
-               !RetrievedAesKey.StartsWith("Failed");
+               !RetrievedAesKey.Contains("Retrieving") &&
+               !RetrievedAesKey.Contains("Failed") &&
+               !RetrievedAesKey.Contains("error");
     }
 
     private void SaveAesKey(object? parameter)
     {
         if (CanSaveAesKey(parameter))
         {
-            // Placeholder: Logic to save the AES key, e.g., to a file or UserSettings.Default.CurrentDir.AesKeys
-            // For now, just log it.
-            FLogger.Append(ELog.Information, () => FLogger.Text($"AES Key saved: {RetrievedAesKey}", Constants.WHITE, true));
+            var aesManager = ApplicationService.ApplicationView.AesManager;
+            if (aesManager != null)
+            {
+                aesManager.AddKey(RetrievedAesKey);
+                FLogger.Append(ELog.Information, () => FLogger.Text($"AES Key saved: {RetrievedAesKey}", Constants.WHITE, true));
+            }
+            else
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Could not find AES Manager to save the key.", Constants.WHITE, true));
+            }
         }
     }
 
     private bool CanSaveAesKey(object? parameter)
     {
         return !string.IsNullOrWhiteSpace(RetrievedAesKey) &&
-               !RetrievedAesKey.StartsWith("Retrieving") &&
-               !RetrievedAesKey.StartsWith("Failed");
+               !RetrievedAesKey.Contains("Retrieving") &&
+               !RetrievedAesKey.Contains("Failed") &&
+               !RetrievedAesKey.Contains("error");
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -127,5 +128,29 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
             file.Key = Helper.FixKey(k);
             output.Add(file);
         }
+    }
+
+    public void AddKey(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key) || !key.StartsWith("0x"))
+        {
+            return;
+        }
+
+        if (_keysFromSettings.DynamicKeys == null)
+        {
+            _keysFromSettings.DynamicKeys = new List<DynamicKey>();
+        }
+
+        // Check if the key already exists
+        if (_keysFromSettings.DynamicKeys.Any(dk => dk.Key.Equals(key, System.StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+
+        var newKey = new DynamicKey { Key = key, Name = "New Dynamic Key", Guid = Guid.NewGuid().ToString() };
+        _keysFromSettings.DynamicKeys.Add(newKey);
+        AesKeys.Add(new FileItem(newKey.Name, 0) { Guid = new FGuid(newKey.Guid), Key = newKey.Key });
+        HasChange = true;
     }
 }

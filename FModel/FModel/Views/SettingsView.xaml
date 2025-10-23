@@ -428,20 +428,36 @@
 
                     <!-- Epic Games認証セクション -->
                     <Separator Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="ログイン認証"></Separator>
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="ログイン状態:" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="5" Text="{Binding EpicAuthStatusText}" VerticalAlignment="Center" Margin="0 0 0 5" Foreground="{Binding EpicAuthStatusForeground}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Epic Games APIステータス:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="5"
+                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                               Text="{Binding SettingsView.EpicAuthStatusText}"
+                               Foreground="{Binding SettingsView.EpicAuthStatusForeground}"
+                               VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Epic Games API" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" Content="Epic Games APIを認証" Command="{Binding AuthenticateEpicGamesCommand}" Margin="0 0 0 5" />
+                    <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" Content="Epic Games APIを認証"
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                            Command="{Binding SettingsView.AuthenticateEpicGamesCommand}" Margin="0 0 0 5" />
 
                     <!-- AESキー取得セクション -->
                     <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="AESキー取得"></Separator>
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="マップコード:" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" Text="{Binding MapCodeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
-                    <Button Grid.Row="4" Grid.Column="6" Content="AESキーを取得" Command="{Binding GetAesKeyCommand}" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3"
+                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                             Text="{Binding SettingsView.MapCodeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
+                    <Button Grid.Row="4" Grid.Column="6" Content="AESキーを取得"
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                            Command="{Binding SettingsView.GetAesKeyCommand}" Margin="0 0 0 5" />
                     <TextBlock Grid.Row="5" Grid.Column="0" Text="AESキー:" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True" Text="{Binding RetrievedAesKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
-                    <Button Grid.Row="5" Grid.Column="4" Content="キーをコピー" Command="{Binding CopyAesKeyCommand}" Margin="0 0 0 5" />
-                    <Button Grid.Row="5" Grid.Column="6" Content="キーを保存" Command="{Binding SaveAesKeyCommand}" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True"
+                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                             Text="{Binding SettingsView.RetrievedAesKey, Mode=OneWay}" Margin="0 0 0 5" />
+                    <Button Grid.Row="5" Grid.Column="4" Content="キーをコピー"
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                            Command="{Binding SettingsView.CopyAesKeyCommand}" Margin="0 0 0 5" />
+                    <Button Grid.Row="5" Grid.Column="6" Content="キーを保存"
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                            Command="{Binding SettingsView.SaveAesKeyCommand}" Margin="0 0 0 5" />
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">
@@ -856,7 +872,7 @@
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource KeyIcon}" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="近日中に追加" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="マップAES" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
