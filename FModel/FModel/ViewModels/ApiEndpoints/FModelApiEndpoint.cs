@@ -190,3 +190,4 @@ public class CustomMandatory : Mandatory
     public string CommitHash { get; set; }
     public string ShortCommitHash => CommitHash[..7];
 }
+
