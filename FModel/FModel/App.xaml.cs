@@ -168,7 +168,20 @@ public partial class App
         var productName = string.Empty;
         try
         {
-            productName = BrandingFormatString("%WINDOWS_LONG%");
+            var formattedString = BrandingFormatString("%WINDOWS_LONG%");
+            // **bold** -> bold
+            // *italic* -> italic
+            // __underline__ -> underline
+            productName = formattedString
+                .Replace("**", "")
+                .Replace("*", "")
+                .Replace("__", "");
+
+            // The above is a simplification. For a real implementation, you would need a more robust parser
+            // to handle nested and combined styles correctly. For example, using regular expressions
+            // or a simple state machine to convert markdown-like syntax to the appropriate format
+            // for the UI control that will display the text (e.g., converting to FlowDocument for RichTextBox).
+            // For now, we just strip the markdown characters.
         }
         catch
         {

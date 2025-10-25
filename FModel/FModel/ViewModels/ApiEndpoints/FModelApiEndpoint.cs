@@ -174,9 +174,13 @@ public class FModelApiEndpoint : AbstractApiProvider
         var response = _client.Execute(request);
         if (!response.IsSuccessful || string.IsNullOrEmpty(response.Content)) return;
 
-        _applicationView.CUE4Parse.TabControl.AddTab($"リリースノート: {args.CurrentVersion}");
-        _applicationView.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("changelog");
-        _applicationView.CUE4Parse.TabControl.SelectedTab.SetDocumentText(response.Content, false, false);
+        // 新しいタブを追加
+        var tabTitle = $"リリースノート: {args.CurrentVersion}";
+        _applicationView.CUE4Parse.TabControl.AddTab(tabTitle);
+        // MarkdownをFlowDocumentに変換し、タブのコンテンツとして設定
+        var flowDocument = Helper.CreateFlowDocumentFromMarkdown(response.Content);
+        _applicationView.CUE4Parse.TabControl.SelectedTab.RichDocument = flowDocument;
+
         UserSettings.Default.ShowChangelog = false;
     }
 }

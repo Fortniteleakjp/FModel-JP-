@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.Textures;
@@ -302,6 +303,14 @@ public class TabItem : ViewModel
         set => SetProperty(ref _diffContent, value);
     }
 
+    private FlowDocument _richDocument;
+    public FlowDocument RichDocument
+    {
+        get => _richDocument;
+        set => SetProperty(ref _richDocument, value);
+    }
+
+
     public string Header => $"{Entry.Name}{(string.IsNullOrEmpty(TitleExtra) ? "" : $" ({TitleExtra})")}";
 
     public bool HasImage => SelectedImage != null;
@@ -336,6 +345,7 @@ public class TabItem : ViewModel
         {
             _images.Clear();
             SelectedImage = null;
+            RichDocument = null;
             RaisePropertyChanged("HasMultipleImages");
 
             Document ??= new TextDocument();

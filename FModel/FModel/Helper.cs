@@ -2,6 +2,9 @@ using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Documents;
+using System.Text.RegularExpressions;
+using System.Windows.Navigation;
 
 namespace FModel;
 
@@ -110,5 +113,77 @@ public static class Helper
     {
         const float ratio = 180f / MathF.PI;
         return radians * ratio;
+    }
+
+    /// <summary>
+    /// Converts a markdown-like string to a FlowDocument for RichTextBox.
+    /// Supports: **bold**, *italic*, _italic_, __underline__, ~~strikethrough~~, and [link](url).
+    /// </summary>
+    /// <param name="markdownText">The markdown text to convert.</param>
+    /// <returns>A FlowDocument with formatted text.</returns>
+    public static FlowDocument CreateFlowDocumentFromMarkdown(string markdownText)
+    {
+        var flowDocument = new FlowDocument();
+        var paragraph = new Paragraph();
+
+        // Regex to find markdown patterns: bold, italic, underline, strikethrough, and links
+        // This regex uses named capture groups to identify the type of formatting.
+        var regex = new Regex(
+            @"(\*\*|__)(?=\S)(.+?)(?<=\S)\1" + // Bold/Underline (__ or **)
+            @"|(\*|_)(?=\S)(.+?)(?<=\S)\1" +    // Italic (_ or *)
+            @"|~~(?=\S)(.+?)(?<=\S)~~" +       // Strikethrough
+            @"|\[(.+?)\]\((.+?)\)",            // Link [text](url)
+            RegexOptions.Compiled);
+
+        var lastIndex = 0;
+        foreach (Match match in regex.Matches(markdownText))
+        {
+            // Add the plain text before the match
+            if (match.Index > lastIndex)
+            {
+                paragraph.Inlines.Add(new Run(markdownText.Substring(lastIndex, match.Index - lastIndex)));
+            }
+
+            Inline newInline = null;
+            if (match.Value.StartsWith("**"))
+                newInline = new Bold(new Run(match.Groups[2].Value));
+            else if (match.Value.StartsWith("__"))
+                newInline = new Underline(new Run(match.Groups[2].Value));
+            else if (match.Value.StartsWith("*") || match.Value.StartsWith("_"))
+                newInline = new Italic(new Run(match.Groups[4].Value));
+            else if (match.Value.StartsWith("~~"))
+                newInline = new Run(match.Groups[5].Value) { TextDecorations = TextDecorations.Strikethrough };
+            else if (match.Value.StartsWith("["))
+            {
+                var link = new Hyperlink(new Run(match.Groups[6].Value));
+                try
+                {
+                    link.NavigateUri = new Uri(match.Groups[7].Value);
+                    link.RequestNavigate += (sender, e) => {
+                        // For security, only allow navigation to http/https schemes.
+                        if (e.Uri.Scheme == "http" || e.Uri.Scheme == "https")
+                        {
+                            // Use Process.Start for external links to open in the default browser.
+                            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+                            e.Handled = true;
+                        }
+                    };
+                }
+                catch { /* Ignore invalid URIs */ }
+                newInline = link;
+            }
+
+            if (newInline != null) paragraph.Inlines.Add(newInline);
+            lastIndex = match.Index + match.Length;
+        }
+
+        // Add any remaining plain text
+        if (lastIndex < markdownText.Length)
+        {
+            paragraph.Inlines.Add(new Run(markdownText.Substring(lastIndex)));
+        }
+
+        flowDocument.Blocks.Add(paragraph);
+        return flowDocument;
     }
 }
