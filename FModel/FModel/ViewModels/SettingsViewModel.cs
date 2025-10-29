@@ -630,7 +630,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
         }
         catch (Exception ex)
         {
-            RetrievedAesKey = "An error occurred while retrieving the AES key.";
+            RetrievedAesKey = "AES キーの取得中にエラーが発生しました。";
             FLogger.Append(ELog.Error, () => FLogger.Text($"{RetrievedAesKey} Details: {ex}", Constants.RED, true));
         }
         finally
