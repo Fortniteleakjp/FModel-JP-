@@ -624,7 +624,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
             }
             else
             {
-                RetrievedAesKey = "Map is not encrypted.";
+                RetrievedAesKey = "マップは暗号化されていません";
                 FLogger.Append(ELog.Information, () => FLogger.Text(RetrievedAesKey, Constants.WHITE, true));
             }
         }
