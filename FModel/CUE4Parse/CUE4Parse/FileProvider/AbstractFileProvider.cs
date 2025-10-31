@@ -12,7 +12,6 @@ using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.Assets;
-using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Internationalization;
 using CUE4Parse.UE4.IO.Objects;
@@ -585,15 +584,6 @@ namespace CUE4Parse.FileProvider
                 case FPakEntry or OsGameFile:
                     return new Package(uasset, uexp?.CreateReader(), lazyUbulk, lazyUptnl, this, UseLazyPackageSerialization);
                 case FIoStoreEntry ioStoreEntry when this is IVfsFileProvider vfsFileProvider:
-                    if (vfsFileProvider.GlobalData == null)
-                    {
-                        vfsFileProvider.Initialize();
-                        // If global data is still null after initialization attempt, it means IoStore packages cannot be loaded.
-                        if (vfsFileProvider.GlobalData == null)
-                        {
-                            throw new ParserException("IoStore グローバルデータが見つからないか、初期化に失敗しました。IoPackage を読み込めません。");
-                        }
-                    }
                     return new IoPackage(uasset, ioStoreEntry.IoStoreReader.ContainerHeader, lazyUbulk, lazyUptnl, vfsFileProvider);
                 default:
                     throw new NotImplementedException($"type {file.GetType()} is not supported");
@@ -617,9 +607,6 @@ namespace CUE4Parse.FileProvider
                     var uexpAr = uexp != null ? await uexp.CreateReaderAsync().ConfigureAwait(false) : null;
                     return new Package(uasset, uexpAr, lazyUbulk, lazyUptnl, this, UseLazyPackageSerialization);
                 case FIoStoreEntry ioStoreEntry when this is IVfsFileProvider vfsFileProvider:
-                    if (vfsFileProvider.GlobalData == null)
-                    {
-                    }
                     return new IoPackage(uasset, ioStoreEntry.IoStoreReader.ContainerHeader, lazyUbulk, lazyUptnl, vfsFileProvider);
                 default:
                     throw new NotImplementedException($"type {file.GetType()} is not supported");
