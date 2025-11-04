@@ -63,7 +63,7 @@ public partial class CUE4ParseViewModel
                             var manifestInfo = _apiEndpointView.EpicApi.GetManifest(cancellationToken);
                             if (manifestInfo is null)
                             {
-                                throw new FileLoadException("最新のFortniteマニフェストを取得できませんでした。ローカルインストールに切り替える必要があるかもしれません。");
+                                throw new HttpRequestException("最新のFortniteマニフェストを取得できませんでした。ローカルインストールに切り替える必要があるかもしれません。");
                             }
 
                             // キャッシュディレクトリを準備
