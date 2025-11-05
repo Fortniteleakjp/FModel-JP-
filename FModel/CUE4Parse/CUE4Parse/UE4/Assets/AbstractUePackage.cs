@@ -30,8 +30,10 @@ public abstract class AbstractUePackage : UObject, IPackage
     {
         get
         {
-            if (HasFlags(EPackageFlags.PKG_UnversionedProperties) && Mappings is null)
-                throw new ParserException("Package has unversioned properties but mapping file is missing, can't serialize");
+            if (HasFlags(EPackageFlags.PKG_UnversionedProperties) && Mappings is null) {
+                //throw new ParserException("Package has unversioned properties but mapping file is missing, can't serialize");
+                return false;
+            }
             return true;
         }
     }

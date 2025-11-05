@@ -5,13 +5,15 @@ using System.Threading;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows;
 using FModel.Framework;
 
 namespace FModel.ViewModels
 {
     public class ProgressWindowViewModel : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler RequestClose;
         private string _message = string.Empty;
         public string Message
         {
@@ -33,10 +35,40 @@ namespace FModel.ViewModels
         private readonly CancellationTokenSource _cts = new();
         public CancellationToken Token => _cts.Token;
         public ICommand CancelCommand { get; }
+
         public ProgressWindowViewModel()
         {
-            CancelCommand = new RelayCommand(_ => _cts.Cancel(), _ => !_cts.IsCancellationRequested);
+            CancelCommand = new RelayCommand(Cancel, CanCancel);
         }
+
+        public void UpdateProgress(int current, int total, string message)
+        {
+            Progress = (double)current / total * 100;
+            Message = message;
+
+            // ETA calculation can be added here if needed
+        }
+
+        public void Complete()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                RequestClose?.Invoke(this, EventArgs.Empty);
+            });
+        }
+
+        private void Cancel(object obj)
+        {
+            _cts.Cancel();
+            (CancelCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            Complete();
+        }
+
+        private bool CanCancel(object obj)
+        {
+            return !_cts.IsCancellationRequested;
+        }
+
         protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, value))

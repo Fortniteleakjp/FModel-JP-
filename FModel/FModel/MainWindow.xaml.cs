@@ -148,6 +148,11 @@ public partial class MainWindow
         Helper.OpenWindow<AdonisWindow>("検索ウィンドウ", () => new SearchView().Show());
     }
 
+    private void OnContentSearchViewClick(object sender, RoutedEventArgs e)
+    {
+        Helper.OpenWindow<AdonisWindow>("ファイル内検索", () => new ContentSearchView().Show());
+    }
+
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)
     {
         if (e.OriginalSource is not TabControl tabControl)

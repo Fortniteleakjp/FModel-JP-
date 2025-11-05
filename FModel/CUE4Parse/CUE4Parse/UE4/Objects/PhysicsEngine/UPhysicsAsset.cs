@@ -36,15 +36,18 @@ public class UPhysicsAsset : Assets.Exports.UObject
     {
         base.WriteJson(writer, serializer);
 
-        writer.WritePropertyName("CollisionDisableTable");
-        writer.WriteStartArray();
-
-        foreach (var Table in CollisionDisableTable)
+        if (CollisionDisableTable != null)
         {
-            serializer.Serialize(writer, Table);
-        }
+            writer.WritePropertyName("CollisionDisableTable");
+            writer.WriteStartArray();
 
-        writer.WriteEndArray();
+            foreach (var Table in CollisionDisableTable)
+            {
+                serializer.Serialize(writer, Table);
+            }
+
+            writer.WriteEndArray();
+        }
     }
 }
 

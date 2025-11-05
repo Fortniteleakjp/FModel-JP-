@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -55,6 +55,7 @@ public class SearchViewModel : ViewModel
     public int ResultsCount => SearchResults?.Count ?? 0;
     public RangeObservableCollection<GameFile> SearchResults { get; }
     public ICollectionView SearchResultsView { get; }
+    public RangeObservableCollection<GameFile> ContentSearchResults { get; }
 
     public ICommand SortCommand { get; }
 
@@ -62,6 +63,7 @@ public class SearchViewModel : ViewModel
     {
         SearchResults = new RangeObservableCollection<GameFile>();
         SearchResultsView = new ListCollectionView(SearchResults);
+        ContentSearchResults = new RangeObservableCollection<GameFile>();
         SortCommand = new RelayCommand(Sort);
         SortMode = ESortMode.Asc;
     }
