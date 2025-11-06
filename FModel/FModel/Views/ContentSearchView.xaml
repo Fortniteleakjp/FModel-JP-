@@ -8,7 +8,7 @@
                              xmlns:viewModels="clr-namespace:FModel.ViewModels"
                              mc:Ignorable="d"
                              d:DataContext="{d:DesignInstance viewModels:ApplicationViewModel}"
-                             Title="Content Search" Height="450" Width="800"
+                             Title="高度な検索" Height="450" Width="800"
                              IconVisibility="Collapsed"
                              WindowStartupLocation="CenterScreen">
     <Grid>
@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Margin="5">
-            <Button DockPanel.Dock="Right" Content="Search" Width="80" Margin="5,0,0,0" Click="OnSearchClick"/>
+            <Button DockPanel.Dock="Right" Content="検索" Width="80" Margin="5,0,0,0" Click="OnSearchClick"/>
             <TextBox x:Name="SearchTextBox" KeyDown="OnSearchKeyDown"/>
         </DockPanel>
 
@@ -38,7 +38,7 @@
 
         <StatusBar Grid.Row="2">
             <StatusBarItem>
-                <TextBlock x:Name="StatusTextBlock" Text="Ready"/>
+                <TextBlock x:Name="StatusTextBlock" Text="準備OK"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

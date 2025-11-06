@@ -121,7 +121,7 @@ namespace FModel.Views
                 _applicationView.CUE4Parse.SearchVm.ContentSearchResults.Add(file);
             }
 
-            StatusTextBlock.Text = $"Found {results.Count} files.";
+            StatusTextBlock.Text = $"{results.Count}つのファイルがヒットしました";
         }
 
         private async void OnAssetDoubleClick(object sender, MouseButtonEventArgs e)
