@@ -58,6 +58,12 @@ public class TabCommand : ViewModelCommand<TabItem>
                     _applicationView.CUE4Parse.Extract(cancellationToken, tabViewModel.Entry, false, EBulkType.Animations);
                 });
                 break;
+            case "Asset_Save_Audio":
+                await _threadWorkerView.Begin(cancellationToken =>
+                {
+                    _applicationView.CUE4Parse.Extract(cancellationToken, tabViewModel.Entry, false, EBulkType.Audio);
+                });
+                break;
             case "Open_Properties":
                 if (tabViewModel.Header == "New Tab" || tabViewModel.Document == null) return;
                 Helper.OpenWindow<AdonisWindow>(tabViewModel.Header + " (Properties)", () =>

@@ -56,7 +56,7 @@ public class ApplicationViewModel : ViewModel
 
     public LoadingModesViewModel LoadingModes { get; }
     public CustomDirectoriesViewModel CustomDirectories { get; }
-    public CUE4Parse.CUE4ParseViewModel CUE4Parse { get; }
+    public FModel.ViewModels.CUE4Parse.CUE4ParseViewModel CUE4Parse { get; }
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
@@ -83,7 +83,7 @@ public class ApplicationViewModel : ViewModel
 
         UserSettings.Default.DiffDir = ResolveDiffDirectory();
 
-        CUE4Parse = new CUE4Parse.CUE4ParseViewModel();
+    CUE4Parse = new FModel.ViewModels.CUE4Parse.CUE4ParseViewModel();
         CUE4Parse.Provider.VfsRegistered += (sender, count) =>
         {
             if (sender is not IAesVfsReader reader) return;

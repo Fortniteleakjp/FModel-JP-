@@ -17,7 +17,24 @@ public class JsonNetSerializer : IRestSerializer, ISerializer, IDeserializer
 
     public string Serialize(Parameter parameter) => JsonConvert.SerializeObject(parameter.Value);
     public string Serialize(object obj) => JsonConvert.SerializeObject(obj);
-    public T Deserialize<T>(RestResponse response) => JsonConvert.DeserializeObject<T>(response.Content!, SerializerSettings);
+    public T Deserialize<T>(RestResponse response)
+    {
+        if (string.IsNullOrEmpty(response.Content))
+        {
+            return default(T);
+        }
+
+        try
+        {
+            return JsonConvert.DeserializeObject<T>(response.Content!, SerializerSettings);
+        }
+        catch (JsonSerializationException)
+        {
+            // "NOT_FOUND" のような不正なJSONコンテンツの場合、ここで捕捉される
+            // 呼び出し元がnullを処理できるように、default(T)を返す
+            return default(T);
+        }
+    }
 
     public ISerializer Serializer => this;
     public IDeserializer Deserializer => this;

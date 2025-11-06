@@ -20,6 +20,7 @@ using CUE4Parse.GameTypes.TQ2.Objects;
 using CUE4Parse.GameTypes.TSW.Objects;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Engine.Font;
+using CUE4Parse.UE4.Assets.Exports.Harmonix;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Objects.Properties;
@@ -49,6 +50,7 @@ using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.WorldCondition;
 using CUE4Parse.UE4.Versions;
 using Newtonsoft.Json;
+using FRawUIntStruct = CUE4Parse.UE4.Objects.StructUtils.FRawStruct<uint>;
 
 namespace CUE4Parse.UE4.Assets.Objects;
 
@@ -86,11 +88,11 @@ public class FScriptStruct
             "MaterialAttributesInput" => type == ReadType.ZERO ? new FExpressionInput() : new FExpressionInput(Ar),
             "SkeletalMeshSamplingLODBuiltData" => type == ReadType.ZERO ? new FSkeletalMeshSamplingLODBuiltData() : new FSkeletalMeshSamplingLODBuiltData(Ar),
             "SkeletalMeshSamplingRegionBuiltData" => type == ReadType.ZERO ? new FSkeletalMeshSamplingRegionBuiltData() : new FSkeletalMeshSamplingRegionBuiltData(Ar),
-            "PerPlatformBool" => type == ReadType.ZERO ? new TPerPlatformProperty.FPerPlatformBool() : new TPerPlatformProperty.FPerPlatformBool(Ar),
-            "PerPlatformFloat" => type == ReadType.ZERO ? new TPerPlatformProperty.FPerPlatformFloat() : new TPerPlatformProperty.FPerPlatformFloat(Ar),
-            "PerPlatformInt" => type == ReadType.ZERO ? new TPerPlatformProperty.FPerPlatformInt() : new TPerPlatformProperty.FPerPlatformInt(Ar),
-            "PerPlatformFrameRate" => type == ReadType.ZERO ? new TPerPlatformProperty.FPerPlatformFrameRate() : new TPerPlatformProperty.FPerPlatformFrameRate(Ar),
-            "PerPlatformFString" => type == ReadType.ZERO ? new TPerPlatformProperty.FPerPlatformFString() : new TPerPlatformProperty.FPerPlatformFString(Ar),
+            "PerPlatformBool" => type == ReadType.ZERO ? new FPerPlatformBool() : new FPerPlatformBool(Ar),
+            "PerPlatformFloat" => type == ReadType.ZERO ? new FPerPlatformFloat() : new FPerPlatformFloat(Ar),
+            "PerPlatformInt" => type == ReadType.ZERO ? new FPerPlatformInt() : new FPerPlatformInt(Ar),
+            "PerPlatformFrameRate" => type == ReadType.ZERO ? new FPerPlatformFrameRate() : new FPerPlatformFrameRate(Ar),
+            "PerPlatformFString" => type == ReadType.ZERO ? new FPerPlatformFString() : new FPerPlatformFString(Ar),
             "PerQualityLevelInt" => type == ReadType.ZERO ? new FPerQualityLevelInt() : new FPerQualityLevelInt(Ar),
             "PerQualityLevelFloat" => type == ReadType.ZERO ? new FPerQualityLevelFloat() : new FPerQualityLevelFloat(Ar),
             "PannerDetails" => new FPannerDetails(Ar),
@@ -130,7 +132,8 @@ public class FScriptStruct
             "MovieSceneTrackIdentifier" => type == ReadType.ZERO ? new FMovieSceneTrackIdentifier() : new FMovieSceneTrackIdentifier(Ar),
             "MovieSceneTrackIdentifiers" when Ar.Game is EGame.GAME_GameForPeace => type == ReadType.ZERO ? new FMovieSceneTrackIdentifiers() : new FMovieSceneTrackIdentifiers(Ar),
             "MovieSceneTrackImplementationPtr" => new FMovieSceneTrackImplementationPtr(Ar),
-            "MidiEvent" => new FMidiEvent(Ar),
+            // disambiguate FMidiEvent: prefer the engine Midi object
+            "MidiEvent" => new CUE4Parse.UE4.Objects.Engine.Midi.FMidiEvent(Ar),
             "FontData" => new FFontData(Ar),
             "FontCharacter" => new FFontCharacter(Ar),
             "Plane" => type == ReadType.ZERO ? new FPlane() : new FPlane(Ar),
@@ -143,6 +146,7 @@ public class FScriptStruct
             "Rotator3f" => type == ReadType.ZERO ? new FRotator() : new FRotator(Ar.Read<float>(), Ar.Read<float>(), Ar.Read<float>()),
             "Rotator3d" => type == ReadType.ZERO ? new FRotator() : new FRotator(Ar.Read<double>(), Ar.Read<double>(), Ar.Read<double>()),
             "RawAnimSequenceTrack" => new FRawAnimSequenceTrack(Ar),
+            "Spline" => type == ReadType.ZERO ? new FSpline() : new FSpline(Ar),
             "Sphere" => type == ReadType.ZERO ? new FSphere() : new FSphere(Ar),
             "Sphere3f" => type == ReadType.ZERO ? new FSphere() : new FSphere(Ar.Read<TIntVector3<float>>(), Ar.Read<float>()),
             "Sphere3d" => type == ReadType.ZERO ? new FSphere() : new FSphere(Ar.Read<TIntVector3<double>>(), Ar.Read<double>()),
@@ -189,6 +193,9 @@ public class FScriptStruct
             "StateTreeInstanceData" => type == ReadType.ZERO ? new FStructFallback() : new FStateTreeInstanceData(Ar),
             "DataCacheDuplicatedObjectData" => new FDataCacheDuplicatedObjectData(Ar),
             "EdGraphPinType" => new FEdGraphPinType(Ar),
+
+            // Custom struct types for simple structs in tagged TMap
+            "UInt32Property" => type == ReadType.ZERO ? new FRawUIntStruct() : Ar.Read<FRawUIntStruct>(),
 
             // FortniteGame
             "ConnectivityCube" => new FConnectivityCube(Ar),

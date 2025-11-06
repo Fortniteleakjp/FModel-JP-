@@ -30,24 +30,6 @@ namespace FModel.ViewModels.CUE4Parse;
 
 public partial class CUE4ParseViewModel
 {
-    // 初期化処理
-    public async Task Initialize()
-    {
-        await _threadWorkerView.Begin(cancellationToken =>
-        {
-            // Providerとディレクトリを取得し、それぞれ初期化
-            foreach (var (provider, dir) in ProvidersWithDirectories())
-            {
-                InitializeProvider(provider, dir, cancellationToken);
-            }
-
-            // 初期化したProviderごとにログ出力
-            ForEachProvider(provider =>
-            {
-                Log.Information($"{provider.Versions.Game} ({provider.Versions.Platform}) | アーカイブ数: x{provider.UnloadedVfs.Count} | AESキー数: x{provider.RequiredKeys.Count} | Looseファイル数: x{provider.Files.Count}");
-            });
-        });
-    }
 
     // Providerの初期化処理
     private void InitializeProvider(AbstractVfsFileProvider provider, DirectorySettings dir, CancellationToken cancellationToken)
@@ -304,15 +286,4 @@ public partial class CUE4ParseViewModel
             yield return (DiffProvider, UserSettings.Default.DiffDir);
     }
 
-    // Providerをクリアする（キャッシュや検索結果を削除）
-    public void ClearProvider()
-    {
-        AssetsFolder.Folders.Clear();
-        SearchVm.SearchResults.Clear();
-        Helper.CloseWindow<AdonisWindow>("検索ウィンドウ");
-
-        ForEachProvider(provider => provider.UnloadNonStreamedVfs());
-
-        GC.Collect();
-    }
 }

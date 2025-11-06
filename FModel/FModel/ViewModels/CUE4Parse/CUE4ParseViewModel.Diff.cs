@@ -289,7 +289,7 @@ public partial class CUE4ParseViewModel
         }
     }
 
-    private static TabImage LoadTabImageForDiff(AbstractVfsFileProvider provider, GameFile entry)
+    private TabImage LoadTabImageForDiff(AbstractVfsFileProvider provider, GameFile entry)
     {
         if (entry == null)
             return null;
@@ -316,8 +316,7 @@ public partial class CUE4ParseViewModel
             case "svg":
                 {
                     var data = provider.SaveAsset(entry);
-                    using var ms = new MemoryStream(data);
-                    var bmp = RenderSvg(ms);
+                    var bmp = this.RenderSvg(data);
                     return bmp != null
                         ? new TabImage(name, rnn, bmp)
                         : null;
