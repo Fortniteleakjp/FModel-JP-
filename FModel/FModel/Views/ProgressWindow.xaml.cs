@@ -3,17 +3,22 @@ using FModel.ViewModels;
 
 namespace FModel.Views
 {
-    public partial class ProgressWindow : Window
+    public partial class ProgressWindow
     {
         private readonly ProgressWindowViewModel _viewModel;
+
+        public ProgressWindow()
+        {
+            InitializeComponent();
+        }
 
         public ProgressWindow(ProgressWindowViewModel viewModel)
         {
             InitializeComponent();
             _viewModel = viewModel;
             DataContext = _viewModel;
-
-            _viewModel.RequestClose += (s, e) => Close();
+            if (_viewModel != null)
+                _viewModel.RequestClose += (s, e) => Close();
         }
     }
 }

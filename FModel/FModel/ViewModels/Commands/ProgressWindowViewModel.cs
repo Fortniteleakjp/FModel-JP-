@@ -14,6 +14,21 @@ namespace FModel.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler RequestClose;
+
+        private string _title;
+        public string Title
+        {
+            get => _title;
+            set => SetField(ref _title, value);
+        }
+
+        private bool _isIndeterminate;
+        public bool IsIndeterminate
+        {
+            get => _isIndeterminate;
+            set => SetField(ref _isIndeterminate, value);
+        }
+
         private string _message = string.Empty;
         public string Message
         {

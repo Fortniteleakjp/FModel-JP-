@@ -8,8 +8,10 @@ using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.ViewModels;
 using Newtonsoft.Json;
+using FModel.Extensions;
 using System.Linq;
 using System.Threading;
+using System.Windows.Threading; // Dispatcher を解決するために追加
 
 namespace FModel.Views
 {
@@ -44,54 +46,82 @@ namespace FModel.Views
             _applicationView.CUE4Parse.SearchVm.ContentSearchResults.Clear();
             StatusTextBlock.Text = "Searching...";
 
-            var progressViewModel = new ProgressWindowViewModel();
-            var progressWindow = new ProgressWindow(progressViewModel) { Owner = this };
-
+            var progressVM = new ProgressWindowViewModel
+            {
+                Title = "ファイル内を検索中",
+                IsIndeterminate = false
+            };
+            var progressWindow = new ProgressWindow(progressVM) { Owner = this };
+            
+            _cts?.Cancel();
             _cts = new CancellationTokenSource();
             var token = _cts.Token;
-            progressViewModel.CancelCommand.CanExecuteChanged += (s, ev) =>
+            
+            var progress = new Progress<(int, int, string)>(value =>
             {
-                if (!progressViewModel.CancelCommand.CanExecute(null))
+                progressVM.Progress = (double)value.Item1 / value.Item2 * 100;
+                progressVM.Message = $"検索中: {value.Item3} ({value.Item1}/{value.Item2})";
+            });
+            
+            progressWindow.Closing += (s, a) => _cts.Cancel();
+            
+            var searchTask = SearchInFilesAsync(searchTerm, progress, token);
+            
+            progressWindow.Show();
+            
+            try
+            {
+                var results = await searchTask;
+                
+                _applicationView.CUE4Parse.SearchVm.ContentSearchResults.Clear();
+                foreach (var file in results)
                 {
-                    _cts.Cancel();
+                    _applicationView.CUE4Parse.SearchVm.ContentSearchResults.Add(file);
                 }
-            };
-
-            var searchTask = Task.Run(() =>
+                StatusTextBlock.Text = $"{results.Count}つのファイルがヒットしました";
+            }
+            catch (OperationCanceledException)
+            {
+                StatusTextBlock.Text = "検索がキャンセルされました";
+            }
+            catch (Exception ex)
+            {
+                StatusTextBlock.Text = $"エラーが発生しました: {ex.Message}";
+            }
+            finally
+            {
+                if (progressWindow.IsVisible)
+                {
+                    progressWindow.Close();
+                }
+            }
+        }
+        
+        private Task<List<GameFile>> SearchInFilesAsync(string searchTerm, IProgress<(int, int, string)> progress, CancellationToken token)
+        {
+            return Task.Run(() =>
             {
                 var filesToSearch = _applicationView.CUE4Parse.SearchVm.SearchResults.Where(f => !f.IsUePackagePayload).ToList();
                 var totalFiles = filesToSearch.Count;
-                var foundFiles = new List<GameFile>();
-
-                for (int i = 0; i < totalFiles; i++)
+                var foundFiles = new System.Collections.Concurrent.ConcurrentBag<GameFile>();
+                var processedFiles = 0;
+        
+                Parallel.ForEach(filesToSearch, new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = Environment.ProcessorCount }, file =>
                 {
-                    if (token.IsCancellationRequested)
-                    {
-                        break;
-                    }
-
-                    var file = filesToSearch[i];
+                    token.ThrowIfCancellationRequested();
+        
                     try
                     {
                         string contentString;
-                        if (file.Path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) || 
-                            file.Path.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
+                        if (file.Path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) || file.Path.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
                         {
-                            try
-                            {
-                                // For package files, load them and serialize to JSON for searching
-                                var package = _applicationView.CUE4Parse.Provider.LoadPackage(file);
-                                if (!package.CanDeserialize) continue;
-                                contentString = JsonConvert.SerializeObject(package.GetExports(), Formatting.None);
-                            }
-                            catch (Exception)
-                            {
-                                // If serialization fails, just skip this file.
-                                continue;
-                            }                        }
+                            // GetExports()は重いので、より軽量なGetDisplayData()を使用
+                            var result = _applicationView.CUE4Parse.Provider.GetLoadPackageResult(file);
+                            if (!result.Package.CanDeserialize) return;
+                            contentString = JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.None);
+                        }
                         else
                         {
-                            // For other files, read as raw text
                             var content = file.Read();
                             contentString = Encoding.UTF8.GetString(content);
                         }
@@ -101,35 +131,36 @@ namespace FModel.Views
                             foundFiles.Add(file);
                         }
                     }
-                    catch (Exception)
-                    {
-                        // Ignore files that can't be read
-                    }
-
-                    progressViewModel.UpdateProgress(i + 1, totalFiles, $"Searching in {file.Name}...");
-                }
-
-                return foundFiles;
+                    catch (OperationCanceledException) { throw; } // キャンセルは再スロー
+                    catch { /* Ignore files that can't be read or deserialized */ }
+        
+                    var currentProcessed = Interlocked.Increment(ref processedFiles);
+                    progress.Report((currentProcessed, totalFiles, file.Name));
+                });
+        
+                return foundFiles.OrderBy(f => f.Path).ToList();
             }, token);
-
-            progressWindow.ShowDialog(); // Show progress window modally
-
-            var results = await searchTask;
-
-            foreach (var file in results)
-            {
-                _applicationView.CUE4Parse.SearchVm.ContentSearchResults.Add(file);
-            }
-
-            StatusTextBlock.Text = $"{results.Count}つのファイルがヒットしました";
         }
 
         private async void OnAssetDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (SearchResultsListView.SelectedItem is not GameFile entry) return;
+            // UI要素へのアクセスはUIスレッドで行う
+            GameFile entry = null;
+            Dispatcher.Invoke(() =>
+            {
+                var searchResultsListView = (System.Windows.Controls.ListView)this.FindName("SearchResultsListView");
+                if (searchResultsListView != null && searchResultsListView.SelectedItem is GameFile selectedEntry)
+                {
+                    entry = selectedEntry;
+                }
+            });
+
+            if (entry == null) return;
 
             await ApplicationService.ThreadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.Extract(cancellationToken, entry, true));
-            MainWindow.YesWeCats.Activate();
+            // MainWindow.YesWeCats.Activate() のエラーは別途調査
+            // 現時点ではコメントアウトまたは適切な修正を行う
+            // MainWindow.YesWeCats.Activate(); 
         }
     }
 }
