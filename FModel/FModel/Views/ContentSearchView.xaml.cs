@@ -13,9 +13,11 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Threading; // Dispatcher を解決するために追加
 
+using AdonisUI.Controls; // AdonisWindow を解決するために追加
+
 namespace FModel.Views
 {
-    public partial class ContentSearchView
+    public partial class ContentSearchView : AdonisWindow
     {
         private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
         private CancellationTokenSource _cts;
@@ -105,8 +107,10 @@ namespace FModel.Views
                 var totalFiles = filesToSearch.Count;
                 var foundFiles = new System.Collections.Concurrent.ConcurrentBag<GameFile>();
                 var processedFiles = 0;
-        
-                Parallel.ForEach(filesToSearch, new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = Environment.ProcessorCount }, file =>
+                var memoryLimitPercentage = FModel.Settings.UserSettings.Default.ContentSearchMemoryLimitPercentage;
+                var maxDegreeOfParallelism = Math.Max(1, (int)(Environment.ProcessorCount * (memoryLimitPercentage / 100.0)));
+
+                Parallel.ForEach(filesToSearch, new ParallelOptions { CancellationToken = token, MaxDegreeOfParallelism = maxDegreeOfParallelism }, file =>
                 {
                     token.ThrowIfCancellationRequested();
         

@@ -1,9 +1,11 @@
 using System.Windows;
 using FModel.ViewModels;
 
+using AdonisUI.Controls; // AdonisWindow を解決するために追加
+
 namespace FModel.Views
 {
-    public partial class ProgressWindow
+    public partial class ProgressWindow : AdonisWindow
     {
         private readonly ProgressWindowViewModel _viewModel;
 

@@ -52,6 +52,8 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -403,6 +405,12 @@
                             Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
 
                     <!-- 新しいUI要素 -->
+                    <TextBlock Grid.Row="26" Grid.Column="0" Text="高度な検索のメモリ使用量" VerticalAlignment="Center" Margin="0 0 0 5"
+                               ToolTip="高度な検索が使用できる最大メモリ量をパーセンテージで指定します" />
+                    <Slider Grid.Row="26" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="100" TickFrequency="5"
+                            AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
+                            Value="{Binding ContentSearchMemoryLimitPercentage, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="MapAesTemplate">
@@ -844,7 +852,7 @@
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M17,13c-2.21,0-4,1.79-4,4c0,2.21,1.79,4,4,4s4-1.79,4-4C21,14.79,19.21,13,17,13z M17,14.38c0.62,0,1.12,0.51,1.12,1.12 s-0.51,1.12-1.12,1.12s-1.12-0.51-1.12-1.12S16.38,14.38,17,14.38z M17,19.75c-0.93,0-1.74-0.46-2.24-1.17 c0.05-0.72,1.51-1.08,2.24-1.08s2.19,0.36,2.24,1.08C18.74,19.29,17.93,19.75,17,19.75z" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="General" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="一般" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>

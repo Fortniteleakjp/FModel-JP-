@@ -456,6 +456,13 @@ namespace FModel.Settings
             set => SetProperty(ref _wwiseMaxBnkPrefetch, value);
         }
 
+        private int _contentSearchMemoryLimitPercentage = 50; // デフォルト値は50%
+        public int ContentSearchMemoryLimitPercentage
+        {
+            get => _contentSearchMemoryLimitPercentage;
+            set => SetProperty(ref _contentSearchMemoryLimitPercentage, value);
+        }
+
         private int _previewMaxTextureSize = 1024;
         public int PreviewMaxTextureSize
         {
