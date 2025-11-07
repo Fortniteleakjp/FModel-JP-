@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -7,6 +8,7 @@ using System.Windows.Input;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.ViewModels;
+using Ookii.Dialogs.Wpf;
 using Newtonsoft.Json;
 using FModel.Extensions;
 using System.Linq;
@@ -20,13 +22,34 @@ namespace FModel.Views
     public partial class ContentSearchView : AdonisWindow
     {
         private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+        public ObservableCollection<string> SearchFolders { get; } = new ObservableCollection<string>();
         private CancellationTokenSource _cts;
+
+        public static readonly DependencyProperty FilterStatusTextProperty =
+            DependencyProperty.Register(nameof(FilterStatusText), typeof(string), typeof(ContentSearchView), new PropertyMetadata("検索フォルダフィルタ (すべてのファイルを検索)"));
+
+        public string FilterStatusText
+        {
+            get => (string)GetValue(FilterStatusTextProperty);
+            set => SetValue(FilterStatusTextProperty, value);
+        }
 
         public ContentSearchView()
         {
             InitializeComponent();
-            DataContext = _applicationView;
+            DataContext = _applicationView; // ViewModelをDataContextに設定
+            SearchFolders.CollectionChanged += OnSearchFoldersChanged;
+            UpdateFilterStatusText(); // 初期状態を設定
+            // XAMLでバインドされるため、コードでの設定は不要
+            // this.FolderFilterListBox.ItemsSource = SearchFolders; 
+            // this.AddFolderButton.Click += OnAddFolderClick; // XAMLでClickイベントを設定するため不要
+            // this.RemoveFolderButton.Click += OnRemoveFolderClick; // XAMLでClickイベントを設定するため不要
             SearchTextBox.Focus();
+        }
+
+        private void OnSearchFoldersChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            UpdateFilterStatusText();
         }
 
         private void OnSearchKeyDown(object sender, KeyEventArgs e)
@@ -103,7 +126,18 @@ namespace FModel.Views
         {
             return Task.Run(() =>
             {
-                var filesToSearch = _applicationView.CUE4Parse.SearchVm.SearchResults.Where(f => !f.IsUePackagePayload).ToList();
+                var allFiles = _applicationView.CUE4Parse.SearchVm.SearchResults.Where(f => !f.IsUePackagePayload);
+
+                List<GameFile> filesToSearch;
+                if (SearchFolders.Any())
+                {
+                    filesToSearch = allFiles.Where(f => SearchFolders.Any(folder => f.Path.StartsWith(folder, StringComparison.OrdinalIgnoreCase))).ToList();
+                }
+                else
+                {
+                    filesToSearch = allFiles.ToList();
+                }
+
                 var totalFiles = filesToSearch.Count;
                 var foundFiles = new System.Collections.Concurrent.ConcurrentBag<GameFile>();
                 var processedFiles = 0;
@@ -165,6 +199,45 @@ namespace FModel.Views
             // MainWindow.YesWeCats.Activate() のエラーは別途調査
             // 現時点ではコメントアウトまたは適切な修正を行う
             // MainWindow.YesWeCats.Activate(); 
+        }
+
+        private void OnAddFolderClick(object sender, RoutedEventArgs e)
+        {
+            var folderPath = FolderInputTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(folderPath) && !SearchFolders.Contains(folderPath))
+            {
+                SearchFolders.Add(folderPath);
+                FolderInputTextBox.Clear();
+            }
+        }
+
+        private void OnFolderInputKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                OnAddFolderClick(sender, e);
+            }
+        }
+        private void OnRemoveFolderClick(object sender, RoutedEventArgs e)
+        {
+            // FolderFilterListBoxから選択されたアイテムを取得し、SearchFoldersから削除
+            var selectedItems = FolderFilterListBox.SelectedItems.Cast<string>().ToList();
+            foreach (var item in selectedItems)
+            {
+                SearchFolders.Remove(item);
+            }
+        }
+
+        private void UpdateFilterStatusText()
+        {
+            if (SearchFolders.Any())
+            {
+                FilterStatusText = $"検索フォルダフィルタ ({SearchFolders.Count}個のフォルダを指定中)";
+            }
+            else
+            {
+                FilterStatusText = "検索フォルダフィルタ (すべてのファイルを検索)";
+            }
         }
     }
 }

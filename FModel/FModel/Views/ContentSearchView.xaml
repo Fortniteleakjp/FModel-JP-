@@ -5,6 +5,8 @@
                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                             xmlns:local="clr-namespace:FModel.Views"
                              xmlns:viewModels="clr-namespace:FModel.ViewModels"
                              mc:Ignorable="d"
                              d:DataContext="{d:DesignInstance viewModels:ApplicationViewModel}"
@@ -14,20 +16,52 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Margin="5">
             <Button DockPanel.Dock="Right" Content="検索" Width="80" Margin="5,0,0,0" Click="OnSearchClick"/>
-            <TextBox x:Name="SearchTextBox" KeyDown="OnSearchKeyDown"/>
+            <TextBox x:Name="SearchTextBox" KeyDown="OnSearchKeyDown"
+                     adonisExtensions:WatermarkExtension.Watermark="ファイルの内容を検索..."/>
         </DockPanel>
 
-        <ListView x:Name="SearchResultsListView" Grid.Row="1" Margin="5,0,5,5"
+        <GroupBox Header="{Binding FilterStatusText, RelativeSource={RelativeSource AncestorType=local:ContentSearchView}}"
+                  Grid.Row="1"
+                  Margin="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ListBox x:Name="FolderFilterListBox"
+                         Grid.Column="0"
+                         ItemsSource="{Binding SearchFolders, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}}"
+                         SelectionMode="Extended"
+                         Height="80"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" ToolTip="{Binding}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                    <TextBox x:Name="FolderInputTextBox" KeyDown="OnFolderInputKeyDown" Margin="0,0,0,5"
+                             adonisExtensions:WatermarkExtension.Watermark="フォルダパスを入力..."/>
+                    <Button x:Name="AddFolderButton" Content="追加" Click="OnAddFolderClick" Margin="0,0,0,5"/>
+                    <Button x:Name="RemoveFolderButton" Content="削除" Click="OnRemoveFolderClick"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <ListView x:Name="SearchResultsListView" Grid.Row="2" Margin="5,0,5,5"
                   ItemsSource="{Binding CUE4Parse.SearchVm.ContentSearchResults}"
                   MouseDoubleClick="OnAssetDoubleClick"
                   Style="{DynamicResource {x:Type ListView}}"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
@@ -36,7 +70,7 @@
             </ListView.View>
         </ListView>
 
-        <StatusBar Grid.Row="2">
+        <StatusBar Grid.Row="3">
             <StatusBarItem>
                 <TextBlock x:Name="StatusTextBlock" Text="準備OK"/>
             </StatusBarItem>
