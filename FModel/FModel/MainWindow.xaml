@@ -117,7 +117,7 @@
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="サウンドを自動で開く" IsCheckable="True" StaysOpenOnClick="True"
-                            IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
+                          IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
                 <Separator />
                 <MenuItem Header="閲覧履歴" x:Name="RecentFilesMenuItem">
                     <MenuItem.Icon>
@@ -169,6 +169,7 @@
             </MenuItem>
             <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
             <MenuItem Header="設定" Command="{Binding MenuCommand}" CommandParameter="Settings" />
+            <MenuItem Header="プロファイル" Command="{Binding MenuCommand}" CommandParameter="Profile" />
             <MenuItem Header="ヘルプ" >
                 <MenuItem Header="寄付 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
                     <MenuItem.Icon>
@@ -269,6 +270,7 @@
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
+
                                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="読み込む"
                                         Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding Status.IsReady}"
                                         CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
@@ -360,14 +362,6 @@
                                             </Canvas>
                                         </Viewbox>
                                     </Button>
-                                    <!-- <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Expand All (not appropriate for huge amount of folders)" Padding="4" -->
-                                    <!--         Command="{Binding MenuCommand}" CommandParameter="ToolBox_Expand_All"> -->
-                                    <!--     <Viewbox Width="16" Height="16" HorizontalAlignment="Center"> -->
-                                    <!--         <Canvas Width="24" Height="24"> -->
-                                    <!--             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource UnfoldIcon}" /> -->
-                                    <!--         </Canvas> -->
-                                    <!--     </Viewbox> -->
-                                    <!-- </Button> -->
                                     <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Collapse All" Padding="4"
                                             Command="{Binding MenuCommand}" CommandParameter="ToolBox_Collapse_All">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
@@ -378,20 +372,11 @@
                                     </Button>
                                 </StackPanel>
                             </Grid>
+
                             <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
                             <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
-                                        <!-- <MenuItem Header="Extract Folder's Packages" Click="OnFolderExtractClick"> -->
-                                        <!--     <MenuItem.Icon> -->
-                                        <!--         <Viewbox Width="16" Height="16"> -->
-                                        <!--             <Canvas Width="24" Height="24"> -->
-                                        <!--                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" /> -->
-                                        <!--             </Canvas> -->
-                                        <!--         </Viewbox> -->
-                                        <!--     </MenuItem.Icon> -->
-                                        <!-- </MenuItem> -->
-                                        <!-- <Separator /> -->
                                         <MenuItem Header=".uasset 形式で保存" Click="OnFolderExportClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
@@ -587,9 +572,9 @@
                                                 <MenuItem.Header>
                                                     <TextBlock
                                                         Text="{Binding DataContext.SelectedItem.Extension,
-                                                        FallbackValue='データを保存',
-                                                        StringFormat='{}{0}形式で保存',
-                                                        RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                                   FallbackValue='データを保存',
+                                                                StringFormat='{}{0}形式で保存',
+                                                                   RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                                 </MenuItem.Header>
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -831,7 +816,6 @@
             <StatusBar.Style>
                 <Style TargetType="{x:Type StatusBar}" BasedOn="{StaticResource {x:Type StatusBar}}">
                     <Style.Triggers>
-                        <!--don't mind me, MultiDataTrigger just sucks-->
                         <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Ready}">
                             <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
                             <Setter Property="Foreground" Value="White" />
