@@ -39,6 +39,18 @@ public class BackupManagerViewModel : ViewModel
         get => _selectedBackup;
         set => SetProperty(ref _selectedBackup, value);
     }
+
+    private KeyValuePair<string, Dictionary<string, string>> _selectedBigBackup;
+    public KeyValuePair<string, Dictionary<string, string>> SelectedBigBackup
+    {
+        get => _selectedBigBackup;
+        set => SetProperty(ref _selectedBigBackup, value);
+    }
+
+    public ObservableCollection<KeyValuePair<string, Dictionary<string, string>>> BigBackups { get; }
+    public ICollectionView BigBackupsView { get; }
+
+
     private bool _isCreatingBackup;
     public bool IsCreatingBackup
     {
@@ -51,6 +63,9 @@ public class BackupManagerViewModel : ViewModel
     {
         _gameName = gameName;
         Backups = new ObservableCollection<Backup>();
+        BigBackups = new ObservableCollection<KeyValuePair<string, Dictionary<string, string>>>();
+        BigBackupsView = new ListCollectionView(BigBackups);
+
         BackupsView = new ListCollectionView(Backups) { SortDescriptions = { new SortDescription("FileName", ListSortDirection.Ascending) } };
     }
     public async Task Initialize()
@@ -60,12 +75,23 @@ public class BackupManagerViewModel : ViewModel
             var backups = _apiEndpointView.FModelApi.GetBackups(cancellationToken, _gameName);
             if (backups == null)
                 return;
+
+            var bigBackups = _apiEndpointView.FModelApi.GetBigBackups(cancellationToken);
+
             Application.Current.Dispatcher.Invoke(() =>
             {
                 foreach (var backup in backups)
                     Backups.Add(backup);
                 SelectedBackup = Backups.LastOrDefault();
+
+                if (bigBackups != null)
+                {
+                    foreach (var bigBackup in bigBackups)
+                        BigBackups.Add(bigBackup);
+                    SelectedBigBackup = BigBackups.FirstOrDefault();
+                }
             });
+
         });
     }
     public async Task CreateBackup()
@@ -104,6 +130,77 @@ public class BackupManagerViewModel : ViewModel
             SaveCheck(fullPath, SelectedBackup.FileName, "downloaded", "download");
         });
     }
+
+    public async Task DownloadBigBackup()
+    {
+        if (SelectedBigBackup.Key == null)
+            return;
+
+        var backupName = SelectedBigBackup.Key;
+        var filesToDownload = SelectedBigBackup.Value;
+        var backupFolder = Path.Combine(UserSettings.Default.OutputDirectory, "Backups", backupName);
+        Directory.CreateDirectory(backupFolder);
+
+        var progressViewModel = new ProgressWindowViewModel
+        {
+            Message = $"バックアップファイル(大)をダウンロードしています: {backupName}",
+            Progress = 0
+        };
+        var progressWindow = new ProgressWindow
+        {
+            DataContext = progressViewModel
+        };
+        progressWindow.Show();
+
+        await Task.Run(async () =>
+        {
+            var cancellationToken = progressViewModel.Token;
+            int totalFiles = filesToDownload.Count;
+            int completedFiles = 0;
+            var stopwatch = Stopwatch.StartNew();
+
+            try
+            {
+                foreach (var fileEntry in filesToDownload)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var fileName = fileEntry.Key;
+                    var downloadUrl = fileEntry.Value;
+                    var fullPath = Path.Combine(backupFolder, fileName);
+
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        FLogger.Append(ELog.Information, () => FLogger.Text($"ダウンロード中: {fileName}", Constants.WHITE, true));
+                    });
+
+                    _apiEndpointView.DownloadFile(downloadUrl, fullPath);
+
+                    completedFiles++;
+                    var percent = (double)completedFiles / totalFiles * 100;
+                    var elapsed = stopwatch.Elapsed;
+                    var etaSeconds = (elapsed.TotalSeconds / completedFiles) * (totalFiles - completedFiles);
+                    var eta = TimeSpan.FromSeconds(etaSeconds);
+
+                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        progressViewModel.Progress = percent;
+                        progressViewModel.ETA = $"推定残り時間: {eta:hh\\:mm\\:ss}";
+                    });
+                }
+                FLogger.Append(ELog.Information, () => FLogger.Text("バックアップファイル(大)のダウンロードが完了しました。", Constants.WHITE, true));
+            }
+            catch (OperationCanceledException)
+            {
+                FLogger.Append(ELog.Warning, () => FLogger.Text("バックアップファイル(大)のダウンロードはユーザーによってキャンセルされました。", Constants.YELLOW, true));
+            }
+            finally
+            {
+                stopwatch.Stop();
+                await Application.Current.Dispatcher.InvokeAsync(() => progressWindow.Close());
+            }
+        });
+    }
+
     private void SaveCheck(string fullPath, string fileName, string type1, string type2)
     {
         if (new FileInfo(fullPath).Length > 0)

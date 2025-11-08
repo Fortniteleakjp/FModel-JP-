@@ -153,6 +153,11 @@ public partial class MainWindow
         Helper.OpenWindow<AdonisWindow>("ファイル内検索", () => new ContentSearchView().Show());
     }
 
+    private void OnProfileViewClick(object sender, RoutedEventArgs e)
+    {
+        Helper.OpenWindow<AdonisWindow>("プロファイル", () => new ProfileWindow().Show());
+    }
+
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)
     {
         if (e.OriginalSource is not TabControl tabControl)

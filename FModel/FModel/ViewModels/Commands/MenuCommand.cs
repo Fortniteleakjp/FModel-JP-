@@ -63,6 +63,14 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Help_Discord":
                 Process.Start(new ProcessStartInfo { FileName = Constants.DISCORD_LINK, UseShellExecute = true });
                 break;
+            case "Athena_AllCosmetics":
+                // TODO: Athenaの「すべてのコスメティック」機能を呼び出す
+                FLogger.Append(ELog.Information, () => FLogger.Text("Athena: すべてのコスメティックを生成します", Constants.WHITE, true));
+                break;
+            case "Athena_NewCosmetics":
+                // TODO: Athenaの「新しいコスメティック」機能を呼び出す
+                FLogger.Append(ELog.Information, () => FLogger.Text("Athena: 新しいコスメティックを生成します", Constants.WHITE, true));
+                break;
             case "ToolBox_Clear_Logs":
                 FLogger.Logger.Text = string.Empty;
                 break;

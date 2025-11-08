@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using AdonisUI.Controls;
 using System.Collections.Generic;
 using System.Threading;
@@ -27,6 +27,7 @@ public class FModelApiEndpoint : AbstractApiProvider
     private Info _infos;
     private Donator[] _donators;
     private Backup[] _backups;
+    private Dictionary<string, Dictionary<string, string>> _bigBackups;
     private Game _game;
     private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
@@ -71,6 +72,19 @@ public class FModelApiEndpoint : AbstractApiProvider
     public Backup[] GetBackups(CancellationToken token, string gameName)
     {
         return _backups ??= GetBackupsAsync(token, gameName).GetAwaiter().GetResult();
+    }
+
+    public async Task<Dictionary<string, Dictionary<string, string>>> GetBigBackupsAsync(CancellationToken token)
+    {
+        var request = new FRestRequest("https://fljpapi2-sjnq.onrender.com/fmodeljp/api/v1/big/backuprink");
+        var response = await _client.ExecuteAsync<Dictionary<string, Dictionary<string, string>>>(request, token).ConfigureAwait(false);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int)response.StatusCode, response.ResponseUri?.OriginalString);
+        return response.Data;
+    }
+
+    public Dictionary<string, Dictionary<string, string>> GetBigBackups(CancellationToken token)
+    {
+        return _bigBackups ??= GetBigBackupsAsync(token).GetAwaiter().GetResult();
     }
 
     public async Task<Game> GetGamesAsync(CancellationToken token, string gameName)
@@ -190,4 +204,3 @@ public class CustomMandatory : Mandatory
     public string CommitHash { get; set; }
     public string ShortCommitHash => CommitHash[..7];
 }
-
