@@ -6,11 +6,11 @@
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              WindowStartupLocation="CenterScreen"
-                             ResizeMode="NoResize"
+                             ResizeMode="CanResize"
                              IconVisibility="Collapsed"
                              SizeToContent="Height"
                              Loaded="OnLoaded"
-                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.225'}" Height="419">
+                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.225'}" Height="433">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow"
                BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
@@ -109,7 +109,7 @@
         <ComboBox Grid.Row="4"
                   Grid.Column="1"
                   ItemsSource="{Binding BackupsView}"
-                  SelectedItem="{Binding SelectedBackup, Mode=TwoWay}" Grid.ColumnSpan="2" Margin="-1,0,0,0">
+                  SelectedItem="{Binding SelectedBackup, Mode=TwoWay}" Margin="5,0,-5,31" Grid.RowSpan="4" Grid.ColumnSpan="2">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding FileName}"
@@ -131,9 +131,10 @@
                 </Style>
             </ComboBox.Style>
         </ComboBox>
-        <Button Grid.Row="5"
+        <Button
+                Grid.Column="1"
                 Content="ダウンロード"
-                Click="OnDownloadClick" Margin="0,5,0,0" Grid.ColumnSpan="3">
+                Click="OnDownloadClick" Margin="5,2,-5,36" Grid.Row="7" Grid.ColumnSpan="2" Grid.RowSpan="3">
             <Button.Style>
                 <Style TargetType="Button"
                        BasedOn="{StaticResource {x:Type Button}}">
@@ -150,17 +151,17 @@
             </Button.Style>
         </Button>
 
-        <Separator Grid.Row="7"
+        <Separator Grid.Row="9"
                    Grid.Column="0"
                    Style="{StaticResource CustomSeparator}"
-                   Tag="クラウド上のバックアップファイル (大)" Grid.ColumnSpan="3" />
+                   Tag="クラウド上のバックアップファイル (大)" Grid.ColumnSpan="3" Margin="5,25,-5,3" Grid.RowSpan="2" />
 
-        <ComboBox Grid.Row="8"
+        <ComboBox Grid.Row="10"
                   Grid.Column="0"
                   Grid.ColumnSpan="3"
                   ItemsSource="{Binding BigBackupsView}"
                   SelectedItem="{Binding SelectedBigBackup, Mode=TwoWay}"
-                  Margin="0,0,0,0">
+                  Margin="5,14,-5,-36">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Key}"
@@ -183,11 +184,10 @@
             </ComboBox.Style>
         </ComboBox>
 
-        <Button Grid.Row="9"
-                Grid.Column="0"
-                Grid.ColumnSpan="3"
+        <Button Grid.Row="10"
+                Grid.Column="1"
                 Content="ダウンロード (大)"
-                Click="OnDownloadBigBackupClick" Margin="0,5,0,-18" Grid.RowSpan="2">
+                Click="OnDownloadBigBackupClick" Margin="5,47,-5,-65" Grid.ColumnSpan="2">
             <Button.Style>
                 <Style TargetType="Button"
                        BasedOn="{StaticResource {x:Type Button}}">
