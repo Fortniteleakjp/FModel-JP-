@@ -89,7 +89,7 @@ public abstract class AbstractUePackage : UObject, IPackage
             {
                 case > 0:
                     Log.Warning("Did not read {0} correctly, {1} bytes remaining ({2}%)", obj.ExportType, remaining,
-                        Math.Round((decimal)remaining / validPos * 100, 2));
+                        validPos == 0 ? "0%" : $"{Math.Round((decimal)remaining / validPos * 100, 2)}%");
                     break;
                 case < 0:
                     Log.Warning("Did not read {0} correctly, {1} bytes exceeded", obj.ExportType, Math.Abs(remaining));
