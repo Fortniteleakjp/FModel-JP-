@@ -105,7 +105,12 @@ public class GameDirectoryViewModel : ViewModel
     {
         DirectoryFiles = new ObservableCollection<FileItem>();
         DirectoryFilesView = new ListCollectionView(DirectoryFiles) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
+
+        // CollectionView の同期を有効にする
+        BindingOperations.EnableCollectionSynchronization(DirectoryFiles, _lock);
     }
+
+    private readonly object _lock = new object(); // 同期オブジェクト
 
     public void Add(IAesVfsReader reader)
     {

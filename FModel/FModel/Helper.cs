@@ -46,14 +46,19 @@ public static class Helper
         }
     }
 
-    public static T GetWindow<T>(string windowName, Action action) where T : Window
+    public static T GetWindow<T>(string windowName, Func<T> createInstance) where T : Window
     {
+        T ret;
         if (!IsWindowOpen<T>(windowName))
         {
-            action();
+            ret = createInstance(); // ここでインスタンスを生成
+            ret.Show(); // ここでウィンドウを表示
+        }
+        else
+        {
+            ret = (T) GetOpenedWindow<T>(windowName);
         }
 
-        var ret = (T) GetOpenedWindow<T>(windowName);
         ret.Focus();
         ret.Activate();
         return ret;

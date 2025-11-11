@@ -381,6 +381,8 @@ public partial class CUE4ParseViewModel : ViewModel
             }
 
             Provider.Initialize();
+            // DiffProviderが初期化されている場合、こちらも初期化する
+            DiffProvider?.Initialize();
             _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.WwiseMaxBnkPrefetch));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
             Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");
@@ -1205,7 +1207,7 @@ public partial class CUE4ParseViewModel : ViewModel
         // but the ThreadWorkerViewModel is an idiot and doesn't understand we want to kill the current thread inside the current thread and continue the code
         Application.Current.Dispatcher.Invoke(delegate
         {
-            var audioPlayer = Helper.GetWindow<AudioPlayer>("Audio Player", () => new AudioPlayer().Show());
+            var audioPlayer = (AudioPlayer) Helper.GetWindow<AdonisUI.Controls.AdonisWindow>("Audio Player", () => (AdonisUI.Controls.AdonisWindow)new AudioPlayer());
             audioPlayer.Load(data, savedAudioPath);
         });
     }
