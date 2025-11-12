@@ -300,26 +300,6 @@ public partial class ImageMerger
         ClipboardExtensions.SetImage(_imageBuffer, FILENAME);
     }
 
-    private void ImagesListBox_DragOver(object sender, DragEventArgs e)
-    {
-        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
-        {
-            e.Effects = DragDropEffects.None;
-            e.Handled = true;
-            return;
-        }
-
-        string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
-        bool hasImage = files.Any(f =>
-        {
-            string ext = Path.GetExtension(f).ToLower();
-            return ext is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".jfif" or ".tif" or ".tiff";
-        });
-
-        e.Effects = hasImage ? DragDropEffects.Copy : DragDropEffects.None;
-        e.Handled = true;
-    }
-
     private async void ImagesListBox_Drop(object sender, DragEventArgs e)
     {
         if (!e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -402,5 +382,11 @@ public partial class ImageMerger
 
             await DrawPreview().ConfigureAwait(false);
         }
+    }
+
+    private void ImagesListBox_DragOver(object sender, DragEventArgs e)
+    {
+        e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
     }
 }
