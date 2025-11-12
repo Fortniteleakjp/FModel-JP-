@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Versions;
@@ -24,7 +24,8 @@ public class DirectorySettings : ViewModel, ICloneable
             Endpoints = old?.Endpoints ?? EndpointSettings.Default(gameName),
             Directories = old?.Directories ?? CustomDirectory.Default(gameName),
             AesKeys = old?.AesKeys ?? new AesResponse { MainKey = aes, DynamicKeys = null },
-            LastAesReload = old?.LastAesReload ?? DateTime.Today.AddDays(-1)
+            LastAesReload = old?.LastAesReload ?? DateTime.Today.AddDays(-1),
+            CriwareDecryptionKey = old?.CriwareDecryptionKey ?? 0
         };
     }
 
@@ -98,10 +99,15 @@ public class DirectorySettings : ViewModel, ICloneable
         set => SetProperty(ref _lastAesReload, value);
     }
 
+    private ulong _criwareDecryptionKey;
+    public ulong CriwareDecryptionKey
+    {
+        get => _criwareDecryptionKey;
+        set => SetProperty(ref _criwareDecryptionKey, value);
+    }
+
     private bool Equals(DirectorySettings other)
     {
-        if (other == null)
-            return false;
         return GameDirectory == other.GameDirectory && UeVersion == other.UeVersion;
     }
 
