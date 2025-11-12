@@ -1,4 +1,4 @@
-﻿using AdonisUI.Controls;
+using AdonisUI.Controls;
 using FModel.Extensions;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
@@ -27,6 +27,7 @@ public partial class ImageMerger
     public ImageMerger()
     {
         InitializeComponent();
+        this.KeyDown += ImageMerger_KeyDown;
     }
 
     private async void DrawPreview(object sender, DragCompletedEventArgs dragCompletedEventArgs)
@@ -171,62 +172,62 @@ public partial class ImageMerger
         switch (((Button) sender).Name)
         {
             case "UpButton":
-            {
-                if (indices.Length > 0 && indices[0] > 0)
                 {
-                    for (var i = 0; i < ImagesListBox.Items.Count; i++)
+                    if (indices.Length > 0 && indices[0] > 0)
                     {
+                        for (var i = 0; i < ImagesListBox.Items.Count; i++)
+                        {
                         if (!indices.Contains(i)) continue;
                         var item = (ListBoxItem) ImagesListBox.Items[i];
                         ImagesListBox.Items.Remove(item);
-                        ImagesListBox.Items.Insert(i - 1, item);
-                        item.IsSelected = true;
-                        reloadImage = true;
+                            ImagesListBox.Items.Insert(i - 1, item);
+                            item.IsSelected = true;
+                            reloadImage = true;
+                        }
                     }
-                }
 
-                ImagesListBox.SelectedItems.Add(indices);
-                if (reloadImage)
-                {
-                    await DrawPreview().ConfigureAwait(false);
-                }
+                    ImagesListBox.SelectedItems.Add(indices);
+                    if (reloadImage)
+                    {
+                        await DrawPreview().ConfigureAwait(false);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case "DownButton":
-            {
-                if (indices.Length > 0 && indices[^1] < ImagesListBox.Items.Count - 1)
                 {
-                    for (var i = ImagesListBox.Items.Count - 1; i > -1; --i)
+                    if (indices.Length > 0 && indices[^1] < ImagesListBox.Items.Count - 1)
                     {
+                        for (var i = ImagesListBox.Items.Count - 1; i > -1; --i)
+                        {
                         if (!indices.Contains(i)) continue;
                         var item = (ListBoxItem) ImagesListBox.Items[i];
                         ImagesListBox.Items.Remove(item);
-                        ImagesListBox.Items.Insert(i + 1, item);
-                        item.IsSelected = true;
-                        reloadImage = true;
+                            ImagesListBox.Items.Insert(i + 1, item);
+                            item.IsSelected = true;
+                            reloadImage = true;
+                        }
                     }
-                }
 
-                if (reloadImage)
-                {
-                    await DrawPreview().ConfigureAwait(false);
-                }
+                    if (reloadImage)
+                    {
+                        await DrawPreview().ConfigureAwait(false);
+                    }
 
-                break;
-            }
+                    break;
+                }
             case "DeleteButton":
-            {
-                if (ImagesListBox.Items.Count > 0 && ImagesListBox.SelectedItems.Count > 0)
                 {
-                    for (var i = ImagesListBox.SelectedItems.Count - 1; i >= 0; --i)
-                        ImagesListBox.Items.Remove(ImagesListBox.SelectedItems[i]);
+                    if (ImagesListBox.Items.Count > 0 && ImagesListBox.SelectedItems.Count > 0)
+                    {
+                        for (var i = ImagesListBox.SelectedItems.Count - 1; i >= 0; --i)
+                            ImagesListBox.Items.Remove(ImagesListBox.SelectedItems[i]);
+                    }
+
+                    await DrawPreview().ConfigureAwait(false);
+
+                    break;
                 }
-
-                await DrawPreview().ConfigureAwait(false);
-
-                break;
-            }
         }
     }
 
@@ -297,5 +298,109 @@ public partial class ImageMerger
     private void OnCopyImage(object sender, RoutedEventArgs e)
     {
         ClipboardExtensions.SetImage(_imageBuffer, FILENAME);
+    }
+
+    private void ImagesListBox_DragOver(object sender, DragEventArgs e)
+    {
+        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+            return;
+        }
+
+        string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+        bool hasImage = files.Any(f =>
+        {
+            string ext = Path.GetExtension(f).ToLower();
+            return ext is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".jfif" or ".tif" or ".tiff";
+        });
+
+        e.Effects = hasImage ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    private async void ImagesListBox_Drop(object sender, DragEventArgs e)
+    {
+        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            return;
+
+        string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+
+        foreach (string file in files)
+        {
+            string ext = Path.GetExtension(file).ToLower();
+            if (ext is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".jfif" or ".tif" or ".tiff")
+            {
+                ImagesListBox.Items.Add(new ListBoxItem
+                {
+                    ContentStringFormat = file,
+                    Content = Path.GetFileNameWithoutExtension(file)
+                });
+            }
+        }
+
+        if (ImagesListBox.Items.Count > 0)
+        {
+            SizeSlider.Value = Math.Min(ImagesListBox.Items.Count,
+                Math.Round(Math.Sqrt(ImagesListBox.Items.Count)));
+
+            await DrawPreview().ConfigureAwait(false);
+        }
+    }
+
+    private async void ImageMerger_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.V)
+        {
+            if (Clipboard.ContainsFileDropList())
+            {
+                var files = Clipboard.GetFileDropList().Cast<string>().ToArray();
+                await AddImagesFromFiles(files);
+            }
+            else if (Clipboard.ContainsImage())
+            {
+                var image = Clipboard.GetImage();
+                if (image != null)
+                {
+                    string tempPath = Path.Combine(Path.GetTempPath(), $"clip_{Guid.NewGuid()}.png");
+                    using (var fs = new FileStream(tempPath, FileMode.Create))
+                    {
+                        var encoder = new PngBitmapEncoder();
+                        encoder.Frames.Add(BitmapFrame.Create(image));
+                        encoder.Save(fs);
+                    }
+
+                    await AddImagesFromFiles(new[] { tempPath });
+                }
+            }
+        }
+    }
+
+    private async Task AddImagesFromFiles(string[] files)
+    {
+        foreach (string file in files)
+        {
+            string ext = Path.GetExtension(file).ToLower();
+            if (ext is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".jfif" or ".tif" or ".tiff")
+            {
+                if (ImagesListBox.Items.Cast<ListBoxItem>().Any(i => i.ContentStringFormat == file))
+                    continue;
+
+                ImagesListBox.Items.Add(new ListBoxItem
+                {
+                    ContentStringFormat = file,
+                    Content = Path.GetFileNameWithoutExtension(file)
+                });
+            }
+        }
+
+        if (ImagesListBox.Items.Count > 0)
+        {
+            SizeSlider.Value = Math.Min(ImagesListBox.Items.Count,
+                Math.Round(Math.Sqrt(ImagesListBox.Items.Count)));
+
+            await DrawPreview().ConfigureAwait(false);
+        }
     }
 }
