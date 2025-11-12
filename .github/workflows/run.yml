@@ -26,7 +26,7 @@ jobs:
         run: dotnet restore FModel/FModel/FModel.csproj
 
       - name: .NET Publish
-        run: dotnet publish "./FModel/FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
+        run: dotnet publish "./FModel/FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net8.0-windows -o "./FModel/FModel/bin/Publish/" -p:PublishReadyToRun=false -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
 
       - name: Create ZIP File
         uses: thedoctor0/zip-release@0.7.6
