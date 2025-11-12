@@ -410,4 +410,29 @@ public partial class MainWindow
 
         UserSettings.Save();
     }
+
+    private async void OnAthenaAllCosmeticsClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            FLogger.Append(ELog.Information, () => FLogger.Text("プロファイルを生成中...", Constants.WHITE));
+            await Task.Run(() =>
+            {
+                try
+                {
+                    // The AthenaGenerator has a Main method that runs synchronously; call it.
+                    AthenaGenerator.Main();
+                }
+                catch (Exception ex)
+                {
+                    FLogger.Append(ELog.Error, () => FLogger.Text($"プロファイルの生成に失敗しました。: {ex.Message}", Constants.RED));
+                }
+            });
+            FLogger.Append(ELog.Information, () => FLogger.Text("プロファイルの生成が完了しました。", Constants.WHITE));
+        }
+        catch (Exception ex)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"プロファイル生成を開始できませんでした。: {ex.Message}", Constants.RED));
+        }
+    }
 }

@@ -65,7 +65,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 break;
             case "Athena_AllCosmetics":
                 // TODO: Athenaの「すべてのコスメティック」機能を呼び出す
-                FLogger.Append(ELog.Information, () => FLogger.Text("Athena: すべてのコスメティックを生成します", Constants.WHITE, true));
+                FLogger.Append(ELog.Information, () => FLogger.Text("", Constants.WHITE, true));
                 break;
             case "Athena_NewCosmetics":
                 // TODO: Athenaの「新しいコスメティック」機能を呼び出す
