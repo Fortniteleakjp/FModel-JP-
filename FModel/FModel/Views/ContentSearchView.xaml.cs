@@ -197,7 +197,6 @@ namespace FModel.Views
 
             await ApplicationService.ThreadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.Extract(cancellationToken, entry, true));
             // MainWindow.YesWeCats.Activate() のエラーは別途調査
-            // 現時点ではコメントアウトまたは適切な修正を行う
             // MainWindow.YesWeCats.Activate(); 
         }
 

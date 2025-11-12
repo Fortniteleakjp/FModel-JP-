@@ -152,11 +152,11 @@ public partial class ImageMerger
 
         foreach (var file in fileBrowser.FileNames)
         {
-            ImagesListBox.Items.Add(new ListBoxItem
-            {
-                ContentStringFormat = file,
-                Content = Path.GetFileNameWithoutExtension(file)
-            });
+                ImagesListBox.Items.Add(new ListBoxItem
+                {
+                    ContentStringFormat = file,
+                    Content = Path.GetFileNameWithoutExtension(file)
+                });
         }
 
         SizeSlider.Value = Math.Min(ImagesListBox.Items.Count, Math.Round(Math.Sqrt(ImagesListBox.Items.Count)));
@@ -312,6 +312,11 @@ public partial class ImageMerger
             string ext = Path.GetExtension(file).ToLower();
             if (ext is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".jfif" or ".tif" or ".tiff")
             {
+                if (!File.Exists(file))
+                {
+                    Log.Warning("Dropped file not found: {FilePath}", file);
+                    continue;
+                }
                 ImagesListBox.Items.Add(new ListBoxItem
                 {
                     ContentStringFormat = file,
@@ -364,6 +369,11 @@ public partial class ImageMerger
             string ext = Path.GetExtension(file).ToLower();
             if (ext is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".jfif" or ".tif" or ".tiff")
             {
+                if (!File.Exists(file))
+                {
+                    Log.Warning("File from clipboard not found: {FilePath}", file);
+                    continue;
+                }
                 if (ImagesListBox.Items.Cast<ListBoxItem>().Any(i => i.ContentStringFormat == file))
                     continue;
 
