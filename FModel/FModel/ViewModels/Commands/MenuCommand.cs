@@ -69,7 +69,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 break;
             case "Athena_NewCosmetics":
                 // TODO: Athenaの「新しいコスメティック」機能を呼び出す
-                FLogger.Append(ELog.Information, () => FLogger.Text("Athena: 新しいコスメティックを生成します", Constants.WHITE, true));
+                FLogger.Append(ELog.Information, () => FLogger.Text("", Constants.WHITE, true));
                 break;
             case "ToolBox_Clear_Logs":
                 FLogger.Logger.Text = string.Empty;
@@ -88,6 +88,9 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 {
                     SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, false, cancellationToken);
                 });
+                break;
+            case "Help_Test":
+                FLogger.Append(ELog.Information, () => FLogger.Text("お前さっきオレら着替えてる時ポチポチボタン押してただろ", Constants.WHITE, true));
                 break;
             case TreeItem selectedFolder:
                 selectedFolder.IsSelected = false;
