@@ -56,116 +56,216 @@ class AthenaGenerator
         }
     }
 
-    // New API: build and return profile JSON string (no UI interaction)
+    // New API: fetches all cosmetics, then constructs the minimal AthenaProfile in memory for the user.
     public static string BuildProfileJson(string apiUrl)
     {
-        return BuildAsync(apiUrl).GetAwaiter().GetResult();
-    }
-
-    static async Task<string> BuildAsync(string apiUrl)
-    {
-        var profile = AthenaProfileBuilder.BuildBaseTemplate();
-
-        var backendFixMap = new Dictionary<string, string>
-        {
-            ["AthenaEmoji"] = "AthenaDance",
-            ["AthenaSpray"] = "AthenaDance",
-            ["AthenaToy"] = "AthenaDance",
-            ["AthenaPetCarrier"] = "AthenaBackpack",
-            ["AthenaPet"] = "AthenaBackpack",
-            ["SparksDrum"] = "SparksDrums",
-            ["SparksMic"] = "SparksMicrophone"
-        };
-
         try
         {
-            string json = await httpClient.GetStringAsync(apiUrl);
-            var doc = JsonSerializer.Deserialize<ApiDataRootFlexible>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var json = httpClient.GetStringAsync(apiUrl).GetAwaiter().GetResult();
+            var deserializeOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-            if (doc?.Data != null)
+            var allApiItems = new List<ApiItem>();
+
+            using (var doc = JsonDocument.Parse(json))
             {
-                //再帰処理
-                void ProcessArray(JsonElement arr, string parentKey)
+                var root = doc.RootElement;
+
+                if (root.ValueKind == JsonValueKind.Object && root.TryGetProperty("data", out var dataElement))
                 {
-                    if (arr.ValueKind != JsonValueKind.Array) return;
-                    List<ApiItem> items = null;
-                    try
+                    if (dataElement.ValueKind == JsonValueKind.Array)
                     {
-                        items = arr.Deserialize<List<ApiItem>>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        var arr = JsonSerializer.Deserialize<List<ApiItem>>(dataElement.GetRawText(), deserializeOptions);
+                        if (arr != null) allApiItems.AddRange(arr);
                     }
-                    catch
+                    else if (dataElement.ValueKind == JsonValueKind.Object)
                     {
-                        return;
-                    }
-
-                    if (items == null) return;
-
-                    foreach (var item in items)
-                    {
-                        if (item == null) continue;
-                        if (item.Id == null) continue;
-                        if (item.Id.ToLower().Contains("random")) continue;
-                        if (item.Type == null) continue;
-
-                        //parentKeyがtracksの場合特例を適用
-                        if (string.Equals(parentKey, "tracks", StringComparison.OrdinalIgnoreCase))
+                        
+                        foreach (var prop in dataElement.EnumerateObject())
                         {
-                            item.Type.BackendValue = "SparksSong";
-                        }
-
-                        if (item.Type.BackendValue != null && backendFixMap.ContainsKey(item.Type.BackendValue))
-                        {
-                            item.Type.BackendValue = backendFixMap[item.Type.BackendValue];
-                        }
-
-                        string itemId = $"{item.Type.BackendValue}:{item.Id}";
-                        profile.Items[itemId] = new AthenaItem
-                        {
-                            TemplateId = itemId,
-                            Attributes = new ItemAttributes
+                            var v = prop.Value;
+                            if (v.ValueKind == JsonValueKind.Array)
                             {
-                                MaxLevelBonus = 0,
-                                Level = 1,
-                                ItemSeen = true,
-                                Xp = 0,
-                                Variants = AthenaProfileBuilder.BuildVariants(item.Variants),
-                                Favorite = false
-                            },
-                            Quantity = 1
-                        };
+                                var list = JsonSerializer.Deserialize<List<ApiItem>>(v.GetRawText(), deserializeOptions);
+                                if (list != null) allApiItems.AddRange(list);
+                            }
+                            else if (v.ValueKind == JsonValueKind.Object)
+                            {
+                                
+                                try
+                                {
+                                    var single = JsonSerializer.Deserialize<ApiItem>(v.GetRawText(), deserializeOptions);
+                                    if (single != null && !string.IsNullOrEmpty(single.Id))
+                                    {
+                                        allApiItems.Add(single);
+                                        continue;
+                                    }
+                                }
+                                catch { }
+
+                                
+                                try
+                                {
+                                    var map = JsonSerializer.Deserialize<Dictionary<string, ApiItem>>(v.GetRawText(), deserializeOptions);
+                                    if (map != null)
+                                    {
+                                        foreach (var item in map.Values)
+                                            if (item != null && !string.IsNullOrEmpty(item.Id))
+                                                allApiItems.Add(item);
+                                    }
+                                }
+                                catch { }
+                            }
+                        }
                     }
                 }
-
-                void Recurse(JsonElement element, string parentKey = null)
+                else if (root.ValueKind == JsonValueKind.Array)
                 {
-                    if (element.ValueKind == JsonValueKind.Array)
-                    {
-                        ProcessArray(element, parentKey);
-                    }
-                    else if (element.ValueKind == JsonValueKind.Object)
-                    {
-                        foreach (var prop in element.EnumerateObject())
-                        {
-                            
-                            Recurse(prop.Value, prop.Name);
-                        }
-                    }
-                    
+                    // ルートが配列になっているケース
+                    var arr = JsonSerializer.Deserialize<List<ApiItem>>(root.GetRawText(), deserializeOptions);
+                    if (arr != null) allApiItems.AddRange(arr);
                 }
 
                 
-                foreach (var kv in doc.Data)
+                if (allApiItems.Count == 0)
                 {
-                    Recurse(kv.Value, kv.Key);
+                    ExtractApiItemsFromElement(root, allApiItems, deserializeOptions);
                 }
             }
 
-            return JsonSerializer.Serialize(profile, new JsonSerializerOptions { WriteIndented = true });
+            
+            if (allApiItems.Count == 0)
+            {
+                try
+                {
+                    var typed = JsonSerializer.Deserialize<ApiDataRoot>(json, deserializeOptions);
+                    if (typed?.Data != null)
+                    {
+                        foreach (var list in typed.Data.Values)
+                            if (list != null)
+                                allApiItems.AddRange(list);
+                    }
+                }
+                catch
+                {
+                    try
+                    {
+                        var flexible = JsonSerializer.Deserialize<ApiDataRootFlexible>(json, deserializeOptions);
+                        if (flexible?.Data != null)
+                        {
+                            foreach (var elem in flexible.Data.Values)
+                            {
+                                try
+                                {
+                                    var list = JsonSerializer.Deserialize<List<ApiItem>>(elem.GetRawText(), deserializeOptions);
+                                    if (list != null)
+                                        allApiItems.AddRange(list);
+                                }
+                                catch
+                                {
+                                    // skip
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+
+            Console.WriteLine($"[Info] Found {allApiItems.Count} API items.");
+
+            var profile = AthenaProfileBuilder.BuildBaseTemplate();
+            var items = new Dictionary<string, AthenaItem>(profile.Items);
+
+            // Populate items from API results.
+            foreach (var api in allApiItems)
+            {
+                if (api == null || string.IsNullOrEmpty(api.Id))
+                    continue;
+
+                // Build a TemplateId consistent with other entries: "{backendValue}:{id}".
+                var backend = api.Type?.BackendValue ?? string.Empty;
+                var templateId = string.IsNullOrEmpty(backend) ? api.Id : $"{backend}:{api.Id}";
+
+                // Avoid duplicates and skip reserved keys already in template
+                if (items.ContainsKey(templateId) || items.ContainsKey(api.Id))
+                    continue;
+
+                var newItem = new AthenaItem
+                {
+                    TemplateId = templateId,
+                    Attributes = new ItemAttributes
+                    {
+                        Variants = AthenaProfileBuilder.BuildVariants(api.Variants),
+                        Favorite = false
+                    },
+                    Quantity = 1
+                };
+
+                items[templateId] = newItem;
+            }
+
+            profile.Items = items;
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = new SnakeCaseNamingPolicy(),
+                DictionaryKeyPolicy = null, // Items のキーはそのまま
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                PropertyNameCaseInsensitive = true
+            };
+
+            return JsonSerializer.Serialize(profile, options);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[Error during BuildAsync] {ex.Message}");
+            Console.WriteLine($"[Error during BuildProfileJson] {ex.Message}");
             throw;
+        }
+    }
+
+    private static void ExtractApiItemsFromElement(JsonElement element, List<ApiItem> collector, JsonSerializerOptions opts)
+    {
+        try
+        {
+            if (element.ValueKind == JsonValueKind.Object)
+            {
+                if (element.TryGetProperty("id", out var idProp))
+                {
+                    try
+                    {
+                        var ai = JsonSerializer.Deserialize<ApiItem>(element.GetRawText(), opts);
+                        if (ai != null && !string.IsNullOrEmpty(ai.Id))
+                        {
+                            collector.Add(ai);
+                            return;
+                        }
+                    }
+                    catch
+                    {
+                       
+                    }
+                }
+
+                foreach (var prop in element.EnumerateObject())
+                {
+                    ExtractApiItemsFromElement(prop.Value, collector, opts);
+                }
+            }
+            else if (element.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in element.EnumerateArray())
+                {
+                    ExtractApiItemsFromElement(item, collector, opts);
+                }
+            }
+        }
+        catch
+        {
+            
         }
     }
 }
@@ -174,4 +274,30 @@ public class ApiDataRootFlexible
 {
     [JsonPropertyName("data")]
     public Dictionary<string, JsonElement> Data { get; set; }
+}
+
+public class SnakeCaseNamingPolicy : JsonNamingPolicy
+{
+    public override string ConvertName(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            return name;
+
+        var result = new System.Text.StringBuilder();
+        for (int i = 0; i < name.Length; i++)
+        {
+            char c = name[i];
+            if (char.IsUpper(c))
+            {
+                if (i > 0)
+                    result.Append('_');
+                result.Append(char.ToLowerInvariant(c));
+            }
+            else
+            {
+                result.Append(c);
+            }
+        }
+        return result.ToString();
+    }
 }
