@@ -188,6 +188,7 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
+            <MenuItem Header="テスト" Command="{Binding MenuCommand}" CommandParameter="Help_Test" />
             <MenuItem Header="設定" Command="{Binding MenuCommand}" CommandParameter="Settings" />
             <MenuItem Header="ヘルプ" >
                 <MenuItem Header="寄付 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">

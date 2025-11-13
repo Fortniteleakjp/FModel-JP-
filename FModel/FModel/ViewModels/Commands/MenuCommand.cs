@@ -89,6 +89,9 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                     SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, false, cancellationToken);
                 });
                 break;
+            case "Help_Test":
+                FLogger.Append(ELog.Information, () => FLogger.Text("お前さっきオレら着替えてる時ポチポチボタン押してただろ", Constants.WHITE, true));
+                break;
             case TreeItem selectedFolder:
                 selectedFolder.IsSelected = false;
                 selectedFolder.IsSelected = true;
