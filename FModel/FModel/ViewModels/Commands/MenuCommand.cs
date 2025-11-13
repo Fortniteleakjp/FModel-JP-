@@ -69,7 +69,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 break;
             case "Athena_NewCosmetics":
                 // TODO: Athenaの「新しいコスメティック」機能を呼び出す
-                FLogger.Append(ELog.Information, () => FLogger.Text("Athena: 新しいコスメティックを生成します", Constants.WHITE, true));
+                FLogger.Append(ELog.Information, () => FLogger.Text("", Constants.WHITE, true));
                 break;
             case "ToolBox_Clear_Logs":
                 FLogger.Logger.Text = string.Empty;
