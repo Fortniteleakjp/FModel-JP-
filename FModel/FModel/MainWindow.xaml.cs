@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic; // List<> を使用するために追加
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,6 +18,7 @@ using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
 using FModel.Framework; // RelayCommand を使用するためのやつ
 using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
+using Microsoft.Win32;
 
 namespace FModel;
 
@@ -416,19 +419,74 @@ public partial class MainWindow
         try
         {
             FLogger.Append(ELog.Information, () => FLogger.Text("プロファイルを生成中...", Constants.WHITE));
-            await Task.Run(() =>
+
+            string json = null;
+            try
             {
-                try
-                {
-                    // The AthenaGenerator has a Main method that runs synchronously; call it.
-                    AthenaGenerator.Main();
-                }
-                catch (Exception ex)
-                {
-                    FLogger.Append(ELog.Error, () => FLogger.Text($"プロファイルの生成に失敗しました。: {ex.Message}", Constants.RED));
-                }
-            });
+                json = await Task.Run(() => AthenaGenerator.BuildProfileJson("https://fortnite-api.com/v2/cosmetics"));
+            }
+            catch (Exception ex)
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text($"プロファイルの生成に失敗しました。: {ex.Message}", Constants.RED));
+                return;
+            }
+
+            var dlg = new SaveFileDialog
+            {
+                Title = "保存先を選択してください",
+                Filter = "JSON Files|*.json",
+                FileName = "athena.json",
+                OverwritePrompt = true
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                await File.WriteAllTextAsync(dlg.FileName, json);
+                Process.Start(new ProcessStartInfo { FileName = "explorer.exe", Arguments = $"/select,\"{dlg.FileName}\"", UseShellExecute = true });
+            }
+
             FLogger.Append(ELog.Information, () => FLogger.Text("プロファイルの生成が完了しました。", Constants.WHITE));
+        }
+        catch (Exception ex)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"プロファイル生成を開始できませんでした。: {ex.Message}", Constants.RED));
+        }
+    }
+
+    private async void OnAthenaNewCosmeticsClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            FLogger.Append(ELog.Information, () => FLogger.Text("新しいコスメティックのプロファイルを生成中...", Constants.WHITE));
+
+            string json = null;
+            try
+            {
+                json = await Task.Run(() => AthenaGenerator.BuildProfileJson("https://fortnite-api.com/v2/cosmetics/new"));
+            }
+            catch (Exception ex)
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text($"プロファイルの生成に失敗しました。: {ex.Message}", Constants.RED));
+                return;
+            }
+
+            var dlg = new SaveFileDialog
+            {
+                Title = "保存先を選択してください",
+                Filter = "JSON Files|*.json",
+                FileName = "athena_new.json",
+                OverwritePrompt = true
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                await File.WriteAllTextAsync(dlg.FileName, json);
+                Process.Start(new ProcessStartInfo { FileName = "explorer.exe", Arguments = $"/select,\"{dlg.FileName}\"", UseShellExecute = true });
+            }
+
+            FLogger.Append(ELog.Information, () => FLogger.Text("新しいコスメティックのプロファイル生成が完了しました。", Constants.WHITE));
         }
         catch (Exception ex)
         {
