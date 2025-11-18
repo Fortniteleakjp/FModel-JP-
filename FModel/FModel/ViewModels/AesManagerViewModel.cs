@@ -49,9 +49,12 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
                 _diffMainKey.Key = Helper.FixKey(_diffKeysFromSettings.MainKey);
                 DiffAesKeys = [];
                 _diffUniqueGuids = [];
-                EnumerateAesKeys(_diffKeysFromSettings, cue4Parse.DiffGameDirectory.DirectoryFiles, _diffMainKey, _diffUniqueGuids, DiffAesKeys);
-                DiffAesKeys.ItemPropertyChanged += (s, e) => AesKeysOnItemPropertyChanged(e, _diffKeysFromSettings, DiffAesKeys);
-                DiffAesKeysView = new ListCollectionView(DiffAesKeys) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
+                if (cue4Parse.DiffGameDirectory != null)
+                {
+                    EnumerateAesKeys(_diffKeysFromSettings, cue4Parse.DiffGameDirectory.DirectoryFiles, _diffMainKey, _diffUniqueGuids, DiffAesKeys);
+                    DiffAesKeys.ItemPropertyChanged += (s, e) => AesKeysOnItemPropertyChanged(e, _diffKeysFromSettings, DiffAesKeys);
+                    DiffAesKeysView = new ListCollectionView(DiffAesKeys) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
+                }
             }
         });
     }

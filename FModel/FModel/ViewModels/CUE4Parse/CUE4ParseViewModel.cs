@@ -219,14 +219,21 @@ public partial class CUE4ParseViewModel : ViewModel
                     _ when versionContainer.Game is EGame.GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
                     _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
                 };
-
+                if (!Directory.Exists(gameDirectory) && Provider is DefaultFileProvider)
+                {
+                    Log.Warning($"Game directory '{gameDirectory}' not found. Skipping DefaultFileProvider initialization.");
+                    Provider = null;
+                }
                 break;
             }
         }
 
-        Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
-        Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
-        Provider.ReadNaniteData = true;
+        if (Provider != null)
+        {
+            Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
+            Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+            Provider.ReadNaniteData = true;
+        }
 
         // DiffProviderの初期化
         if (UserSettings.Default.DiffDir != null)
@@ -268,7 +275,7 @@ public partial class CUE4ParseViewModel : ViewModel
                 default:
                     {
                         var project = gameDirectory.SubstringBeforeLast(gameDirectory.Contains("eFootball") ? "\\pak" : "\\Content").SubstringAfterLast("\\");
-                        return project switch
+                        AbstractVfsFileProvider resultProvider = project switch
                         {
                             "StateOfDecay2" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
                                 [
@@ -283,6 +290,12 @@ public partial class CUE4ParseViewModel : ViewModel
                             _ when versionContainer.Game is EGame.GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
                             _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
                         };
+                        if (!Directory.Exists(gameDirectory) && resultProvider is DefaultFileProvider)
+                        {
+                            Log.Warning($"Game directory '{gameDirectory}' not found. Skipping DefaultFileProvider initialization.");
+                            return null;
+                        }
+                        return resultProvider;
                     }
             }
         }
@@ -380,12 +393,15 @@ public partial class CUE4ParseViewModel : ViewModel
                 }
             }
 
-            Provider.Initialize();
+            Provider?.Initialize();
             // DiffProviderが初期化されている場合、こちらも初期化する
             DiffProvider?.Initialize();
             _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.WwiseMaxBnkPrefetch));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
-            Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");
+            if (Provider != null)
+            {
+                Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");
+            }
         });
     }
 
