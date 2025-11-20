@@ -533,6 +533,13 @@ namespace FModel.Settings
             set => SetProperty(ref _saveHdrTexturesAsHdr, value);
         }
 
+        private bool _restoreTabsOnStartup = true;
+        public bool RestoreTabsOnStartup
+        {
+            get => _restoreTabsOnStartup;
+            set => SetProperty(ref _restoreTabsOnStartup, value);
+        }
+
         private ObservableCollection<string> _recentFiles = new();
         public ObservableCollection<string> RecentFiles
         {

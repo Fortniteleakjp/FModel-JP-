@@ -59,6 +59,7 @@ public partial class SettingsViewModel : ViewModel
     private EMaterialFormat _materialExportFormatSnapshot;
     private ETextureFormat _textureExportFormatSnapshot;
     private bool _mappingsUpdate;
+    private bool _restoreTabsOnStartupSnapshot;
 
     private readonly EpicGamesAuthService _epicGamesAuthService;
     private readonly DiscordHandler _discordHandler = DiscordService.DiscordHandler;
@@ -226,6 +227,14 @@ public partial class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedTextureExportFormat, value);
     }
 
+    private bool _selectedRestoreTabsOnStartup;
+    public bool SelectedRestoreTabsOnStartup
+    {
+        get => _selectedRestoreTabsOnStartup;
+        set => SetProperty(ref _selectedRestoreTabsOnStartup, value);
+    }
+
+
     public bool SocketSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.ActorX;
     public bool CompressionSettingsEnabled => SelectedMeshExportFormat == EMeshFormat.UEFormat;
 
@@ -333,6 +342,7 @@ public partial class SettingsViewModel : ViewModel
         _naniteMeshExportFormatSnapshot = UserSettings.Default.NaniteMeshExportFormat;
         _materialExportFormatSnapshot = UserSettings.Default.MaterialExportFormat;
         _textureExportFormatSnapshot = UserSettings.Default.TextureExportFormat;
+        _restoreTabsOnStartupSnapshot = UserSettings.Default.RestoreTabsOnStartup;
 
         SelectedUePlatform = _uePlatformSnapshot;
         SelectedUeGame = _ueGameSnapshot;
@@ -351,6 +361,7 @@ public partial class SettingsViewModel : ViewModel
         SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         SelectedAesReload = UserSettings.Default.AesReload;
+        SelectedRestoreTabsOnStartup = UserSettings.Default.RestoreTabsOnStartup;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
         var ueGames = new ObservableCollection<EGame>(EnumerateUeGames());
@@ -440,6 +451,7 @@ public partial class SettingsViewModel : ViewModel
         UserSettings.Default.MaterialExportFormat = SelectedMaterialExportFormat;
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
         UserSettings.Default.AesReload = SelectedAesReload;
+        UserSettings.Default.RestoreTabsOnStartup = SelectedRestoreTabsOnStartup;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
 
         if (SelectedDiscordRpc == EDiscordRpc.Never)

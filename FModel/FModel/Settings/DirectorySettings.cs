@@ -106,6 +106,14 @@ public class DirectorySettings : ViewModel, ICloneable
         set => SetProperty(ref _criwareDecryptionKey, value);
     }
 
+    private List<string> _lastOpenedTabs;
+    public List<string> LastOpenedTabs
+    {
+        get => _lastOpenedTabs;
+        set => SetProperty(ref _lastOpenedTabs, value);
+    }
+
+
     private bool Equals(DirectorySettings other)
     {
         return GameDirectory == other.GameDirectory && UeVersion == other.UeVersion;

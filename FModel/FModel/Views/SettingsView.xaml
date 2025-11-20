@@ -54,6 +54,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -331,10 +332,15 @@
                     <CheckBox Grid.Row="16" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 0"/>
 
-                    <Separator Grid.Row="17" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="詳細設定"></Separator>
+                    <TextBlock Grid.Row="17" Grid.Column="0" Text="起動時にタブを復元(※β版です)" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="有効にすると、FModelは終了時に開いていたタブを記憶し、次回起動時に復元します" />
+                    <CheckBox Grid.Row="17" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              IsChecked="{Binding SettingsView.SelectedRestoreTabsOnStartup, Mode=TwoWay}" Margin="0 5 0 0"/>
 
-                    <TextBlock Grid.Row="18" Grid.Column="0" Text="バージョン管理の設定 *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
+                    <Separator Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="詳細設定"></Separator>
+
+                    <TextBlock Grid.Row="19" Grid.Column="0" Text="バージョン管理の設定 *" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
@@ -348,10 +354,10 @@
                         <Button Grid.Column="4" Content="MapStruct型" Click="OpenMapStructTypes" />
                     </Grid>
 
-                    <TextBlock Grid.Row="19" Grid.Column="0" Text="起動時のAESの再読み込み" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="20" Grid.Column="0" Text="起動時のAESの再読み込み" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <ComboBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <ComboBox Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
                               Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -362,8 +368,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="20" Grid.Column="0" Text="データを自動取得" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="21" Grid.Column="0" Text="データを自動取得" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                           DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -375,39 +381,39 @@
                         <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint" />
                     </Grid>
 
-                    <TextBlock Grid.Row="21" Grid.Column="0" Text="マッピングファイルをローカルで指定" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="21" Grid.Column="2" Margin="0 5 0 10"
+                    <TextBlock Grid.Row="22" Grid.Column="0" Text="マッピングファイルをローカルで指定" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="22" Grid.Column="2" Margin="0 5 0 10"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SettingsView.MappingEndpoint.Overwrite, Mode=TwoWay}" />
 
-                    <TextBlock Grid.Row="22" Grid.Column="0" Text="Mapping File Path" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="23" Grid.Column="0" Text="Mapping File Path" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <TextBox Grid.Row="22" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5" Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
+                    <TextBox Grid.Row="23" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5" Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                              Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <Button Grid.Row="22" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
+                    <Button Grid.Row="23" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                    <TextBlock Grid.Row="23" Grid.Column="0" Text="スクリプトバイトコードをシリアル化" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="23" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="24" Grid.Column="0" Text="スクリプトバイトコードをシリアル化" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="24" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadScriptData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
-                    <TextBlock Grid.Row="24" Grid.Column="0" Text="インラインシェーダーマップのシリアル化" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="24" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="25" Grid.Column="0" Text="インラインシェーダーマップのシリアル化" VerticalAlignment="center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="25" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadShaderMaps, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
-                    <TextBlock Grid.Row="25" Grid.Column="0" Text="最大 Wwise Bank (.BNK) プリフェッチ" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="25" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
+                    <TextBlock Grid.Row="26" Grid.Column="0" Text="最大 Wwise Bank (.BNK) プリフェッチ" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Slider Grid.Row="26" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
                             Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
 
                     <!-- 新しいUI要素 -->
-                    <TextBlock Grid.Row="26" Grid.Column="0" Text="高度な検索のメモリ使用量" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="27" Grid.Column="0" Text="高度な検索のメモリ使用量" VerticalAlignment="Center" Margin="0 0 0 5"
                                ToolTip="高度な検索が使用できる最大メモリ量をパーセンテージで指定します" />
-                    <Slider Grid.Row="26" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="100" TickFrequency="5"
+                    <Slider Grid.Row="27" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="100" TickFrequency="5"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
                             Value="{Binding ContentSearchMemoryLimitPercentage, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
 

@@ -63,6 +63,11 @@ public partial class MainWindow
     private void OnClosing(object sender, CancelEventArgs e)
     {
         _discordHandler.Dispose();
+        if (UserSettings.Default.RestoreTabsOnStartup)
+        {
+            var tabPaths = _applicationView.CUE4Parse.TabControl.TabsItems.Select(t => t.Entry.Path).Where(p => p != "New Tab").ToList();
+            UserSettings.Default.CurrentDir.LastOpenedTabs = tabPaths;
+        }
     }
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -104,6 +109,20 @@ public partial class MainWindow
                     _discordHandler.Initialize(_applicationView.GameDisplayName);
             })
         ).ConfigureAwait(false);
+
+        await Dispatcher.InvokeAsync(() =>
+        {
+            if (UserSettings.Default.RestoreTabsOnStartup && UserSettings.Default.CurrentDir.LastOpenedTabs?.Any() == true)
+            {
+                var paths = UserSettings.Default.CurrentDir.LastOpenedTabs;
+                _applicationView.CUE4Parse.TabControl.RemoveAllTabs(); // "新しいタブ"を削除
+                foreach (var path in paths)
+                {
+                    if (_applicationView.CUE4Parse.Provider.TryGetGameFile(path, out var gameFile))
+                        _applicationView.CUE4Parse.TabControl.AddTab(gameFile);
+                }
+            }
+        });
 
 #if DEBUG
         // await _threadWorkerView.Begin(cancellationToken =>
