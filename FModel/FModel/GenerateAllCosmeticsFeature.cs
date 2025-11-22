@@ -28,11 +28,19 @@ namespace FModel.Features.Athena
 
     public class GenerateAllCosmeticsFeature
     {
-        public static async Task ExecuteAsync(AbstractVfsFileProvider Provider)
+        public static async Task ExecuteAsync(AbstractVfsFileProvider abstractVfsFileProvider)
         {
             AthenaGenerator athenaGenerator = new AthenaGenerator(false, false);
 
-            foreach (IAesVfsReader mountedVf in Provider.MountedVfs)
+            if (!athenaGenerator.IsValid())
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("プロファイルの初期化に失敗しました", Constants.WHITE, true));
+                return;
+            }
+
+            FLogger.Append(ELog.Information, () => FLogger.Text("プロファイルを生成しています...", Constants.WHITE, true));
+
+            foreach (IAesVfsReader mountedVf in abstractVfsFileProvider.MountedVfs)
             {
                 foreach (GameFile value in mountedVf.Files.Values)
                 {
@@ -48,7 +56,7 @@ namespace FModel.Features.Athena
                         || vfsEntry.Path.StartsWith("FortniteGame/Plugins/GameFeatures/FM/SparksCosmetics/Content/Instrument/Drum")
                         || vfsEntry.Path.StartsWith("FortniteGame/Plugins/GameFeatures/FM/SparksCosmetics/Content/Instrument/Mic"))
                     {
-                        IPackage package = await Provider.LoadPackageAsync(vfsEntry.Path);
+                        IPackage package = await abstractVfsFileProvider.LoadPackageAsync(vfsEntry.Path);
 
                         if (package == null)
                             continue;

@@ -196,6 +196,8 @@ namespace FModel.AthenaProfile
 
         public void SaveFile()
         {
+            FLogger.Append(ELog.Information, () => FLogger.Text("保存先を選んでください", Constants.WHITE, true));
+
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Title = "保存先を選択してください";
             saveFileDialog.Filter = "JSON Files|*.json";
@@ -214,7 +216,12 @@ namespace FModel.AthenaProfile
                 process.Start();
             }
 
-            FLogger.Append(ELog.Information, () => FLogger.Text($"プロファイルの生成が完了しました。{Constants.APP_VERSION}", Constants.WHITE, true));
+            FLogger.Append(ELog.Information, () => FLogger.Text("プロファイルの生成が完了しました", Constants.WHITE, true));
+        }
+
+        public bool IsValid()
+        {
+            return ATHENA_PROFILE != null;
         }
     }
 }

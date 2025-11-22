@@ -449,12 +449,20 @@ public partial class MainWindow
     private async void OnAthenaAllCosmeticsClick(object sender, RoutedEventArgs e)
     {
         if (ShowBetaFeatureWarning())
+        {
+            _applicationView.Status.SetStatus(EStatusKind.Loading);
             await GenerateAllCosmeticsFeature.ExecuteAsync(_applicationView.CUE4Parse.Provider);
+            _applicationView.Status.SetStatus(EStatusKind.Completed);
+        }
     }
 
     private async void OnAthenaNewCosmeticsClick(object sender, RoutedEventArgs e)
     {
         if (ShowBetaFeatureWarning())
-            await GenerateNewCosmeticsFeature.ExecuteAsync();
+        {
+            _applicationView.Status.SetStatus(EStatusKind.Loading);
+            await GenerateNewCosmeticsFeature.ExecuteAsync(_applicationView.CUE4Parse.Provider);
+            _applicationView.Status.SetStatus(EStatusKind.Completed);
+        }
     }
 }
