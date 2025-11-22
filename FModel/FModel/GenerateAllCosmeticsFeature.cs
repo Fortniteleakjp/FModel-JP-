@@ -40,7 +40,13 @@ namespace FModel.Features.Athena
                         continue;
 
                     if (vfsEntry.Path.StartsWith("FortniteGame/Content/Athena/Items/Cosmetics/")
-                        || vfsEntry.Path.StartsWith("FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/"))
+                        // バトルロイヤル
+                        || vfsEntry.Path.StartsWith("FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/")
+                        // フェスティバル
+                        || vfsEntry.Path.StartsWith("FortniteGame/Plugins/GameFeatures/FM/SparksCosmetics/Content/Instrument/Guitar")
+                        || vfsEntry.Path.StartsWith("FortniteGame/Plugins/GameFeatures/FM/SparksCosmetics/Content/Instrument/Bass")
+                        || vfsEntry.Path.StartsWith("FortniteGame/Plugins/GameFeatures/FM/SparksCosmetics/Content/Instrument/Drum")
+                        || vfsEntry.Path.StartsWith("FortniteGame/Plugins/GameFeatures/FM/SparksCosmetics/Content/Instrument/Mic"))
                     {
                         IPackage package = await Provider.LoadPackageAsync(vfsEntry.Path);
 
@@ -51,7 +57,7 @@ namespace FModel.Features.Athena
 
                         foreach (UObject export in exports)
                         {
-                            if (Filters.ItemDefinitionFilter.Contains(export.ExportType))
+                            if (Filters.ItemDefinition.Contains(export.ExportType))
                             {
                                 UObject[] itemVariants = export.GetOrDefault<UObject[]>("ItemVariants");
 

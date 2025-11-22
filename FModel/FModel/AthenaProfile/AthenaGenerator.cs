@@ -150,6 +150,7 @@ namespace FModel.AthenaProfile
 
         private string GetItemType(string type)
         {
+            // バトルロイヤル
             if (type == "AthenaCharacterItemDefinition")
                 return "AthenaCharacter";
 
@@ -177,36 +178,43 @@ namespace FModel.AthenaProfile
             if (type == "AthenaLoadingScreenItemDefinition")
                 return "AthenaLoadingScreen";
 
+            //フェスティバル
+            if (type == "SparksGuitarItemDefinition")
+                return "SparksGuitar";
+
+            if (type == "SparksBassItemDefinition")
+                return "SparksBass";
+
+            if (type == "SparksDrumItemDefinition")
+                return "SparksDrums";
+
+            if (type == "SparksMicItemDefinition")
+                return "SparksMicrophone";
+
             return "None";
         }
 
         public void SaveFile()
         {
-            var dlg = new SaveFileDialog
-            {
-                Title = "保存先を選択してください",
-                Filter = "JSON Files|*.json",
-                FileName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\athena.json",
-                OverwritePrompt = true
-            };
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "保存先を選択してください";
+            saveFileDialog.Filter = "JSON Files|*.json";
+            saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            saveFileDialog.FileName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\athena.json";
+            saveFileDialog.OverwritePrompt = true;
 
-            if (dlg.ShowDialog() == DialogResult.OK)
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                File.WriteAllText(dlg.FileName, ATHENA_PROFILE.ToString());
+                File.WriteAllText(saveFileDialog.FileName, ATHENA_PROFILE.ToString());
 
                 Process process = new Process();
                 process.StartInfo.FileName = "explorer.exe";
-                process.StartInfo.Arguments = $"/select,\"{dlg.FileName}\"";
+                process.StartInfo.Arguments = $"/select,\"{saveFileDialog.FileName}\"";
                 process.StartInfo.UseShellExecute = true;
                 process.Start();
             }
 
             FLogger.Append(ELog.Information, () => FLogger.Text($"プロファイルの生成が完了しました。{Constants.APP_VERSION}", Constants.WHITE, true));
-        }
-
-        public override string ToString()
-        {
-            return ATHENA_PROFILE.ToString();
         }
     }
 }

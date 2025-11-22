@@ -168,7 +168,7 @@
                 </MenuItem>
                 
             </MenuItem>
-            <MenuItem Header="プロファイル" IsEnabled="{Binding Status.IsReady}">
+            <MenuItem Header="アテナ" IsEnabled="{Binding Status.IsReady}">
                 <MenuItem Header="全ての化粧品でプロファイルを作成" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">

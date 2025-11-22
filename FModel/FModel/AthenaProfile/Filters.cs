@@ -8,8 +8,9 @@ namespace FModel.AthenaProfile
 {
     internal class Filters
     {
-        public static IEnumerable<string> ItemDefinitionFilter =
+        public static IEnumerable<string> ItemDefinition =
         [
+            // バトルロイヤル
             "AthenaCharacterItemDefinition", // Character
             "AthenaBackpackItemDefinition", "AthenaPetItemDefinition", "AthenaPetCarrierItemDefinition", // Backpack
             "AthenaPickaxeItemDefinition", // Pickaxe
@@ -19,11 +20,12 @@ namespace FModel.AthenaProfile
             "AthenaItemWrapDefinition", // ItemWrap
             "AthenaMusicPackItemDefinition", // MusicPack
             "AthenaLoadingScreenItemDefinition", // LoadingScreen
-        ];
 
-        public static IEnumerable<string> VariantFilter =
-        [
-            "FortCosmeticMaterialVariant",
+            //フェスティバル
+            "SparksGuitarItemDefinition",
+            "SparksBassItemDefinition",
+            "SparksDrumItemDefinition",
+            "SparksMicItemDefinition"
         ];
     }
 }
