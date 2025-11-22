@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic; // List<> を使用するために追加
+using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -10,16 +11,16 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.Assets.Readers;
+using FModel.Features.Athena;
+using FModel.Framework; // RelayCommand を使用するためのやつ
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
-using FModel.Framework; // RelayCommand を使用するためのやつ
-using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
 using Microsoft.Win32;
-using FModel.Features.Athena;
 
 namespace FModel;
 
@@ -448,42 +449,12 @@ public partial class MainWindow
     private async void OnAthenaAllCosmeticsClick(object sender, RoutedEventArgs e)
     {
         if (ShowBetaFeatureWarning())
-            await GenerateAllCosmeticsFeature.ExecuteAsync();
+            await GenerateAllCosmeticsFeature.ExecuteAsync(_applicationView.CUE4Parse.Provider);
     }
 
     private async void OnAthenaNewCosmeticsClick(object sender, RoutedEventArgs e)
     {
         if (ShowBetaFeatureWarning())
             await GenerateNewCosmeticsFeature.ExecuteAsync();
-    }
-
-    private async void OnAthenaNewCosmeticsWithPaksClick(object sender, RoutedEventArgs e)
-    {
-        if (ShowBetaFeatureWarning())
-            await GenerateNewCosmeticsWithPaksFeature.ExecuteAsync();
-    }
-
-    private async void OnAthenaCustomByIdClick(object sender, RoutedEventArgs e)
-    {
-        if (ShowBetaFeatureWarning())
-            await GenerateCustomCosmeticsByIdFeature.ExecuteAsync();
-    }
-
-    private void OnAthenaPakCosmeticsClick(object sender, RoutedEventArgs e)
-    {
-        if (ShowBetaFeatureWarning())
-            AthenaFeatureBase.LogNotImplemented("Pak Cosmetics");
-    }
-
-    private void OnAthenaPaksBulkClick(object sender, RoutedEventArgs e)
-    {
-        if (ShowBetaFeatureWarning())
-            AthenaFeatureBase.LogNotImplemented("Paks Bulk");
-    }
-
-    private void OnAthenaBackClick(object sender, RoutedEventArgs e)
-    {
-        if (ShowBetaFeatureWarning())
-            AthenaFeatureBase.LogNotImplemented("Back");
     }
 }

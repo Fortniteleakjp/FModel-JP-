@@ -2,302 +2,211 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CUE4Parse.UE4.Assets.Exports;
+using FModel.Views.Resources.Controls;
+using Newtonsoft.Json.Linq;
 
-class AthenaGenerator
+namespace FModel.AthenaProfile
 {
-    private static readonly HttpClient httpClient = new HttpClient();
-
-    [STAThread]
-    public static void Main()
+    public class AthenaGenerator
     {
-        try
-        {
-            Generate("https://fortnite-api.com/v2/cosmetics");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("[ERROR] " + ex);
-        }
-    }
+        protected JObject ATHENA_PROFILE;
 
-    // Backwards-compatible: still provides a method that shows the save dialog from a new STA thread.
-    public static void Generate(string apiUrl)
-    {
-        try
+        public AthenaGenerator(bool addDefaultPickaxe = true, bool addDefaultGlider = true)
         {
-            var json = BuildProfileJson(apiUrl);
+            ATHENA_PROFILE = Init(addDefaultPickaxe, addDefaultGlider);
+        }
 
-            // STAスレッドでファイルダイアログを呼び出す
-            string savePath = null;
-            Thread staThread = new Thread(() =>
+        public static JObject Init(bool addDefaultPickaxe, bool addDefaultGlider)
+        {
+            JObject result = new JObject();
+
+            result["created"] = DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'");
+            result["updated"] = DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'");
+            result["rvn"] = 1;
+            result["wipeNumber"] = 5;
+            result["accountId"] = "birufn";
+            result["profileId"] = "athena";
+            result["version"] = "";
+            result["stats"] = new JObject();
+            result["stats"]["attributes"] = new JObject();
+            result["stats"]["attributes"]["habanero_unlocked"] = false;
+            result["stats"]["attributes"]["locker_loadout_migration"] = "FortniteReadFortniteWrite";
+            result["stats"]["attributes"]["locker_two_phase_commit"] = "COMMITTED";
+            result["stats"]["attributes"]["loadouts"] = new JArray();
+            result["stats"]["attributes"]["level"] = 1;
+            result["stats"]["attributes"]["pinned_quest"] = null;
+            result["stats"]["attributes"]["last_applied_loadout"] = null;
+            result["stats"]["attributes"]["book_level"] = 1;
+            result["stats"]["attributes"]["season_num"] = 38;
+            result["stats"]["attributes"]["accountLevel"] = 1;
+            result["commandRevision"] = 0;
+            result["_id"] = "3e60bab6176044f0a4c3fb2346d4486d";
+            result["items"] = new JObject();
+
             {
-                savePath = FileUtil.SelectSaveFile();
-            });
-            staThread.SetApartmentState(ApartmentState.STA);
-            staThread.Start();
-            staThread.Join();
+                string itemGuid = "45f24600-ce74-458c-95c9-7214ce8e58df";
 
-            if (savePath != null)
-            {
-                File.WriteAllText(savePath, json);
-                Process.Start("explorer.exe", $"/select,\"{savePath}\"");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("[ERROR] " + ex);
-            throw;
-        }
-    }
+                result["items"][itemGuid] = new JObject();
+                result["items"][itemGuid]["templateId"] = "CosmeticLocker:cosmeticlocker_athena";
+                result["items"][itemGuid]["attributes"] = new JObject();
+                result["items"][itemGuid]["attributes"]["locker_slots_data"] = new JObject();
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"] = new JObject();
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"]["Dance"] = new JObject();
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"]["Dance"]["items"] = new JArray("", "", "", "", "", "");
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"]["Dance"]["activeVariants"] = new JArray("", "", "", "", "", "");
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"]["Pickaxe"] = new JObject();
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"]["Pickaxe"]["items"] = new JArray(addDefaultPickaxe ? "AthenaPickaxe:defaultpickaxe" : "");
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"]["Pickaxe"]["activeVariants"] = new JArray("");
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"]["Glider"] = new JObject();
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"]["Glider"]["items"] = new JArray(addDefaultGlider ? "AthenaGlider:defaultglider" : "");
+                result["items"][itemGuid]["attributes"]["locker_slots_data"]["slots"]["Glider"]["activeVariants"] = new JArray("");
+                result["items"][itemGuid]["quantity"] = 1;
 
-    // New API: fetches all cosmetics, then constructs the minimal AthenaProfile in memory for the user.
-    public static string BuildProfileJson(string apiUrl)
-    {
-        try
-        {
-            var json = httpClient.GetStringAsync(apiUrl).GetAwaiter().GetResult();
-            var deserializeOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
-            var allApiItems = new List<ApiItem>();
-
-            using (var doc = JsonDocument.Parse(json))
-            {
-                var root = doc.RootElement;
-
-                if (root.ValueKind == JsonValueKind.Object && root.TryGetProperty("data", out var dataElement))
-                {
-                    if (dataElement.ValueKind == JsonValueKind.Array)
-                    {
-                        var arr = JsonSerializer.Deserialize<List<ApiItem>>(dataElement.GetRawText(), deserializeOptions);
-                        if (arr != null) allApiItems.AddRange(arr);
-                    }
-                    else if (dataElement.ValueKind == JsonValueKind.Object)
-                    {
-                        
-                        foreach (var prop in dataElement.EnumerateObject())
-                        {
-                            var v = prop.Value;
-                            if (v.ValueKind == JsonValueKind.Array)
-                            {
-                                var list = JsonSerializer.Deserialize<List<ApiItem>>(v.GetRawText(), deserializeOptions);
-                                if (list != null) allApiItems.AddRange(list);
-                            }
-                            else if (v.ValueKind == JsonValueKind.Object)
-                            {
-                                
-                                try
-                                {
-                                    var single = JsonSerializer.Deserialize<ApiItem>(v.GetRawText(), deserializeOptions);
-                                    if (single != null && !string.IsNullOrEmpty(single.Id))
-                                    {
-                                        allApiItems.Add(single);
-                                        continue;
-                                    }
-                                }
-                                catch { }
-
-                                
-                                try
-                                {
-                                    var map = JsonSerializer.Deserialize<Dictionary<string, ApiItem>>(v.GetRawText(), deserializeOptions);
-                                    if (map != null)
-                                    {
-                                        foreach (var item in map.Values)
-                                            if (item != null && !string.IsNullOrEmpty(item.Id))
-                                                allApiItems.Add(item);
-                                    }
-                                }
-                                catch { }
-                            }
-                        }
-                    }
-                }
-                else if (root.ValueKind == JsonValueKind.Array)
-                {
-                    // ルートが配列になっているケース
-                    var arr = JsonSerializer.Deserialize<List<ApiItem>>(root.GetRawText(), deserializeOptions);
-                    if (arr != null) allApiItems.AddRange(arr);
-                }
-
-                
-                if (allApiItems.Count == 0)
-                {
-                    ExtractApiItemsFromElement(root, allApiItems, deserializeOptions);
-                }
+                result["stats"]["attributes"]["loadouts"] = new JArray(itemGuid);
             }
 
-            
-            if (allApiItems.Count == 0)
+            if (addDefaultPickaxe)
             {
-                try
-                {
-                    var typed = JsonSerializer.Deserialize<ApiDataRoot>(json, deserializeOptions);
-                    if (typed?.Data != null)
-                    {
-                        foreach (var list in typed.Data.Values)
-                            if (list != null)
-                                allApiItems.AddRange(list);
-                    }
-                }
-                catch
-                {
-                    try
-                    {
-                        var flexible = JsonSerializer.Deserialize<ApiDataRootFlexible>(json, deserializeOptions);
-                        if (flexible?.Data != null)
-                        {
-                            foreach (var elem in flexible.Data.Values)
-                            {
-                                try
-                                {
-                                    var list = JsonSerializer.Deserialize<List<ApiItem>>(elem.GetRawText(), deserializeOptions);
-                                    if (list != null)
-                                        allApiItems.AddRange(list);
-                                }
-                                catch
-                                {
-                                    // skip
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
+                string itemGuid = "a797af08-0aa3-446f-8c63-ad0edb4a5f41";
 
+                result["items"][itemGuid] = new JObject();
+                result["items"][itemGuid]["templateId"] = "AthenaPickaxe:defaultpickaxe";
+                result["items"][itemGuid]["attributes"] = new JObject();
+                result["items"][itemGuid]["attributes"]["creation_time"] = DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'");
+                result["items"][itemGuid]["attributes"]["level"] = 1;
+                result["items"][itemGuid]["attributes"]["item_seen"] = true;
+                result["items"][itemGuid]["quantity"] = 1;
+            }
+
+            if (addDefaultGlider)
+            {
+                string itemGuid = "ad144593-4712-465d-ba1e-9bb0d78fb952";
+
+                result["items"][itemGuid] = new JObject();
+                result["items"][itemGuid]["templateId"] = "AthenaGlider:defaultglider";
+                result["items"][itemGuid]["attributes"] = new JObject();
+                result["items"][itemGuid]["attributes"]["creation_time"] = DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'");
+                result["items"][itemGuid]["attributes"]["level"] = 1;
+                result["items"][itemGuid]["attributes"]["item_seen"] = true;
+                result["items"][itemGuid]["quantity"] = 1;
+            }
+
+            return result;
+        }
+
+        public void AddItem(UObject itemDefinition, List<KeyValuePair<string, List<string>>> itemVariants = null)
+        {
+            if (itemDefinition == null || itemDefinition.Class == null)
+                return;
+
+            JArray variants = null;
+
+            if (itemVariants != null && itemVariants.Count != 0)
+            {
+                variants = new JArray();
+
+                foreach (KeyValuePair<string, List<string>> itemVariant in itemVariants)
+                {
+                    string channel = itemVariant.Key;
+                    string active = itemVariant.Value[0];
+                    JArray owned = new JArray();
+
+                    foreach (string value in itemVariant.Value)
+                    {
+                        owned.Add(value);
                     }
+
+                    JObject variant = new JObject();
+
+                    variant["channel"] = channel;
+                    variant["active"] = active;
+                    variant["owned"] = owned;
+
+                    variants.Add(variant);
                 }
             }
 
-            Console.WriteLine($"[Info] Found {allApiItems.Count} API items.");
+            string templateId = $"{GetItemType(itemDefinition.Class.Name)}:{itemDefinition.Name.ToLower()}";
 
-            var profile = AthenaProfileBuilder.BuildBaseTemplate();
-            var items = new Dictionary<string, AthenaItem>(profile.Items);
+            ATHENA_PROFILE["items"][templateId] = new JObject();
+            ATHENA_PROFILE["items"][templateId]["templateId"] = templateId;
+            ATHENA_PROFILE["items"][templateId]["attributes"] = new JObject();
+            ATHENA_PROFILE["items"][templateId]["attributes"]["creation_time"] = DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'");
+            ATHENA_PROFILE["items"][templateId]["attributes"]["level"] = 1;
+            ATHENA_PROFILE["items"][templateId]["attributes"]["item_seen"] = true;
 
-            // Populate items from API results.
-            foreach (var api in allApiItems)
+            if (variants != null)
             {
-                if (api == null || string.IsNullOrEmpty(api.Id))
-                    continue;
-
-                // Build a TemplateId consistent with other entries: "{backendValue}:{id}".
-                var backend = api.Type?.BackendValue ?? string.Empty;
-                var templateId = string.IsNullOrEmpty(backend) ? api.Id : $"{backend}:{api.Id}";
-
-                // Avoid duplicates and skip reserved keys already in template
-                if (items.ContainsKey(templateId) || items.ContainsKey(api.Id))
-                    continue;
-
-                var newItem = new AthenaItem
-                {
-                    TemplateId = templateId,
-                    Attributes = new ItemAttributes
-                    {
-                        Variants = AthenaProfileBuilder.BuildVariants(api.Variants),
-                        Favorite = false
-                    },
-                    Quantity = 1
-                };
-
-                items[templateId] = newItem;
+                ATHENA_PROFILE["items"][templateId]["attributes"]["variants"] = variants;
             }
 
-            profile.Items = items;
+            ATHENA_PROFILE["items"][templateId]["quantity"] = 1;
+        }
 
-            var options = new JsonSerializerOptions
+        private string GetItemType(string type)
+        {
+            if (type == "AthenaCharacterItemDefinition")
+                return "AthenaCharacter";
+
+            if (type == "AthenaBackpackItemDefinition" || type == "AthenaPetItemDefinition" || type == "AthenaPetCarrierItemDefinition")
+                return "AthenaBackpack";
+
+            if (type == "AthenaPickaxeItemDefinition")
+                return "AthenaPickaxe";
+
+            if (type == "AthenaGliderItemDefinition")
+                return "AthenaGlider";
+
+            if (type == "AthenaSkyDiveContrailItemDefinition")
+                return "AthenaSkyDiveContrail";
+
+            if (type == "AthenaDanceItemDefinition" || type == "AthenaEmojiItemDefinition" || type == "AthenaSprayItemDefinition" || type == "AthenaToyItemDefinition")
+                return "AthenaDance";
+
+            if (type == "AthenaItemWrapDefinition")
+                return "AthenaItemWrap";
+
+            if (type == "AthenaMusicPackItemDefinition")
+                return "AthenaMusicPack";
+
+            if (type == "AthenaLoadingScreenItemDefinition")
+                return "AthenaLoadingScreen";
+
+            return "None";
+        }
+
+        public void SaveFile()
+        {
+            var dlg = new SaveFileDialog
             {
-                WriteIndented = true,
-                PropertyNamingPolicy = new SnakeCaseNamingPolicy(),
-                DictionaryKeyPolicy = null, // Items のキーはそのまま
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                PropertyNameCaseInsensitive = true
+                Title = "保存先を選択してください",
+                Filter = "JSON Files|*.json",
+                FileName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\athena.json",
+                OverwritePrompt = true
             };
 
-            return JsonSerializer.Serialize(profile, options);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Error during BuildProfileJson] {ex.Message}");
-            throw;
-        }
-    }
-
-    private static void ExtractApiItemsFromElement(JsonElement element, List<ApiItem> collector, JsonSerializerOptions opts)
-    {
-        try
-        {
-            if (element.ValueKind == JsonValueKind.Object)
+            if (dlg.ShowDialog() == DialogResult.OK)
             {
-                if (element.TryGetProperty("id", out var idProp))
-                {
-                    try
-                    {
-                        var ai = JsonSerializer.Deserialize<ApiItem>(element.GetRawText(), opts);
-                        if (ai != null && !string.IsNullOrEmpty(ai.Id))
-                        {
-                            collector.Add(ai);
-                            return;
-                        }
-                    }
-                    catch
-                    {
-                       
-                    }
-                }
+                File.WriteAllText(dlg.FileName, ATHENA_PROFILE.ToString());
 
-                foreach (var prop in element.EnumerateObject())
-                {
-                    ExtractApiItemsFromElement(prop.Value, collector, opts);
-                }
+                Process process = new Process();
+                process.StartInfo.FileName = "explorer.exe";
+                process.StartInfo.Arguments = $"/select,\"{dlg.FileName}\"";
+                process.StartInfo.UseShellExecute = true;
+                process.Start();
             }
-            else if (element.ValueKind == JsonValueKind.Array)
-            {
-                foreach (var item in element.EnumerateArray())
-                {
-                    ExtractApiItemsFromElement(item, collector, opts);
-                }
-            }
+
+            FLogger.Append(ELog.Information, () => FLogger.Text($"プロファイルの生成が完了しました。{Constants.APP_VERSION}", Constants.WHITE, true));
         }
-        catch
+
+        public override string ToString()
         {
-            
+            return ATHENA_PROFILE.ToString();
         }
-    }
-}
-
-public class ApiDataRootFlexible
-{
-    [JsonPropertyName("data")]
-    public Dictionary<string, JsonElement> Data { get; set; }
-}
-
-public class SnakeCaseNamingPolicy : JsonNamingPolicy
-{
-    public override string ConvertName(string name)
-    {
-        if (string.IsNullOrEmpty(name))
-            return name;
-
-        var result = new System.Text.StringBuilder();
-        for (int i = 0; i < name.Length; i++)
-        {
-            char c = name[i];
-            if (char.IsUpper(c))
-            {
-                if (i > 0)
-                    result.Append('_');
-                result.Append(char.ToLowerInvariant(c));
-            }
-            else
-            {
-                result.Append(c);
-            }
-        }
-        return result.ToString();
     }
 }

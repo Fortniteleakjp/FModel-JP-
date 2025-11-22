@@ -169,7 +169,7 @@
                 
             </MenuItem>
             <MenuItem Header="プロファイル" IsEnabled="{Binding Status.IsReady}">
-                <MenuItem Header="すべてのコスメティック" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
+                <MenuItem Header="全ての化粧品でプロファイルを作成" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -178,7 +178,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="新しいコスメティック" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
+                <MenuItem Header="新しい化粧品でプロファイルを作成" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -189,79 +189,6 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
-            <MenuItem Header="テスト" IsEnabled="{Binding Status.IsReady}">
-                <MenuItem Header="All Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="New Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="New Cosmetics (With Paks)" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics_WithPaks" Click="OnAthenaNewCosmeticsWithPaksClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="Custom Cosmetics (by Id)" Command="{Binding MenuCommand}" CommandParameter="Athena_Custom_ById" Click="OnAthenaCustomByIdClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="Pak Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_PakCosmetics" Click="OnAthenaPakCosmeticsClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="Paks Bulk" Command="{Binding MenuCommand}" CommandParameter="Athena_Paks_Bulk" Click="OnAthenaPaksBulkClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <Separator />
-
-                <MenuItem Header="Back" Command="{Binding MenuCommand}" CommandParameter="Athena_Back" Click="OnAthenaBackClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
             <MenuItem Header="設定" Command="{Binding MenuCommand}" CommandParameter="Settings" />
             <MenuItem Header="ヘルプ" >
                 <MenuItem Header="寄付 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
