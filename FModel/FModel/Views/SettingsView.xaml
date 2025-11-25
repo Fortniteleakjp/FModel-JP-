@@ -549,6 +549,10 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -570,6 +574,16 @@
                         <CheckBox Grid.Row="1" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                                   IsChecked="{Binding CosmeticDisplayAsset, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                                   Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 10"/>
+
+                        <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" Tag="武器画像" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="ダメージ値のプロパティ" VerticalAlignment="Center" Margin="0 5 0 5" />
+                        <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding CustomWeaponDamageProperty, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 5" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Localize Key" VerticalAlignment="Center" Margin="0 5 0 5" />
+                        <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding CustomWeaponDamageLocalizeKey, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 5" />
+                        
+                        <Button Grid.Row="5" Grid.Column="2" Content="保存して再起動" Click="SaveAndRestart" Margin="0 10 0 0"/>
                     </Grid>
                 </Grid>
             </DataTemplate>

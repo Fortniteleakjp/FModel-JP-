@@ -228,4 +228,10 @@ public partial class SettingsView
         _applicationView.SettingsView.DiffMappingEndpoint.FilePath = string.Empty;
         _applicationView.SettingsView.DiffMappingEndpoint.Overwrite = false;
     }
+
+    private void SaveAndRestart(object sender, RoutedEventArgs e)
+    {
+        UserSettings.Save();
+        _applicationView.Restart();
+    }
 }

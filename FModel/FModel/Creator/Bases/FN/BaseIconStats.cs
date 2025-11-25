@@ -10,6 +10,7 @@ using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
 using FModel.Extensions;
 using FModel.Framework;
+using FModel.Settings;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 
@@ -112,6 +113,16 @@ public class BaseIconStats : BaseIcon
                 else if (dmgCritical != 0f && dmgCritical != 1f && dmgPb != 0f)
                 {
                     _statistics.Add(new IconStat(Utils.GetLocalizedResource("", "0DEF2455463B008C4499FEA03D149EDF", "Headshot Damage"), dmgPb * dmgCritical * multiplier, 160));
+                }
+
+                // Add custom stat from settings
+                if (!string.IsNullOrWhiteSpace(UserSettings.Default.CustomWeaponDamageProperty) && !string.IsNullOrWhiteSpace(UserSettings.Default.CustomWeaponDamageLocalizeKey))
+                {
+                    if (weaponRowValue.TryGetValue(out float statValue, UserSettings.Default.CustomWeaponDamageProperty) && statValue > 0)
+                    {
+                        var statName = Utils.GetLocalizedResource("", UserSettings.Default.CustomWeaponDamageLocalizeKey, UserSettings.Default.CustomWeaponDamageLocalizeKey);
+                        _statistics.Add(new IconStat(statName, statValue));
+                    }
                 }
             }
             if (clipSize > 999f || clipSize == 0f)

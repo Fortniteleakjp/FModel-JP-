@@ -540,6 +540,20 @@ namespace FModel.Settings
             set => SetProperty(ref _restoreTabsOnStartup, value);
         }
 
+        private string _customWeaponDamageProperty = "";
+        public string CustomWeaponDamageProperty
+        {
+            get => _customWeaponDamageProperty;
+            set => SetProperty(ref _customWeaponDamageProperty, value);
+        }
+
+        private string _customWeaponDamageLocalizeKey = "";
+        public string CustomWeaponDamageLocalizeKey
+        {
+            get => _customWeaponDamageLocalizeKey;
+            set => SetProperty(ref _customWeaponDamageLocalizeKey, value);
+        }
+
         private ObservableCollection<string> _recentFiles = new();
         public ObservableCollection<string> RecentFiles
         {
