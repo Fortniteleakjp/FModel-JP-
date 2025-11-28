@@ -14,6 +14,7 @@
                     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                     xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI">
 
+    <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
     <Geometry x:Key="StatusBarIcon">M22,9v6c0,1.1-0.9,2-2,2h-1l0-2h1V9H4v6h6v2H4c-1.1,0-2-0.9-2-2V9c0-1.1,0.9-2,2-2h16C21.1,7,22,7.9,22,9z M14.04,17.99 c0.18,0.39,0.73,0.39,0.91,0l0.63-1.4l1.4-0.63c0.39-0.18,0.39-0.73,0-0.91l-1.4-0.63l-0.63-1.4c-0.18-0.39-0.73-0.39-0.91,0 l-0.63,1.4l-1.4,0.63c-0.39,0.18-0.39,0.73,0,0.91l1.4,0.63L14.04,17.99z M16.74,13.43c0.1,0.22,0.42,0.22,0.52,0l0.36-0.8 l0.8-0.36c0.22-0.1,0.22-0.42,0-0.52l-0.8-0.36l-0.36-0.8c-0.1-0.22-0.42-0.22-0.52,0l-0.36,0.8l-0.8,0.36 c-0.22,0.1-0.22,0.42,0,0.52l0.8,0.36L16.74,13.43z</Geometry>
@@ -130,8 +131,7 @@
                         <Separator Grid.Column="0" VerticalAlignment="Center" Margin="0"
                                    Background="{TemplateBinding Background}"
                                    Foreground="{TemplateBinding Foreground}"/>
-                        <TextBlock x:Name="TagTextBlock" Grid.Column="1" VerticalAlignment="Center" Text="{TemplateBinding Tag}"
-                                   FontWeight="SemiBold" FontSize="11" Margin="10 0" />
+                        <TextBlock x:Name="TagTextBlock" Grid.Column="1" VerticalAlignment="Center" Text="{TemplateBinding Tag}" FontWeight="Bold" FontSize="11" Margin="10 0" />
                         <Separator Grid.Column="2" VerticalAlignment="Center" Margin="0"
                                    Background="{TemplateBinding Background}"
                                    Foreground="{TemplateBinding Foreground}"/>
@@ -206,10 +206,9 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding CUE4Parse.GameDirectory.DirectoryFilesView.Count}" Value="0">
                 <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate>
+                    <Setter.Value>                        <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No archives found in the specified directory" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No archives found in the specified directory" FontWeight="Bold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -264,10 +263,9 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding AudioPlayer.AudioFilesView.Count}" Value="0">
                 <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate>
+                    <Setter.Value>                        <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="再生できる音声ファイルがありません" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="再生できる音声ファイルがありません" FontWeight="Bold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -293,7 +291,7 @@
                         <Border x:Name="TreeBadge" CornerRadius="5" Height="10" MinWidth="10" Background="#705542"
                                 Margin="-10.5 0 4.5 0" VerticalAlignment="Bottom">
                             <TextBlock Text="{Binding AssetsList.Assets.Count}" Margin="2.5 0 2.5 0" Padding="1 0 0 0"
-                                       FontSize="7" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"  />
+                                       FontSize="7" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
                         </Border>
                         <TextBlock Text="{Binding Header}" HorizontalAlignment="Left">
                             <TextBlock.ToolTip>
@@ -571,10 +569,9 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding CUE4Parse.AssetsFolder.FoldersView.Count, FallbackValue=0}" Value="0">
                 <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate>
+                    <Setter.Value>                        <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="アーカイブにフォルダが見つかりません。少なくとも1つはロードされていることを確認してください。" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="アーカイブにフォルダが見つかりません。少なくとも1つはロードされていることを確認してください。" FontWeight="Bold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -632,10 +629,9 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" Value="0">
                 <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate>
+                    <Setter.Value>                        <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No package found in folder" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="No package found in folder" FontWeight="Bold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>

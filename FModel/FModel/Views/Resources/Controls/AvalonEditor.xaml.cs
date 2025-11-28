@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using CUE4Parse.Utils;
@@ -140,4 +141,64 @@ public partial class AvalonEditor
     {
         SaveCaretLoc(MyAvalonEditor.CaretOffset);
     }
-}
+
+    private void OnJsonFilterKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && DataContext is TabItem vm)
+        {
+            vm.ApplyJsonFilter();
+        }
+    }
+
+        private void OnClearJsonFilterClick(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is TabItem vm)
+                vm.JsonFilterText = string.Empty;
+        }
+    }
+    
+    public static class HintTextBox
+    {
+        public static readonly DependencyProperty HintProperty = DependencyProperty.RegisterAttached(
+            "Hint",
+            typeof(string),
+            typeof(HintTextBox),
+            new PropertyMetadata(default(string), OnHintChanged));
+
+        public static string GetHint(DependencyObject d) => (string)d.GetValue(HintProperty);
+
+        public static void SetHint(DependencyObject d, string value) => d.SetValue(HintProperty, value);
+
+        private static void OnHintChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is not System.Windows.Controls.TextBox textBox) return;
+
+            textBox.Loaded -= OnTextBoxLoaded;
+            textBox.Loaded += OnTextBoxLoaded;
+            textBox.TextChanged -= OnTextChanged;
+            textBox.TextChanged += OnTextChanged;
+        }
+
+        private static void OnTextBoxLoaded(object sender, RoutedEventArgs e)
+        {
+            UpdateHintVisibility(sender as System.Windows.Controls.TextBox);
+        }
+
+        private static void OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            UpdateHintVisibility(sender as System.Windows.Controls.TextBox);
+        }
+
+        private static void UpdateHintVisibility(System.Windows.Controls.TextBox textBox)
+        {
+            if (textBox == null) return;
+
+            var hint = GetHint(textBox);
+            var watermark = textBox.Template.FindName("PART_Watermark", textBox) as System.Windows.Controls.ContentControl;
+
+            if (watermark != null)
+            {
+                watermark.Content = hint;
+            }
+        }
+    }

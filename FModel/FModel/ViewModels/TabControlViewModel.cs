@@ -244,6 +244,20 @@ public class TabItem : ViewModel
         set => SetProperty(ref _wholeWord, value);
     }
 
+    private string _jsonFilterText;
+    public string JsonFilterText
+    {
+        get => _jsonFilterText;
+        set
+        {
+            if (SetProperty(ref _jsonFilterText, value))
+            {
+                ApplyJsonFilter();
+            }
+        }
+    }
+    private string _originalDocumentText;
+
     private TextDocument _document;
     public TextDocument Document
     {
@@ -427,12 +441,30 @@ public class TabItem : ViewModel
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
+            _originalDocumentText = text;
             Document ??= new TextDocument();
-            Document.Text = text;
+            Document.Text = string.IsNullOrEmpty(JsonFilterText) ? text : FilterJsonText(text, JsonFilterText);
             Document.UndoStack.ClearAll();
 
             if (save) SaveProperty(updateUi);
         });
+    }
+
+    public void ApplyJsonFilter()
+    {
+        if (Document != null && _originalDocumentText != null)
+        {
+            Document.Text = string.IsNullOrEmpty(JsonFilterText) ? _originalDocumentText : FilterJsonText(_originalDocumentText, JsonFilterText);
+        }
+    }
+
+    private static string FilterJsonText(string originalText, string filter)
+    {
+        if (string.IsNullOrEmpty(filter))
+            return originalText;
+
+        var filteredLines = originalText.Split(new[] { '\r', '\n' }, StringSplitOptions.None).Where(line => !line.Contains(filter, StringComparison.OrdinalIgnoreCase));
+        return string.Join(Environment.NewLine, filteredLines);
     }
 
     public void SaveImage() => SaveImage(SelectedImage, true);

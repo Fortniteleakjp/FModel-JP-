@@ -1,0 +1,8 @@
+D:\FModelJP\obj\Debug\net8.0\test.csproj.AssemblyReference.cache
+D:\FModelJP\obj\Debug\net8.0\test.FModel.FModel.Properties.Resources.resources
+D:\FModelJP\obj\Debug\net8.0\test.csproj.GenerateResource.cache
+D:\FModelJP\obj\Debug\net8.0\test.GeneratedMSBuildEditorConfig.editorconfig
+D:\FModelJP\obj\Debug\net8.0\test.AssemblyInfoInputs.cache
+D:\FModelJP\obj\Debug\net8.0\test.AssemblyInfo.cs
+D:\FModelJP\obj\Debug\net8.0\test.csproj.CoreCompileInputs.cache
+D:\FModelJP\obj\Debug\net8.0\test.sourcelink.json
