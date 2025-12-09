@@ -430,15 +430,7 @@ public class DelegatePropertyConverter : JsonConverter<DelegateProperty>
 {
     public override void WriteJson(JsonWriter writer, DelegateProperty value, JsonSerializer serializer)
     {
-        writer.WriteStartObject();
-
-        writer.WritePropertyName("Num");
-        writer.WriteValue(value.Num);
-
-        writer.WritePropertyName("Name");
         serializer.Serialize(writer, value.Value);
-
-        writer.WriteEndObject();
     }
 
     public override DelegateProperty ReadJson(JsonReader reader, Type objectType, DelegateProperty existingValue, bool hasExistingValue,
@@ -886,7 +878,7 @@ public class FPackageFileSummaryConverter : JsonConverter<FPackageFileSummary>
         writer.WriteValue(value.FileVersionLicenseeUE.ToStringBitfield());
 
         writer.WritePropertyName("CustomVersions");
-        serializer.Serialize(writer, value.CustomVersionContainer.Versions);
+        serializer.Serialize(writer, value.CustomVersionContainer?.Versions);
 
         writer.WritePropertyName(nameof(value.bUnversioned));
         writer.WriteValue(value.bUnversioned);

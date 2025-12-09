@@ -131,8 +131,8 @@ public class FScriptStruct
             "MovieSceneTimeWarpVariant" => type == ReadType.ZERO ? new FStructFallback() : new FMovieSceneTimeWarpVariant(Ar),
             "MovieSceneTrackFieldData" => type == ReadType.ZERO ? new FMovieSceneTrackFieldData() : new FMovieSceneTrackFieldData(Ar),
             "MovieSceneTrackIdentifier" => type == ReadType.ZERO ? new FMovieSceneTrackIdentifier() : new FMovieSceneTrackIdentifier(Ar),
-            "MovieSceneTrackIdentifiers" when Ar.Game is EGame.GAME_GameForPeace => type == ReadType.ZERO ? new FMovieSceneTrackIdentifiers() : new FMovieSceneTrackIdentifiers(Ar),
-            "MovieSceneTrackImplementationPtr" => new FMovieSceneTrackImplementationPtr(Ar), 
+            "MovieSceneTrackIdentifiers" when Ar.Game is EGame.GAME_GameForPeace => type == ReadType.ZERO ? new CUE4Parse.UE4.Objects.MovieScene.FMovieSceneTrackIdentifiers() : new CUE4Parse.UE4.Objects.MovieScene.FMovieSceneTrackIdentifiers(Ar),
+            "MovieSceneTrackImplementationPtr" => new FMovieSceneTrackImplementationPtr(Ar),
             "MidiEvent" => new CUE4Parse.UE4.Objects.Engine.Midi.FMidiEvent(Ar),
             "FontData" => new FFontData(Ar),
             "FontCharacter" => new FFontCharacter(Ar),
@@ -338,6 +338,8 @@ public class FScriptStruct
             // The Last Caretaker 
             "VoyagePackedLocalTransform" => new VoyagePackedLocalTransform(Ar),
             "VoyageFloat16" => Ar.Read<FRawStruct<Half>>(),
+
+            "EncVector" when Ar.Game is EGame.GAME_DeltaForceHawkOps => Ar.Read<FVector>(),
 
             _ => Ar.Game switch
             {

@@ -27,6 +27,7 @@ public partial class IoStoreReader : AbstractAesVfsReader
     public readonly FIoStoreTocResource TocResource;
     public readonly Dictionary<FIoChunkId, FIoOffsetAndLength>? TocImperfectHashMapFallback;
     public FIoContainerHeader? ContainerHeader { get; private set; }
+    public Dictionary<FPackageId, GameFile> PackageIdIndex { get; } = [];
 
     public override string MountPoint { get; protected set; }
     public sealed override long Length { get; set; }
@@ -54,6 +55,7 @@ public partial class IoStoreReader : AbstractAesVfsReader
     {
         Length = tocStream.Length;
         TocResource = new FIoStoreTocResource(tocStream, readOptions);
+        CompressionMethods = TocResource.CompressionMethods;
 
         List<FArchive> containerStreams;
         if (TocResource.Header.PartitionCount <= 1)
@@ -379,10 +381,7 @@ public partial class IoStoreReader : AbstractAesVfsReader
         watch.Start();
 
         ProcessIndex(pathComparer);
-        if (Game >= EGame.GAME_UE5_0) // We can safely skip reading container header on UE4
-        {
-            ContainerHeader = ReadContainerHeader();
-        }
+        ContainerHeader = ReadContainerHeader();
 
         if (Globals.LogVfsMounts)
         {
@@ -448,6 +447,7 @@ public partial class IoStoreReader : AbstractAesVfsReader
 
                     var entry = new FIoStoreEntry(this, path, fileEntry.UserData);
                     if (entry.IsEncrypted) EncryptedFileCount++;
+                    if (entry.IsUePackage) PackageIdIndex[entry.ChunkId.AsPackageId()] = entry;
                     files[path] = entry;
 
                     file = fileEntry.NextFileEntry;
@@ -465,9 +465,19 @@ public partial class IoStoreReader : AbstractAesVfsReader
 
     private FIoContainerHeader ReadContainerHeader()
     {
-        var headerChunkId = new FIoChunkId(TocResource.Header.ContainerId.Id, 0, Game >= EGame.GAME_UE5_0 ? (byte) EIoChunkType5.ContainerHeader : (byte) EIoChunkType.ContainerHeader);
-        using var Ar = new FByteArchive("ContainerHeader", Read(headerChunkId), Versions);
-        return new FIoContainerHeader(Ar);
+        try
+        {
+            var headerChunkId = new FIoChunkId(TocResource.Header.ContainerId.Id, 0, Game >= EGame.GAME_UE5_0 ? (byte) EIoChunkType5.ContainerHeader : (byte) EIoChunkType.ContainerHeader);
+            using var Ar = new FByteArchive("ContainerHeader", Read(headerChunkId), Versions);
+            return new FIoContainerHeader(Ar);
+        }
+        catch (Exception)
+        {
+            if (Game >= EGame.GAME_UE5_0)
+                throw;
+            else
+                return null!;
+        }
     }
 
     public override byte[] MountPointCheckBytes() => TocResource.DirectoryIndexBuffer ?? new byte[MAX_MOUNTPOINT_TEST_LENGTH];

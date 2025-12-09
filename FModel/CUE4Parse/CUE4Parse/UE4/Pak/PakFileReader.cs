@@ -39,9 +39,10 @@ namespace CUE4Parse.UE4.Pak
             this.Ar = Ar;
             Length = Ar.Length;
             Info = FPakInfo.ReadFPakInfo(Ar);
+            CompressionMethods = Info.CompressionMethods.ToArray();
 
-            var hasUnsupportedVersion = (Ar.Game < EGame.GAME_UE5_8 && Info.Version > PakFile_Version_Fnv64BugFix)
-                || (Ar.Game >= EGame.GAME_UE5_8 && Info.Version > PakFile_Version_Latest);
+            var hasUnsupportedVersion = (Ar.Game < EGame.GAME_UE5_7 && Info.Version > PakFile_Version_Fnv64BugFix)
+                || (Ar.Game >= EGame.GAME_UE5_7 && Info.Version > PakFile_Version_Latest);
             if (hasUnsupportedVersion && !UsingCustomPakVersion())
             {
                 Log.Warning($"Pak file \"{Name}\" has unsupported version {(int) Info.Version}");
@@ -196,7 +197,7 @@ namespace CUE4Parse.UE4.Pak
 
             var fileCount = index.Read<int>();
             if (Ar.Game == EGame.GAME_TransformersOnline) fileCount -= 100;
-            
+
             var files = new Dictionary<string, GameFile>(fileCount, pathComparer);
             for (var i = 0; i < fileCount; i++)
             {
@@ -283,9 +284,12 @@ namespace CUE4Parse.UE4.Pak
 
             // Read FDirectoryIndex
             Ar.Position = directoryIndexOffset;
-            var data = Ar.Game != EGame.GAME_Rennsport
-                ? ReadAndDecryptIndex((int) directoryIndexSize)
-                : RennsportAes.RennsportDecrypt(Ar.ReadBytes((int) directoryIndexSize), 0, (int) directoryIndexSize, true, this, true);
+            var data = Ar.Game switch
+            {
+                EGame.GAME_Rennsport => RennsportAes.RennsportDecrypt(Ar.ReadBytes((int) directoryIndexSize), 0, (int) directoryIndexSize, true, this, true),
+                _ => ReadAndDecryptIndex((int) directoryIndexSize),
+            };
+
             using var directoryIndex = new GenericBufferReader(data);
 
             var files = new Dictionary<string, GameFile>(fileCount, pathComparer);

@@ -9,6 +9,7 @@ using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace CUE4Parse.UE4.Assets.Exports.Material;
 
@@ -47,7 +48,7 @@ public class UMaterial : UMaterialInterface
             if (CachedExpressionData != null && CachedExpressionData.TryGetValue(out UTexture[] referencedTextures, "ReferencedTextures"))
                 ReferencedTextures.AddRange(referencedTextures);
 
-            if (TryGetValue(out referencedTextures, "ReferencedTextures")) // is this a thing ?
+            if (TryGetValue(out referencedTextures, "ReferencedTextures"))
                 ReferencedTextures.AddRange(referencedTextures);
         }
 
@@ -63,6 +64,10 @@ public class UMaterial : UMaterialInterface
                 try
                 {
                     DeserializeInlineShaderMaps(Ar, LoadedMaterialResources);
+                }
+                catch (Exception e)
+                {
+                    Log.Warning(e, "Failed to deserialize inline shader maps.");
                 }
                 finally
                 {

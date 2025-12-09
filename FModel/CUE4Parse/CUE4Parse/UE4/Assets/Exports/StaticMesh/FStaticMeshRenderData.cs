@@ -92,7 +92,7 @@ public class FStaticMeshRenderData
             var stripped = false;
             if (Ar.Ver >= EUnrealEngineObjectUE4Version.RENAME_WIDGET_VISIBILITY)
             {
-                var stripDataFlags = Ar.Read<FStripDataFlags>();
+                var stripDataFlags = new FStripDataFlags(Ar);
                 stripped = stripDataFlags.IsAudioVisualDataStripped();
                 if (Ar.Game >= EGame.GAME_UE4_21)
                 {
@@ -107,7 +107,7 @@ public class FStaticMeshRenderData
                     var bValid = Ar.ReadBoolean();
                     if (bValid)
                     {
-                        if (Ar.Game is >= EGame.GAME_UE5_0 or EGame.GAME_TerminullBrigade)
+                        if (Ar.Game is >= EGame.GAME_UE5_0 or EGame.GAME_TerminullBrigade or EGame.GAME_WutheringWaves)
                         {
                             _ = new FDistanceFieldVolumeData5(Ar);
                         }
@@ -217,7 +217,7 @@ public class FStaticMeshRenderData
             }
         }
 
-        if (Ar.Game >= EGame.GAME_UE5_4) _ = Ar.Read<FStripDataFlags>();
+        if (Ar.Game >= EGame.GAME_UE5_4) _ = new FStripDataFlags(Ar);
     }
 
     private void SerializeInlineDataRepresentations(FAssetArchive Ar)

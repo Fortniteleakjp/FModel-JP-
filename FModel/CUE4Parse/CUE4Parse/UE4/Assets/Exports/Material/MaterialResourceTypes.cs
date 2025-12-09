@@ -139,7 +139,7 @@ public class FShaderMapContent
             var shaderPlatform = Ar.ReadFName();
             Enum.TryParse("SP_" + shaderPlatform.PlainText, out ShaderPlatform);
 
-            if (Ar.Game == EGame.GAME_MarvelRivals) Ar.Position += 8;
+            if (Ar.Game is EGame.GAME_MarvelRivals or EGame.GAME_Valorant or EGame.GAME_DeadByDaylight) Ar.Position += 8;
         }
         else
         {
@@ -592,6 +592,7 @@ public class FUniformExpressionSet
                 UniformParameterEvaluations = Ar.ReadArray<FMaterialUniformParameterEvaluation>();
             }
 
+            if (Ar.Game is EGame.GAME_Aion2) _ = Ar.ReadArray(() => new FMaterialNumericParameterInfo(Ar)); // additional parameters
             UniformPreshaders = Ar.ReadArray(() => new FMaterialUniformPreshaderHeader(Ar));
             UniformPreshaderFields = Ar.Game >= EGame.GAME_UE5_1 ? Ar.ReadArray<FMaterialUniformPreshaderField>() : [];
             UniformNumericParameters = Ar.ReadArray(() => new FMaterialNumericParameterInfo(Ar));
