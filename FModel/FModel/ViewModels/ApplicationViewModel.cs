@@ -11,6 +11,7 @@ using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -41,6 +42,32 @@ public class ApplicationViewModel : ViewModel
     {
         get => _status;
         private init => SetProperty(ref _status, value);
+    }
+
+    public IEnumerable<EAssetCategory> Categories { get; } = AssetCategoryExtensions.GetBaseCategories();
+
+    private bool _isAssetsExplorerVisible;
+    public bool IsAssetsExplorerVisible
+    {
+        get => _isAssetsExplorerVisible;
+        set
+        {
+            if (SetProperty(ref _isAssetsExplorerVisible, value))
+            {
+                // SelectedLeftTabIndex = value ? 1 : 2;
+            }
+        }
+    }
+
+    private int _selectedLeftTabIndex;
+    public int SelectedLeftTabIndex
+    {
+        get => _selectedLeftTabIndex;
+        set
+        {
+            if (value is < 0 or > 2) return;
+            SetProperty(ref _selectedLeftTabIndex, value);
+        }
     }
 
     public RightClickMenuCommand RightClickMenuCommand => _rightClickMenuCommand ??= new RightClickMenuCommand(this);

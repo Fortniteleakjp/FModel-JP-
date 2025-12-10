@@ -29,11 +29,20 @@ public class EpicGamesAuthService
         Directory.CreateDirectory(Path.GetDirectoryName(DeviceAuthPath)!);
     }
 
-    private async Task<T> SendJsonAsync<T>(HttpRequestMessage request)
+    private async Task<T> SendJsonAsync<T>(HttpRequestMessage request, bool throwOnError = true)
     {
         var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
         var responseBody = await response.Content.ReadAsStringAsync();
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            if (throwOnError)
+            {
+                throw new HttpRequestException($"Response status code does not indicate success: {(int)response.StatusCode} ({response.ReasonPhrase}). Body: {responseBody}");
+            }
+            return default;
+        }
+        
         return JsonSerializer.Deserialize<T>(responseBody);
     }
 
@@ -76,9 +85,19 @@ public class EpicGamesAuthService
             await File.WriteAllTextAsync(DeviceAuthPath, JsonSerializer.Serialize(savedAuth, new JsonSerializerOptions { WriteIndented = true }));
             return savedAuth;
         }
+        catch (HttpRequestException ex) when (ex.Message.Contains("400"))
+        {
+            // 無効な認証情報の場合、保存されたファイルを削除
+            FLogger.Append(ELog.Warning, () => FLogger.Text("Device auth credentials are invalid. Deleting saved auth and re-logging.", Constants.YELLOW, true));
+            if (File.Exists(DeviceAuthPath))
+            {
+                File.Delete(DeviceAuthPath);
+            }
+            return null;
+        }
         catch (Exception ex)
         {
-            FLogger.Append(ELog.Warning, () => FLogger.Text($"Device auth expired or failed to refresh, re-logging. Exception: {ex}", Constants.WHITE, true));
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Device auth failed to refresh: {ex.Message}", Constants.YELLOW, true));
             return null;
         }
     }
@@ -171,8 +190,33 @@ public class EpicGamesAuthService
                     Content = pollingBody
                 };
                 req.Headers.Add("Authorization", ClientAuth);
-                FLogger.Append(ELog.Information, () => FLogger.Text($"Polling for token with device code: {deviceCode}", Constants.WHITE, true));
-                var token = await SendJsonAsync<JsonElement>(req);
+                
+                var response = await _httpClient.SendAsync(req);
+                var responseBody = await response.Content.ReadAsStringAsync();
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    // 400エラーは通常、まだユーザーが認証していないことを示す
+                    if ((int)response.StatusCode == 400)
+                    {
+                        var errorData = JsonSerializer.Deserialize<JsonElement>(responseBody);
+                        if (errorData.TryGetProperty("errorCode", out var errorCodeElement))
+                        {
+                            var errorCode = errorCodeElement.GetString();
+                            // "errors.com.epicgames.account.oauth.authorization_pending" は認証待ち
+                            if (errorCode == "errors.com.epicgames.account.oauth.authorization_pending")
+                            {
+                                // 通常の待機状態なのでログを出さずに続行
+                                continue;
+                            }
+                        }
+                    }
+                    
+                    FLogger.Append(ELog.Warning, () => FLogger.Text($"Polling error: {(int)response.StatusCode} - {responseBody}", Constants.YELLOW, true));
+                    continue;
+                }
+                
+                var token = JsonSerializer.Deserialize<JsonElement>(responseBody);
 
                 if (!token.TryGetProperty("displayName", out var displayNameElement) || displayNameElement.GetString() is not { } displayName)
                 {
@@ -190,33 +234,55 @@ public class EpicGamesAuthService
                     return null;
                 }
 
-                var authReq = new HttpRequestMessage(HttpMethod.Post, $"https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{accountId}/deviceAuth");
-                authReq.Headers.Add("Authorization", $"Bearer {finalAccessToken}");
-                FLogger.Append(ELog.Information, () => FLogger.Text($"Requesting device auth for account ID: {accountId}", Constants.WHITE, true));
-                var deviceAuth = await SendJsonAsync<JsonElement>(authReq);
-
-                var authData = new AuthData
+                // デバイス認証の作成を試みる
+                AuthData authData;
+                try
                 {
-                    DisplayName = displayName,
-                    AccountId = accountId,
-                    DeviceId = deviceAuth.GetProperty("deviceId").GetString()!,
-                    Secret = deviceAuth.GetProperty("secret").GetString()!,
-                    AccessToken = finalAccessToken,
-                    ExpiresAt = DateTime.Now.AddSeconds(finalExpiresInElement.GetInt32())
-                };
+                    var authReq = new HttpRequestMessage(HttpMethod.Post, $"https://account-public-service-prod.ol.epicgames.com/account/api/public/account/{accountId}/deviceAuth");
+                    authReq.Headers.Add("Authorization", $"Bearer {finalAccessToken}");
+                    FLogger.Append(ELog.Information, () => FLogger.Text($"Requesting device auth for account ID: {accountId}", Constants.WHITE, true));
+                    var deviceAuth = await SendJsonAsync<JsonElement>(authReq);
 
-                await File.WriteAllTextAsync(DeviceAuthPath, JsonSerializer.Serialize(authData, new JsonSerializerOptions { WriteIndented = true }));
-                FLogger.Append(ELog.Information, () => FLogger.Text("Device auth data saved.", Constants.GREEN, true));
+                    authData = new AuthData
+                    {
+                        DisplayName = displayName,
+                        AccountId = accountId,
+                        DeviceId = deviceAuth.GetProperty("deviceId").GetString()!,
+                        Secret = deviceAuth.GetProperty("secret").GetString()!,
+                        AccessToken = finalAccessToken,
+                        ExpiresAt = DateTime.Now.AddSeconds(finalExpiresInElement.GetInt32())
+                    };
+
+                    await File.WriteAllTextAsync(DeviceAuthPath, JsonSerializer.Serialize(authData, new JsonSerializerOptions { WriteIndented = true }));
+                    FLogger.Append(ELog.Information, () => FLogger.Text("Device auth data saved.", Constants.GREEN, true));
+                }
+                catch (HttpRequestException ex) when (ex.Message.Contains("403") || ex.Message.Contains("missing_permission"))
+                {
+                    // デバイス認証の作成権限がない場合、セッショントークンのみで続行
+                    FLogger.Append(ELog.Warning, () => FLogger.Text("Your account does not have permission to create device auth. Using session token only (you will need to re-login next time).", Constants.YELLOW, true));
+                    authData = new AuthData
+                    {
+                        DisplayName = displayName,
+                        AccountId = accountId,
+                        DeviceId = string.Empty,
+                        Secret = string.Empty,
+                        AccessToken = finalAccessToken,
+                        ExpiresAt = DateTime.Now.AddSeconds(finalExpiresInElement.GetInt32())
+                    };
+                    // 権限がない場合は保存しない
+                }
+                
                 return authData;
             }
             catch (Exception ex)
             {
-                // Log polling errors but continue trying
-                FLogger.Append(ELog.Warning, () => FLogger.Text($"Polling error: {ex}", Constants.WHITE, true));
+                // 予期しないエラーのみログに記録
+                FLogger.Append(ELog.Error, () => FLogger.Text($"Unexpected polling error: {ex.Message}", Constants.RED, true));
             }
         }
 
-        throw new Exception("Login timed out.");
+        FLogger.Append(ELog.Error, () => FLogger.Text("Login timed out. Please try again.", Constants.RED, true));
+        return null;
     }
 
     public static async Task<AuthData?> LoadDeviceAuthAsync()

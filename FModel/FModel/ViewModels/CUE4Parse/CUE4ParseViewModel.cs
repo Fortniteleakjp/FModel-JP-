@@ -65,6 +65,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
+using Svg.Skia;
 using UE4Config.Parsing;
 using Application = System.Windows.Application;
 using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
@@ -80,13 +81,23 @@ public partial class CUE4ParseViewModel : ViewModel
     public SkiaSharp.SKBitmap RenderSvg(byte[] svgData, int width = 512, int height = 512)
     {
         using var stream = new System.IO.MemoryStream(svgData);
-        var svg = new SkiaSharp.Extended.Svg.SKSvg(new SkiaSharp.SKSize(width, height));
-        svg.Load(stream);
+        var svg = new SKSvg();
+        if (svg.Load(stream) == null)
+            return null;
+        
         var bitmap = new SkiaSharp.SKBitmap(width, height);
         using (var canvas = new SkiaSharp.SKCanvas(bitmap))
-        using (var paint = new SkiaSharp.SKPaint { IsAntialias = true, FilterQuality = SkiaSharp.SKFilterQuality.Medium })
         {
-            canvas.DrawPicture(svg.Picture, paint);
+            canvas.Clear(SkiaSharp.SKColors.Transparent);
+            if (svg.Picture != null)
+            {
+                var scaleX = width / svg.Picture.CullRect.Width;
+                var scaleY = height / svg.Picture.CullRect.Height;
+                var scale = Math.Min(scaleX, scaleY);
+                
+                var matrix = SkiaSharp.SKMatrix.CreateScale(scale, scale);
+                canvas.DrawPicture(svg.Picture, ref matrix);
+            }
         }
         return bitmap;
     }
@@ -879,17 +890,27 @@ public partial class CUE4ParseViewModel : ViewModel
             {
                 var data = Provider.SaveAsset(entry);
                 using var stream = new MemoryStream(data) { Position = 0 };
-                var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(512, 512));
-                svg.Load(stream);
-
-                var bitmap = new SKBitmap(512, 512);
-                using (var canvas = new SKCanvas(bitmap))
-                using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
+                var svg = new SKSvg();
+                if (svg.Load(stream) != null)
                 {
-                    canvas.DrawPicture(svg.Picture, paint);
-                }
+                    const int size = 512;
+                    var bitmap = new SKBitmap(size, size);
+                    using (var canvas = new SKCanvas(bitmap))
+                    {
+                        canvas.Clear(SKColors.Transparent);
+                        if (svg.Picture != null)
+                        {
+                            var scaleX = size / svg.Picture.CullRect.Width;
+                            var scaleY = size / svg.Picture.CullRect.Height;
+                            var scale = Math.Min(scaleX, scaleY);
+                            
+                            var matrix = SKMatrix.CreateScale(scale, scale);
+                            canvas.DrawPicture(svg.Picture, ref matrix);
+                        }
+                    }
 
-                TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
+                    TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
+                }
 
                 break;
             }
@@ -996,14 +1017,24 @@ public partial class CUE4ParseViewModel : ViewModel
                 var data = svgasset.GetOrDefault<byte[]>("SvgData");
                 var sourceFile = svgasset.GetOrDefault<string>("SourceFile");
                 using var stream = new MemoryStream(data) { Position = 0 };
-                var svg = new SkiaSharp.Extended.Svg.SKSvg(new SKSize(size, size));
-                svg.Load(stream);
-
-                var bitmap = new SKBitmap(size, size);
-                using (var canvas = new SKCanvas(bitmap))
-                using (var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
+                var svg = new SKSvg();
+                SKBitmap bitmap = null;
+                if (svg.Load(stream) != null)
                 {
-                    canvas.DrawPicture(svg.Picture, paint);
+                    bitmap = new SKBitmap(size, size);
+                    using (var canvas = new SKCanvas(bitmap))
+                    {
+                        canvas.Clear(SKColors.Transparent);
+                        if (svg.Picture != null)
+                        {
+                            var scaleX = size / svg.Picture.CullRect.Width;
+                            var scaleY = size / svg.Picture.CullRect.Height;
+                            var scale = Math.Min(scaleX, scaleY);
+                            
+                            var matrix = SKMatrix.CreateScale(scale, scale);
+                            canvas.DrawPicture(svg.Picture, ref matrix);
+                        }
+                    }
                 }
 
                 if (saveTextures)

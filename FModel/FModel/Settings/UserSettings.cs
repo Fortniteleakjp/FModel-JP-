@@ -533,6 +533,13 @@ namespace FModel.Settings
             set => SetProperty(ref _saveHdrTexturesAsHdr, value);
         }
 
+        private bool _previewTexturesAssetExplorer = true;
+        public bool PreviewTexturesAssetExplorer
+        {
+            get => _previewTexturesAssetExplorer;
+            set => SetProperty(ref _previewTexturesAssetExplorer, value);
+        }
+
         private bool _restoreTabsOnStartup = true;
         public bool RestoreTabsOnStartup
         {

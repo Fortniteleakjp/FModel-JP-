@@ -47,6 +47,9 @@ public partial class MainWindow
         DataContext = _applicationView;
         InitializeComponent();
 
+        // テクスチャプレビュー設定の変更を監視
+        UserSettings.Default.PropertyChanged += OnUserSettingsPropertyChanged;
+
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
 
@@ -63,6 +66,7 @@ public partial class MainWindow
     private void OnClosing(object sender, CancelEventArgs e)
     {
         _discordHandler.Dispose();
+        UserSettings.Default.PropertyChanged -= OnUserSettingsPropertyChanged;
         if (UserSettings.Default.RestoreTabsOnStartup)
         {
             var tabPaths = _applicationView.CUE4Parse.TabControl.TabsItems.Select(t => t.Entry.Path).Where(p => p != "New Tab").ToList();
@@ -474,7 +478,6 @@ public partial class MainWindow
         if (ShowBetaFeatureWarning())
             AthenaFeatureBase.LogNotImplemented("Pak Cosmetics");
     }
-
     private void OnAthenaPaksBulkClick(object sender, RoutedEventArgs e)
     {
         if (ShowBetaFeatureWarning())
@@ -485,5 +488,35 @@ public partial class MainWindow
     {
         if (ShowBetaFeatureWarning())
             AthenaFeatureBase.LogNotImplemented("Back");
+    }
+
+    private void OnUserSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(UserSettings.PreviewTexturesAssetExplorer))
+        {
+            RefreshAssetListPreview();
+        }
+    }
+
+    private void RefreshAssetListPreview()
+    {
+        if (AssetsFolderName.SelectedItem is not TreeItem folder)
+            return;
+
+        // アセットリストのプレビュー画像をリフレッシュ
+        foreach (var item in folder.AssetsList.Assets)
+        {
+            if (item is GameFile gameFile)
+            {
+                var viewModel = new GameFileViewModel(gameFile);
+                if (UserSettings.Default.PreviewTexturesAssetExplorer)
+                {
+                    viewModel.OnVisibleChanged(true);
+                }
+            }
+        }
+        
+        // ビューを更新
+        folder.AssetsList.AssetsView.Refresh();
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using FModel.Extensions;
 
 namespace FModel;
 
@@ -116,4 +117,23 @@ public enum EBulkType
     Skeletons =     1 << 4,
     Animations =    1 << 5,
     Audio =         1 << 6
+}
+
+public enum EAssetCategory : uint
+{
+    All = AssetCategoryExtensions.CategoryBase + (0 << 16),
+    Texture = AssetCategoryExtensions.CategoryBase + (1 << 16),
+    Mesh = AssetCategoryExtensions.CategoryBase + (2 << 16),
+    StaticMesh = Mesh + 1,
+    SkeletalMesh = Mesh + 2,
+    Skeleton = AssetCategoryExtensions.CategoryBase + (4 << 16),
+    Material = AssetCategoryExtensions.CategoryBase + (5 << 16),
+    Blueprint = AssetCategoryExtensions.CategoryBase + (6 << 16),
+    Audio = AssetCategoryExtensions.CategoryBase + (7 << 16),
+    Animation = AssetCategoryExtensions.CategoryBase + (8 << 16),
+    Font = AssetCategoryExtensions.CategoryBase + (9 << 16),
+    PhysicsAsset = AssetCategoryExtensions.CategoryBase + (10 << 16),
+    Video = AssetCategoryExtensions.CategoryBase + (11 << 16),
+    Data = AssetCategoryExtensions.CategoryBase + (12 << 16),
+    Map = AssetCategoryExtensions.CategoryBase + (13 << 16),
 }
