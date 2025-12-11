@@ -1,0 +1,4609 @@
+{
+    "projectId": "a0a9b641-45b5-19bc-75ce-55916f2adc5f",
+    "projectFlags": {
+        "name": "StealABrainrot",
+        "kind": "Island",
+        "title": "StealABrainrot",
+        "description": "",
+        "key_art": "resources/stb.png",
+        "docs_url": "",
+        "locale": "en-US",
+        "source_control": {
+            "active": "Unreal Revision Control",
+            "Unreal Revision Control": {
+                "fileVersion": 1,
+                "providerName": "Unreal Revision Control",
+                "providerParameters": {}
+            }
+        }
+    },
+    "resolved": {
+        "root": {
+            "moduleId": "d66cb9b1-4ae0-a552-f882-50be01682c3a",
+            "version": 1034
+        },
+        "resolutions": {
+            "d66cb9b1-4ae0-a552-f882-50be01682c3a": 1034
+        }
+    },
+    "status": "cooked",
+    "isEncrypted": true,
+    "content": [
+        {
+            "moduleId": "f0c0a8e7-016e-5e7a-abd7-b7a221215eaa",
+            "version": 0,
+            "artifactId": "f0c0a8e7-016e-5e7a-abd7-b7a221215eaa:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_Analytic/CRD_Analytic.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f42c6ab3-bbb3-510b-891c-d0fae242c282",
+            "version": 0,
+            "artifactId": "f42c6ab3-bbb3-510b-891c-d0fae242c282:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_Accolades/CRD_Accolades.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5d1b53b9-cffd-53d3-8951-d8b218ef15c0",
+            "version": 0,
+            "artifactId": "5d1b53b9-cffd-53d3-8951-d8b218ef15c0:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortUIAudioBase/FortUIAudioBase.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "3f5d26a6-9bab-5b26-a290-390d6c1f74ab",
+            "version": 0,
+            "artifactId": "3f5d26a6-9bab-5b26-a290-390d6c1f74ab:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortUIAudioContent/FortUIAudioContent.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f96fbcaf-126c-585f-a12b-c19690b64c11",
+            "version": 0,
+            "artifactId": "f96fbcaf-126c-585f-a12b-c19690b64c11:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortniteCoreUI/FortniteCoreUI.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "b52802c6-510e-5fd4-9094-0a1fc1eff17e",
+            "version": 0,
+            "artifactId": "b52802c6-510e-5fd4-9094-0a1fc1eff17e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/FNE_Volume/FNE_Volume.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "a73d7799-f5af-50aa-aa2b-6fbb10005690",
+            "version": 0,
+            "artifactId": "a73d7799-f5af-50aa-aa2b-6fbb10005690:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_Volume/CRD_Volume.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "c08c1084-0103-5e37-84ec-9d6adeed1ad5",
+            "version": 0,
+            "artifactId": "c08c1084-0103-5e37-84ec-9d6adeed1ad5:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/HealthBar/HealthBar.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "88e9476b-0d42-5804-8ce5-d1553c36c332",
+            "version": 0,
+            "artifactId": "88e9476b-0d42-5804-8ce5-d1553c36c332:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/AnimPresets/AnimPresets.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e6e4ecae-300c-5c3d-8110-74513ed617ec",
+            "version": 0,
+            "artifactId": "e6e4ecae-300c-5c3d-8110-74513ed617ec:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/DefaultCosmeticsAthena/DefaultCosmeticsAthena.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "932ad0d6-6b12-52aa-99d3-0b8026b68f8c",
+            "version": 0,
+            "artifactId": "932ad0d6-6b12-52aa-99d3-0b8026b68f8c:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/BRCosmetics/BRCosmetics.uplugin?Bundles=CosmeticPreInstall"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "d3e90ae0-0842-58df-9834-62d0d17e4b54",
+            "version": 0,
+            "artifactId": "d3e90ae0-0842-58df-9834-62d0d17e4b54:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/AITokenProvider/AITokenProvider.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5a194498-a6af-5f3a-9640-42e2e410b5a1",
+            "version": 0,
+            "artifactId": "5a194498-a6af-5f3a-9640-42e2e410b5a1:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/CreativeCommonAI/CreativeCommonAI/CreativeCommonAI.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e0f75661-a5d5-58ae-90ff-891a70244290",
+            "version": 0,
+            "artifactId": "e0f75661-a5d5-58ae-90ff-891a70244290:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_AIPatrolPath/CRD_AIPatrolPath.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "06e3398b-2a59-5f1e-84df-1cd95f96eb94",
+            "version": 0,
+            "artifactId": "06e3398b-2a59-5f1e-84df-1cd95f96eb94:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/MiscReferencersOfCosmetics/MiscReferencersOfCosmetics.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "177babef-7ee5-5af8-8e0a-911e7ab49344",
+            "version": 0,
+            "artifactId": "177babef-7ee5-5af8-8e0a-911e7ab49344:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortniteConversation/FortniteConversation.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5ed5c8ad-613b-52e5-9e5d-d794c3994d8a",
+            "version": 0,
+            "artifactId": "5ed5c8ad-613b-52e5-9e5d-d794c3994d8a:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortniteConversationUI/FortniteConversationUI.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f55b402b-0f01-59a7-a881-6f78812865ca",
+            "version": 0,
+            "artifactId": "f55b402b-0f01-59a7-a881-6f78812865ca:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/CreativeCommonCharacters/CreativeCommonCharacters.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "901e53f1-1aeb-5387-8cd7-248a2e64b59c",
+            "version": 0,
+            "artifactId": "901e53f1-1aeb-5387-8cd7-248a2e64b59c:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Hoagie/Hoagie.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "de40b6c6-416a-5322-9836-09b96905907e",
+            "version": 0,
+            "artifactId": "de40b6c6-416a-5322-9836-09b96905907e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/VehicleAudio/VehicleAudio.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "68b94c4f-1cfb-5757-952f-6b2f9a813c2e",
+            "version": 0,
+            "artifactId": "68b94c4f-1cfb-5757-952f-6b2f9a813c2e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortGenericMapGame/FortGenericMapGame.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f8395129-2e1f-5d87-9392-66ba08c18289",
+            "version": 0,
+            "artifactId": "f8395129-2e1f-5d87-9392-66ba08c18289:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortGenericMapUI/FortGenericMapUI.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "af3a0d84-e808-55e2-b11b-6c48be3585e3",
+            "version": 0,
+            "artifactId": "af3a0d84-e808-55e2-b11b-6c48be3585e3:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/VariableSelections/VariableSelections.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "a5b3f8f7-2ff6-53d0-899e-114f6d8ae600",
+            "version": 0,
+            "artifactId": "a5b3f8f7-2ff6-53d0-899e-114f6d8ae600:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Lager/Lager.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "aa305917-f148-5f6b-95b0-77f7727675d8",
+            "version": 0,
+            "artifactId": "aa305917-f148-5f6b-95b0-77f7727675d8:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Motorboat/Motorboat.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "fed9d834-196a-55bb-b5d1-38dff094662e",
+            "version": 0,
+            "artifactId": "fed9d834-196a-55bb-b5d1-38dff094662e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Bounties/Bounties.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "288b5b9b-fb87-582a-b6dc-6c622ee06b33",
+            "version": 0,
+            "artifactId": "288b5b9b-fb87-582a-b6dc-6c622ee06b33:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/ContextualTraversal/ContextualTraversal.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "544154fd-1d1e-591f-bc7c-bf27016d00f3",
+            "version": 0,
+            "artifactId": "544154fd-1d1e-591f-bc7c-bf27016d00f3:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/ClamberingCode/ClamberingCode.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5336c1e2-1af2-53bd-94c8-8911c8a73c1b",
+            "version": 0,
+            "artifactId": "5336c1e2-1af2-53bd-94c8-8911c8a73c1b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/UniversalDailyQuests/UniversalDailyQuests.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "474f8316-9dac-5a22-b289-d0a141e0d8d6",
+            "version": 0,
+            "artifactId": "474f8316-9dac-5a22-b289-d0a141e0d8d6:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Locker/Locker.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e3020be8-2651-5f09-a38b-c649d1ba3581",
+            "version": 0,
+            "artifactId": "e3020be8-2651-5f09-a38b-c649d1ba3581:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Nexus/GiftBox/GiftBox.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "db609f17-0a81-5735-a627-790d0ceaadaf",
+            "version": 0,
+            "artifactId": "db609f17-0a81-5735-a627-790d0ceaadaf:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Nexus/SeasonPass/SeasonPass.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "760a6d40-e77f-51c1-a372-aa417ef0c398",
+            "version": 0,
+            "artifactId": "760a6d40-e77f-51c1-a372-aa417ef0c398:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/BattlePassBase/BattlePassBase.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "acb91e6e-b5b0-5490-ab54-a70f9a1b56bd",
+            "version": 0,
+            "artifactId": "acb91e6e-b5b0-5490-ab54-a70f9a1b56bd:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/BattlePassPermanentQuests/BattlePassPermanentQuests.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "c575d84c-318e-5edf-adae-f372cc67faf8",
+            "version": 0,
+            "artifactId": "c575d84c-318e-5edf-adae-f372cc67faf8:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Mantis/Mantis.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "c4741795-637f-5d0e-b26f-3ddd588296d0",
+            "version": 0,
+            "artifactId": "c4741795-637f-5d0e-b26f-3ddd588296d0:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/AICore/AICore.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "199ea862-dc49-5d14-85d6-219bc227b001",
+            "version": 0,
+            "artifactId": "199ea862-dc49-5d14-85d6-219bc227b001:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/NPCCore/NPCCore.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "08b761b1-d1bc-5c1f-8adf-33fc4897fb6c",
+            "version": 0,
+            "artifactId": "08b761b1-d1bc-5c1f-8adf-33fc4897fb6c:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/SmartObjectLibrary/SmartObjectLibrary.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "3405e1eb-0034-5f54-9684-a1029852c593",
+            "version": 0,
+            "artifactId": "3405e1eb-0034-5f54-9684-a1029852c593:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/OfferCatalog/OfferCatalog.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "d7bd1a72-217a-53b9-89f1-b5c353a2a30c",
+            "version": 0,
+            "artifactId": "d7bd1a72-217a-53b9-89f1-b5c353a2a30c:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PlayerAugmentGameplayLibrary/PlayerAugmentGameplayLibrary.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "878f712d-9e31-5777-8a79-a219baf647e1",
+            "version": 0,
+            "artifactId": "878f712d-9e31-5777-8a79-a219baf647e1:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/ZeroPoint/ZeroPoint.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "b674ba78-ed19-5fc2-b76d-2e14d8e4e6a2",
+            "version": 0,
+            "artifactId": "b674ba78-ed19-5fc2-b76d-2e14d8e4e6a2:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/SharedNPCAnims/SharedNPCAnims.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "9e9717b5-6b24-5c13-80f7-92d1f84b1f06",
+            "version": 0,
+            "artifactId": "9e9717b5-6b24-5c13-80f7-92d1f84b1f06:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/NPCLibrary/NPCLibrary.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "791e2c42-d975-5b98-8ea2-dd5cc9bb9c4d",
+            "version": 0,
+            "artifactId": "791e2c42-d975-5b98-8ea2-dd5cc9bb9c4d:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_HenchmanSpawner/CRD_HenchmanSpawner.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "70e58186-ad2e-5c83-aaf6-5c7889c89d3e",
+            "version": 0,
+            "artifactId": "70e58186-ad2e-5c83-aaf6-5c7889c89d3e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/ItemShop/ItemShop.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "57d9a74e-af9b-55a5-bccd-322911dc56b8",
+            "version": 0,
+            "artifactId": "57d9a74e-af9b-55a5-bccd-322911dc56b8:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/CreativeOpenFrontEndShop/CreativeOpenFrontEndShop.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "b604ddb3-b342-5b59-92cd-5a50b7959a7c",
+            "version": 0,
+            "artifactId": "b604ddb3-b342-5b59-92cd-5a50b7959a7c:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_Mannequin/CRD_Mannequin.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5758d768-ccf6-5e2a-97c0-10bb1523bfd9",
+            "version": 0,
+            "artifactId": "5758d768-ccf6-5e2a-97c0-10bb1523bfd9:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Irwin/Irwin.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "10b43c79-98c4-54e8-8476-308557040f1b",
+            "version": 0,
+            "artifactId": "10b43c79-98c4-54e8-8476-308557040f1b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/WhisperRemedyAssets/WhisperRemedyAssets.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "62df227e-dc18-5233-8ec8-d34bb0977070",
+            "version": 0,
+            "artifactId": "62df227e-dc18-5233-8ec8-d34bb0977070:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Juno/JunoBase/JunoBase.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5499bb7e-6f5d-5574-b5ee-fa62a3172211",
+            "version": 0,
+            "artifactId": "5499bb7e-6f5d-5574-b5ee-fa62a3172211:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Juno/LFNAudioBase/LFNAudioBase.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "7d307f58-d8bd-52ab-993b-687494fb1c37",
+            "version": 0,
+            "artifactId": "7d307f58-d8bd-52ab-993b-687494fb1c37:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Juno/JunoAudioBase/JunoAudioBase.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "dd1ac987-05ce-55b2-a6c1-b2a08e2fb148",
+            "version": 0,
+            "artifactId": "dd1ac987-05ce-55b2-a6c1-b2a08e2fb148:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/EmoteWheel/EmoteWheel.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "16e9580c-690d-5c99-956d-de08c6b2775a",
+            "version": 0,
+            "artifactId": "16e9580c-690d-5c99-956d-de08c6b2775a:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/FMCore/FMCore.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "1aa121d6-26b7-55ac-acf0-8c6ef937c734",
+            "version": 0,
+            "artifactId": "1aa121d6-26b7-55ac-acf0-8c6ef937c734:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PolygonalInputZones/PolygonalInputZones.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "4cc8f86f-be09-53a3-af2a-b7d19b2e62bb",
+            "version": 0,
+            "artifactId": "4cc8f86f-be09-53a3-af2a-b7d19b2e62bb:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/SparksCore/SparksCore.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "10ef7160-d248-5a53-8004-62a038d6e851",
+            "version": 0,
+            "artifactId": "10ef7160-d248-5a53-8004-62a038d6e851:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Juno/FigureCharacterNative/FigureCharacterNative.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "a3e65535-845d-5dcb-ba37-7234cd296fe0",
+            "version": 0,
+            "artifactId": "a3e65535-845d-5dcb-ba37-7234cd296fe0:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Juno/FigureCharacter/FigureCharacter.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f49af9c5-e3da-5b58-abd9-fe685807af42",
+            "version": 0,
+            "artifactId": "f49af9c5-e3da-5b58-abd9-fe685807af42:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Juno/JunoAtomAssets/JunoAtomAssets.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "cb8abb33-4462-5b1a-8e6d-38fff643969f",
+            "version": 0,
+            "artifactId": "cb8abb33-4462-5b1a-8e6d-38fff643969f:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/MeshCosmetics/MeshCosmetics.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "84f1d30b-e8b2-523a-81d3-ecdd53f93728",
+            "version": 0,
+            "artifactId": "84f1d30b-e8b2-523a-81d3-ecdd53f93728:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/BeatSyncedAnim/BeatSyncedAnim.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e96f357d-9419-5b53-b4d4-b96912f74460",
+            "version": 0,
+            "artifactId": "e96f357d-9419-5b53-b4d4-b96912f74460:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/PilgrimQPShared/PilgrimQPShared.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "78dca73f-ed53-54c2-a45b-4ba7f095ee5a",
+            "version": 0,
+            "artifactId": "78dca73f-ed53-54c2-a45b-4ba7f095ee5a:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/SparksCameraDirector/SparksCameraDirector.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "3737548c-53ef-5e3b-9896-7d49c40ded60",
+            "version": 0,
+            "artifactId": "3737548c-53ef-5e3b-9896-7d49c40ded60:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/SparksMusicPlayspace/SparksMusicPlayspace.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e8793f84-f87d-5473-9d16-2a044a9215b0",
+            "version": 0,
+            "artifactId": "e8793f84-f87d-5473-9d16-2a044a9215b0:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/FMAudioReactiveData/FMAudioReactiveData.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "74e369db-0d0f-5aba-90b2-5bc72870f882",
+            "version": 0,
+            "artifactId": "74e369db-0d0f-5aba-90b2-5bc72870f882:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/SparksCharacterCommon/SparksCharacterCommon.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "7b181f21-cbb4-5897-a3d0-a2c4192e688e",
+            "version": 0,
+            "artifactId": "7b181f21-cbb4-5897-a3d0-a2c4192e688e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/FMJam/FMJamCore/FMJamCore.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "7509a172-51b8-5bc7-b65a-19fd002922b9",
+            "version": 0,
+            "artifactId": "7509a172-51b8-5bc7-b65a-19fd002922b9:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/SparksAudioBase/SparksAudioBase.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "1f0636af-e430-5097-9724-5fca300bf60f",
+            "version": 0,
+            "artifactId": "1f0636af-e430-5097-9724-5fca300bf60f:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/SparksSongPlayer/SparksSongPlayer.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "dec8c59a-019f-5cd1-b911-9ea765dc1942",
+            "version": 0,
+            "artifactId": "dec8c59a-019f-5cd1-b911-9ea765dc1942:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/SparksCosmetics/SparksCosmetics.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "ea3cb50b-8d46-52cb-b6ae-5d0783c2338f",
+            "version": 0,
+            "artifactId": "ea3cb50b-8d46-52cb-b6ae-5d0783c2338f:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Juno/FigureCosmetics/FigureCosmetics.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "04503b67-2d1b-5385-9231-64f5c08ef141",
+            "version": 0,
+            "artifactId": "04503b67-2d1b-5385-9231-64f5c08ef141:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/QuestCategories/QuestCategories.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "9a2d9cb1-b7a7-5a5e-be40-476bcb6f36ee",
+            "version": 0,
+            "artifactId": "9a2d9cb1-b7a7-5a5e-be40-476bcb6f36ee:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/CosmeticCompanions/CosmeticCompanions.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "6b8ac06d-dd69-5d39-9b4b-38b03a342fd8",
+            "version": 0,
+            "artifactId": "6b8ac06d-dd69-5d39-9b4b-38b03a342fd8:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_AISpawner/CRD_AISpawner.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f9d67c54-c5b0-5a1d-9ab0-c89648a0eecd",
+            "version": 0,
+            "artifactId": "f9d67c54-c5b0-5a1d-9ab0-c89648a0eecd:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/FortNPCCharacterMovieSceneBindings/FortNPCMovieSceneCharacterBindings.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f3823952-c261-5df7-ac45-bbb73b882d76",
+            "version": 0,
+            "artifactId": "f3823952-c261-5df7-ac45-bbb73b882d76:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_CinematicSequence/CRD_CinematicSequence.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "98cf4b26-42b7-5b7b-830a-6017b723055c",
+            "version": 0,
+            "artifactId": "98cf4b26-42b7-5b7b-830a-6017b723055c:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_VolumetricRegion/CRD_VolumetricRegion.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "70d2e384-34b4-5ec0-8b6a-7af5dd0a1aee",
+            "version": 0,
+            "artifactId": "70d2e384-34b4-5ec0-8b6a-7af5dd0a1aee:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/CreativeCommunication/CreativeCommunication.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "cc105f75-6b82-5de5-8b8a-9b569b9aec6e",
+            "version": 0,
+            "artifactId": "cc105f75-6b82-5de5-8b8a-9b569b9aec6e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/AdHocSquads/AdHocSquads.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "8aa697b8-d939-5b35-9316-c0301f51dea2",
+            "version": 0,
+            "artifactId": "8aa697b8-d939-5b35-9316-c0301f51dea2:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/SolidWave/Creative_TemporaryTeams/Creative_TemporaryTeams.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "80960830-c8ab-51f0-896c-a5139d268d5a",
+            "version": 0,
+            "artifactId": "80960830-c8ab-51f0-896c-a5139d268d5a:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/CreativeCoreDevices/CreativeCoreDevices.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "1ef4d9fa-4a2d-5cb9-8a4a-5e87cfc10e34",
+            "version": 0,
+            "artifactId": "1ef4d9fa-4a2d-5cb9-8a4a-5e87cfc10e34:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_AudioPlayer/CRD_AudioPlayer.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "b142f04f-814c-5387-88cf-2fd9f98c6206",
+            "version": 0,
+            "artifactId": "b142f04f-814c-5387-88cf-2fd9f98c6206:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_SkilledInteractionDevice/CRD_SkilledInteractionDevice.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "cc43b416-cd7d-578d-b732-410123cfd580",
+            "version": 0,
+            "artifactId": "cc43b416-cd7d-578d-b732-410123cfd580:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_CarryableItemSpawner/CRD_CarryableItemSpawner.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "d77f9412-db40-599c-b996-309c429fe212",
+            "version": 0,
+            "artifactId": "d77f9412-db40-599c-b996-309c429fe212:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/CRD_PlayerSpawn/CRD_PlayerSpawn.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "637574e4-c2b1-5013-ae81-849255c5d285",
+            "version": 0,
+            "artifactId": "637574e4-c2b1-5013-ae81-849255c5d285:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_PlayerCounter/CRD_PlayerCounter.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5075fa90-4943-5370-9b3a-b8bc8e973a35",
+            "version": 0,
+            "artifactId": "5075fa90-4943-5370-9b3a-b8bc8e973a35:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_InputTrigger/CRD_InputTrigger.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "1a277ff9-24dd-5db4-ab6e-0abee643aee1",
+            "version": 0,
+            "artifactId": "1a277ff9-24dd-5db4-ab6e-0abee643aee1:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_Switch/CRD_Switch.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f29a619a-cc71-587d-ab91-66959ed7493c",
+            "version": 0,
+            "artifactId": "f29a619a-cc71-587d-ab91-66959ed7493c:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_ModalDialog/CRD_ModalDialog.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "7a77eab3-00ec-5ff5-88a9-465a74e2b428",
+            "version": 0,
+            "artifactId": "7a77eab3-00ec-5ff5-88a9-465a74e2b428:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/CRD_PlayerRef/CRD_PlayerRef.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "fb1db7c4-a00b-5a4b-8302-69fd67a0f8f3",
+            "version": 0,
+            "artifactId": "fb1db7c4-a00b-5a4b-8302-69fd67a0f8f3:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_ItemRemover/CRD_ItemRemover.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "974e6c65-0237-5d0f-a4bd-3cae3fc9a276",
+            "version": 0,
+            "artifactId": "974e6c65-0237-5d0f-a4bd-3cae3fc9a276:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/RidingCode/RidingCode.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "4b37ca65-bb29-57f0-b266-4652674df2e5",
+            "version": 0,
+            "artifactId": "4b37ca65-bb29-57f0-b266-4652674df2e5:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Labrador/Labrador.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "1c6ab1ea-8204-59c2-9864-a4fa82be210b",
+            "version": 0,
+            "artifactId": "1c6ab1ea-8204-59c2-9864-a4fa82be210b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/ValetMods/ValetMods.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e08b1cf6-94ac-5cc1-b3ef-14cd932d9b4c",
+            "version": 0,
+            "artifactId": "e08b1cf6-94ac-5cc1-b3ef-14cd932d9b4c:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortAthenaVehicleAudio/FortAthenaVehicleAudio.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "b7837983-bb88-5e0d-acc5-ed9142b5068b",
+            "version": 0,
+            "artifactId": "b7837983-bb88-5e0d-acc5-ed9142b5068b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/VehicleBouncyChassis/VehicleBouncyChassis.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "30b42ee0-128c-57d3-8b25-7a7464b3a619",
+            "version": 0,
+            "artifactId": "30b42ee0-128c-57d3-8b25-7a7464b3a619:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/DealershipSharedLibrary/DealershipSharedLibrary.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "fef2049f-d17d-5587-8fef-9a5e63d7244d",
+            "version": 0,
+            "artifactId": "fef2049f-d17d-5587-8fef-9a5e63d7244d:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/VehicleCosmetics/VehicleCosmetics.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e5b35f4a-3c73-533b-996a-9adc66ebd1e5",
+            "version": 0,
+            "artifactId": "e5b35f4a-3c73-533b-996a-9adc66ebd1e5:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/VehicleCosmeticsAudio/VehicleCosmeticsAudio.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "6d24ecb5-c109-51be-aa10-979e3fca46a6",
+            "version": 0,
+            "artifactId": "6d24ecb5-c109-51be-aa10-979e3fca46a6:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Valet/Valet.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "ed9de8ac-8c84-5372-b087-079bdd900356",
+            "version": 0,
+            "artifactId": "ed9de8ac-8c84-5372-b087-079bdd900356:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/RidingContent/RidingContent.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e86492bf-89f7-50c5-8d31-9411bdd899d3",
+            "version": 0,
+            "artifactId": "e86492bf-89f7-50c5-8d31-9411bdd899d3:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_Chair/CRD_Chair.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "9e88b25f-d5e8-5f91-b711-a2f515cd859b",
+            "version": 0,
+            "artifactId": "9e88b25f-d5e8-5f91-b711-a2f515cd859b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/EventMode/EventMode.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "277c2f9d-e378-5f46-a295-b7ea0ab72d03",
+            "version": 0,
+            "artifactId": "277c2f9d-e378-5f46-a295-b7ea0ab72d03:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortFirstPersonMode/FortFirstPersonMode.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "6d0524e0-404f-5c07-be22-0ae5921a6d53",
+            "version": 0,
+            "artifactId": "6d0524e0-404f-5c07-be22-0ae5921a6d53:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/FabricSettings/FabricSettings.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "3fef583d-6982-5361-935f-59071b9e4a9b",
+            "version": 0,
+            "artifactId": "3fef583d-6982-5361-935f-59071b9e4a9b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/FabricUI/FabricUI.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "58b1a60a-fd6f-508f-98b7-d7cf42cf7b0d",
+            "version": 0,
+            "artifactId": "58b1a60a-fd6f-508f-98b7-d7cf42cf7b0d:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/ToggleScopeModeInput/ToggleScopeModeInput.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "d1987d69-ff84-57ce-89d7-13e30b03b1ee",
+            "version": 0,
+            "artifactId": "d1987d69-ff84-57ce-89d7-13e30b03b1ee:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FM/Fabric/Fabric.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "763ee18d-0c8c-5eb7-8c0b-a46b022b4b8f",
+            "version": 0,
+            "artifactId": "763ee18d-0c8c-5eb7-8c0b-a46b022b4b8f:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_CameraModes/CRD_CameraModes.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "79ad7a44-e995-5ff7-848e-9c1c65548f91",
+            "version": 0,
+            "artifactId": "79ad7a44-e995-5ff7-848e-9c1c65548f91:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/BREnvShared/BREnvShared.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "048a1f92-1da5-5f6f-9f2b-472b118424e3",
+            "version": 0,
+            "artifactId": "048a1f92-1da5-5f6f-9f2b-472b118424e3:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/BRCoreMaterials/BRCoreMaterials.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "fcc79b3a-d559-5b31-bb0b-72b9d3e3043d",
+            "version": 0,
+            "artifactId": "fcc79b3a-d559-5b31-bb0b-72b9d3e3043d:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/AmbientAudioBase/AmbientAudioBase.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5452e799-f2ca-583d-912c-5abdcc42966e",
+            "version": 0,
+            "artifactId": "5452e799-f2ca-583d-912c-5abdcc42966e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/AmbientAudioContent/AmbientAudioContent.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "c2cd4b5b-9b5a-5e95-bcfc-8fb144b74236",
+            "version": 0,
+            "artifactId": "c2cd4b5b-9b5a-5e95-bcfc-8fb144b74236:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/CrewCutPortAPotty/CrewCutPortAPotty.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "ea5555b3-b52e-5cb2-b9ba-f94f5f6b6612",
+            "version": 0,
+            "artifactId": "ea5555b3-b52e-5cb2-b9ba-f94f5f6b6612:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Hermes/Hermes.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "3b0aabcd-079d-5253-b881-b5697db8688a",
+            "version": 0,
+            "artifactId": "3b0aabcd-079d-5253-b881-b5697db8688a:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/SoberBotany/SoberBotany.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "9f20b115-f7c1-522e-bb79-f2a91637c888",
+            "version": 0,
+            "artifactId": "9f20b115-f7c1-522e-bb79-f2a91637c888:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Hera/Hera.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "b1c4f6d3-58b8-55d5-8a5d-86c8ba2a2134",
+            "version": 0,
+            "artifactId": "b1c4f6d3-58b8-55d5-8a5d-86c8ba2a2134:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/FNEC/FNEC_Nature_Ch7_Assets/FNEC_Nature_Ch7_Assets.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "ffa7e0ff-4d55-5614-b8df-9bbee20be790",
+            "version": 0,
+            "artifactId": "ffa7e0ff-4d55-5614-b8df-9bbee20be790:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/FNEC/FNEC_Assets/FNEC_Assets.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "2cbf2f17-c579-5d35-98b4-6f45f9234d94",
+            "version": 0,
+            "artifactId": "2cbf2f17-c579-5d35-98b4-6f45f9234d94:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/CRP/CRP_Jungle/CRP_Jungle.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "bb003d21-0fc7-54cf-b385-c04685ef81f2",
+            "version": 0,
+            "artifactId": "bb003d21-0fc7-54cf-b385-c04685ef81f2:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FerrisWheelGameplay/FerrisWheelGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "6030d7c3-473f-5fae-9b9e-47fbc85b34fc",
+            "version": 0,
+            "artifactId": "6030d7c3-473f-5fae-9b9e-47fbc85b34fc:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Energy/Energy.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "c7990623-b10e-5b23-bf1f-67fedec4d18d",
+            "version": 0,
+            "artifactId": "c7990623-b10e-5b23-bf1f-67fedec4d18d:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/TacticalSprint/TacticalSprintGame/TacticalSprintGame.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "a1aa7970-6357-597b-9454-b018d7d0aa8d",
+            "version": 0,
+            "artifactId": "a1aa7970-6357-597b-9454-b018d7d0aa8d:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/GrindRail/GrindRail.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "b9519524-ca13-5497-9db5-5accf0d108c0",
+            "version": 0,
+            "artifactId": "b9519524-ca13-5497-9db5-5accf0d108c0:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/Hera/Wonky_Assets/Wonky_Assets.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "7e641d2e-5027-5649-b32a-d826c6a21b25",
+            "version": 0,
+            "artifactId": "7e641d2e-5027-5649-b32a-d826c6a21b25:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/KeysAndLocks/KeysAndLocks.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "1e49230b-4021-5a56-9a68-20f63b500988",
+            "version": 0,
+            "artifactId": "1e49230b-4021-5a56-9a68-20f63b500988:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/LaserGameplay/LaserGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "0d338223-6b69-5569-99e6-ba0d9eaadab1",
+            "version": 0,
+            "artifactId": "0d338223-6b69-5569-99e6-ba0d9eaadab1:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/BombableWallsGameplay/BombableWallsGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "829cf0fe-194d-550b-92d3-6d52b4f92f1b",
+            "version": 0,
+            "artifactId": "829cf0fe-194d-550b-92d3-6d52b4f92f1b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/SegmentedReload/SegmentedReload.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "3f061af8-048f-50e1-a5fa-205f8f88d467",
+            "version": 0,
+            "artifactId": "3f061af8-048f-50e1-a5fa-205f8f88d467:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/SharedWeaponAnims/SharedWeaponAnims.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "97c28af4-5441-5d24-9bac-942c330cb7f7",
+            "version": 0,
+            "artifactId": "97c28af4-5441-5d24-9bac-942c330cb7f7:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortMetaSoundWeapon/FortMetaSoundWeapon.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "1d663b58-c7cd-5178-b85b-133e11beabbb",
+            "version": 0,
+            "artifactId": "1d663b58-c7cd-5178-b85b-133e11beabbb:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FlipperGameplay/FlipperGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "37d73ca6-8022-52f9-92dd-cada22d71851",
+            "version": 0,
+            "artifactId": "37d73ca6-8022-52f9-92dd-cada22d71851:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/AscenderCode/AscenderCode.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "84e85474-0d57-5e1d-afc4-9a14715f10f1",
+            "version": 0,
+            "artifactId": "84e85474-0d57-5e1d-afc4-9a14715f10f1:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Ascender/Ascender.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "4f59a3fe-e9a2-54d9-890c-91362475724f",
+            "version": 0,
+            "artifactId": "4f59a3fe-e9a2-54d9-890c-91362475724f:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/HopscotchWeaponsGameplay/HopscotchWeaponsGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "72cddd55-3003-519f-8d57-41dd476c574f",
+            "version": 0,
+            "artifactId": "72cddd55-3003-519f-8d57-41dd476c574f:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/DaisyWeaponGameplay/DaisyWeaponGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "dd5eb3b7-61f3-5a8c-b605-ceebe62634a2",
+            "version": 0,
+            "artifactId": "dd5eb3b7-61f3-5a8c-b605-ceebe62634a2:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/MusterConsumables/MusterConsumables.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "6b360368-f620-58da-a3e9-33c55b0e7f1a",
+            "version": 0,
+            "artifactId": "6b360368-f620-58da-a3e9-33c55b0e7f1a:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/MusterCoreWeapons/MusterCoreWeapons.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e5ec7b5c-1bbc-524a-8295-53da08662029",
+            "version": 0,
+            "artifactId": "e5ec7b5c-1bbc-524a-8295-53da08662029:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/CorruptionItems/CorruptionItems.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "1ca3aca0-88fd-5229-bd76-2d151f5e9e11",
+            "version": 0,
+            "artifactId": "1ca3aca0-88fd-5229-bd76-2d151f5e9e11:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/ChronoWeaponGameplay/ChronoWeaponGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "2de248ed-7edf-5618-a5aa-6a548129f95a",
+            "version": 0,
+            "artifactId": "2de248ed-7edf-5618-a5aa-6a548129f95a:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/RadicalWeaponsGameplay/RadicalWeaponsGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "af6e40d0-0536-5042-88e7-3d742db8a073",
+            "version": 0,
+            "artifactId": "af6e40d0-0536-5042-88e7-3d742db8a073:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/WeaponsUnvaulted/WeaponsUnvaulted.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "4d337df3-562a-51f6-a91f-a94c27ef3834",
+            "version": 0,
+            "artifactId": "4d337df3-562a-51f6-a91f-a94c27ef3834:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/HeistBaseGuards/HeistBaseGuards.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "686d30cc-e9e0-5bc4-80b7-8418b8a68e27",
+            "version": 0,
+            "artifactId": "686d30cc-e9e0-5bc4-80b7-8418b8a68e27:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Crafting/Crafting.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "2607b040-43f8-56cc-a82a-e17af5bda02b",
+            "version": 0,
+            "artifactId": "2607b040-43f8-56cc-a82a-e17af5bda02b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PrimalGameplay/PrimalGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "e60d16e8-645f-521f-b392-45355b9e9ea6",
+            "version": 0,
+            "artifactId": "e60d16e8-645f-521f-b392-45355b9e9ea6:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/HeistBasesGameplay/HeistBasesGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "cf92adb2-7fa9-550a-bda1-395ba35b2fc9",
+            "version": 0,
+            "artifactId": "cf92adb2-7fa9-550a-bda1-395ba35b2fc9:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/DragonCartDoors/DragonCartDoors.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5de219b2-11fa-58b5-bf0e-92d8b050e67f",
+            "version": 0,
+            "artifactId": "5de219b2-11fa-58b5-bf0e-92d8b050e67f:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/Hera/SecretF_Assets/SecretF_Assets.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "53bc1481-56f7-57b8-8d1f-f38cfee62f78",
+            "version": 0,
+            "artifactId": "53bc1481-56f7-57b8-8d1f-f38cfee62f78:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/FNE_UI/FNE_UI.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "0d902deb-3581-549f-99ba-ac6dad3aaabc",
+            "version": 0,
+            "artifactId": "0d902deb-3581-549f-99ba-ac6dad3aaabc:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_CreatorProfile/CRD_CreatorProfile.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "bf3177a1-6a8f-5436-b22d-32e6cc411da1",
+            "version": 0,
+            "artifactId": "bf3177a1-6a8f-5436-b22d-32e6cc411da1:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/DynamicRollTables/DynamicRollTables.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "0485f32f-f60b-5696-ba8c-a63e6f0be6e3",
+            "version": 0,
+            "artifactId": "0485f32f-f60b-5696-ba8c-a63e6f0be6e3:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PlayerAugmentsCode/PlayerAugmentsCode.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5033e682-286f-5061-aa6f-b7d6801eb510",
+            "version": 0,
+            "artifactId": "5033e682-286f-5061-aa6f-b7d6801eb510:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PlayerAugments/PlayerAugments.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "819e9487-7627-58e0-a229-24b66ee4ef57",
+            "version": 0,
+            "artifactId": "819e9487-7627-58e0-a229-24b66ee4ef57:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/GoldenPOI/GoldenPOI.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "0630c773-5f4e-5bd8-8239-efeec9b7a82d",
+            "version": 0,
+            "artifactId": "0630c773-5f4e-5bd8-8239-efeec9b7a82d:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/POIBanner/POIBanner.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "06f2a53e-0126-511a-85a9-5243d8f5c96b",
+            "version": 0,
+            "artifactId": "06f2a53e-0126-511a-85a9-5243d8f5c96b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Lonelies/Lonelies.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "2c5efce8-4b5b-56ff-8ac7-b5fdf66a807c",
+            "version": 0,
+            "artifactId": "2c5efce8-4b5b-56ff-8ac7-b5fdf66a807c:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/IceCream/IceCream.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "4e24abe8-9647-5db6-9471-d95621f8fecd",
+            "version": 0,
+            "artifactId": "4e24abe8-9647-5db6-9471-d95621f8fecd:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/LilWhip/LilWhip.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "bbdde160-709b-553d-adf8-6d9d1ac1f908",
+            "version": 0,
+            "artifactId": "bbdde160-709b-553d-adf8-6d9d1ac1f908:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/KeysAndLocksUI/KeysAndLocksUI.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "352713f0-de3b-5b59-8b4f-212c49fea7a0",
+            "version": 0,
+            "artifactId": "352713f0-de3b-5b59-8b4f-212c49fea7a0:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/EnergyProps/EnergyProps.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f50a127c-e54d-5989-91eb-ac5b602e85ef",
+            "version": 0,
+            "artifactId": "f50a127c-e54d-5989-91eb-ac5b602e85ef:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/LaunchPadItemGameplay/LaunchPadItemGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "7bbeef29-80f4-5342-b1d8-b28590ebc97d",
+            "version": 0,
+            "artifactId": "7bbeef29-80f4-5342-b1d8-b28590ebc97d:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PortAShackGameplay/PortAShackGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "b3bbdb88-e507-5ad8-8670-c47a457cc4d8",
+            "version": 0,
+            "artifactId": "b3bbdb88-e507-5ad8-8670-c47a457cc4d8:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/StateDrivenActor/StateDrivenActor.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "2dab30e9-2f63-587b-b1e0-523cba55637e",
+            "version": 0,
+            "artifactId": "2dab30e9-2f63-587b-b1e0-523cba55637e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/VendingMachine/VendingMachine.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "c4ba7183-5555-53ca-9268-1e2238653a14",
+            "version": 0,
+            "artifactId": "c4ba7183-5555-53ca-9268-1e2238653a14:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/RiftEncounters/RiftEncounters.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "d92aa58a-3fb3-5209-b276-e66388363a2a",
+            "version": 0,
+            "artifactId": "d92aa58a-3fb3-5209-b276-e66388363a2a:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/MidMatchObjectivesGameplay/MidMatchObjectivesGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "06a062ef-c774-5b62-93fc-7d4c1116d8fc",
+            "version": 0,
+            "artifactId": "06a062ef-c774-5b62-93fc-7d4c1116d8fc:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Accolades/Accolades.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "39725d56-6333-584c-a95a-b8f0fc56596e",
+            "version": 0,
+            "artifactId": "39725d56-6333-584c-a95a-b8f0fc56596e:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/WeaponModsCode/WeaponModsCode.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "91ba0d92-bc9e-5243-b330-5ca3c332fd58",
+            "version": 0,
+            "artifactId": "91ba0d92-bc9e-5243-b330-5ca3c332fd58:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PaprikaGameplayTags/PaprikaGameplayTags.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "57dc6667-fc71-5ee8-a184-504989791e77",
+            "version": 0,
+            "artifactId": "57dc6667-fc71-5ee8-a184-504989791e77:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/WeaponMods/WeaponMods.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "9a1181db-2361-5f16-aaa9-5a466c5a2890",
+            "version": 0,
+            "artifactId": "9a1181db-2361-5f16-aaa9-5a466c5a2890:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/WeaponModStation/WeaponModStation.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "38ee0c24-e940-51eb-9ed1-70c3eefb5ef1",
+            "version": 0,
+            "artifactId": "38ee0c24-e940-51eb-9ed1-70c3eefb5ef1:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Train/Train.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "ff54b4af-8399-5e37-9ac7-5fc79f956f21",
+            "version": 0,
+            "artifactId": "ff54b4af-8399-5e37-9ac7-5fc79f956f21:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/DamageNumbers/DamageNumbers.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "ecf09051-c66c-5065-8668-c4dbb7d9a0ba",
+            "version": 0,
+            "artifactId": "ecf09051-c66c-5065-8668-c4dbb7d9a0ba:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/HotAirBalloon/HotAirBalloon.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "198ad06a-3d01-54ce-b2b8-c6625cd332e0",
+            "version": 0,
+            "artifactId": "198ad06a-3d01-54ce-b2b8-c6625cd332e0:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/Hera/RWood_Assets/RWood_Assets.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5b4d5ee4-c0b1-5b37-a072-f00b8e3cba4a",
+            "version": 0,
+            "artifactId": "5b4d5ee4-c0b1-5b37-a072-f00b8e3cba4a:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_VerseDevices/CRD_VerseDevices.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "db5d4e94-7cc5-539c-b446-b777482b8b89",
+            "version": 0,
+            "artifactId": "db5d4e94-7cc5-539c-b446-b777482b8b89:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/Hermes/S34/AlleyT_Assets/AlleyT_Assets.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "f06fc380-ef14-5e47-bdb9-56468cd75ee7",
+            "version": 0,
+            "artifactId": "f06fc380-ef14-5e47-bdb9-56468cd75ee7:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/TacticalSprint/TacticalSprintUI/TacticalSprintUI.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "a18cd0d5-db42-52ff-847c-a171a46f3453",
+            "version": 0,
+            "artifactId": "a18cd0d5-db42-52ff-847c-a171a46f3453:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_HUDController/CRD_HUDController.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "fea3073b-9735-54c3-bc1c-5ba760af5ed2",
+            "version": 0,
+            "artifactId": "fea3073b-9735-54c3-bc1c-5ba760af5ed2:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/Hera/BeachT_Assets/BeachT_Assets.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "6f1f7090-75c0-5434-8adb-a5da357295e5",
+            "version": 0,
+            "artifactId": "6f1f7090-75c0-5434-8adb-a5da357295e5:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PlaytimeRewards/PlaytimeRewards.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "2578ef7e-ac84-593b-ba02-810f711cb1ab",
+            "version": 0,
+            "artifactId": "2578ef7e-ac84-593b-ba02-810f711cb1ab:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortniteGameDebuggers/FortniteGameDebuggers.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "764894b7-56ee-5051-9aa2-d62419fd29ce",
+            "version": 0,
+            "artifactId": "764894b7-56ee-5051-9aa2-d62419fd29ce:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/CosmeticsDebuggers/CosmeticsDebuggers.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "688d466e-8f09-5275-b8af-820572364a04",
+            "version": 0,
+            "artifactId": "688d466e-8f09-5275-b8af-820572364a04:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PlayerCompanion/PlayerCompanion.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "6895cd67-540b-53ea-b32f-11f9e01ba015",
+            "version": 0,
+            "artifactId": "6895cd67-540b-53ea-b32f-11f9e01ba015:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Companions/CreativeCompanion/CreativeCompanion.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "02692284-d6c4-5b80-aea8-0ee9d6b58305",
+            "version": 0,
+            "artifactId": "02692284-d6c4-5b80-aea8-0ee9d6b58305:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/LazyRiver/LazyRiver.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "5655b021-e715-5a4a-9ca6-e80c9657fb28",
+            "version": 0,
+            "artifactId": "5655b021-e715-5a4a-9ca6-e80c9657fb28:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/DynamicCapsuleCode/DynamicCapsuleCode.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "befd10a2-f9ad-5320-8912-c567e21c4fe7",
+            "version": 0,
+            "artifactId": "befd10a2-f9ad-5320-8912-c567e21c4fe7:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Sliding/Sliding/Sliding.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "694fd82f-00fc-5be5-9fa2-974a635e5e6b",
+            "version": 0,
+            "artifactId": "694fd82f-00fc-5be5-9fa2-974a635e5e6b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/SlipperyMovement/SlipperyMovement.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "df63f855-1e9c-5500-a146-9c26d40df873",
+            "version": 0,
+            "artifactId": "df63f855-1e9c-5500-a146-9c26d40df873:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/WaterSlideMaterial/WaterSlideMaterial.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "c12caaa5-b041-5164-a848-69313bbf5711",
+            "version": 0,
+            "artifactId": "c12caaa5-b041-5164-a848-69313bbf5711:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_SkydomeDevice/CRD_SkydomeDevice.uplugin?Bundles=GFP_CreativeRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "31e1da4c-1631-5529-b479-055e58d2c93b",
+            "version": 0,
+            "artifactId": "31e1da4c-1631-5529-b479-055e58d2c93b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Creative/Devices/CRD_VFX_Creator/CRD_VFX_Creator.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "0ef6857a-0cf8-57ba-a704-1fdcbb70616b",
+            "version": 0,
+            "artifactId": "0ef6857a-0cf8-57ba-a704-1fdcbb70616b:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FeralCorgiTags/FeralCorgiTags.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "1c210862-e416-558c-b46b-845b589db9ae",
+            "version": 0,
+            "artifactId": "1c210862-e416-558c-b46b-845b589db9ae:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FortGameplayStateMachine/FortGameplayStateMachine.uplugin?Bundles=Startup"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "9d9ce874-20a3-596b-99a7-6eaef0b4c001",
+            "version": 0,
+            "artifactId": "9d9ce874-20a3-596b-99a7-6eaef0b4c001:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PaprikaCoreWeapons/PaprikaCoreWeapons.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "18791bf7-8877-59fe-ae39-3fc7cf766704",
+            "version": 0,
+            "artifactId": "18791bf7-8877-59fe-ae39-3fc7cf766704:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/PaprikaConsumables/PaprikaConsumables.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "ad0c3345-8cea-59a6-ab94-69614d155733",
+            "version": 0,
+            "artifactId": "ad0c3345-8cea-59a6-ab94-69614d155733:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/BigLeafPile/BigLeafPile.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "2e1c52b9-87ce-5ffd-ae88-2bf8c8f985f6",
+            "version": 0,
+            "artifactId": "2e1c52b9-87ce-5ffd-ae88-2bf8c8f985f6:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/CowCatcherModCode/CowCatcherModCode.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "908cc584-bcb5-5f0f-969b-31b05dcca174",
+            "version": 0,
+            "artifactId": "908cc584-bcb5-5f0f-969b-31b05dcca174:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Motorcycle/Motorcycle.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "11890747-504f-554e-8a02-a9d6155f1ded",
+            "version": 0,
+            "artifactId": "11890747-504f-554e-8a02-a9d6155f1ded:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/Dirtbike/Dirtbike.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "21b4f2af-65f4-5f77-9ee2-5b90a790b740",
+            "version": 0,
+            "artifactId": "21b4f2af-65f4-5f77-9ee2-5b90a790b740:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/BigBushGrenade/BigBushGrenade.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "47438b6c-27a6-555b-908d-42c61a41b0d1",
+            "version": 0,
+            "artifactId": "47438b6c-27a6-555b-908d-42c61a41b0d1:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/ShieldBubble/ShieldBubble.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "68f7150e-e6ed-5255-ace9-1fc32e10d7f4",
+            "version": 0,
+            "artifactId": "68f7150e-e6ed-5255-ace9-1fc32e10d7f4:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/WeaponsUpdated/WeaponsUpdated.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "a2f70be6-ea20-5aa8-ad0c-f43a79cfd752",
+            "version": 0,
+            "artifactId": "a2f70be6-ea20-5aa8-ad0c-f43a79cfd752:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FNE/QuestUtilities/QuestUtilities.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "2a60915f-185b-5b27-99bd-19d298c57adc",
+            "version": 0,
+            "artifactId": "2a60915f-185b-5b27-99bd-19d298c57adc:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/DynamicBacchusHUD/DynamicBacchusHUD.uplugin?Bundles=GFP_BaseInstallRoot"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "d43ca7d3-5b76-50ba-8d81-464731214798",
+            "version": 0,
+            "artifactId": "d43ca7d3-5b76-50ba-8d81-464731214798:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FlexLegendWeaponGameplay/FlexLegendWeaponGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "b48057bf-8f65-5d0d-b36e-fc9bf8ff62c2",
+            "version": 0,
+            "artifactId": "b48057bf-8f65-5d0d-b36e-fc9bf8ff62c2:windows",
+            "binaryVersion": "39.0.48801071",
+            "cookJobId": "",
+            "binaries": {
+                "baseUrl": "",
+                "files": [],
+                "manifest": "",
+                "installMetadata": [
+                    {
+                        "gameFeaturePluginUri": "installbundle:../../../FortniteGame/Plugins/GameFeatures/FeralCorgiGameplay/FeralCorgiGameplay.uplugin?Bundles=FortniteBR"
+                    }
+                ],
+                "totalSizeKb": 0,
+                "manifestSizeKb": 0,
+                "manifestDownloadSizeKb": 0,
+                "manifestDiskSizeKb": 0,
+                "userContentTotalSizeKb": 0
+            }
+        },
+        {
+            "moduleId": "d66cb9b1-4ae0-a552-f882-50be01682c3a",
+            "version": 1034,
+            "artifactId": "8e850303-208b-4eec-9975-8e447d61baa6:pc",
+            "binaryVersion": "",
+            "cookJobId": "0389cd47-58d9-48aa-8079-9431397ca3f0",
+            "binaries": {
+                "baseUrl": "https://cooked-content-live-cdn.epicgames.com/valkyrie/cooked-content/d66cb9b1-4ae0-a552-f882-50be01682c3a/39.0.48801071/v1034/0389cd47-58d9-48aa-8079-9431397ca3f0/",
+                "files": [],
+                "manifest": "alt/plugin.manifest",
+                "installMetadata": [
+                    {
+                        "pluginName": "d66cb9b1-4ae0-a552-f882-50be01682c3a"
+                    }
+                ],
+                "totalSizeKb": 294743.466796875,
+                "manifestSizeKb": 15.423828125,
+                "manifestDownloadSizeKb": 272971.826171875,
+                "manifestDiskSizeKb": 294728.04296875,
+                "userContentTotalSizeKb": 0
+            }
+        }
+    ]
+}

@@ -46,7 +46,7 @@ public class EpicGamesAuthService
         return JsonSerializer.Deserialize<T>(responseBody);
     }
 
-    public async Task<AuthData?> RefreshTokenAsync(AuthData savedAuth)
+    public async Task<AuthData> RefreshTokenAsync(AuthData savedAuth)
     {
         var bodyContent = new FormUrlEncodedContent(new[]
         {
@@ -102,7 +102,7 @@ public class EpicGamesAuthService
         }
     }
 
-    public async Task<AuthData?> LoginAsync()
+    public async Task<AuthData> LoginAsync()
     {
         // Log initial token request
         FLogger.Append(ELog.Information, () => FLogger.Text("Requesting initial client credentials token.", Constants.WHITE, true));
@@ -285,7 +285,7 @@ public class EpicGamesAuthService
         return null;
     }
 
-    public static async Task<AuthData?> LoadDeviceAuthAsync()
+    public static async Task<AuthData> LoadDeviceAuthAsync()
     {
         if (!File.Exists(DeviceAuthPath)) return null;
         
