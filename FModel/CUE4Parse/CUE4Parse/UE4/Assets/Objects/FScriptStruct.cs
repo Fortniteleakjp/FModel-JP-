@@ -133,7 +133,7 @@ public class FScriptStruct
             "MovieSceneTrackIdentifier" => type == ReadType.ZERO ? new FMovieSceneTrackIdentifier() : new FMovieSceneTrackIdentifier(Ar),
             "MovieSceneTrackIdentifiers" when Ar.Game is EGame.GAME_GameForPeace => type == ReadType.ZERO ? new FMovieSceneTrackIdentifiers() : new FMovieSceneTrackIdentifiers(Ar),
             "MovieSceneTrackImplementationPtr" => new FMovieSceneTrackImplementationPtr(Ar),
-            "MidiEvent" => new FMidiEvent(Ar),
+            "MidiEvent" => new CUE4Parse.UE4.Objects.Engine.Midi.FMidiEvent(Ar),
             "FontData" => new FFontData(Ar),
             "FontCharacter" => new FFontCharacter(Ar),
             "Plane" => type == ReadType.ZERO ? new FPlane() : new FPlane(Ar),
