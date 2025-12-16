@@ -76,7 +76,7 @@ public static class BlueprintDecompilerUtils
                 value = objectProperty.PropertyClass.ToString();
                 type += $"class U{classType}";
 
-                break;
+                return (value, $"U{classType}");
             }
             case FArrayProperty arrayProperty:
             {
@@ -96,7 +96,7 @@ public static class BlueprintDecompilerUtils
             {
                 var structType = structProperty.Struct.Name;
 
-                type += $"struct F{structType}";
+                type += $"F{structType}";
                 value = structProperty.Struct.ToString();
                 break;
             }
@@ -115,7 +115,7 @@ public static class BlueprintDecompilerUtils
             }
             case FInterfaceProperty interfaceProperty:
             {
-                type = $"F{interfaceProperty.InterfaceClass.Name}";
+                type = $"I{interfaceProperty.InterfaceClass.Name}";
                 break;
             }
             case FBoolProperty boolProperty:
@@ -205,7 +205,7 @@ public static class BlueprintDecompilerUtils
                 {
                     var enumValue = name.ToString();
 
-                    value = $"{enumValue}";
+                    value = $"{propertyTag.TagData?.EnumName}::{enumValue.SubstringAfter("::")}";
                     type = $"enum {enumValue.SubstringBefore("::")}";
                 }
                 else
@@ -231,7 +231,7 @@ public static class BlueprintDecompilerUtils
             case EPropertyType.FloatProperty:
             {
                 type = "float";
-                value = propertyTag.GetGenericValue<float>().ToString(CultureInfo.InvariantCulture);
+                value = propertyTag.GetGenericValue<float>().ToString(CultureInfo.InvariantCulture) + "f";
                 break;
             }
             case EPropertyType.ObjectProperty or EPropertyType.ClassProperty:
@@ -244,8 +244,15 @@ public static class BlueprintDecompilerUtils
                 }
                 else
                 {
-                    type = $"class U{pkgIndex.SubstringBefore("'")}*";
-                    value = $"\"{pkgIndex}\"";
+                    var classType = pkgIndex.SubstringBefore("'");
+                    var objectPath = pkgIndex.SubstringAfter("'").SubstringBeforeLast("'");
+                    type = $"class {classType}*";
+                    value = $"\"/{objectPath}\"";
+
+                    if (value.Contains(":"))
+                    {
+                        value = $"\"{classType}'{objectPath}'\"";
+                    }
                 }
 
                 break;
@@ -259,7 +266,7 @@ public static class BlueprintDecompilerUtils
             case EPropertyType.DoubleProperty:
             {
                 type = "double";
-                value = propertyTag.GetGenericValue<double>().ToString(CultureInfo.InvariantCulture);
+                value = propertyTag.GetGenericValue<double>().ToString(CultureInfo.InvariantCulture) + "f";
                 break;
             }
             case EPropertyType.ArrayProperty:
@@ -345,7 +352,7 @@ public static class BlueprintDecompilerUtils
                     return false;
                 }
 
-                type = $"struct F{propertyTag.TagData?.StructType}";
+                type = $"F{propertyTag.TagData?.StructType}";
                 break;
             }
             case EPropertyType.StrProperty:
@@ -615,16 +622,18 @@ public static class BlueprintDecompilerUtils
                 else
                 {
                     var stringBuilder = new CustomStringBuilder();
-                    stringBuilder.OpenBlock();
+                    stringBuilder.AppendLine("{");
+                    stringBuilder.IncreaseIndentation();
                     for (int i = 0; i < fallback.Properties.Count; i++)
                     {
                         var property = fallback.Properties[i];
                         GetPropertyTagVariable(property, out string _, out string tagValue);
-                        bool isLast = i == fallback.Properties.Count - 1;
-                        stringBuilder.AppendLine($"\"{property.Name}\": {tagValue}{(isLast ? "" : ",")}");
+                        var sanitizedName = property.Name.Text.Replace(" ", "");
+                        stringBuilder.AppendLine($".{sanitizedName} = {tagValue}{(i < fallback.Properties.Count - 1 ? "," : "")}");
                     }
 
-                    stringBuilder.CloseBlock();
+                    stringBuilder.DecreaseIndentation();
+                    stringBuilder.Append("}");
 
                     value = stringBuilder.ToString();
                 }
@@ -657,7 +666,7 @@ public static class BlueprintDecompilerUtils
                 var z = vector4.Z;
                 var w = vector4.W;
 
-                value = $"FVector4({x}, {y}, {z}, {w})";
+                value = $"FVector4({x}f, {y}f, {z}f, {w}f)";
                 break;
             }
             case TIntVector2<float> floatVector2:
@@ -679,7 +688,7 @@ public static class BlueprintDecompilerUtils
                 var x = floatVector3.X;
                 var y = floatVector3.Y;
                 var z = floatVector3.Z;
-                value = $"TIntVector3<float>({x}, {y}, {z})";
+                value = $"FVector3f({x}f, {y}f, {z}f)";
                 break;
             }
             case TIntVector4<float> floatVector3:
@@ -687,7 +696,7 @@ public static class BlueprintDecompilerUtils
                 var x = floatVector3.X;
                 var y = floatVector3.Y;
                 var z = floatVector3.Z;
-                value = $"TIntVector4<float>({x}, {y}, {z})";
+                value = $"FVector4f({x}f, {y}f, {z}f)";
                 break;
             }
             case FVector2D vector2d:
@@ -695,7 +704,7 @@ public static class BlueprintDecompilerUtils
                 var x = vector2d.X;
                 var y = vector2d.Y;
 
-                value = $"FVector2D({x}, {y})";
+                value = $"FVector2D({x}f, {y}f)";
                 break;
             }
             case FQuat fQuat:
@@ -705,7 +714,7 @@ public static class BlueprintDecompilerUtils
                 var z = fQuat.Z;
                 var w = fQuat.W;
 
-                value = $"FQuat({x}, {y}, {z}, {w})";
+                value = $"FQuat({x}f, {y}f, {z}f, {w}f)";
                 break;
             }
             case FBox box:
@@ -733,7 +742,7 @@ public static class BlueprintDecompilerUtils
                 var yaw = rotator.Yaw;
                 var roll = rotator.Roll;
 
-                value = $"FRotator({pitch}, {yaw}, {roll})";
+                value = $"FRotator({pitch}f, {yaw}f, {roll}f)";
                 break;
             }
             case FLinearColor linearColor:
@@ -743,7 +752,7 @@ public static class BlueprintDecompilerUtils
                 var b = linearColor.B;
                 var a = linearColor.A;
 
-                value = $"FLinearColor({r}, {g}, {b}, {a})";
+                value = $"FLinearColor({r}f, {g}f, {b}f, {a}f)";
                 break;
             }
             case FUniqueNetIdRepl netId:

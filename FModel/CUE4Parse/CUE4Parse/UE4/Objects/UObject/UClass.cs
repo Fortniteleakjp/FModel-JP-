@@ -109,7 +109,7 @@ public class UClass : UStruct
         var derivedClass = BlueprintDecompilerUtils.GetClassWithPrefix(this);
         var baseClass = BlueprintDecompilerUtils.GetClassWithPrefix(SuperStruct.Load<UStruct>());
         var accessSpecifier = Flags.HasFlag(EObjectFlags.RF_Public) ? "public" : "private";
-
+        
         var classDefaultObject = ClassDefaultObject.Load();
         bool emptyClass = Properties.Count == 0 && (ChildProperties?.Length ?? 0) == 0 && FuncMap.Count == 0 && (classDefaultObject?.Properties.Count ?? 0) == 0;
 
@@ -134,15 +134,16 @@ public class UClass : UStruct
             if (childProperty is not FProperty property || !distinct.Add(property.Name.Text))
                 continue;
 
-            var (variableValue, variableType) = BlueprintDecompilerUtils.GetPropertyType(property);
+            var (variableValue, variableType) = BlueprintDecompilerUtils.GetPropertyType(property); // This seems to be for class member declarations, not default values
             if (variableType is null)
                 continue;
 
             var value = variableValue is null ? string.Empty : $" = {variableValue}";
-            variables.TryAdd($"{variableType} {property.Name.Text}{value};", property.GetAccessMode());
+            var sanitizedName = property.Name.Text.Replace(" ", "");
+            variables.TryAdd($"{variableType} {sanitizedName}{value};", property.GetAccessMode());
         }
 
-        foreach (var group in variables.GroupBy(pair => pair.Value))
+        foreach (var group in variables.OrderBy(x => x.Value).GroupBy(pair => pair.Value))
         {
             stringBuilder.DecreaseIndentation();
             stringBuilder.AppendLine(group.Key.ToString().ToLower() + ":");
