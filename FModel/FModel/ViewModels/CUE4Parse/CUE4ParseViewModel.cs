@@ -697,13 +697,15 @@ public partial class CUE4ParseViewModel : ViewModel
                 if (saveProperties || updateUi)
                 {
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
-                    if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
                 }
-                if (saveDecompiled || updateUi)
+                if (saveDecompiled)
                 {
-                    Decompile(entry, false);
-                    TabControl.SelectedTab.SaveDecompiled(updateUi);
+                    var cpp = Decompile(entry, addTab: false);
+                    TabControl.SelectedTab.SetDocumentText(cpp, save: false, updateUi: false); // Set text without updating UI or saving as json
+                    TabControl.SelectedTab.SaveDecompiled(updateUi); // Save as cpp
                 }
+
+                if (saveProperties || saveDecompiled) break; // do not search for viewable exports if we are dealing with jsons or code
 
                     for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
                 {
