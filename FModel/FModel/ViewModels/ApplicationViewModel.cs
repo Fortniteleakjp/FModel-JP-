@@ -176,6 +176,9 @@ public class ApplicationViewModel : ViewModel
         if (!result.HasValue || !result.Value) return null;
 
         UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
+        if (string.IsNullOrEmpty(UserSettings.Default.GameDirectory))
+            return null;
+
         if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory) && (allowDiffSelection && UserSettings.Default.DiffDir != null && UserSettings.Default.DiffDir.Equals(gameLauncherViewModel.SelectedDiffDirectory)))
             return gameLauncherViewModel.SelectedDirectory;
 

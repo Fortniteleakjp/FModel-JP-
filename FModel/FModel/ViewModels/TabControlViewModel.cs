@@ -178,7 +178,7 @@ public class TabImage : ViewModel
 
 public class TabItem : ViewModel
 {
-    public string ParentExportType { get; private set; }
+    public string ParentExportType { get; set; }
 
     private GameFile _entry;
     public GameFile Entry
@@ -504,6 +504,17 @@ public class TabItem : ViewModel
         SaveCheck(directory, fileName, updateUi);
     }
 
+    public void SaveDecompiled(bool updateUi)
+    {
+        var fileName = Path.ChangeExtension(Entry.Name, ".cpp");
+        var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
+            UserSettings.Default.KeepDirectoryStructure ? Entry.Directory : "", fileName).Replace('\\', '/');
+
+        Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
+
+        Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
+        SaveCheck(directory, fileName, updateUi);
+    }
     private void SaveCheck(string path, string fileName, bool updateUi)
     {
         if (File.Exists(path))
@@ -556,10 +567,19 @@ public class TabControlViewModel : ViewModel
     public void AddTab(string title) => AddTab(new FakeGameFile(title));
     public void AddTab(GameFile entry, string parentExportType = null)
     {
-        if (SelectedTab?.Header == "New Tab")
+        if (SelectedTab?.Entry is FakeGameFile)
         {
-            SelectedTab.Entry = entry;
-            return;
+            SelectedTab.SoftReset(entry);
+            SelectedTab.ParentExportType = parentExportType ?? string.Empty;
+            if (parentExportType == "Decompiled")
+            {
+                SelectedTab.TitleExtra = "Decompiled";
+                SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
+            }
+            else if (parentExportType == "Diff") {
+                SelectedTab.TitleExtra = Path.GetFileName(entry.Path);
+            }
+            return; 
         }
 
         if (!CanAddTabs) return;
@@ -577,7 +597,7 @@ public class TabControlViewModel : ViewModel
 
         Application.Current.Dispatcher.Invoke(() =>
         {
-            if (_tabItems.Count == 1 && _tabItems[0].Header == "New Tab")
+            if (_tabItems.Count == 1 && _tabItems[0].Entry is FakeGameFile)
             {
                 _tabItems.Clear();
             }

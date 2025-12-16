@@ -658,6 +658,8 @@ public partial class CUE4ParseViewModel : ViewModel
 
     public void SaveFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Properties | EBulkType.Auto));
+    public void SaveDecompiled(CancellationToken cancellationToken, TreeItem folder)
+    => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Code | EBulkType.Auto));
 
     public void TextureFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, EBulkType.Textures | EBulkType.Auto));
@@ -683,6 +685,7 @@ public partial class CUE4ParseViewModel : ViewModel
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
         var saveAudio = HasFlag(bulk, EBulkType.Audio);
+        var saveDecompiled = HasFlag(bulk, EBulkType.Code);
         switch (entry.Extension)
         {
             case "uasset":
@@ -696,8 +699,13 @@ public partial class CUE4ParseViewModel : ViewModel
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(saveProperties), Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
                 }
+                if (saveDecompiled || updateUi)
+                {
+                    Decompile(entry, false);
+                    TabControl.SelectedTab.SaveDecompiled(updateUi);
+                }
 
-                for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
+                    for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
                 {
                     if (CheckExport(cancellationToken, result.Package, i, bulk))
                         break;
@@ -1187,13 +1195,11 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
     }
 
-    public void Decompile(GameFile entry)
+    public string Decompile(GameFile entry, bool addTab = true)
     {
-        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
-        else TabControl.SelectedTab.SoftReset(entry);
-
-        TabControl.SelectedTab.TitleExtra = "Decompiled";
-        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
+        if (addTab) {
+            TabControl.AddTab(entry, "Decompiled");
+        }
 
         UClassCookedMetaData cookedMetaData = null;
         try
@@ -1228,8 +1234,7 @@ public partial class CUE4ParseViewModel : ViewModel
         }
         cpp = Regex.Replace(cpp, @"CallFunc_([A-Za-z0-9_]+)_ReturnValue", "$1");
 
-
-        TabControl.SelectedTab.SetDocumentText(cpp, false, false);
+        return cpp;
     }
 
     private void SaveAndPlaySound(string fullPath, string ext, byte[] data, bool isBulk)
