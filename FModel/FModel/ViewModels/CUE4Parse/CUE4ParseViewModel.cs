@@ -17,6 +17,7 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.GameTypes.Aion2.Objects;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.MappingsProvider;
@@ -24,7 +25,10 @@ using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.CriWare;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
+using CUE4Parse.UE4.CriWare;
+using CUE4Parse.UE4.CriWare.Readers;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.Sound;
@@ -181,12 +185,15 @@ public partial class CUE4ParseViewModel : ViewModel
     public GameDirectoryViewModel GameDirectory { get; set; }
     public AssetsFolderViewModel AssetsFolder { get; set; }
     public SearchViewModel SearchVm { get; set; }
+    public SearchViewModel RefVm { get; set; } // devブランチ追加
     public TabControlViewModel TabControl { get; set; }
     public ConfigIni IoStoreOnDemand { get; set; }
     private Lazy<WwiseProvider> _wwiseProviderLazy;
     public WwiseProvider WwiseProvider => _wwiseProviderLazy.Value;
     private Lazy<FModProvider> _fmodProviderLazy;
     public FModProvider FmodProvider => _fmodProviderLazy?.Value;
+    private Lazy<CriWareProvider> _criWareProviderLazy;
+    public CriWareProvider CriWareProvider => _criWareProviderLazy?.Value;
     public ConcurrentBag<string> UnknownExtensions = [];
 
     public CUE4ParseViewModel()
@@ -261,54 +268,84 @@ public partial class CUE4ParseViewModel : ViewModel
         GameDirectory = new GameDirectoryViewModel();
         AssetsFolder = new AssetsFolderViewModel();
         SearchVm = new SearchViewModel();
+        RefVm = new SearchViewModel(); // devブランチ追加
         TabControl = new TabControlViewModel();
         IoStoreOnDemand = new ConfigIni(nameof(IoStoreOnDemand));
-
-        // DiffProvider生成用のローカル関数
-        AbstractVfsFileProvider CreateDiffProvider(DirectorySettings dir)
+    }
+    // devブランチ: Aion2 DATファイル対応
+    void ProcessAion2DatFile(GameFile entry, bool updateUi, bool saveProperties)
+    {
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+        if (entry.NameWithoutExtension.EndsWith("_MapEvent"))
         {
-            var gameDirectory = dir.GameDirectory;
-            var versionContainer = new VersionContainer(
-                game: dir.UeVersion,
-                platform: dir.TexturePlatform,
-                customVersions: new FCustomVersionContainer(dir.Versioning.CustomVersions),
-                optionOverrides: dir.Versioning.Options,
-                mapStructTypesOverrides: dir.Versioning.MapStructTypes
-            );
-            var pathComparer = StringComparer.OrdinalIgnoreCase;
-
-            switch (gameDirectory)
+            var data = Provider.SaveAsset(entry);
+            FAion2DatFileArchive.DecryptData(data);
+            using var stream = new MemoryStream(data) { Position = 0 };
+            using var reader = new StreamReader(stream);
+            TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
+        }
+        else if (entry.NameWithoutExtension.Equals("L10NString"))
+        {
+            var l10nData = new FAion2L10NFile(entry);
+            TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(l10nData, Formatting.Indented), saveProperties, updateUi);
+        }
+        else
+        {
+            FAion2DataFile datfile = entry.NameWithoutExtension switch
             {
-                case Constants._FN_LIVE_TRIGGER:
-                    return new StreamedFileProvider("FortniteLive", versionContainer, pathComparer);
-                case Constants._VAL_LIVE_TRIGGER:
-                    return new StreamedFileProvider("ValorantLive", versionContainer, pathComparer);
-                default:
+                "MapDataHierarchy" => new FAion2MapHierarchyFile(entry),
+                "MapData" => new FAion2MapDataFile(entry, Provider),
+                _ when entry.Directory.EndsWith("Data/WorldMap", StringComparison.OrdinalIgnoreCase) => new FAion2MapDataFile(entry, Provider),
+                _ => new FAion2DataTableFile(entry, Provider)
+            };
+            TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(datfile, Formatting.Indented), saveProperties, updateUi);
+        }
+    }
+
+    // DiffProvider生成用のプライベートメソッド
+    private AbstractVfsFileProvider CreateDiffProvider(DirectorySettings dir)
+    {
+        var gameDirectory = dir.GameDirectory;
+        var versionContainer = new VersionContainer(
+            game: dir.UeVersion,
+            platform: dir.TexturePlatform,
+            customVersions: new FCustomVersionContainer(dir.Versioning.CustomVersions),
+            optionOverrides: dir.Versioning.Options,
+            mapStructTypesOverrides: dir.Versioning.MapStructTypes
+        );
+        var pathComparer = StringComparer.OrdinalIgnoreCase;
+
+        switch (gameDirectory)
+        {
+            case Constants._FN_LIVE_TRIGGER:
+                return new StreamedFileProvider("FortniteLive", versionContainer, pathComparer);
+            case Constants._VAL_LIVE_TRIGGER:
+                return new StreamedFileProvider("ValorantLive", versionContainer, pathComparer);
+            default:
+                {
+                    var project = gameDirectory.SubstringBeforeLast(gameDirectory.Contains("eFootball") ? "\\pak" : "\\Content").SubstringAfterLast("\\");
+                    AbstractVfsFileProvider resultProvider = project switch
                     {
-                        var project = gameDirectory.SubstringBeforeLast(gameDirectory.Contains("eFootball") ? "\\pak" : "\\Content").SubstringAfterLast("\\");
-                        AbstractVfsFileProvider resultProvider = project switch
-                        {
-                            "StateOfDecay2" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                                [
-                                    new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
-                                    new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                                ], SearchOption.AllDirectories, versionContainer, pathComparer),
-                            "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                                [
-                                    new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
-                                ], SearchOption.AllDirectories, versionContainer, pathComparer),
-                            _ when versionContainer.Game is EGame.GAME_AshEchoes => new AEDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
-                            _ when versionContainer.Game is EGame.GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
-                            _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
-                        };
-                        if (!Directory.Exists(gameDirectory) && resultProvider is DefaultFileProvider)
-                        {
-                            Log.Warning($"Game directory '{gameDirectory}' not found. Skipping DefaultFileProvider initialization.");
-                            return null;
-                        }
-                        return resultProvider;
+                        "StateOfDecay2" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                            [
+                                new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                                new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+                            ], SearchOption.AllDirectories, versionContainer, pathComparer),
+                        "eFootball" => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                            [
+                                new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
+                            ], SearchOption.AllDirectories, versionContainer, pathComparer),
+                        _ when versionContainer.Game is EGame.GAME_AshEchoes => new AEDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+                        _ when versionContainer.Game is EGame.GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
+                        _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
+                    };
+                    if (!Directory.Exists(gameDirectory) && resultProvider is DefaultFileProvider)
+                    {
+                        Log.Warning($"Game directory '{gameDirectory}' not found. Skipping DefaultFileProvider initialization.");
+                        return null;
                     }
-            }
+                    return resultProvider;
+                }
         }
     }
 
@@ -688,6 +725,69 @@ public partial class CUE4ParseViewModel : ViewModel
         var saveDecompiled = HasFlag(bulk, EBulkType.Code);
         switch (entry.Extension)
         {
+                    case "dat" when Provider.ProjectName.Equals("Aion2", StringComparison.OrdinalIgnoreCase):
+                        {
+                            ProcessAion2DatFile(entry, updateUi, saveProperties);
+                            break;
+                        }
+                    case "awb":
+                        {
+                            var archive = entry.CreateReader();
+                            var awbReader = new AwbReader(archive);
+                            TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(awbReader, Formatting.Indented), saveProperties, updateUi);
+                            var directory = Path.GetDirectoryName(archive.Name) ?? "/Criware/";
+                            var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
+                            foreach (var sound in extractedSounds)
+                            {
+                                SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                            }
+                            break;
+                        }
+                    case "acb":
+                        {
+                            var archive = entry.CreateReader();
+                            var acbReader = new AcbReader(archive);
+                            TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(acbReader, Formatting.Indented), saveProperties, updateUi);
+                            var directory = Path.GetDirectoryName(archive.Name) ?? "/Criware/";
+                            var extractedSounds = CriWareProvider.ExtractCriWareSounds(acbReader, archive.Name);
+                            foreach (var sound in extractedSounds)
+                            {
+                                SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                            }
+                            break;
+                        }
+                    case "usoundatomcuesheet":
+                    case "uatomcuesheet":
+                    case "usoundatomcue":
+                    case "uatomwavebank":
+                        {
+                            if (Provider is null) break;
+                            var archive = entry.CreateReader();
+                            UObject atomObject = entry.Extension switch
+                            {
+                                "usoundatomcuesheet" => new USoundAtomCueSheet(archive),
+                                "uatomcuesheet" => new UAtomCueSheet(archive),
+                                "usoundatomcue" => new USoundAtomCue(archive),
+                                "uatomwavebank" => new UAtomWaveBank(archive),
+                                _ => null
+                            };
+                            if (atomObject == null) break;
+                            TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(atomObject, Formatting.Indented), saveProperties, updateUi);
+                            var directory = Path.GetDirectoryName(archive.Name) ?? "/Criware/";
+                            var extractedSounds = atomObject switch
+                            {
+                                USoundAtomCueSheet cueSheet => CriWareProvider.ExtractCriWareSounds(cueSheet),
+                                UAtomCueSheet cueSheet => CriWareProvider.ExtractCriWareSounds(cueSheet),
+                                USoundAtomCue cue => CriWareProvider.ExtractCriWareSounds(cue),
+                                UAtomWaveBank awb => CriWareProvider.ExtractCriWareSounds(awb),
+                                _ => []
+                            };
+                            foreach (var sound in extractedSounds)
+                            {
+                                SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                            }
+                            break;
+                        }
             case "uasset":
             case "umap":
             {

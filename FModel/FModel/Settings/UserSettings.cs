@@ -315,7 +315,12 @@ namespace FModel.Settings
             get => _dirRightTab;
             set => SetProperty(ref _dirRightTab, value);
         }
-
+        private Hotkey _switchAssetExplorer = new(Key.Z);
+        public Hotkey SwitchAssetExplorer
+        {
+            get => _switchAssetExplorer;
+            set => SetProperty(ref _switchAssetExplorer, value);
+        }
         private Hotkey _assetLeftTab = new(Key.Q);
         public Hotkey AssetLeftTab
         {
@@ -533,13 +538,19 @@ namespace FModel.Settings
             set => SetProperty(ref _saveHdrTexturesAsHdr, value);
         }
 
+        private bool _featurePreviewNewAssetExplorer = true;
+        public bool FeaturePreviewNewAssetExplorer
+        {
+            get => _featurePreviewNewAssetExplorer;
+            set => SetProperty(ref _featurePreviewNewAssetExplorer, value);
+        }
+
         private bool _previewTexturesAssetExplorer = true;
         public bool PreviewTexturesAssetExplorer
         {
             get => _previewTexturesAssetExplorer;
             set => SetProperty(ref _previewTexturesAssetExplorer, value);
         }
-
         private bool _restoreTabsOnStartup = true;
         public bool RestoreTabsOnStartup
         {

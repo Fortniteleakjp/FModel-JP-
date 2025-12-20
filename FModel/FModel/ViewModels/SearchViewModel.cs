@@ -1,6 +1,7 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
@@ -18,17 +19,18 @@ public enum ESortMode
 
 public class SearchViewModel : ViewModel
 {
-    private ESortMode _sortMode;
-    public ESortMode SortMode
+    public enum ESortSizeMode
     {
-        get => _sortMode;
-        set
-        {
-            if (SetProperty(ref _sortMode, value))
-            {
-                Sort(value);
-            }
-        }
+        None,
+        Ascending,
+        Descending
+    }
+
+    private ESortSizeMode _currentSortSizeMode = ESortSizeMode.None;
+    public ESortSizeMode CurrentSortSizeMode
+    {
+        get => _currentSortSizeMode;
+        set => SetProperty(ref _currentSortSizeMode, value);
     }
 
     private string _filterText;
@@ -52,38 +54,88 @@ public class SearchViewModel : ViewModel
         set => SetProperty(ref _hasMatchCaseEnabled, value);
     }
 
-    public int ResultsCount => SearchResults?.Count ?? 0;
-    public RangeObservableCollection<GameFile> SearchResults { get; }
-    public ICollectionView SearchResultsView { get; }
-    public RangeObservableCollection<GameFile> ContentSearchResults { get; }
+    private int _resultsCount = 0;
+    public int ResultsCount
+    {
+        get => _resultsCount;
+        private set => SetProperty(ref _resultsCount, value);
+    }
 
-    public ICommand SortCommand { get; }
+    private GameFile _refFile;
+    public GameFile RefFile
+    {
+        get => _refFile;
+        private set => SetProperty(ref _refFile, value);
+    }
+
+    public RangeObservableCollection<GameFile> SearchResults { get; }
+    public ListCollectionView SearchResultsView { get; }
 
     public SearchViewModel()
     {
         SearchResults = new RangeObservableCollection<GameFile>();
-        SearchResultsView = new ListCollectionView(SearchResults);
-        ContentSearchResults = new RangeObservableCollection<GameFile>();
-        SortCommand = new RelayCommand(Sort);
-        SortMode = ESortMode.Asc;
+        SearchResultsView = new ListCollectionView(SearchResults)
+        {
+            Filter = e => ItemFilter(e, FilterText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)),
+        };
+        ResultsCount = SearchResultsView.Count;
     }
 
-    private void Sort(object? mode)
-    {
-        var modeStr = mode?.ToString();
-        if (string.IsNullOrEmpty(modeStr)) return;
 
-        var direction = modeStr.Equals("Asc", StringComparison.OrdinalIgnoreCase) ? ListSortDirection.Ascending : ListSortDirection.Descending;
-        SearchResultsView.SortDescriptions.Clear();
-        SearchResultsView.SortDescriptions.Add(new SortDescription("Path", direction));
+    public void ChangeCollection(IEnumerable<GameFile> files, GameFile refFile = null)
+    {
+        SearchResults.Clear();
+        SearchResults.AddRange(files);
+        RefFile = refFile;
+        ResultsCount = SearchResultsView.Count;
+    }
+
+    public async Task CycleSortSizeMode()
+    {
+        CurrentSortSizeMode = CurrentSortSizeMode switch
+        {
+            ESortSizeMode.None => ESortSizeMode.Descending,
+            ESortSizeMode.Descending => ESortSizeMode.Ascending,
+            _ => ESortSizeMode.None
+        };
+
+        var sorted = await Task.Run(() =>
+        {
+            var archiveDict = SearchResults
+                .OfType<CUE4Parse.UE4.VirtualFileSystem.VfsEntry>()
+                .Select(f => f.Vfs.Name)
+                .Distinct()
+                .Select((name, idx) => (name, idx))
+                .ToDictionary(x => x.name, x => x.idx);
+
+            var keyed = SearchResults.Select(f =>
+            {
+                int archiveKey = f is CUE4Parse.UE4.VirtualFileSystem.VfsEntry ve && archiveDict.TryGetValue(ve.Vfs.Name, out var key) ? key : -1;
+                return (File: f, f.Size, ArchiveKey: archiveKey);
+            });
+
+            return CurrentSortSizeMode switch
+            {
+                ESortSizeMode.Ascending => keyed
+                    .OrderBy(x => x.Size).ThenBy(x => x.ArchiveKey)
+                    .Select(x => x.File).ToList(),
+                ESortSizeMode.Descending => keyed
+                    .OrderByDescending(x => x.Size).ThenBy(x => x.ArchiveKey)
+                    .Select(x => x.File).ToList(),
+                _ => keyed
+                    .OrderBy(x => x.ArchiveKey).ThenBy(x => x.File.Path, StringComparer.OrdinalIgnoreCase)
+                    .Select(x => x.File).ToList()
+            };
+        });
+
+        SearchResults.Clear();
+        SearchResults.AddRange(sorted);
     }
 
     public void RefreshFilter()
     {
-        if (SearchResultsView.Filter == null)
-            SearchResultsView.Filter = e => ItemFilter(e, FilterText.Trim().Split(' '));
-        else
-            SearchResultsView.Refresh();
+        SearchResultsView.Refresh();
+        ResultsCount = SearchResultsView.Count;
     }
 
     private bool ItemFilter(object item, IEnumerable<string> filters)

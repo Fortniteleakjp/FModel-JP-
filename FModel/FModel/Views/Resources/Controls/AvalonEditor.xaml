@@ -8,13 +8,6 @@
              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
              xmlns:viewModels="clr-namespace:FModel.ViewModels"
              mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:TabItem}">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <DockPanel>
         <controls:AvalonSearchbar TargetEditor="{Binding ElementName=MyAvalonEditor}"
                                   Visibility="{Binding HasSearchOpen, Converter={StaticResource BoolToVisibilityConverter}}"

@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:FModel"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+        xmlns:inputs="clr-namespace:FModel.Views.Resources.Controls.Inputs"
         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
         xmlns:settings="clr-namespace:FModel.Settings"
         xmlns:services="clr-namespace:FModel.Services"
@@ -13,8 +14,18 @@
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:document="clr-namespace:ICSharpCode.AvalonEdit.Document;assembly=ICSharpCode.AvalonEdit"
         WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
-        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.85'}"
-        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}">
+        Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.95'}"
+        Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.90'}">
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo ProgressValue="1.0">
+            <TaskbarItemInfo.ProgressState>
+                <MultiBinding Converter="{converters:StatusToTaskbarStateConverter}">
+                    <Binding Path="Status.Kind" />
+                    <Binding Path="IsActive" RelativeSource="{RelativeSource AncestorType=Window}" />
+                </MultiBinding>
+            </TaskbarItemInfo.ProgressState>
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
             <Setter Property="Title" Value="{Binding DataContext.InitialWindowTitle, RelativeSource={RelativeSource Self}}" />
@@ -33,20 +44,19 @@
             </Style.Triggers>
         </Style>
     </adonisControls:AdonisWindow.Style>
-    <adonisControls:AdonisWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Views/Resources/Resources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </adonisControls:AdonisWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="{adonisUi:Space 1}" />
+            <RowDefinition Height="8" />
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
         <Menu Grid.Row="0">
             <MenuItem Header="ディレクトリ">
@@ -59,6 +69,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="最近開いたファイル" x:Name="RecentFilesMenuItem" IsEnabled="{Binding Status.IsReady}" />
                 <MenuItem Header="AESキー" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
@@ -97,7 +108,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="ファイル内検索" IsEnabled="{Binding Status.IsReady}" Click="OnContentSearchViewClick">
+                <MenuItem Header="参照" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+R" Click="OnRefViewClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -114,28 +125,6 @@
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
-                </MenuItem>
-                <Separator />
-                <MenuItem Header="サウンドを自動で開く" IsCheckable="True" StaysOpenOnClick="True"
-                          IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
-                <Separator />
-                <MenuItem Header="閲覧履歴" x:Name="RecentFilesMenuItem">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource NoteIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                    <MenuItem Header="履歴をクリア" Command="{Binding DataContext.ClearRecentFilesCommand, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}}">
-                        <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}" />
-                                </Canvas>
-                            </Viewbox>
-                        </MenuItem.Icon>
-                    </MenuItem>
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="表示">
@@ -166,105 +155,10 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                
-            </MenuItem>
-            <MenuItem Header="プロファイル" IsEnabled="{Binding Status.IsReady}">
-                <MenuItem Header="すべてのコスメティック" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="新しいコスメティック" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-            <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
-            <MenuItem Header="テスト" IsEnabled="{Binding Status.IsReady}">
-                <MenuItem Header="All Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="New Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="New Cosmetics (With Paks)" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics_WithPaks" Click="OnAthenaNewCosmeticsWithPaksClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="Custom Cosmetics (by Id)" Command="{Binding MenuCommand}" CommandParameter="Athena_Custom_ById" Click="OnAthenaCustomByIdClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="Pak Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_PakCosmetics" Click="OnAthenaPakCosmeticsClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <MenuItem Header="Paks Bulk" Command="{Binding MenuCommand}" CommandParameter="Athena_Paks_Bulk" Click="OnAthenaPaksBulkClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <Separator />
-
-                <MenuItem Header="Back" Command="{Binding MenuCommand}" CommandParameter="Athena_Back" Click="OnAthenaBackClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
             </MenuItem>
             <MenuItem Header="設定" Command="{Binding MenuCommand}" CommandParameter="Settings" />
             <MenuItem Header="ヘルプ" >
-                <MenuItem Header="寄付 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
+                <MenuItem Header="寄付" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -273,25 +167,16 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="寄付 (JP)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate_JP">
+                <MenuItem Header="リリース" Command="{Binding MenuCommand}" CommandParameter="Help_Releases">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GiftIcon}" />
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GitHubIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="バグ報告 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_BugsReport">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource BugIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="バグ報告 (JP)" Command="{Binding MenuCommand}" CommandParameter="Help_BugsReport_JP">
+                <MenuItem Header="バグ報告" Command="{Binding MenuCommand}" CommandParameter="Help_BugsReport">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -300,16 +185,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Discordサーバー (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Discord">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource DiscordIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Discordサーバー (JP)" Command="{Binding MenuCommand}" CommandParameter="Help_Discord_JP">
+                <MenuItem Header="Discordサーバー" Command="{Binding MenuCommand}" CommandParameter="Help_Discord">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -329,6 +205,7 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
+        </Grid>
 
         <Grid x:Name="RootGrid" Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -338,8 +215,8 @@
             </Grid.ColumnDefinitions>
 
             <GroupBox Grid.Column="0" adonisExtensions:LayerExtension.Layer="2"
-                      Padding="{adonisUi:Space 0}" Background="Transparent">
-                <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange">
+                      Padding="0" Background="Transparent">
+                <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange" SelectedIndex="{Binding SelectedLeftTabIndex, Mode=TwoWay}">
                     <TabItem Style="{StaticResource TabItemFillSpace}" Header="アーカイブ">
                         <DockPanel>
                             <Grid DockPanel.Dock="Top">
@@ -394,7 +271,7 @@
 
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=DirectoryFilesListBox, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="0" Grid.Column="1" Text="フォルダ位置" VerticalAlignment="Center" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FileCount, ElementName=DirectoryFilesListBox, FallbackValue='0', StringFormat={}{0} Files}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FileCount, ElementName=DirectoryFilesListBox, FallbackValue='0', StringFormat={}{0} ファイル}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="1" Grid.Column="1" Text="ファイル数" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
                                             <TextBlock.Style>
@@ -447,7 +324,7 @@
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Bring Selected Folder To View" Padding="4"
+                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="選択したフォルダを表示" Padding="4"
                                             Command="{Binding MenuCommand}" CommandParameter="{Binding SelectedItem, ElementName=AssetsFolderName}">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
@@ -455,7 +332,7 @@
                                             </Canvas>
                                         </Viewbox>
                                     </Button>
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Collapse All" Padding="4"
+                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="すべて折りたたむ" Padding="4"
                                             Command="{Binding MenuCommand}" CommandParameter="ToolBox_Collapse_All">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
@@ -488,7 +365,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Folder's Packages Decompiled Blueprints (.cpp)" Click="OnFolderSaveDecompiled">
+                                        <MenuItem Header="フォルダ内のパッケージの逆コンパイルされたブループリントを保存 (.cpp)" Click="OnFolderSaveDecompiled">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -596,7 +473,7 @@
                                          Padding="25 0 0 0" HorizontalAlignment="Stretch" TextChanged="OnFilterTextChanged"
                                          adonisExtensions:WatermarkExtension.Watermark="検索するファイル名を入力してください..." />
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <Button ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
+                                    <Button ToolTip="検索フィルターをクリア" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
                                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
@@ -614,7 +491,7 @@
                                 </Grid.RowDefinitions>
 
                                 <controls:Breadcrumb Grid.Row="0" MaxWidth="{Binding ActualWidth, ElementName=AssetsSearchName}" HorizontalAlignment="Left" Margin="0 5 0 5"
-                                                     DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='No/Directory/Detected/In/Folder'}"/>
+                                                     DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='フォルダ/内に/ディレクトリが/検出されません'}"/>
 
                                 <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick" PreviewKeyDown="OnPreviewKeyDown">
                                     <ListBox.ContextMenu>
@@ -890,7 +767,7 @@
 
                             <controls:CustomRichTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" />
                             <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="-5 -5 5 5">
-                                <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Open Output Folder" Padding="0,4,0,4"
+                                <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="出力フォルダを開く" Padding="0,4,0,4"
                                         Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
@@ -898,7 +775,7 @@
                                         </Canvas>
                                     </Viewbox>
                                 </Button>
-                                <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Clear Logs" Padding="0,4,0,4"
+                                <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="ログをクリア" Padding="0,4,0,4"
                                         Command="{Binding MenuCommand}" CommandParameter="ToolBox_Clear_Logs">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
@@ -1009,7 +886,7 @@
                         </Viewbox>
                     </StatusBarItem>
 
-                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Sounds Enabled">
+                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="サウンド自動再生有効">
                         <StatusBarItem.Style>
                             <Style TargetType="StatusBarItem">
                                 <Style.Triggers>

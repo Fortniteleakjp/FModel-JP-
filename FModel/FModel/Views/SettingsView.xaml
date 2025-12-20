@@ -19,13 +19,18 @@
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/AdonisUI;component/Themes/Light.xaml" />
+                <ResourceDictionary Source="/AdonisUI;component/Themes/Colors.xaml" />
+                <ResourceDictionary Source="/AdonisUI.ClassicTheme;component/ClassicTheme.xaml" />
                 <ResourceDictionary Source="Resources/Resources.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
+            <!-- devブランチのTagTemplateSelector名に合わせて修正（例: OnTagDataTemplateSelector→TagTemplateSelector） -->
+            <controls:TagTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="GeneralTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
