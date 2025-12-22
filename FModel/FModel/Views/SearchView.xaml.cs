@@ -1,4 +1,5 @@
-﻿using System;
+﻿// CUE4Parseの型がCUE4ParseViewModelであることを確認し、FindReferences呼び出し時はキャストすること
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

@@ -83,7 +83,7 @@ public class ApplicationViewModel : ViewModel
 
     public LoadingModesViewModel LoadingModes { get; }
     public CustomDirectoriesViewModel CustomDirectories { get; }
-    public FModel.ViewModels.CUE4Parse.CUE4ParseViewModel CUE4Parse { get; }
+    public CUE4ParseViewModel CUE4Parse { get; }
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
@@ -110,7 +110,7 @@ public class ApplicationViewModel : ViewModel
 
         // devブランチ: DiffDirの初期化は省略
 
-        CUE4Parse = new FModel.ViewModels.CUE4Parse.CUE4ParseViewModel();
+        CUE4Parse = new CUE4ParseViewModel();
         CUE4Parse.Provider.VfsRegistered += (sender, count) =>
         {
             if (sender is not IAesVfsReader reader) return;

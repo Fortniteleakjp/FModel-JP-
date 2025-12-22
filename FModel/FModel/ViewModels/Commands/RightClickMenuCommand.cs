@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Linq;
 using System.Threading;
 using CUE4Parse.FileProvider.Objects;
@@ -6,6 +6,7 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
+using FModel.ViewModels; // CUE4ParseViewModelの名前空間を明示的に追加
 
 namespace FModel.ViewModels.Commands;
 
@@ -31,7 +32,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             GameFile gf => new[] { gf },
             GameFileViewModel gvm => new[] { gvm.Asset },
             _ => []
-        }).ToArray();
+        }).OfType<GameFile>().ToArray(); // 型を明示的にGameFileに限定
         if (folders.Length == 0 && assets.Length == 0)
             return;
 
@@ -61,7 +62,11 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     {
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
-                        contextViewModel.CUE4Parse.FindReferences(assets.FirstOrDefault());
+                        var asset = assets.FirstOrDefault();
+                        if (asset != null)
+                        {
+                            contextViewModel.CUE4Parse.FindReferences(asset);
+                        }
                     }
                     break;
                 case "Assets_Decompile":

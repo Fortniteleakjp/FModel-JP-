@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -13,7 +13,7 @@ using FModel.ViewModels.ApiEndpoints.Models;
 
 namespace FModel.ViewModels;
 
-public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewModel
+public class AesManagerViewModel(CUE4ParseViewModel cue4Parse) : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
 
