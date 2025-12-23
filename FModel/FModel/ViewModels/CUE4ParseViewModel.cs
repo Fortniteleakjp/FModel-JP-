@@ -74,6 +74,7 @@ using UE4Config.Parsing;
 using Application = System.Windows.Application;
 using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
 
+
 namespace FModel.ViewModels;
 
 public class CUE4ParseViewModel : ViewModel
@@ -334,13 +335,14 @@ public class CUE4ParseViewModel : ViewModel
     {
         // game directory dependent, we don't have the provider game name yet since we don't have aes keys
         // except when this comes from the AES Manager
-        if (!UserSettings.IsEndpointValid(EEndpointType.Aes, out var endpoint))
+        if (!UserSettings.IsEndpointValid(UserSettings.Default.CurrentDir, EEndpointType.Aes, out var endpoint))
             return;
 
         await _threadWorkerView.Begin(cancellationToken =>
         {
-            // deprecated values
-            if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/aes") endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/aes";
+            // endpointのUrlが古い場合は新しいものに置き換え
+            if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/aes")
+                endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/aes";
 
             var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url, endpoint.Path);
             if (aes is not { IsValid: true }) return;
@@ -368,7 +370,7 @@ public class CUE4ParseViewModel : ViewModel
 
     public Task InitAllMappings(bool force = false)
     {
-        if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
+        if (!UserSettings.IsEndpointValid(UserSettings.Default.CurrentDir, EEndpointType.Mapping, out var endpoint))
         {
             Provider.MappingsContainer = null;
             return Task.CompletedTask;
@@ -383,9 +385,12 @@ public class CUE4ParseViewModel : ViewModel
             }
             else if (endpoint.IsValid)
             {
-                // deprecated values
-                if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") endpoint.Path = "$.[0].['url','fileName']";
-                if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/mappings")
+                // endpointのPathが古い場合は新しいものに置き換え
+                if (endpoint.Url == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
+                {
+                    endpoint.Path = "$.[0].['url','fileName']";
+                }
+                else if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/mappings")
                 {
                     endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/mappings";
                     endpoint.Path = "$.mappings.ZStandard";

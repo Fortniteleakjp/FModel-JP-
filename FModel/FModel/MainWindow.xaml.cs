@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives; // GeneratorStatus 用
 using System.Windows.Input;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
@@ -20,6 +21,7 @@ using FModel.Framework; // RelayCommand を使用するためのやつ
 using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
 using Microsoft.Win32;
 using FModel.Features.Athena;
+using FModel.ViewModels.CUE4Parse;
 
 namespace FModel;
 
@@ -234,7 +236,8 @@ public partial class MainWindow
         LeftTabControl.SelectedIndex++;
     }
 
-    private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
+    // AssetsExplorerは存在しないため、AssetsFolderNameに修正
+    private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsFolderName.ItemContainerGenerator, EventArgs.Empty);
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
     {
         if (sender is not ItemContainerGenerator { Status: GeneratorStatus.ContainersGenerated } generator)
@@ -313,18 +316,6 @@ public partial class MainWindow
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully saved ", Constants.WHITE);
-                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
-            });
-        }
-    }
-    private async void OnFolderSaveDecompiled(object sender, RoutedEventArgs e)
-    {
-        if (AssetsFolderName.SelectedItem is TreeItem folder)
-        {
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveDecompiled(cancellationToken, folder); });
             FLogger.Append(ELog.Information, () =>
             {
                 FLogger.Text("Successfully saved ", Constants.WHITE);

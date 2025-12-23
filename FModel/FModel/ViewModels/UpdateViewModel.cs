@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Collections.Generic; // Dictionary, HashSet
+using System.Text.RegularExpressions; // Match
 using System.Threading.Tasks;
 using System.Windows.Data;
 using CUE4Parse.Utils;
@@ -70,7 +72,7 @@ public partial class UpdateViewModel : ViewModel
 
                 commit.Commit.Message = regex.Replace(commit.Commit.Message, string.Empty).Trim();
 
-                coAuthorMap[commit] = [];
+                coAuthorMap[commit] = new HashSet<string>();
                 foreach (Match match in matches)
                 {
                     if (match.Groups.Count < 3) continue;
@@ -96,8 +98,10 @@ public partial class UpdateViewModel : ViewModel
                 }
             }
 
-            foreach (var (commit, usernames) in coAuthorMap)
+            foreach (KeyValuePair<GitHubCommit, HashSet<string>> pair in coAuthorMap)
             {
+                var commit = pair.Key;
+                var usernames = pair.Value;
                 var coAuthors = usernames
                     .Where(username => authorCache.ContainsKey(username))
                     .Select(username => authorCache[username])
