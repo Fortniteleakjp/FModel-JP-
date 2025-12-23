@@ -310,6 +310,10 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
+                                    <inputs:SearchTextBox x:Name="AssetsExplorerSearch" Grid.Column="0"
+                                                          Text="{Binding SelectedItem.SearchText, ElementName=AssetsFolderName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                          ClearButtonClick="OnClearFilterClick" />
+
                                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                                     <Image Source="/FModel;component/Resources/label.png"
                                            Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />

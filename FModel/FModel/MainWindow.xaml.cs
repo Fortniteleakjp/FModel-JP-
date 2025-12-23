@@ -168,13 +168,13 @@ public partial class MainWindow
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
     {
-        var searchView = Helper.GetWindow<SearchView>("検索", () => new SearchView().Show());
+        var searchView = Helper.GetWindow<SearchView>("検索", () => new SearchView());
         searchView.FocusTab(ESearchViewTab.SearchView);
     }
 
     private void OnRefViewClick(object sender, RoutedEventArgs e)
     {
-        var searchView = Helper.GetWindow<SearchView>("検索ウィンドウ", () => new SearchView().Show());
+        var searchView = Helper.GetWindow<SearchView>("検索ウィンドウ", () => new SearchView());
         searchView.FocusTab(ESearchViewTab.RefView);
     }
 
