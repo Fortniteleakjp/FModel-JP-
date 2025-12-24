@@ -7,7 +7,6 @@ using System.Windows.Shapes;
 using FModel.Services;
 
 namespace FModel.Views.Resources.Controls;
-
 public partial class Breadcrumb
 {
     public Breadcrumb()
@@ -74,6 +73,8 @@ public partial class Breadcrumb
             border.Background = new SolidColorBrush(Color.FromRgb(72, 73, 92));
         }
     }
+
+    private const string NavigateNext = "M8.59,16.59L13.17,12L8.59,7.41L10,6l6,6-6,6z";
 
     private void OnMouseLeave(object sender, MouseEventArgs e)
     {

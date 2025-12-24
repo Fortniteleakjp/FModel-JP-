@@ -99,7 +99,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                     default: throw new ArgumentOutOfRangeException();
                 }
 
-                _discordHandler.UpdatePresence(_applicationView.CUE4Parse);
+                _discordHandler.UpdatePresence((FModel.ViewModels.CUE4ParseViewModel)_applicationView.CUE4Parse);
             })
         ).ConfigureAwait(false);
 #if DEBUG

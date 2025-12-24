@@ -46,7 +46,7 @@ namespace FModel.Services
             _client.Initialize();
         }
 
-        public void UpdatePresence(CUE4ParseViewModel viewModel) =>
+        public void UpdatePresence(FModel.ViewModels.CUE4ParseViewModel viewModel) =>
             UpdatePresence(
                 $"{viewModel.Provider.GameDisplayName ?? viewModel.Provider.ProjectName} - {viewModel.Provider.MountedVfs.Count}/{viewModel.Provider.MountedVfs.Count + viewModel.Provider.UnloadedVfs.Count} Packages",
                 $"Mode: {UserSettings.Default.LoadingMode.GetDescription()} - {viewModel.SearchVm.ResultsCount:### ### ###} Loaded Assets".Trim());
