@@ -8,8 +8,6 @@ using SkiaSharp;
 
 namespace FModel.Creator;
 
-using FModel.ViewModels;
-
 public class Typefaces
 {
     private readonly Uri _BURBANK_BIG_CONDENSED_BOLD = new("pack://application:,,,/Resources/BurbankBigCondensed-Bold.ttf");
@@ -50,7 +48,7 @@ public class Typefaces
     private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
     private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
 
-    private readonly FModel.ViewModels.CUE4ParseViewModel _viewModel;
+    private readonly FModel.ViewModels.CUE4Parse.CUE4ParseViewModel _viewModel;
 
     public readonly SKTypeface Default; // used as a fallback font for all untranslated strings (item source, ...)
     public readonly SKTypeface DisplayName;
@@ -62,7 +60,7 @@ public class Typefaces
     public readonly SKTypeface TandemGenDescription;
     public readonly SKTypeface TandemAddDescription;
 
-    public Typefaces(FModel.ViewModels.CUE4ParseViewModel viewModel)
+    public Typefaces(FModel.ViewModels.CUE4Parse.CUE4ParseViewModel viewModel)
     {
         _viewModel = viewModel;
         var language = UserSettings.Default.AssetLanguage;

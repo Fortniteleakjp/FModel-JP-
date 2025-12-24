@@ -1,4 +1,4 @@
-﻿﻿﻿﻿using System;
+﻿﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -10,6 +10,7 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
+using CUE4ParseViewModel = FModel.ViewModels.CUE4Parse.CUE4ParseViewModel;
 
 namespace FModel.ViewModels;
 

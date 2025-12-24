@@ -21,6 +21,7 @@ using FModel.Views.Resources.Controls;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using CUE4ParseViewModel = FModel.ViewModels.CUE4Parse.CUE4ParseViewModel;
 
 namespace FModel.ViewModels;
 

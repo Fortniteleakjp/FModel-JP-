@@ -67,15 +67,17 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
+using Application = System.Windows.Application;
+using UE4Config.Parsing;
+using System.Text;
 using Serilog;
 using SkiaSharp;
 using Svg.Skia;
-using UE4Config.Parsing;
-using Application = System.Windows.Application;
-using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
-using System.Text;
+// このファイルは重複定義防止のため空にしています。
 
 namespace FModel.ViewModels;
+// 重複定義のため、このファイルのクラス定義を削除
 
 public class CUE4ParseViewModel : ViewModel
 {
