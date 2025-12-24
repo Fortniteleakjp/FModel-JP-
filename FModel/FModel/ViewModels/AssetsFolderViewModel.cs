@@ -251,7 +251,7 @@ public class AssetsFolderViewModel
                     parentNode = lastNode.Folders;
                 }
 
-                lastNode?.AssetsList.Assets.Add(entry);
+                lastNode?.AssetsList.Add(entry);
             }
 
             Folders.AddRange(treeItems);

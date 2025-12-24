@@ -9,6 +9,7 @@ using FModel.Extensions;
 using FModel.Services;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
+using FModel.ViewModels.CUE4Parse;
 
 namespace FModel.ViewModels.CUE4Parse;
 
