@@ -73,7 +73,7 @@ using Svg.Skia;
 using UE4Config.Parsing;
 using Application = System.Windows.Application;
 using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
-
+using System.Text;
 
 namespace FModel.ViewModels;
 
@@ -1224,7 +1224,7 @@ public class CUE4ParseViewModel : ViewModel
         var refs = Provider.ScanForPackageRefs(entry);
         Application.Current.Dispatcher.Invoke(delegate
         {
-            var refView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView().Show());
+            var refView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView());
             refView.ChangeCollection(ESearchViewTab.RefView, refs, entry);
             refView.FocusTab(ESearchViewTab.RefView);
         });
@@ -1300,7 +1300,7 @@ public class CUE4ParseViewModel : ViewModel
         // but the ThreadWorkerViewModel is an idiot and doesn't understand we want to kill the current thread inside the current thread and continue the code
         Application.Current.Dispatcher.Invoke(delegate
         {
-            var audioPlayer = Helper.GetWindow<AudioPlayer>("Audio Player", () => new AudioPlayer().Show());
+            var audioPlayer = Helper.GetWindow<AudioPlayer>("Audio Player", () => new AudioPlayer());
             audioPlayer.Load(data, savedAudioPath);
         });
     }

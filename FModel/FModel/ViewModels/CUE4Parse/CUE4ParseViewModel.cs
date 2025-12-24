@@ -668,7 +668,7 @@ public partial class CUE4ParseViewModel : ViewModel
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                action(entry);
+                action(entry.Asset);
             }
             catch
             {
@@ -684,7 +684,7 @@ public partial class CUE4ParseViewModel : ViewModel
         Parallel.ForEach(folder.AssetsList.Assets, entry =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            ExportData(entry, false);
+            ExportData(entry.Asset, false);
         });
 
         foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
@@ -765,10 +765,10 @@ public partial class CUE4ParseViewModel : ViewModel
                             var archive = entry.CreateReader();
                             UObject atomObject = entry.Extension switch
                             {
-                                "usoundatomcuesheet" => new USoundAtomCueSheet(archive),
-                                "uatomcuesheet" => new UAtomCueSheet(archive),
-                                "usoundatomcue" => new USoundAtomCue(archive),
-                                "uatomwavebank" => new UAtomWaveBank(archive),
+                                "usoundatomcuesheet" => new USoundAtomCueSheet(),
+                                "uatomcuesheet" => new UAtomCueSheet(),
+                                "usoundatomcue" => new USoundAtomCue(),
+                                "uatomwavebank" => new UAtomWaveBank(),
                                 _ => null
                             };
                             if (atomObject == null) break;

@@ -4,9 +4,11 @@ using System.Windows;
 using CUE4Parse.UE4.Versions;
 using FModel.Settings;
 using SkiaSharp;
-using CUE4ParseViewModel = FModel.ViewModels.CUE4Parse.CUE4ParseViewModel;
+
 
 namespace FModel.Creator;
+
+using FModel.ViewModels;
 
 public class Typefaces
 {
@@ -48,7 +50,7 @@ public class Typefaces
     private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
     private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
 
-    private readonly CUE4ParseViewModel _viewModel;
+    private readonly FModel.ViewModels.CUE4Parse.CUE4ParseViewModel _viewModel;
 
     public readonly SKTypeface Default; // used as a fallback font for all untranslated strings (item source, ...)
     public readonly SKTypeface DisplayName;
@@ -60,7 +62,7 @@ public class Typefaces
     public readonly SKTypeface TandemGenDescription;
     public readonly SKTypeface TandemAddDescription;
 
-    public Typefaces(CUE4ParseViewModel viewModel)
+    public Typefaces(FModel.ViewModels.CUE4Parse.CUE4ParseViewModel viewModel)
     {
         _viewModel = viewModel;
         var language = UserSettings.Default.AssetLanguage;
