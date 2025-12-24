@@ -7,7 +7,9 @@ using System.Text.RegularExpressions;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
+
 using System.Windows.Input;
+using CUE4Parse.UE4.VirtualFileSystem;
 
 namespace FModel.ViewModels;
 
@@ -102,7 +104,7 @@ public class SearchViewModel : ViewModel
         var sorted = await Task.Run(() =>
         {
             var archiveDict = SearchResults
-                .OfType<CUE4Parse.UE4.VirtualFileSystem.VfsEntry>()
+                .OfType<VfsEntry>()
                 .Select(f => f.Vfs.Name)
                 .Distinct()
                 .Select((name, idx) => (name, idx))
@@ -110,7 +112,7 @@ public class SearchViewModel : ViewModel
 
             var keyed = SearchResults.Select(f =>
             {
-                int archiveKey = f is CUE4Parse.UE4.VirtualFileSystem.VfsEntry ve && archiveDict.TryGetValue(ve.Vfs.Name, out var key) ? key : -1;
+                int archiveKey = f is VfsEntry ve && archiveDict.TryGetValue(ve.Vfs.Name, out var key) ? key : -1;
                 return (File: f, f.Size, ArchiveKey: archiveKey);
             });
 
