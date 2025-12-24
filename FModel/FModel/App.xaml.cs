@@ -137,9 +137,10 @@ public partial class App
     {
         Log.Error("{Exception}", e.Exception);
 
+        var baseException = e.Exception.GetBaseException();
         var messageBox = new MessageBoxModel
         {
-            Text = $"An unhandled {e.Exception.GetBaseException().GetType()} occurred: {e.Exception.Message}",
+            Text = $"An unhandled {baseException.GetType()} occurred: {e.Exception.Message}\n\nDetails: {baseException.Message}",
             Caption = "Fatal Error",
             Icon = MessageBoxImage.Error,
             Buttons =

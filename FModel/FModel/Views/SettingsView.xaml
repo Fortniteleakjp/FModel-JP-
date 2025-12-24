@@ -26,7 +26,6 @@
             </ResourceDictionary.MergedDictionaries>
 
             <!-- devブランチのTagTemplateSelector名に合わせて修正（例: OnTagDataTemplateSelector→TagTemplateSelector） -->
-            <controls:TagTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="GeneralTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">
                     <Grid.RowDefinitions>

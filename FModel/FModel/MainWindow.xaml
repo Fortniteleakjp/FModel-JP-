@@ -369,15 +369,6 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="フォルダ内のパッケージの逆コンパイルされたブループリントを保存 (.cpp)" Click="OnFolderSaveDecompiled">
-                                            <MenuItem.Icon>
-                                                <Viewbox Width="16" Height="16">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                            </MenuItem.Icon>
-                                        </MenuItem>
                                         <MenuItem Header="テクスチャを保存" Click="OnFolderTextureClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">

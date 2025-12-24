@@ -21,8 +21,6 @@ using K4os.Compression.LZ4.Streams;
 using Microsoft.Win32;
 
 // 型エイリアスを追加
-using CUE4ParseViewModel = FModel.ViewModels.CUE4Parse.CUE4ParseViewModel;
-
 namespace FModel.ViewModels.Commands;
 
 /// <summary>
@@ -38,6 +36,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
     public LoadCommand(LoadingModesViewModel contextViewModel) : base(contextViewModel) { }
+
+    private FModel.ViewModels.CUE4Parse.CUE4ParseViewModel _asDiscordCUE4Parse(FModel.ViewModels.CUE4ParseViewModel vm)
+    {
+        return (FModel.ViewModels.CUE4Parse.CUE4ParseViewModel)(object)vm;
+    }
 
     public override async void Execute(LoadingModesViewModel contextViewModel, object parameter)
     {
@@ -102,7 +105,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                     default: throw new ArgumentOutOfRangeException();
                 }
 
-                _discordHandler.UpdatePresence(_applicationView.CUE4Parse);
+                _discordHandler.UpdatePresence(_asDiscordCUE4Parse(_applicationView.CUE4Parse));
             })
         ).ConfigureAwait(false);
 #if DEBUG
