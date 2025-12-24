@@ -622,12 +622,11 @@ public partial class MainWindow
         // アセットリストのプレビュー画像をリフレッシュ
         foreach (var item in folder.AssetsList.Assets)
         {
-            if (item is GameFile gameFile)
+            if (item is GameFileViewModel viewModel)
             {
-                var viewModel = new GameFileViewModel(gameFile);
                 if (UserSettings.Default.PreviewTexturesAssetExplorer)
                 {
-                    viewModel.OnVisibleChanged(true);
+                    viewModel.OnIsVisible();
                 }
             }
         }
