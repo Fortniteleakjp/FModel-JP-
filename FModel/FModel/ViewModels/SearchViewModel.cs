@@ -35,7 +35,7 @@ public class SearchViewModel : ViewModel
         set => SetProperty(ref _currentSortSizeMode, value);
     }
 
-    private string _filterText;
+    private string _filterText = "";
     public string FilterText
     {
         get => _filterText;

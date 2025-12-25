@@ -1,43 +1,28 @@
-<adonisControls:AdonisWindow x:Class="FModel.Views.SettingsView" x:Name="SettingsWindow"
+<adonisControls:AdonisWindow x:Class="FModel.Views.SettingsView"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:local="clr-namespace:FModel"
                              xmlns:c4pMeshes="clr-namespace:CUE4Parse_Conversion.Meshes;assembly=CUE4Parse-Conversion"
                              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+                             xmlns:settings="clr-namespace:FModel.Settings"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
-                             xmlns:settings="clr-namespace:FModel.Settings"
-                             WindowStartupLocation="CenterScreen"
-                             ResizeMode="NoResize"
-                             IconVisibility="Collapsed"
-                             SizeToContent="Height"
-                             Title="設定"
+                             WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="Height"
                              MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.10'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
+            <Setter Property="Title" Value="設定" />
+        </Style>
+    </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/AdonisUI;component/Themes/Light.xaml" />
-                <ResourceDictionary Source="/AdonisUI;component/Themes/Colors.xaml" />
-                <ResourceDictionary Source="/AdonisUI.ClassicTheme;component/ClassicTheme.xaml" />
-                <ResourceDictionary Source="Resources/Resources.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-
-            <!-- devブランチのTagTemplateSelector名に合わせて修正（例: OnTagDataTemplateSelector→TagTemplateSelector） -->
+            <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="GeneralTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
