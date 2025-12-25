@@ -1,3 +1,4 @@
+using Serilog;
 using System;
 using System.Collections.Generic; // List<> を使用するために追加
 using System.ComponentModel;
@@ -30,16 +31,9 @@ namespace FModel;
 /// </summary>
 public partial class MainWindow
 {
-    private static readonly string LogFilePath = @"D:\FModelJP\logs\mainwindow.log";
-    private static readonly object LogFileLock = new();
-
     private void LogToFile(string message)
     {
-        var log = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}\r\n";
-        lock (LogFileLock)
-        {
-            File.AppendAllText(LogFilePath, log);
-        }
+        Log.Information(message);
     }
     public static MainWindow YesWeCats;
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;

@@ -1345,6 +1345,9 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ExpanderButtonLikeHeader" TargetType="{x:Type Expander}" BasedOn="{StaticResource {x:Type Expander}}">
+    </Style>
+
     <Style x:Key="{x:Type avalonedit:TextEditor}" TargetType="avalonedit:TextEditor" BasedOn="{StaticResource {x:Type avalonedit:TextEditor}}">
         <Setter Property="Template">
             <Setter.Value>
