@@ -39,7 +39,7 @@ public partial class UpdateViewModel : ViewModel
 
     public async Task LoadAsync()
     {
-        var commits = await _apiEndpointView.GitHubApi.GetCommitHistoryAsync();
+        var commits = await _apiEndpointView.GitHubApi.GetCommitHistoryAsync("main");
         if (commits == null || commits.Length == 0)
             return;
 
