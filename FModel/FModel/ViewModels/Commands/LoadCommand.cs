@@ -37,9 +37,9 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 
     public LoadCommand(LoadingModesViewModel contextViewModel) : base(contextViewModel) { }
 
-    private FModel.ViewModels.CUE4Parse.CUE4ParseViewModel _asDiscordCUE4Parse(FModel.ViewModels.CUE4ParseViewModel vm)
+    private FModel.ViewModels.CUE4Parse.CUE4ParseViewModel _asDiscordCUE4Parse(FModel.ViewModels.CUE4Parse.CUE4ParseViewModel vm)
     {
-        return (FModel.ViewModels.CUE4Parse.CUE4ParseViewModel)(object)vm;
+        return vm;
     }
 
     public override async void Execute(LoadingModesViewModel contextViewModel, object parameter)

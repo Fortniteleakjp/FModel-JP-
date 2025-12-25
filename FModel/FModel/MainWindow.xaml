@@ -317,7 +317,8 @@
                                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                                     <Image Source="/FModel;component/Resources/label.png"
                                            Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
-                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" Margin="0,0,0,0" MaxWidth="180">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}'{0}' 直下には {1} 個のフォルダと {2} つのファイルがあります">
                                                 <Binding Path="SelectedItem.Header" ElementName="AssetsFolderName" FallbackValue="None" />

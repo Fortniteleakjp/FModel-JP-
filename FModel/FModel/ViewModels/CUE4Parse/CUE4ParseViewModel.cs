@@ -1297,6 +1297,17 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
     }
 
+    public void FindReferences(GameFile entry)
+    {
+        var refs = Provider.ScanForPackageRefs(entry);
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            var refView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView());
+            refView.ChangeCollection(ESearchViewTab.RefView, refs, entry);
+            refView.FocusTab(ESearchViewTab.RefView);
+        });
+    }
+
     public string Decompile(GameFile entry, bool addTab = true)
     {
         if (addTab) {
