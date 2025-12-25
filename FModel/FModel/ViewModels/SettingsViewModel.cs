@@ -1892,10 +1892,6 @@ public partial class SettingsViewModel // partial 修飾子を追加
         {
             Log.Debug(ex, "オブジェクト {TypeName} のHttpClient置き換えに失敗", obj.GetType().Name);
         }
-        finally
-        {
-            visited.Remove(obj);
-        }
     }
     
     private void ReplaceStaticHttpClientsInType(Type type, HttpClient authenticatedClient)

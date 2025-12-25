@@ -30,9 +30,20 @@ namespace FModel;
 /// </summary>
 public partial class MainWindow
 {
+    private static readonly string LogFilePath = @"D:\FModelJP\logs\mainwindow.log";
+    private static readonly object LogFileLock = new();
+
+    private void LogToFile(string message)
+    {
+        var log = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}\r\n";
+        lock (LogFileLock)
+        {
+            File.AppendAllText(LogFilePath, log);
+        }
+    }
     public static MainWindow YesWeCats;
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
-    private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    private static ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
     public ICommand OpenRecentFileCommand { get; }
@@ -40,14 +51,16 @@ public partial class MainWindow
 
     public MainWindow()
     {
+        DataContext = _applicationView;
+        InitializeComponent();
+
+        LogToFile("MainWindow initialized.");
+
         CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection { new KeyGesture(Key.F12) }), OnMappingsReload));
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (_, _) => OnOpenAvalonFinder()));
 
         OpenRecentFileCommand = new RelayCommand(OnOpenRecentFile);
         ClearRecentFilesCommand = new RelayCommand(OnClearRecentFiles);
-
-        DataContext = _applicationView;
-        InitializeComponent();
 
         // テクスチャプレビュー設定の変更を監視
         UserSettings.Default.PropertyChanged += OnUserSettingsPropertyChanged;
@@ -69,6 +82,7 @@ public partial class MainWindow
     {
         _discordHandler.Dispose();
         UserSettings.Default.PropertyChanged -= OnUserSettingsPropertyChanged;
+        LogToFile("MainWindow closing.");
         if (UserSettings.Default.RestoreTabsOnStartup)
         {
             var tabPaths = _applicationView.CUE4Parse.TabControl.TabsItems.Select(t => t.Entry.Path).Where(p => p != "New Tab").ToList();
@@ -78,6 +92,7 @@ public partial class MainWindow
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        LogToFile("MainWindow loaded.");
         var newOrUpdated = UserSettings.Default.ShowChangelog;
 #if !DEBUG
         ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(true);
@@ -118,6 +133,7 @@ public partial class MainWindow
 
         await Dispatcher.InvokeAsync(() =>
         {
+            LogToFile("MainWindow post-initialization complete.");
             if (UserSettings.Default.RestoreTabsOnStartup && UserSettings.Default.CurrentDir.LastOpenedTabs?.Any() == true)
             {
                 var paths = UserSettings.Default.CurrentDir.LastOpenedTabs;
@@ -139,16 +155,19 @@ public partial class MainWindow
 
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        LogToFile("GridSplitter double-clicked.");
         RootGrid.ColumnDefinitions[0].Width = GridLength.Auto;
     }
 
     private void OnWindowKeyDown(object sender, KeyEventArgs e)
     {
+        LogToFile($"KeyDown: {e.Key}, Modifiers: {Keyboard.Modifiers}");
         if (e.OriginalSource is TextBox || e.OriginalSource is TextArea && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             return;
 
         if (_threadWorkerView.CanBeCanceled && e.Key == Key.Escape)
         {
+            LogToFile("Cancel requested by ESC key.");
             _applicationView.Status.SetStatus(EStatusKind.Stopping);
             _threadWorkerView.Cancel();
         }
@@ -162,60 +181,78 @@ public partial class MainWindow
             _applicationView.CUE4Parse.TabControl.GoLeftTab();
         else if (UserSettings.Default.AssetRightTab.IsTriggered(e.Key))
             _applicationView.CUE4Parse.TabControl.GoRightTab();
-        else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex > 0)
-            _applicationView.SelectedLeftTabIndex--;
-        else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex < LeftTabControl.Items.Count - 1)
-            _applicationView.SelectedLeftTabIndex++;
+        // else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex > 0)
+        //     _applicationView.SelectedLeftTabIndex--;
+        // else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex < LeftTabControl.Items.Count - 1)
+        //     _applicationView.SelectedLeftTabIndex++;
     }
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("SearchView opened.");
         var searchView = Helper.GetWindow<SearchView>("検索", () => new SearchView());
         searchView.FocusTab(ESearchViewTab.SearchView);
     }
 
     private void OnRefViewClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("RefView opened.");
         var searchView = Helper.GetWindow<SearchView>("検索ウィンドウ", () => new SearchView());
         searchView.FocusTab(ESearchViewTab.RefView);
     }
 
     private void OnContentSearchViewClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("ContentSearchView opened.");
         Helper.OpenWindow<AdonisWindow>("ファイル内検索", () => new ContentSearchView().Show());
     }
 
     private void OnProfileViewClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("ProfileView opened.");
         Helper.OpenWindow<AdonisWindow>("プロファイル", () => new ProfileWindow().Show());
     }
 
+    private bool _isHandlingTabChange = false;
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)
     {
-        if (e.OriginalSource is not TabControl tabControl)
-            return;
-
-        switch (tabControl.SelectedIndex)
+        if (_isHandlingTabChange) return;
+        _isHandlingTabChange = true;
+        try
         {
-            case 0:
-                DirectoryFilesListBox.Focus();
-                break;
-            case 1:
-                AssetsFolderName.Focus();
-                break;
-            case 2:
-                AssetsListName.Focus();
-                break;
+            LogToFile($"TabItem changed: {((TabControl)sender).SelectedIndex}");
+            if (e.OriginalSource is not TabControl tabControl)
+                return;
+
+            // SelectedLeftTabIndexはここで変更しない！
+            switch (tabControl.SelectedIndex)
+            {
+                case 0:
+                    DirectoryFilesListBox.Focus();
+                    break;
+                case 1:
+                    AssetsFolderName.Focus();
+                    break;
+                case 2:
+                    AssetsListName.Focus();
+                    break;
+            }
+        }
+        finally
+        {
+            _isHandlingTabChange = false;
         }
     }
 
     private async void OnMappingsReload(object sender, ExecutedRoutedEventArgs e)
     {
+        LogToFile("Mappings reloaded.");
         await _applicationView.CUE4Parse.InitAllMappings(true);
     }
 
     private void OnOpenAvalonFinder()
     {
+        LogToFile("AvalonFinder opened.");
         if (_applicationView.IsAssetsExplorerVisible)
         {
             AssetsExplorerSearch.TextBox.Focus();
@@ -231,13 +268,14 @@ public partial class MainWindow
 
     private void OnAssetsTreeMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        LogToFile("AssetsTree double-clicked.");
         if (sender is not TreeView { SelectedItem: TreeItem treeItem } || treeItem.Folders.Count > 0) return;
 
         LeftTabControl.SelectedIndex++;
     }
 
     // AssetsExplorerは存在しないため、AssetsFolderNameに修正
-    private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsFolderName.ItemContainerGenerator, EventArgs.Empty);
+    private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsListName.ItemContainerGenerator, EventArgs.Empty);
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
     {
         if (sender is not ItemContainerGenerator { Status: GeneratorStatus.ContainersGenerated } generator)
@@ -262,15 +300,26 @@ public partial class MainWindow
             }
         }
     }
+
+    private bool _isHandlingSelectionChanged;
     private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
     {
+        if (_isHandlingSelectionChanged) return;
         if (sender is not TreeView { SelectedItem: TreeItem }) return;
-
-        _applicationView.IsAssetsExplorerVisible = true;
-        _applicationView.SelectedLeftTabIndex = 1;
-    }
-    private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        try
+        {
+            //_isHandlingSelectionChanged = true;
+            //if (!_applicationView.IsAssetsExplorerVisible)
+            //    _applicationView.IsAssetsExplorerVisible = true;
+            // _applicationView.SelectedLeftTabIndex = 1; // 無限ループ防止のため削除
+        }
+        finally
+        {
+            _isHandlingSelectionChanged = false;
+        }
+    }    private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        LogToFile("AssetsList double-clicked.");
         if (sender is not ListBox listBox) return;
 
         var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
@@ -283,6 +332,7 @@ public partial class MainWindow
 
     private async void OnFolderExtractClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder extract requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractFolder(cancellationToken, folder); });
@@ -291,6 +341,7 @@ public partial class MainWindow
 
     private void OnClearFilterClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Clear filter clicked.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             folder.SearchText = string.Empty;
@@ -300,6 +351,7 @@ public partial class MainWindow
 
     private async void OnFolderExportClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder export requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExportFolder(cancellationToken, folder); });
@@ -313,6 +365,7 @@ public partial class MainWindow
 
     private async void OnFolderSaveClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder save requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
@@ -325,6 +378,7 @@ public partial class MainWindow
     }
     private async void OnFolderTextureClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder texture export requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
@@ -338,6 +392,7 @@ public partial class MainWindow
 
     private async void OnFolderModelClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder model export requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ModelFolder(cancellationToken, folder); });
@@ -351,6 +406,7 @@ public partial class MainWindow
 
     private async void OnFolderAnimationClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder animation export requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AnimationFolder(cancellationToken, folder); });
@@ -364,6 +420,7 @@ public partial class MainWindow
 
     private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Favorite directory added.");
         if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
 
         _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
@@ -373,18 +430,21 @@ public partial class MainWindow
 
     private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Directory path copied.");
         if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
         Clipboard.SetText(folder.PathAtThisPoint);
     }
 
     private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Delete search clicked.");
         AssetsSearchName.Text = string.Empty;
         AssetsListName.ScrollIntoView(AssetsListName.SelectedItem);
     }
 
     private void OnFilterTextChanged(object sender, TextChangedEventArgs e)
     {
+        LogToFile("Filter text changed.");
         if (sender is not TextBox textBox || AssetsFolderName.SelectedItem is not TreeItem folder)
             return;
 
@@ -394,6 +454,7 @@ public partial class MainWindow
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        LogToFile("ListBox double-clicked.");
         if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
         UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
         _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
@@ -401,6 +462,7 @@ public partial class MainWindow
 
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
+        LogToFile($"PreviewKeyDown: {e.Key}");
         if (!_applicationView.Status.IsReady || sender is not ListBox listBox)
             return;
         if (e.Key != Key.Enter)
@@ -412,11 +474,11 @@ public partial class MainWindow
         {
             case GameFileViewModel file:
                 _applicationView.IsAssetsExplorerVisible = false;
-                ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
+                // ApplicationService.ApplicationView.SelectedLeftTabIndex = 2; // 無限ループ防止のため削除
                 await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [file.Asset]));
                 break;
             case TreeItem folder:
-                ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
+                // ApplicationService.ApplicationView.SelectedLeftTabIndex = 1; // 無限ループ防止のため削除
 
                 var parent = folder.Parent;
                 while (parent != null)
@@ -440,17 +502,19 @@ public partial class MainWindow
 
     private void FeaturePreviewOnUnchecked(object sender, RoutedEventArgs e)
     {
+        LogToFile("Feature preview unchecked.");
         _applicationView.IsAssetsExplorerVisible = false;
     }
 
     private async void OnFoldersPreviewKeyDown(object sender, KeyEventArgs e)
     {
+        LogToFile($"FoldersPreviewKeyDown: {e.Key}");
         if (e.Key != Key.Enter || sender is not TreeView treeView || treeView.SelectedItem is not TreeItem folder)
             return;
 
         if ((folder.IsExpanded || folder.Folders.Count == 0) && folder.AssetsList.Assets.Count > 0)
         {
-            _applicationView.SelectedLeftTabIndex++;
+            // _applicationView.SelectedLeftTabIndex++; // 無限ループ防止のため削除
             return;
         }
 
@@ -467,6 +531,7 @@ public partial class MainWindow
 
     private async void OnOpenRecentFile(object? parameter)
     {
+        LogToFile($"Open recent file: {parameter}");
         if (parameter is not string filePath || string.IsNullOrEmpty(filePath)) return;
 
         if (_applicationView.CUE4Parse.Provider.TryGetGameFile(filePath, out var gameFile))
@@ -486,6 +551,7 @@ public partial class MainWindow
 
     private void OnClearRecentFiles(object? parameter)
     {
+        LogToFile("Clear recent files requested.");
         FLogger.Append(ELog.Information, () => FLogger.Text("Attempting to clear recent files.", Constants.WHITE, true));
         UserSettings.Default.RecentFiles.Clear();
         UserSettings.Save();
@@ -608,10 +674,10 @@ public partial class MainWindow
 
     private void OnUserSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(UserSettings.PreviewTexturesAssetExplorer))
-        {
-            RefreshAssetListPreview();
-        }
+        // if (e.PropertyName == nameof(UserSettings.PreviewTexturesAssetExplorer))
+        // {
+        //     RefreshAssetListPreview();
+        // }
     }
 
     private void RefreshAssetListPreview()

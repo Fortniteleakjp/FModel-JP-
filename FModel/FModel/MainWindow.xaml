@@ -216,7 +216,7 @@
 
             <GroupBox Grid.Column="0" adonisExtensions:LayerExtension.Layer="2"
                       Padding="0" Background="Transparent">
-                <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange" SelectedIndex="{Binding SelectedLeftTabIndex, Mode=TwoWay}">
+                <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange" SelectedIndex="{Binding SelectedLeftTabIndex, Mode=OneWay}">
                     <TabItem Style="{StaticResource TabItemFillSpace}" Header="アーカイブ">
                         <DockPanel>
                             <Grid DockPanel.Dock="Top">

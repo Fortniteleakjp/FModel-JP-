@@ -549,7 +549,11 @@ namespace FModel.Settings
         public bool PreviewTexturesAssetExplorer
         {
             get => _previewTexturesAssetExplorer;
-            set => SetProperty(ref _previewTexturesAssetExplorer, value);
+            set
+            {
+                if (_previewTexturesAssetExplorer == value) return;
+                SetProperty(ref _previewTexturesAssetExplorer, value);
+            }
         }
         private bool _restoreTabsOnStartup = true;
         public bool RestoreTabsOnStartup
