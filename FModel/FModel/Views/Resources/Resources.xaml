@@ -14,6 +14,7 @@
                     xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                     xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI">
     <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
 
     <Style x:Key="TabItemFillSpace" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
         <Setter Property="Width">
