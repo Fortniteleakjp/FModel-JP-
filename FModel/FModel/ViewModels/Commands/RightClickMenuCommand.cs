@@ -29,10 +29,10 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         var folders = param.OfType<TreeItem>().ToArray();
         var assets = param.SelectMany(item => item switch
         {
-            GameFile gf => new[] { gf },
             GameFileViewModel gvm => new[] { gvm.Asset },
-            _ => []
-        }).OfType<GameFile>().ToArray(); // 型を明示的にGameFileに限定
+            GameFile gf => new[] { gf },
+            _ => Enumerable.Empty<GameFile>()
+        }).ToArray();
         if (folders.Length == 0 && assets.Length == 0)
             return;
 

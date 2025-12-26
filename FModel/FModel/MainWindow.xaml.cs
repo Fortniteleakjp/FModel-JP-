@@ -316,7 +316,10 @@ public partial class MainWindow
         LogToFile("AssetsList double-clicked.");
         if (sender is not ListBox listBox) return;
 
-        var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
+        var selectedItems = listBox.SelectedItems
+            .OfType<GameFileViewModel>()
+            .Select(vm => vm.Asset)
+            .ToList();
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
         foreach (var item in selectedItems)
         {

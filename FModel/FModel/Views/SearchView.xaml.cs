@@ -75,7 +75,9 @@ public partial class SearchView
     // 参照検索
     private async void OnFindRefs(object sender, RoutedEventArgs e)
     {
-        if (CurrentListView?.SelectedItem is not GameFile entry)
+        var item = CurrentListView?.SelectedItem;
+        if (item is GameFileViewModel vm) item = vm.Asset;
+        if (item is not GameFile entry)
             return;
 
         await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.FindReferences(entry));
@@ -140,7 +142,9 @@ public partial class SearchView
     // ダブルクリックでアセットに移動
     private async void OnAssetDoubleClick(object sender, RoutedEventArgs e)
     {
-        if (CurrentListView?.SelectedItem is not GameFile entry)
+        var item = CurrentListView?.SelectedItem;
+        if (item is GameFileViewModel vm) item = vm.Asset;
+        if (item is not GameFile entry)
             return;
 
         await NavigateToAssetAndSelect(entry);
@@ -185,7 +189,9 @@ public partial class SearchView
     // 新規タブで抽出
     private async void OnAssetExtract(object sender, RoutedEventArgs e)
     {
-        if (CurrentListView?.SelectedItem is not GameFile entry)
+        var item = CurrentListView?.SelectedItem;
+        if (item is GameFileViewModel vm) item = vm.Asset;
+        if (item is not GameFile entry)
             return;
 
         WindowState = WindowState.Minimized;
