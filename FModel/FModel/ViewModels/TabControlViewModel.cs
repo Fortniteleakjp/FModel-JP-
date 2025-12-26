@@ -178,6 +178,8 @@ public class TabImage : ViewModel
 
 public class TabItem : ViewModel
 {
+    // NEW エクスプローラーなど、任意のUI要素を格納できるプロパティ
+    public object Content { get; set; }
     public string ParentExportType { get; set; }
 
     private GameFile _entry;

@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:FModel"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+        xmlns:views="clr-namespace:FModel.Views"
         xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
         xmlns:settings="clr-namespace:FModel.Settings"
         xmlns:services="clr-namespace:FModel.Services"
@@ -47,7 +48,6 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
         <Menu Grid.Row="0">
             <MenuItem Header="ディレクトリ">
                 <MenuItem Header="セレクター" Command="{Binding MenuCommand}" CommandParameter="Directory_Selector">
@@ -166,7 +166,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                
+
             </MenuItem>
             <MenuItem Header="プロファイル" IsEnabled="{Binding Status.IsReady}">
                 <MenuItem Header="すべてのコスメティック" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
@@ -328,6 +328,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
+            <MenuItem Header="NEW エクスプローラー" IsCheckable="True" x:Name="NewExplorerMenuItem" Checked="OnNewExplorerChecked" Unchecked="OnNewExplorerUnchecked" Width="140"/>
         </Menu>
 
         <Grid x:Name="RootGrid" Grid.Row="2">
@@ -872,14 +873,17 @@
                       Padding="{adonisUi:Space 0}" Background="Transparent">
                 <Grid Margin="0 0 3 0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
+                        <!-- NEW エクスプローラー用 -->
+                        <RowDefinition Height="*" />
+                        <!-- タブ -->
+                        <RowDefinition Height="Auto" />
+                        <!-- ログ欄 -->
                     </Grid.RowDefinitions>
-
-                    <TabControl Grid.Row="0"
+                    <TabControl Grid.Row="1"
                                 x:Name="TabControlName"
                                 Style="{StaticResource GameFilesTabControl}" />
-                    <Expander Grid.Row="1" Margin="0 5 0 5" ExpandDirection="Down"
+                    <Expander Grid.Row="2" Margin="0 5 0 5" ExpandDirection="Down"
                               IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -888,7 +892,7 @@
                                 <ColumnDefinition Width="24" />
                             </Grid.ColumnDefinitions>
 
-                            <controls:CustomRichTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" />
+                            <controls:CustomRichTextBox x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" Grid.Column="0" Grid.ColumnSpan="3" />
                             <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="-5 -5 5 5">
                                 <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Open Output Folder" Padding="0,4,0,4"
                                         Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory">

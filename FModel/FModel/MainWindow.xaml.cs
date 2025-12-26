@@ -28,6 +28,39 @@ namespace FModel;
 /// </summary>
 public partial class MainWindow
 {
+    // NEW エクスプローラー ON/OFF切り替え（タブ制御）
+    private const string ExplorerTabHeader = "NEW エクスプローラー";
+    private FModel.ViewModels.TabItem _explorerTabVm;
+    private void OnNewExplorerChecked(object sender, RoutedEventArgs e)
+    {
+        if (_explorerTabVm == null)
+        {
+            // ExplorerTab用のViewModelを生成
+            _explorerTabVm = new FModel.ViewModels.TabItem(null, "NEW エクスプローラー");
+            _explorerTabVm.Content = new FModel.Views.ExplorerTab();
+            _applicationView.CUE4Parse.TabControl.AddTab(_explorerTabVm);
+        }
+        _applicationView.CUE4Parse.TabControl.SelectedTab = _explorerTabVm;
+    }
+
+    private void OnNewExplorerUnchecked(object sender, RoutedEventArgs e)
+    {
+        if (_explorerTabVm != null)
+        {
+            _applicationView.CUE4Parse.TabControl.RemoveTab(_explorerTabVm);
+            _explorerTabVm = null;
+        }
+    }
+    // NEW エクスプローラー ボタンクリック時の処理
+    private void OnNewExplorerClick(object sender, RoutedEventArgs e)
+    {
+        // TODO: 本格的なエクスプローラーUIをここで開く
+        System.Windows.MessageBox.Show(
+            "新しいエクスプローラーウィンドウを開きます（ここにエクスプローラーUIを実装）",
+            "NEW エクスプローラー",
+            System.Windows.MessageBoxButton.OK,
+            System.Windows.MessageBoxImage.Information);
+    }
     public static MainWindow YesWeCats;
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
@@ -529,5 +562,10 @@ public partial class MainWindow
         
         // ビューを更新
         folder.AssetsList.AssetsView.Refresh();
+    }
+
+    private void TabControlName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
     }
 }
