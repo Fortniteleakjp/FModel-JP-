@@ -710,4 +710,9 @@ public partial class MainWindow
     {
 
     }
+
+    private void TabControlName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+
+    }
 }

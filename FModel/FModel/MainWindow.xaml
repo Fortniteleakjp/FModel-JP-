@@ -766,8 +766,8 @@
                       Padding="{adonisUi:Space 0}" Background="Transparent" Margin="5,32,-5,-32">
                 <Grid Margin="0 0 3 0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1150*"/>
-                        <ColumnDefinition Width="189*"/>
+                        <ColumnDefinition Width="659*"/>
+                        <ColumnDefinition Width="680*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
@@ -776,21 +776,21 @@
 
                     <TabControl Grid.Row="0"
                                 x:Name="TabControlName"
-                                Style="{StaticResource GameFilesTabControl}" Margin="10,-38,-10,38" Grid.ColumnSpan="2" />
+                                Style="{StaticResource GameFilesTabControl}" Margin="-10,16,10,190" Grid.RowSpan="2" SelectionChanged="TabControlName_SelectionChanged" Grid.ColumnSpan="2" />
 
-                    <views:AssetsExplorerView Grid.Row="0" Grid.ColumnSpan="2" Margin="10,-38,-10,38"
+                    <views:AssetsExplorerView Grid.Row="0" Margin="-26,10,26,170"
                                               Visibility="{Binding IsAssetsExplorerVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                              DataContext="{Binding AssetsExplorer}" />
+                                              DataContext="{Binding AssetsExplorer}" Grid.RowSpan="2" Grid.ColumnSpan="2" />
 
-                    <Expander Grid.ColumnSpan="2" Grid.Row="1" Margin="0,5,0,5" IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}" ExpandDirection="Down">
+                    <Expander Grid.Row="1" Margin="0,5,0,5" IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}" ExpandDirection="Down" Grid.ColumnSpan="2">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="2" />
                                 <ColumnDefinition Width="24" />
                             </Grid.ColumnDefinitions>
-                            <controls:CustomRichTextBox Style="{StaticResource CustomRichTextBox}" x:Name="LogRtbName" Grid.ColumnSpan="3" Grid.Column="0" />
-                            <StackPanel VerticalAlignment="Bottom" Orientation="Vertical" Margin="-5 -5 5 5" Grid.Column="2">
+                            <controls:CustomRichTextBox Style="{StaticResource CustomRichTextBox}" x:Name="LogRtbName" Grid.Column="0" Margin="0,-39,12,39" Grid.ColumnSpan="3" />
+                            <StackPanel VerticalAlignment="Bottom" Orientation="Vertical" Margin="0,0,5,5" Grid.Column="2">
                                 <Button ToolTip="出力フォルダを開く" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Padding="0,4,0,4" CommandParameter="ToolBox_Open_Output_Directory" Command="{Binding MenuCommand}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Height="24" Width="24">
@@ -809,9 +809,9 @@
                         </Grid>
                     </Expander>
 
-                    <Border Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,16,26,0" Opacity="0.5"
+                    <Border VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,666,26,0" Opacity="0.5"
                             Visibility="{Binding FeaturePreviewNewAssetExplorer, Converter={StaticResource BooleanToVisibilityConverter}, Source={x:Static settings:UserSettings.Default}}"
-                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" CornerRadius="8" Padding="4">
+                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" CornerRadius="8" Padding="4" Grid.Column="1">
                         <Border.Triggers>
                             <EventTrigger RoutedEvent="UIElement.MouseEnter">
                                 <BeginStoryboard>
