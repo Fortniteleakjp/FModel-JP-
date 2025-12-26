@@ -21,6 +21,7 @@ using FModel.Views.Resources.Controls;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using CUE4ParseViewModel = FModel.ViewModels.CUE4Parse.CUE4ParseViewModel;
 
 namespace FModel.ViewModels;
 
@@ -52,10 +53,10 @@ public class ApplicationViewModel : ViewModel
         get => _isAssetsExplorerVisible;
         set
         {
-            if (SetProperty(ref _isAssetsExplorerVisible, value))
-            {
-                // SelectedLeftTabIndex = value ? 1 : 2;
-            }
+            // devブランチ: 新アセットエクスプローラーが有効でない場合は開けない
+            if (value && !UserSettings.Default.FeaturePreviewNewAssetExplorer)
+                return;
+            SetProperty(ref _isAssetsExplorerVisible, value);
         }
     }
 
@@ -77,13 +78,13 @@ public class ApplicationViewModel : ViewModel
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
 
-    public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID})";
+    public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID} - {Constants.APP_BUILD_DATE:MMM d, yyyy})";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
     public LoadingModesViewModel LoadingModes { get; }
     public CustomDirectoriesViewModel CustomDirectories { get; }
-    public FModel.ViewModels.CUE4Parse.CUE4ParseViewModel CUE4Parse { get; }
+    public CUE4ParseViewModel CUE4Parse { get; }
     public SettingsViewModel SettingsView { get; }
     public AesManagerViewModel AesManager { get; }
     public AudioPlayerViewModel AudioPlayer { get; }
@@ -108,9 +109,9 @@ public class ApplicationViewModel : ViewModel
             Environment.Exit(0);
         }
 
-        UserSettings.Default.DiffDir = ResolveDiffDirectory();
+        // devブランチ: DiffDirの初期化は省略
 
-    CUE4Parse = new FModel.ViewModels.CUE4Parse.CUE4ParseViewModel();
+        CUE4Parse = new CUE4ParseViewModel();
         CUE4Parse.Provider.VfsRegistered += (sender, count) =>
         {
             if (sender is not IAesVfsReader reader) return;
@@ -129,16 +130,7 @@ public class ApplicationViewModel : ViewModel
             CUE4Parse.GameDirectory.Disable(reader);
         };
 
-        if (CUE4Parse.DiffProvider != null)
-        {
-            CUE4Parse.DiffProvider.VfsRegistered += (sender, count) =>
-            {
-                if (sender is not IAesVfsReader reader)
-                    return;
-
-                CUE4Parse.DiffGameDirectory.Add(reader);
-            };
-        }
+        // devブランチ: DiffProviderのVfsRegisteredは省略
 
         CustomDirectories = new CustomDirectoriesViewModel();
         SettingsView = new SettingsViewModel();
@@ -162,24 +154,18 @@ public class ApplicationViewModel : ViewModel
         UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory] = vm.SelectedDirectory;
         return vm.SelectedDirectory;
     }
-    public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched, bool allowDiffSelection = false)
+    public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
     {
         var gameDirectory = UserSettings.Default.GameDirectory;
         if (!bAlreadyLaunched && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
             return currentDir;
 
-        var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory, allowDiffSelection)
-        {
-            SelectedDiffDirectory = (DirectorySettings) UserSettings.Default.DiffDir?.Clone()
-        };
+        var gameLauncherViewModel = new GameSelectorViewModel(gameDirectory);
         var result = new DirectorySelector(gameLauncherViewModel).ShowDialog();
         if (!result.HasValue || !result.Value) return null;
 
         UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
-        if (string.IsNullOrEmpty(UserSettings.Default.GameDirectory))
-            return null;
-
-        if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory) && (allowDiffSelection && UserSettings.Default.DiffDir != null && UserSettings.Default.DiffDir.Equals(gameLauncherViewModel.SelectedDiffDirectory)))
+        if (!bAlreadyLaunched || UserSettings.Default.CurrentDir.Equals(gameLauncherViewModel.SelectedDirectory))
             return gameLauncherViewModel.SelectedDirectory;
 
         // UserSettings.Save(); // ??? change key then change game, key saved correctly what?
@@ -247,21 +233,7 @@ public class ApplicationViewModel : ViewModel
                 return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
             });
 
-            IEnumerable<KeyValuePair<FGuid, FAesKey>> secondAes = [];
-            if (AesManager.DiffAesKeys != null)
-            {
-                secondAes = AesManager.DiffAesKeys.Select(x =>
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    var k = x.Key.Trim();
-                    if (k.Length != 66)
-                        k = Constants.ZERO_64_CHAR;
-                    return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
-                });
-            }
-
-            CUE4Parse.LoadVfs(aes, secondAes);
+            CUE4Parse.LoadVfs(aes);
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));
@@ -270,32 +242,37 @@ public class ApplicationViewModel : ViewModel
     public static async Task InitVgmStream()
     {
         var vgmZipFilePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "vgmstream-win.zip");
-        if (File.Exists(vgmZipFilePath)) return;
+        var vgmFileInfo = new FileInfo(vgmZipFilePath);
 
-        await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
-        if (new FileInfo(vgmZipFilePath).Length > 0)
+        if (!vgmFileInfo.Exists || vgmFileInfo.LastWriteTimeUtc < DateTime.UtcNow.AddMonths(-4))
         {
-            var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
-            await using var zipFs = File.OpenRead(vgmZipFilePath);
-            using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
+            await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip", vgmZipFilePath);
+            vgmFileInfo.Refresh();
 
-            foreach (var entry in zip.Entries)
+            if (vgmFileInfo.Length > 0)
             {
-                var entryPath = Path.Combine(zipDir, entry.FullName);
-                await using var entryFs = File.Create(entryPath);
-                await using var entryStream = entry.Open();
-                await entryStream.CopyToAsync(entryFs);
+                var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
+                await using var zipFs = File.OpenRead(vgmZipFilePath);
+                using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
+
+                foreach (var entry in zip.Entries)
+                {
+                    var entryPath = Path.Combine(zipDir, entry.FullName);
+                    await using var entryFs = File.Create(entryPath);
+                    await using var entryStream = entry.Open();
+                    await entryStream.CopyToAsync(entryFs);
+                }
             }
-        }
-        else
-        {
-            FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
+            else
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Could not download VgmStream", Constants.WHITE, true));
+            }
         }
     }
 
     public static async Task InitImGuiSettings(bool forceDownload)
     {
-        var imgui = "imgui.ini";
+        const string imgui = "imgui.ini";
         var imguiPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", imgui);
 
         if (File.Exists(imgui)) File.Move(imgui, imguiPath, true);
@@ -308,7 +285,7 @@ public class ApplicationViewModel : ViewModel
         }
     }
 
-    public static async ValueTask InitOodle()
+    public static async Task InitOodle()
     {
         if (File.Exists(OodleHelper.OODLE_DLL_NAME_OLD))
         {
@@ -319,23 +296,36 @@ public class ApplicationViewModel : ViewModel
             catch { /* ignored */}
         }
 
-        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME_OLD);
+        if (!File.Exists(oodlePath))
+        {
+            oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        }
 
         if (!File.Exists(oodlePath))
         {
-            await OodleHelper.DownloadOodleDllAsync(oodlePath);
+            if (!await OodleHelper.DownloadOodleDllAsync(oodlePath))
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Oodle", Constants.WHITE, true));
+                return;
+            }
         }
 
         OodleHelper.Initialize(oodlePath);
     }
 
-    public static async ValueTask InitZlib()
+    public static async Task InitZlib()
     {
         var zlibPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", ZlibHelper.DLL_NAME);
         var zlibFileInfo = new FileInfo(zlibPath);
+
         if (!zlibFileInfo.Exists || zlibFileInfo.LastWriteTimeUtc < DateTime.UtcNow.AddMonths(-4))
         {
-            await ZlibHelper.DownloadDllAsync(zlibPath);
+            if (!await ZlibHelper.DownloadDllAsync(zlibPath))
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("Failed to download Zlib-ng", Constants.WHITE, true));
+                if (!zlibFileInfo.Exists) return;
+            }
         }
 
         ZlibHelper.Initialize(zlibPath);

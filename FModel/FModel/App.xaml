@@ -9,9 +9,15 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/AdonisUI.ClassicTheme;component/Resources.xaml"/>
-                <ResourceDictionary Source="Views/Resources/Resources.xaml"/>
+                <ResourceDictionary Source="Resources/Colors.xaml" />
+                <ResourceDictionary Source="Views/Resources/Icons.xaml" />
+                <ResourceDictionary Source="Views/Resources/Controls/ContextMenus/FileContextMenu.xaml" />
+                <ResourceDictionary Source="Views/Resources/Controls/ContextMenus/FolderContextMenu.xaml" />
+                <ResourceDictionary Source="Views/Resources/Resources.xaml" />
+                <ResourceDictionary Source="Views/Resources/Controls/TiledExplorer/Resources.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
+            <!-- 標準のBooleanToVisibilityConverterを追加 -->
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <Color x:Key="{x:Static adonisUi:Colors.AccentColor}">#206BD4</Color>
             <Color x:Key="{x:Static adonisUi:Colors.AlertColor}">#D49220</Color>
             <Color x:Key="{x:Static adonisUi:Colors.ErrorColor}">#C22B2B</Color>

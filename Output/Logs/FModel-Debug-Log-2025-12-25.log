@@ -1,0 +1,1597 @@
+2025-12-25 17:14:22 [INF] FModel: Version 4.4.4.0 (7384a17a953d22bc2d18ea8e6bfed33f925b9f07)
+2025-12-25 17:14:22 [INF] FModel: Windows 11 Pro (64-bit)
+2025-12-25 17:14:22 [INF] FModel: .NET 8.0.22
+2025-12-25 17:14:22 [INF] FModel: Culture ja-JP
+2025-12-25 17:14:27 [ERR] FModel: System.Windows.Markup.XamlParseException: 'プロパティ 'System.Windows.Controls.Primitives.Selector.SelectedItem' の Set で例外がスローされました。' 行番号 '236'、行位置 '43'。
+ ---> System.IO.DirectoryNotFoundException: Could not find a part of the path 'D:\FModelJP\logs\mainwindow.log'.
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.File.OpenHandle(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)
+   at System.IO.File.WriteToFile(String path, FileMode mode, String contents, Encoding encoding)
+   at FModel.MainWindow.LogToFile(String message) in C:\Users\user\fjp-pullrq\FModel\FModel\MainWindow.xaml.cs:line 41
+   at FModel.MainWindow.OnTabItemChange(Object sender, SelectionChangedEventArgs e) in C:\Users\user\fjp-pullrq\FModel\FModel\MainWindow.xaml.cs:line 223
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.ComboBox.OnSelectionChanged(SelectionChangedEventArgs e)
+   at System.Windows.Controls.Primitives.Selector.SelectionChanger.SelectJustThisItem(ItemInfo info, Boolean assumeInItemsCollection)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetValue(DependencyProperty dp, Object value)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.SetValue(Object inst, XamlMember property, Object value)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.WpfXamlLoader.Load(XamlReader xamlReader, IXamlObjectWriterFactory writerFactory, Boolean skipJournaledProperties, Object rootObject, XamlObjectWriterSettings settings, Uri baseUri)
+   at System.Windows.Markup.WpfXamlLoader.LoadBaml(XamlReader xamlReader, Boolean skipJournaledProperties, Object rootObject, XamlAccessLevel accessLevel, Uri baseUri)
+   at System.Windows.Markup.XamlReader.LoadBaml(Stream stream, ParserContext parserContext, Object parent, Boolean closeStream)
+   at System.Windows.Application.LoadBamlStreamWithSyncInfo(Stream stream, ParserContext pc)
+   at System.Windows.Application.DoStartup()
+   at System.Windows.Application.<.ctor>b__1_0(Object unused)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:14:41 [INF] FModel: Version 4.4.4.0 (7384a17a953d22bc2d18ea8e6bfed33f925b9f07)
+2025-12-25 17:14:41 [INF] FModel: Windows 11 Pro (64-bit)
+2025-12-25 17:14:41 [INF] FModel: .NET 8.0.22
+2025-12-25 17:14:41 [INF] FModel: Culture ja-JP
+2025-12-25 17:14:45 [ERR] FModel: System.Windows.Markup.XamlParseException: 'プロパティ 'System.Windows.Controls.Primitives.Selector.SelectedItem' の Set で例外がスローされました。' 行番号 '236'、行位置 '43'。
+ ---> System.IO.DirectoryNotFoundException: Could not find a part of the path 'D:\FModelJP\logs\mainwindow.log'.
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.File.OpenHandle(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)
+   at System.IO.File.WriteToFile(String path, FileMode mode, String contents, Encoding encoding)
+   at FModel.MainWindow.LogToFile(String message) in C:\Users\user\fjp-pullrq\FModel\FModel\MainWindow.xaml.cs:line 41
+   at FModel.MainWindow.OnTabItemChange(Object sender, SelectionChangedEventArgs e) in C:\Users\user\fjp-pullrq\FModel\FModel\MainWindow.xaml.cs:line 223
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.ComboBox.OnSelectionChanged(SelectionChangedEventArgs e)
+   at System.Windows.Controls.Primitives.Selector.SelectionChanger.SelectJustThisItem(ItemInfo info, Boolean assumeInItemsCollection)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetValue(DependencyProperty dp, Object value)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.SetValue(Object inst, XamlMember property, Object value)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.WpfXamlLoader.Load(XamlReader xamlReader, IXamlObjectWriterFactory writerFactory, Boolean skipJournaledProperties, Object rootObject, XamlObjectWriterSettings settings, Uri baseUri)
+   at System.Windows.Markup.WpfXamlLoader.LoadBaml(XamlReader xamlReader, Boolean skipJournaledProperties, Object rootObject, XamlAccessLevel accessLevel, Uri baseUri)
+   at System.Windows.Markup.XamlReader.LoadBaml(Stream stream, ParserContext parserContext, Object parent, Boolean closeStream)
+   at System.Windows.Application.LoadBamlStreamWithSyncInfo(Stream stream, ParserContext pc)
+   at System.Windows.Application.DoStartup()
+   at System.Windows.Application.<.ctor>b__1_0(Object unused)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:15:50 [INF] FModel: Version 4.4.4.0 (7384a17a953d22bc2d18ea8e6bfed33f925b9f07)
+2025-12-25 17:15:50 [INF] FModel: Windows 11 Pro (64-bit)
+2025-12-25 17:15:50 [INF] FModel: .NET 8.0.22
+2025-12-25 17:15:50 [INF] FModel: Culture ja-JP
+2025-12-25 17:15:52 [ERR] FModel: System.Windows.Markup.XamlParseException: 'プロパティ 'System.Windows.Controls.Primitives.Selector.SelectedItem' の Set で例外がスローされました。' 行番号 '236'、行位置 '43'。
+ ---> System.IO.DirectoryNotFoundException: Could not find a part of the path 'D:\FModelJP\logs\mainwindow.log'.
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.File.OpenHandle(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)
+   at System.IO.File.WriteToFile(String path, FileMode mode, String contents, Encoding encoding)
+   at FModel.MainWindow.LogToFile(String message) in C:\Users\user\fjp-pullrq\FModel\FModel\MainWindow.xaml.cs:line 41
+   at FModel.MainWindow.OnTabItemChange(Object sender, SelectionChangedEventArgs e) in C:\Users\user\fjp-pullrq\FModel\FModel\MainWindow.xaml.cs:line 223
+   at System.Windows.RoutedEventArgs.InvokeHandler(Delegate handler, Object target)
+   at System.Windows.EventRoute.InvokeHandlersImpl(Object source, RoutedEventArgs args, Boolean reRaised)
+   at System.Windows.UIElement.RaiseEventImpl(DependencyObject sender, RoutedEventArgs args)
+   at System.Windows.Controls.ComboBox.OnSelectionChanged(SelectionChangedEventArgs e)
+   at System.Windows.Controls.Primitives.Selector.SelectionChanger.SelectJustThisItem(ItemInfo info, Boolean assumeInItemsCollection)
+   at System.Windows.FrameworkElement.OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+   at System.Windows.DependencyObject.NotifyPropertyChange(DependencyPropertyChangedEventArgs args)
+   at System.Windows.DependencyObject.UpdateEffectiveValue(EntryIndex entryIndex, DependencyProperty dp, PropertyMetadata metadata, EffectiveValueEntry oldEntry, EffectiveValueEntry& newEntry, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType)
+   at System.Windows.DependencyObject.SetValueCommon(DependencyProperty dp, Object value, PropertyMetadata metadata, Boolean coerceWithDeferredReference, Boolean coerceWithCurrentValue, OperationType operationType, Boolean isInternal)
+   at System.Windows.DependencyObject.SetValue(DependencyProperty dp, Object value)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.SetValue(Object inst, XamlMember property, Object value)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.WpfXamlLoader.Load(XamlReader xamlReader, IXamlObjectWriterFactory writerFactory, Boolean skipJournaledProperties, Object rootObject, XamlObjectWriterSettings settings, Uri baseUri)
+   at System.Windows.Markup.WpfXamlLoader.LoadBaml(XamlReader xamlReader, Boolean skipJournaledProperties, Object rootObject, XamlAccessLevel accessLevel, Uri baseUri)
+   at System.Windows.Markup.XamlReader.LoadBaml(Stream stream, ParserContext parserContext, Object parent, Boolean closeStream)
+   at System.Windows.Application.LoadBamlStreamWithSyncInfo(Stream stream, ParserContext pc)
+   at System.Windows.Application.DoStartup()
+   at System.Windows.Application.<.ctor>b__1_0(Object unused)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:05 [INF] FModel: Version 4.4.4.0 (7384a17a953d22bc2d18ea8e6bfed33f925b9f07)
+2025-12-25 17:17:05 [INF] FModel: Windows 11 Pro (64-bit)
+2025-12-25 17:17:05 [INF] FModel: .NET 8.0.22
+2025-12-25 17:17:05 [INF] FModel: Culture ja-JP
+2025-12-25 17:17:07 [INF] FModel: TabItem changed: -1
+2025-12-25 17:17:07 [INF] FModel: TabItem changed: 0
+2025-12-25 17:17:07 [INF] FModel: MainWindow initialized.
+2025-12-25 17:17:08 [INF] FModel: MainWindow loaded.
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.ContextLayoutManager.UpdateLayoutCallback(Object arg)
+   at System.Windows.Media.MediaContext.FireInvokeOnRenderCallbacks()
+   at System.Windows.Media.MediaContext.RenderMessageHandlerCore(Object resizedCompositionTarget)
+   at System.Windows.Media.MediaContext.RenderMessageHandler(Object resizedCompositionTarget)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:17:08 [ERR] FModel: System.Windows.Markup.XamlParseException: ''System.Windows.StaticResourceExtension' の値の指定時に例外がスローされました。' 行番号 '17'、行位置 '20'。
+ ---> System.Exception: 'StringToVisibilityConverter' という名前のリソースが見つかりません。リソース名は大文字と小文字を区別します。
+   at System.Windows.StaticResourceExtension.ProvideValueInternal(IServiceProvider serviceProvider, Boolean allowDeferredReference)
+   at MS.Internal.Xaml.Runtime.ClrObjectRuntime.CallProvideValue(MarkupExtension me, IServiceProvider serviceProvider)
+   --- End of inner exception stack trace ---
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, IXamlLineInfo lineInfo, Uri baseUri)
+   at System.Windows.Markup.XamlReader.RewrapException(Exception e, Uri baseUri)
+   at System.Windows.FrameworkTemplate.LoadTemplateXaml(XamlReader templateReader, XamlObjectWriter currentWriter)
+   at System.Windows.FrameworkTemplate.LoadOptimizedTemplateContent(DependencyObject container, IComponentConnector componentConnector, IStyleConnector styleConnector, List`1 affectedChildren, UncommonField`1 templatedNonFeChildrenField)
+   at System.Windows.FrameworkTemplate.LoadContent(DependencyObject container, List`1 affectedChildren)
+   at System.Windows.StyleHelper.ApplyTemplateContent(UncommonField`1 dataField, DependencyObject container, FrameworkElementFactory templateRoot, Int32 lastChildIndex, HybridDictionary childIndexFromChildID, FrameworkTemplate frameworkTemplate)
+   at System.Windows.FrameworkTemplate.ApplyTemplateContent(UncommonField`1 templateDataField, FrameworkElement container)
+   at System.Windows.FrameworkElement.ApplyTemplate()
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Control.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at MS.Internal.Helper.MeasureElementWithSingleChild(UIElement element, Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Grid.MeasureCell(Int32 cell, Boolean forceInfinityV)
+   at System.Windows.Controls.Grid.MeasureCellsGroup(Int32 cellsHead, Size referenceSize, Boolean ignoreDesiredSizeU, Boolean forceInfinityV, Boolean& hasDesiredSizeUChanged)
+   at System.Windows.Controls.Grid.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Border.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Controls.Decorator.MeasureOverride(Size constraint)
+   at System.Windows.Documents.AdornerDecorator.MeasureOverride(Size constraint)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.Window.MeasureOverrideHelper(Size constraint)
+   at System.Windows.Window.MeasureOverride(Size availableSize)
+   at System.Windows.FrameworkElement.MeasureCore(Size availableSize)
+   at System.Windows.UIElement.Measure(Size availableSize)
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.Process_WM_SIZE(UIElement rootUIElement, IntPtr hwnd, WindowMessage msg, IntPtr wParam, IntPtr lParam)
+   at System.Windows.Interop.HwndSource.LayoutFilterMessage(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at MS.Win32.HwndWrapper.WndProc(IntPtr hwnd, Int32 msg, IntPtr wParam, IntPtr lParam, Boolean& handled)
+   at System.Windows.Threading.ExceptionWrapper.InternalRealCall(Delegate callback, Object args, Int32 numArgs)
+   at System.Windows.Threading.ExceptionWrapper.TryCatchWhen(Object source, Delegate callback, Object args, Int32 numArgs, Delegate catchHandler)
+2025-12-25 17:19:23 [INF] FModel: Version 4.4.4.0 (f6b4e919f6f41890fbef8728aec5085455265d1f)
+2025-12-25 17:19:23 [INF] FModel: Windows 11 Pro (64-bit)
+2025-12-25 17:19:23 [INF] FModel: .NET 8.0.22
+2025-12-25 17:19:23 [INF] FModel: Culture ja-JP
+2025-12-25 17:19:27 [INF] FModel: TabItem changed: -1
+2025-12-25 17:19:27 [INF] FModel: TabItem changed: 0
+2025-12-25 17:19:27 [INF] FModel: MainWindow initialized.
+2025-12-25 17:19:28 [INF] FModel: MainWindow loaded.
+2025-12-25 17:19:29 [INF] FModel: ["Get"] [OK(200)] 'https://uedb.dev/svc/api/v1/fortnite/aes'
+2025-12-25 17:19:32 [INF] CUE4Parse: Successfully downloaded Zlib-ng dll at C:\Users\user\fjp-pullrq\Output\.data\zlib-ng2.dll
+2025-12-25 17:19:36 [INF] FModel: ["Post"] [OK(200)] 'https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token' Response: {"access_token":"b1cb9eec17324c9c96b5f8b7ce508600","expires_in":14400,"expires_at":"2025-12-25T12:19:36.384Z","token_type":"bearer","client_id":"3f69e56c7649492c8cc29f1af08a8a12","internal_client":true,"client_service":"prod-fn","product_id":"prod-fn","application_id":"fghi4567FNFBKFz3E4TROb0bmPS8h1GW"}
+2025-12-25 17:19:36 [INF] FModel: Fortnite Live専用のアクセストークンが正常に発行されました。
+2025-12-25 17:19:36 [INF] FModel: リクエストに使用するアクセストークン: b1cb9eec17324c9c96b5f8b7ce508600
+2025-12-25 17:19:37 [INF] FModel: ["Get"] [OK(200)] 'https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/public/assets/v2/platform/Windows/namespace/fn/catalogItem/4fe75bbc5a674f4f9b356b5c90567da5/app/Fortnite/label/Live' Response: {
+  "elements" : [ {
+    "appName" : "Fortnite",
+    "labelName" : "Live-Windows",
+    "buildVersion" : "++Fortnite+Release-39.11-CL-49242330-Windows",
+    "hash" : "ff9e8b86f11f53df111684a7ea7c0b3bc4bd839e",
+    "useSignedUrl" : false,
+    "metadata" : {
+      "installationPoolId" : "FortniteInstallationPool"
+    },
+    "manifests" : [ {
+      "uri" : "https://fastly-download.epicgames.com/Builds/Fortnite/CloudDir/L-Uj_aNFGmfslarjoE--c1TIFHzOQQ.manifest",
+      "queryParams" : [ {
+        "name" : "f_token",
+        "value" : "1766651076_9f8b20fb518ef2288928ad5fe267c0edd0ed7c8f"
+      } ]
+    }, {
+      "uri" : "https://epicgames-download1.akamaized.net/Builds/Fortnite/CloudDir/L-Uj_aNFGmfslarjoE--c1TIFHzOQQ.manifest",
+      "queryParams" : [ {
+        "name" : "ak_token",
+        "value" : "exp=1766651076~hmac=7465303524a98c6ae6ae57343cf8bd3d23bb2937060e9e1ef64877451cd9a27d"
+      } ]
+    }, {
+      "uri" : "https://download.epicgames.com/Builds/Fortnite/CloudDir/L-Uj_aNFGmfslarjoE--c1TIFHzOQQ.manifest",
+      "queryParams" : [ {
+        "name" : "cf_token",
+        "value" : "1766651076_26d67740ee9989193265b270e28ae5b65cf9a68d"
+      } ]
+    }, {
+      "uri" : "https://cloudflare.epicgamescdn.com/Builds/Fortnite/CloudDir/L-Uj_aNFGmfslarjoE--c1TIFHzOQQ.manifest",
+      "queryParams" : [ {
+        "name" : "cfl_token",
+        "value" : "1766651076-AL8V3TsGCkMlu7A%2BFJscSV6YgILA2hVOA4JERpUFeUk%3D"
+      } ]
+    } ],
+    "isPreloaded" : false
+  } ]
+}
+2025-12-25 17:19:37 [INF] FModel: Epic Games APIからマニフェストを正常に取得しました。
+2025-12-25 17:19:41 [INF] FModel: KeyDown: LeftShift, Modifiers: Shift
+2025-12-25 17:19:42 [WRN] CUE4Parse: Pak file "pakchunk10-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:44 [WRN] CUE4Parse: Pak file "pakChunkEarly-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:44 [WRN] CUE4Parse: Pak file "pakchunk0-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:45 [WRN] CUE4Parse: Pak file "pakchunk100ondemand-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:45 [WRN] CUE4Parse: Pak file "pakchunk100fatiad-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:45 [WRN] CUE4Parse: Pak file "pakchunk1038-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:45 [WRN] CUE4Parse: Pak file "pakchunk1036optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:45 [WRN] CUE4Parse: Pak file "pakchunk100ondemandoptional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:46 [WRN] CUE4Parse: Pak file "pakchunk1036-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:46 [WRN] CUE4Parse: Pak file "pakchunk1038optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:46 [WRN] CUE4Parse: Pak file "pakchunk0optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:46 [WRN] CUE4Parse: Pak file "pakchunk0ondemand-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:46 [WRN] CUE4Parse: Pak file "pakchunk0ondemandoptional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:46 [WRN] CUE4Parse: Pak file "pakchunk1045optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:46 [WRN] CUE4Parse: Pak file "pakchunk1039optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:47 [WRN] CUE4Parse: Pak file "pakchunk1043optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:47 [WRN] CUE4Parse: Pak file "pakchunk1041-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:47 [WRN] CUE4Parse: Pak file "pakchunk1042-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:47 [WRN] CUE4Parse: Pak file "pakchunk1047-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:47 [WRN] CUE4Parse: Pak file "pakchunk1044-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:47 [WRN] CUE4Parse: Pak file "pakchunk1044optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:48 [WRN] CUE4Parse: Pak file "pakchunk1048-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:48 [WRN] CUE4Parse: Pak file "pakchunk1046-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:48 [WRN] CUE4Parse: Pak file "pakchunk1045-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:48 [WRN] CUE4Parse: Pak file "pakchunk1041optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1040optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1061optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1039-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1046optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1043-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1056-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1051-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1061-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk11-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk13-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1047optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1048optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1054optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1058optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1054-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk30-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk11optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1058-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1049optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk1060-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:49 [WRN] CUE4Parse: Pak file "pakchunk20-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk13optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk32-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1055optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk20optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk10optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1057-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1050optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk60optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk32optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1055-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1040-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk30ondemand-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1049-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1050-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1052-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1056optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1053-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1057optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1059-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1059optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk1060optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk70-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk60-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk32ondemand-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk50-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk7optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk30ondemandoptional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk2optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk8-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk40optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk90-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk32ondemandoptional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk100-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk30optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk80-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk8optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk5-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk7-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk5optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:50 [WRN] CUE4Parse: Pak file "pakchunk85optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:51 [WRN] CUE4Parse: Pak file "pakchunk85-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:51 [WRN] CUE4Parse: Pak file "pakchunk90optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:51 [WRN] CUE4Parse: Pak file "pakchunk100optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:51 [WRN] CUE4Parse: Pak file "pakchunk80optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:51 [WRN] CUE4Parse: Pak file "pakchunk2-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:51 [WRN] CUE4Parse: Pak file "pakchunk50optional-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:52 [WRN] CUE4Parse: Pak file "pakchunk40-WindowsClient.pak" has unsupported version 12
+2025-12-25 17:19:58 [INF] FModel: GAME_UE5_6 (DesktopMobile) | Archives: x187 | AES: x26 | Loose Files: x0
+2025-12-25 17:19:58 [INF] CUE4Parse: IoStore "pakchunk5optional-WindowsClient.utoc": 16 files, mount point: "FortniteGame/Content/L10N/fr/", order 3, version 8 in 00:00:00.0105153
+2025-12-25 17:19:58 [INF] CUE4Parse: IoStore "pakchunk7optional-WindowsClient.utoc": 11 files, mount point: "FortniteGame/Content/L10N/pl/", order 3, version 8 in 00:00:00.0105869
+2025-12-25 17:19:58 [INF] CUE4Parse: IoStore "pakchunk85optional-WindowsClient.utoc": 617 files, order 3, version 8 in 00:00:00.0108707
+2025-12-25 17:19:58 [INF] CUE4Parse: IoStore "pakchunk8-WindowsClient.utoc": 72 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0107483
+2025-12-25 17:19:58 [WRN] CUE4Parse: "pakchunk5optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:58 [WRN] CUE4Parse: "pakchunk7optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:58 [WRN] CUE4Parse: "pakchunk50optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:58 [WRN] CUE4Parse: "pakchunk85optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:58 [INF] CUE4Parse: Pak "pakchunk50optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.2800464
+2025-12-25 17:19:58 [INF] CUE4Parse: Pak "pakchunk7optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.2800434
+2025-12-25 17:19:58 [INF] CUE4Parse: Pak "pakchunk5optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.2800554
+2025-12-25 17:19:58 [INF] CUE4Parse: Pak "pakchunk85optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.2800314
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk100fatiad-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk32ondemand-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk100fatiad-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.0035796
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk32ondemand-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.0036750
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk8optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk2-WindowsClient.utoc": 77 files, mount point: "FortniteGame/Content/L10N/de/", order 3, version 8 in 00:00:00.0056157
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk40optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk8optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.0138467
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk0optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk50-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 12 in 00:00:00.0158568
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk80-WindowsClient.pak": 345 files, mount point: "FortniteGame/", order 3, version 12 in 00:00:00.0170575
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk7-WindowsClient.utoc": 61 files, mount point: "FortniteGame/Content/L10N/pl/", order 3, version 8 in 00:00:00.0070201
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk30ondemandoptional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk85-WindowsClient.pak": 23 files, mount point: "FortniteGame/", order 3, version 12 in 00:00:00.0198817
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk32optional-WindowsClient.utoc": 2465 files, order 3, version 8 in 00:00:00.0206008
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk40optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.0165612
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk32optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk30optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk0optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.0244318
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk70-WindowsClient.pak": 58 files, mount point: "FortniteGame/", order 3, version 12 in 00:00:00.0194616
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk8-WindowsClient.pak": 4 files, mount point: "FortniteGame/Content/", order 3, version 12 in 00:00:00.0206157
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk70-WindowsClient.utoc": 231 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.1242580
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk90-WindowsClient.pak": 41 files, mount point: "FortniteGame/", order 3, version 12 in 00:00:00.1285693
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk30ondemandoptional-WindowsClient.utoc": 2391 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0325473
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk90optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk32optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.1503395
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk30ondemandoptional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.1477004
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk8optional-WindowsClient.utoc": 15 files, mount point: "FortniteGame/Content/L10N/ru/", order 3, version 8 in 00:00:00.0503295
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk0ondemand-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/Effects/Fort_Effects/Textures/Electric/", order 3, version 8 in 00:00:00.0494251
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk5-WindowsClient.utoc": 72 files, mount point: "FortniteGame/Content/L10N/fr/", order 3, version 8 in 00:00:00.0517115
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk2optional-WindowsClient.utoc": 20 files, mount point: "FortniteGame/Content/L10N/de/", order 3, version 8 in 00:00:00.0521605
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakChunkEarly-WindowsClient.utoc": 3 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0536857
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk80optional-WindowsClient.utoc": 564 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0556474
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk20optional-WindowsClient.utoc": 1062 files, mount point: "FortniteGame/Content/", order 3, version 8 in 00:00:00.0586076
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk10optional-WindowsClient.utoc": 717 files, order 3, version 8 in 00:00:00.0591939
+2025-12-25 17:19:59 [INF] CUE4Parse: Pak "pakchunk30optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.1837906
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk90optional-WindowsClient.utoc": 1419 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0953847
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk13optional-WindowsClient.utoc": 6843 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2437050
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk0ondemandoptional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk13optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk2-WindowsClient.pak": 1 files, mount point: "FortniteGame/Content/Localization/Fortnite_locchunk2/", order 3, version 12 in 00:00:00.3296578
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk2optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk30ondemand-WindowsClient.utoc": 2350 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0924728
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk0ondemandoptional-WindowsClient.utoc": 1 files, mount point: "FortniteGame/Content/Effects/Fort_Effects/Textures/Electric/", order 3, version 8 in 00:00:00.2569850
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk60optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk11optional-WindowsClient.utoc": 4716 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2491173
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk20optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk32ondemandoptional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk30ondemand-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk80optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [WRN] CUE4Parse: "pakchunk0ondemand-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk10optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk90optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.4210202
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk20-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 12 in 00:00:00.2994760
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1038-WindowsClient.utoc": 475 files (475 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0464816
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1036optional-WindowsClient.utoc": 9 files (9 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/Events/DrySquashPortal/Content/Props/Commerce_GoldTerminal_A/Textures/", order 3, version 8 in 00:00:00.2061659
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk7-WindowsClient.pak": 1 files, mount point: "FortniteGame/Content/Localization/Fortnite_locchunk7/", order 3, version 12 in 00:00:00.3059960
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1036-WindowsClient.utoc": 34 files (34 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2063191
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1040-WindowsClient.utoc": 936 files (936 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0693856
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk32-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 12 in 00:00:00.3265381
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk11optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:19:59 [INF] CUE4Parse: IoStore "pakchunk60optional-WindowsClient.utoc": 1568 files, order 3, version 8 in 00:00:00.2567045
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1039-WindowsClient.utoc": 897 files (897 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0291913
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk0optional-WindowsClient.utoc": 1229 files, order 3, version 8 in 00:00:00.3317584
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk13optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.3405857
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1038-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.2755430
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk100ondemandoptional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk100optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1039optional-WindowsClient.utoc": 128 files (128 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2037648
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1040-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.2768091
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1061-WindowsClient.utoc": 316 files (316 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0319047
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk0ondemandoptional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5697935
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk5-WindowsClient.pak": 1 files, mount point: "FortniteGame/Content/Localization/Fortnite_locchunk5/", order 3, version 12 in 00:00:00.4780212
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1036optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk100ondemand-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1038optional-WindowsClient.utoc": 51 files (51 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.3318145
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1047optional-WindowsClient.utoc": 4 files (4 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Animation/Props/Gadget_BeepBop/Textures/", order 3, version 8 in 00:00:00.0547594
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk11optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5408053
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1047-WindowsClient.utoc": 35 files (35 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0554856
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk10optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5931719
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1043-WindowsClient.utoc": 265 files (265 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0568432
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk30ondemand-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5906079
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk80optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5951837
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk32ondemandoptional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5906646
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk60optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5920725
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk0ondemand-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5930564
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk20optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5896788
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk2optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5898056
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1039-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.3337449
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk10-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 12 in 00:00:00.5943151
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk100-WindowsClient.pak": 22 files, mount point: "FortniteGame/Content/", order 3, version 12 in 00:00:00.5930166
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk11-WindowsClient.pak": 41 files, mount point: "FortniteGame/", order 3, version 12 in 00:00:00.5888292
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1040optional-WindowsClient.utoc": 219 files (219 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:00.3352214
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk50optional-WindowsClient.utoc": 1265 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.5833413
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk40-WindowsClient.pak": 706 files, mount point: "FortniteGame/", order 3, version 12 in 00:00:00.5918606
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1040optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk100optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5143986
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk100ondemandoptional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5991459
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk30-WindowsClient.pak": 1967 files, mount point: "FortniteGame/", order 3, version 12 in 00:00:00.7793888
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1049optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1036-WindowsClient.pak": 24 files (24 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.5351044
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1039optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1042-WindowsClient.utoc": 23 files (23 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.4531232
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1038optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1039optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5970619
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1047optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1061optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1043optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk100ondemandoptional-WindowsClient.utoc": 5292 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.6037555
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1061optional-WindowsClient.utoc": 41 files (41 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2521498
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1047-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.2606897
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk100ondemand-WindowsClient.utoc": 3880 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:00.9253262
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1050optional-WindowsClient.utoc": 33 files (33 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/CosmeticShoes/Content/Assets/FORT_Shoes/", order 3, version 8 in 00:00:00.0376064
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1049optional-WindowsClient.utoc": 50 files (50 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.2346470
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1054-WindowsClient.utoc": 504 files (504 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0390488
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1046optional-WindowsClient.utoc": 12 files (12 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/CosmeticCompanions/Content/", order 3, version 8 in 00:00:00.0436789
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1043-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.3009355
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1036optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5798532
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk100ondemand-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.8259515
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1045optional-WindowsClient.utoc": 35 files (35 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0424769
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1040optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.5807598
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1054optional-WindowsClient.utoc": 75 files (75 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0430798
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1045-WindowsClient.utoc": 183 files (183 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0435734
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1056optional-WindowsClient.utoc": 31 files (31 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/", order 3, version 8 in 00:00:00.0430672
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1049-WindowsClient.utoc": 360 files (360 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2396651
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1049-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.2736744
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1046optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk13-WindowsClient.pak": 3824 files, mount point: "FortniteGame/", order 3, version 12 in 00:00:00.8452421
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1050-WindowsClient.utoc": 125 files (125 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0261200
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1056optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1045-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.0919244
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1045optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1061-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.3513495
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1050optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1060optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1042-WindowsClient.pak": 20 files (20 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.3546826
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1049optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.2897154
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1054-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.0999131
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1056-WindowsClient.utoc": 198 files (198 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0999802
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1046-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.1049322
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1060optional-WindowsClient.utoc": 42 files (42 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/VehicleCosmetics/Content/", order 3, version 8 in 00:00:00.0444402
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1043optional-WindowsClient.utoc": 70 files (70 encrypted), mount point: "FortniteGame/Plugins/GameFeatures/CosmeticShoes/Content/Assets/FORT_Shoes/", order 3, version 8 in 00:00:00.2603303
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1057optional-WindowsClient.utoc": 81 files (81 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.0148951
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1056-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.3147347
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1060-WindowsClient.utoc": 175 files (175 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2582629
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1060-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.2821938
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1059optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1054optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1057-WindowsClient.utoc": 495 files (495 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2291902
+2025-12-25 17:20:00 [WRN] CUE4Parse: "pakchunk1057optional-WindowsClient.pak" has strange mount point "/", mounting to root
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1053-WindowsClient.utoc": 79 files (79 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2617226
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk100optional-WindowsClient.utoc": 18497 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:01.2668196
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1050-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.3203654
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1046-WindowsClient.utoc": 1510 files (1510 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.3021938
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1057-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.2685891
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1038optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.8978124
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1043optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.6197717
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1053-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.3010285
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1047optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.6203400
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1061optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.6195380
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1059optional-WindowsClient.utoc": 160 files (160 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2558213
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1046optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.3630223
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1056optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.3613316
+2025-12-25 17:20:00 [INF] CUE4Parse: IoStore "pakchunk1059-WindowsClient.utoc": 895 files (895 encrypted), mount point: "FortniteGame/", order 3, version 8 in 00:00:00.2595199
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1045optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.3624015
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1050optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.3612797
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1060optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.3241785
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1059-WindowsClient.pak": 23 files (23 encrypted), mount point: "FortniteGame/", order 3, version 12 in 00:00:00.2660613
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk0-WindowsClient.pak": 10022 files (2238 encrypted), order 3, version 12 in 00:00:01.1972631
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1059optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.3313130
+2025-12-25 17:20:00 [INF] CUE4Parse: Pak "pakchunk1054optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.4316488
+2025-12-25 17:20:01 [INF] CUE4Parse: IoStore "pakchunk90-WindowsClient.utoc": 10958 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:01.4875067
+2025-12-25 17:20:01 [INF] CUE4Parse: Pak "pakchunk1057optional-WindowsClient.pak": 0 files, order 3, version 12 in 00:00:00.6060003
+2025-12-25 17:20:01 [INF] CUE4Parse: IoStore "pakchunk85-WindowsClient.utoc": 9297 files, order 3, version 8 in 00:00:01.4887025
+2025-12-25 17:20:01 [INF] CUE4Parse: Pak "pakchunk60-WindowsClient.pak": 10035 files, mount point: "FortniteGame/", order 3, version 12 in 00:00:01.5838304
+2025-12-25 17:20:01 [INF] CUE4Parse: IoStore "pakchunk40optional-WindowsClient.utoc": 22813 files, order 3, version 8 in 00:00:01.9614273
+2025-12-25 17:20:01 [INF] CUE4Parse: IoStore "pakchunk10-WindowsClient.utoc": 15693 files, order 3, version 8 in 00:00:01.8791012
+2025-12-25 17:20:01 [INF] CUE4Parse: IoStore "pakchunk30optional-WindowsClient.utoc": 24840 files, order 3, version 8 in 00:00:02.0797898
+2025-12-25 17:20:01 [INF] CUE4Parse: IoStore "pakchunk80-WindowsClient.utoc": 7572 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:01.9535794
+2025-12-25 17:20:01 [INF] CUE4Parse: IoStore "pakchunk0-WindowsClient.utoc": 23455 files, order 3, version 8 in 00:00:02.3377173
+2025-12-25 17:20:02 [INF] CUE4Parse: IoStore "pakchunk20-WindowsClient.utoc": 20424 files, order 3, version 8 in 00:00:02.4028599
+2025-12-25 17:20:02 [INF] CUE4Parse: Pak "pakChunkEarly-WindowsClient.pak": 24379 files (2238 encrypted), order 3, version 12 in 00:00:02.6118836
+2025-12-25 17:20:02 [INF] CUE4Parse: IoStore "pakchunk50-WindowsClient.utoc": 17670 files, order 3, version 8 in 00:00:02.8085181
+2025-12-25 17:20:04 [INF] CUE4Parse: IoStore "pakchunk32ondemandoptional-WindowsClient.utoc": 76735 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:04.5975390
+2025-12-25 17:20:04 [INF] CUE4Parse: IoStore "pakchunk32ondemand-WindowsClient.utoc": 76892 files, mount point: "FortniteGame/", order 3, version 8 in 00:00:04.9177732
+2025-12-25 17:20:05 [INF] CUE4Parse: IoStore "pakchunk100fatiad-WindowsClient.utoc": 165790 files, mount point: "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/", order 3, version 8 in 00:00:07.4700325
+2025-12-25 17:20:06 [INF] FModel: KeyDown: System, Modifiers: Alt
+2025-12-25 17:20:07 [INF] FModel: KeyDown: System, Modifiers: Alt
+2025-12-25 17:20:07 [INF] FModel: MainWindow closing.
+2025-12-25 17:20:07 [INF] CUE4Parse: IoStore "pakchunk32-WindowsClient.utoc": 101987 files, order 3, version 8 in 00:00:07.6801967
+2025-12-25 17:20:07 [INF] FModel: ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

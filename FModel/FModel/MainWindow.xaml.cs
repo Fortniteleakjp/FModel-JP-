@@ -1,3 +1,4 @@
+using Serilog;
 using System;
 using System.Collections.Generic; // List<> を使用するために追加
 using System.ComponentModel;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives; // GeneratorStatus 用
 using System.Windows.Input;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
@@ -20,6 +22,7 @@ using FModel.Framework; // RelayCommand を使用するためのやつ
 using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
 using Microsoft.Win32;
 using FModel.Features.Athena;
+using FModel.ViewModels.CUE4Parse;
 
 namespace FModel;
 
@@ -28,42 +31,9 @@ namespace FModel;
 /// </summary>
 public partial class MainWindow
 {
-    // NEW エクスプローラー ON/OFF切り替え（タブ制御）
-    private const string ExplorerTabHeader = "NEW エクスプローラー";
-    private FModel.ViewModels.TabItem _explorerTabVm;
-    private void OnNewExplorerChecked(object sender, RoutedEventArgs e)
-    {
-        if (_explorerTabVm == null)
-        {
-            // ExplorerTab用のViewModelを生成
-            _explorerTabVm = new FModel.ViewModels.TabItem(null, "NEW エクスプローラー");
-            _explorerTabVm.Content = new FModel.Views.ExplorerTab();
-            _applicationView.CUE4Parse.TabControl.AddTab(_explorerTabVm);
-        }
-        _applicationView.CUE4Parse.TabControl.SelectedTab = _explorerTabVm;
-    }
-
-    private void OnNewExplorerUnchecked(object sender, RoutedEventArgs e)
-    {
-        if (_explorerTabVm != null)
-        {
-            _applicationView.CUE4Parse.TabControl.RemoveTab(_explorerTabVm);
-            _explorerTabVm = null;
-        }
-    }
-    // NEW エクスプローラー ボタンクリック時の処理
-    private void OnNewExplorerClick(object sender, RoutedEventArgs e)
-    {
-        // TODO: 本格的なエクスプローラーUIをここで開く
-        System.Windows.MessageBox.Show(
-            "新しいエクスプローラーウィンドウを開きます（ここにエクスプローラーUIを実装）",
-            "NEW エクスプローラー",
-            System.Windows.MessageBoxButton.OK,
-            System.Windows.MessageBoxImage.Information);
-    }
     public static MainWindow YesWeCats;
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
-    private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    private static ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
     public ICommand OpenRecentFileCommand { get; }
@@ -71,17 +41,25 @@ public partial class MainWindow
 
     public MainWindow()
     {
+        DataContext = _applicationView;
+        InitializeComponent();
+
+        LogToFile("MainWindow initialized.");
+
         CommandBindings.Add(new CommandBinding(new RoutedCommand("ReloadMappings", typeof(MainWindow), new InputGestureCollection { new KeyGesture(Key.F12) }), OnMappingsReload));
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, (_, _) => OnOpenAvalonFinder()));
 
         OpenRecentFileCommand = new RelayCommand(OnOpenRecentFile);
         ClearRecentFilesCommand = new RelayCommand(OnClearRecentFiles);
 
-        DataContext = _applicationView;
-        InitializeComponent();
-
         // テクスチャプレビュー設定の変更を監視
         UserSettings.Default.PropertyChanged += OnUserSettingsPropertyChanged;
+
+        // 新しいアセットエクスプローラーのホットキー切り替え
+        if (UserSettings.Default.FeaturePreviewNewAssetExplorer)
+        {
+            _applicationView.IsAssetsExplorerVisible = true;
+        }
 
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
@@ -100,6 +78,7 @@ public partial class MainWindow
     {
         _discordHandler.Dispose();
         UserSettings.Default.PropertyChanged -= OnUserSettingsPropertyChanged;
+        LogToFile("MainWindow closing.");
         if (UserSettings.Default.RestoreTabsOnStartup)
         {
             var tabPaths = _applicationView.CUE4Parse.TabControl.TabsItems.Select(t => t.Entry.Path).Where(p => p != "New Tab").ToList();
@@ -109,6 +88,7 @@ public partial class MainWindow
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        LogToFile("MainWindow loaded.");
         var newOrUpdated = UserSettings.Default.ShowChangelog;
 #if !DEBUG
         ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(true);
@@ -149,6 +129,7 @@ public partial class MainWindow
 
         await Dispatcher.InvokeAsync(() =>
         {
+            LogToFile("MainWindow post-initialization complete.");
             if (UserSettings.Default.RestoreTabsOnStartup && UserSettings.Default.CurrentDir.LastOpenedTabs?.Any() == true)
             {
                 var paths = UserSettings.Default.CurrentDir.LastOpenedTabs;
@@ -170,25 +151,24 @@ public partial class MainWindow
 
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        LogToFile("GridSplitter double-clicked.");
         RootGrid.ColumnDefinitions[0].Width = GridLength.Auto;
     }
 
     private void OnWindowKeyDown(object sender, KeyEventArgs e)
     {
+        LogToFile($"KeyDown: {e.Key}, Modifiers: {Keyboard.Modifiers}");
         if (e.OriginalSource is TextBox || e.OriginalSource is TextArea && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             return;
 
         if (_threadWorkerView.CanBeCanceled && e.Key == Key.Escape)
         {
+            LogToFile("Cancel requested by ESC key.");
             _applicationView.Status.SetStatus(EStatusKind.Stopping);
             _threadWorkerView.Cancel();
         }
-        else if (_applicationView.Status.IsReady && e.Key == Key.F && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
-            OnSearchViewClick(null, null);
-        else if (e.Key == Key.Left && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
-            _applicationView.CUE4Parse.TabControl.SelectedTab.GoPreviousImage();
-        else if (e.Key == Key.Right && _applicationView.CUE4Parse.TabControl.SelectedTab.HasImage)
-            _applicationView.CUE4Parse.TabControl.SelectedTab.GoNextImage();
+        else if (_applicationView.Status.IsReady && UserSettings.Default.FeaturePreviewNewAssetExplorer && UserSettings.Default.SwitchAssetExplorer.IsTriggered(e.Key))
+            _applicationView.IsAssetsExplorerVisible = !_applicationView.IsAssetsExplorerVisible;
         else if (UserSettings.Default.AssetAddTab.IsTriggered(e.Key))
             _applicationView.CUE4Parse.TabControl.AddTab();
         else if (UserSettings.Default.AssetRemoveTab.IsTriggered(e.Key))
@@ -197,57 +177,151 @@ public partial class MainWindow
             _applicationView.CUE4Parse.TabControl.GoLeftTab();
         else if (UserSettings.Default.AssetRightTab.IsTriggered(e.Key))
             _applicationView.CUE4Parse.TabControl.GoRightTab();
-        else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key) && LeftTabControl.SelectedIndex > 0)
-            LeftTabControl.SelectedIndex--;
-        else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && LeftTabControl.SelectedIndex < LeftTabControl.Items.Count - 1)
-            LeftTabControl.SelectedIndex++;
+        // else if (UserSettings.Default.DirLeftTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex > 0)
+        //     _applicationView.SelectedLeftTabIndex--;
+        // else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && _applicationView.SelectedLeftTabIndex < LeftTabControl.Items.Count - 1)
+        //     _applicationView.SelectedLeftTabIndex++;
     }
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
     {
-        Helper.OpenWindow<AdonisWindow>("検索ウィンドウ", () => new SearchView().Show());
+        LogToFile("SearchView opened.");
+        var searchView = Helper.GetWindow<SearchView>("検索", () => new SearchView());
+        searchView.FocusTab(ESearchViewTab.SearchView);
+    }
+
+    private void OnRefViewClick(object sender, RoutedEventArgs e)
+    {
+        LogToFile("RefView opened.");
+        var searchView = Helper.GetWindow<SearchView>("検索ウィンドウ", () => new SearchView());
+        searchView.FocusTab(ESearchViewTab.RefView);
     }
 
     private void OnContentSearchViewClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("ContentSearchView opened.");
         Helper.OpenWindow<AdonisWindow>("ファイル内検索", () => new ContentSearchView().Show());
     }
 
     private void OnProfileViewClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("ProfileView opened.");
         Helper.OpenWindow<AdonisWindow>("プロファイル", () => new ProfileWindow().Show());
     }
 
+    private bool _isHandlingTabChange = false;
     private void OnTabItemChange(object sender, SelectionChangedEventArgs e)
     {
-        if (e.OriginalSource is not TabControl tabControl)
-            return;
+        if (_isHandlingTabChange) return;
+        _isHandlingTabChange = true;
+        try
+        {
+            LogToFile($"TabItem changed: {((TabControl)sender).SelectedIndex}");
+            if (e.OriginalSource is not TabControl tabControl)
+                return;
 
-        (tabControl.SelectedItem as System.Windows.Controls.TabItem)?.Focus();
+            // SelectedLeftTabIndexはここで変更しない！
+            switch (tabControl.SelectedIndex)
+            {
+                case 0:
+                    DirectoryFilesListBox.Focus();
+                    break;
+                case 1:
+                    AssetsFolderName.Focus();
+                    break;
+                case 2:
+                    AssetsListName.Focus();
+                    break;
+            }
+        }
+        finally
+        {
+            _isHandlingTabChange = false;
+        }
     }
 
     private async void OnMappingsReload(object sender, ExecutedRoutedEventArgs e)
     {
+        LogToFile("Mappings reloaded.");
         await _applicationView.CUE4Parse.InitAllMappings(true);
     }
 
     private void OnOpenAvalonFinder()
     {
-        _applicationView.CUE4Parse.TabControl.SelectedTab.HasSearchOpen = true;
+        LogToFile("AvalonFinder opened.");
+        if (_applicationView.IsAssetsExplorerVisible)
+        {
+            AssetsExplorerSearch.TextBox.Focus();
+            AssetsExplorerSearch.TextBox.SelectAll();
+        }
+        else if (_applicationView.CUE4Parse.TabControl.SelectedTab is { } tab)
+        {
+            tab.HasSearchOpen = true;
+            AvalonEditor.YesWeSearch.Focus();
+            AvalonEditor.YesWeSearch.SelectAll();
+        }
     }
 
     private void OnAssetsTreeMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        LogToFile("AssetsTree double-clicked.");
         if (sender is not TreeView { SelectedItem: TreeItem treeItem } || treeItem.Folders.Count > 0) return;
 
-        LeftTabControl.SelectedIndex++;
+        if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
+            LeftTabControl.SelectedIndex++;
     }
 
-    private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    // AssetsExplorerは存在しないため、AssetsFolderNameに修正
+    private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsListName.ItemContainerGenerator, EventArgs.Empty);
+    private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
     {
+        if (sender is not ItemContainerGenerator { Status: GeneratorStatus.ContainersGenerated } generator)
+            return;
+
+        var foundVisibleItem = false;
+        var itemCount = generator.Items.Count;
+
+        for (var i = 0; i < itemCount; i++)
+        {
+            var container = generator.ContainerFromIndex(i);
+            if (container == null)
+            {
+                if (foundVisibleItem) break; // we're past the visible range already
+                continue; // keep scrolling to find visible items
+            }
+
+            if (container is FrameworkElement { IsVisible: true } && generator.Items[i] is GameFileViewModel file)
+            {
+                foundVisibleItem = true;
+                file.OnIsVisible();
+            }
+        }
+    }
+
+    private bool _isHandlingSelectionChanged;
+    private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (_isHandlingSelectionChanged) return;
+        if (sender is not TreeView { SelectedItem: TreeItem }) return;
+        try
+        {
+            _isHandlingSelectionChanged = true;
+            if (UserSettings.Default.FeaturePreviewNewAssetExplorer && !_applicationView.IsAssetsExplorerVisible)
+                _applicationView.IsAssetsExplorerVisible = true;
+        }
+        finally
+        {
+            _isHandlingSelectionChanged = false;
+        }
+    }    private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        LogToFile("AssetsList double-clicked.");
         if (sender is not ListBox listBox) return;
 
-        var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
+        var selectedItems = listBox.SelectedItems
+            .OfType<GameFileViewModel>()
+            .Select(vm => vm.Asset)
+            .ToList();
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
         foreach (var item in selectedItems)
         {
@@ -257,14 +331,26 @@ public partial class MainWindow
 
     private async void OnFolderExtractClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder extract requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractFolder(cancellationToken, folder); });
         }
     }
 
+    private void OnClearFilterClick(object sender, RoutedEventArgs e)
+    {
+        LogToFile("Clear filter clicked.");
+        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        {
+            folder.SearchText = string.Empty;
+            folder.SelectedCategory = EAssetCategory.All;
+        }
+    }
+
     private async void OnFolderExportClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder export requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExportFolder(cancellationToken, folder); });
@@ -278,6 +364,7 @@ public partial class MainWindow
 
     private async void OnFolderSaveClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder save requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveFolder(cancellationToken, folder); });
@@ -288,20 +375,9 @@ public partial class MainWindow
             });
         }
     }
-    private async void OnFolderSaveDecompiled(object sender, RoutedEventArgs e)
-    {
-        if (AssetsFolderName.SelectedItem is TreeItem folder)
-        {
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.SaveDecompiled(cancellationToken, folder); });
-            FLogger.Append(ELog.Information, () =>
-            {
-                FLogger.Text("Successfully saved ", Constants.WHITE);
-                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.PropertiesDirectory, true);
-            });
-        }
-    }
     private async void OnFolderTextureClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder texture export requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.TextureFolder(cancellationToken, folder); });
@@ -315,6 +391,7 @@ public partial class MainWindow
 
     private async void OnFolderModelClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder model export requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ModelFolder(cancellationToken, folder); });
@@ -328,6 +405,7 @@ public partial class MainWindow
 
     private async void OnFolderAnimationClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Folder animation export requested.");
         if (AssetsFolderName.SelectedItem is TreeItem folder)
         {
             await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AnimationFolder(cancellationToken, folder); });
@@ -341,6 +419,7 @@ public partial class MainWindow
 
     private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Favorite directory added.");
         if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
 
         _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
@@ -350,18 +429,21 @@ public partial class MainWindow
 
     private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Directory path copied.");
         if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
         Clipboard.SetText(folder.PathAtThisPoint);
     }
 
     private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
     {
+        LogToFile("Delete search clicked.");
         AssetsSearchName.Text = string.Empty;
         AssetsListName.ScrollIntoView(AssetsListName.SelectedItem);
     }
 
     private void OnFilterTextChanged(object sender, TextChangedEventArgs e)
     {
+        LogToFile("Filter text changed.");
         if (sender is not TextBox textBox || AssetsFolderName.SelectedItem is not TreeItem folder)
             return;
 
@@ -371,6 +453,7 @@ public partial class MainWindow
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        LogToFile("ListBox double-clicked.");
         if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
         UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
         _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
@@ -378,23 +461,78 @@ public partial class MainWindow
 
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
+        LogToFile($"PreviewKeyDown: {e.Key}");
+        if (!_applicationView.Status.IsReady || sender is not ListBox listBox)
+            return;
+        if (e.Key != Key.Enter)
+            return;
+        if (listBox.SelectedItem == null)
+            return;
 
-        switch (e.Key)
+        switch (listBox.SelectedItem)
         {
-            case Key.Enter:
-                var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
-                await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
-                foreach (var item in selectedItems)
+            case GameFileViewModel file:
+                _applicationView.IsAssetsExplorerVisible = false;
+                if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
+                    ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
+                await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [file.Asset]));
+                break;
+            case TreeItem folder:
+                if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
+                    ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
+
+                var parent = folder.Parent;
+                while (parent != null)
                 {
-                    AddFileToRecent(item.Path);
+                    parent.IsExpanded = true;
+                    parent = parent.Parent;
                 }
+
+                var childFolder = folder;
+                while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
+                {
+                    childFolder.IsExpanded = true;
+                    childFolder = childFolder.Folders[0];
+                }
+
+                childFolder.IsExpanded = true;
+                childFolder.IsSelected = true;
                 break;
         }
     }
 
+    private void FeaturePreviewOnUnchecked(object sender, RoutedEventArgs e)
+    {
+        LogToFile("Feature preview unchecked.");
+        _applicationView.IsAssetsExplorerVisible = false;
+    }
+
+    private async void OnFoldersPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        LogToFile($"FoldersPreviewKeyDown: {e.Key}");
+        if (e.Key != Key.Enter || sender is not TreeView treeView || treeView.SelectedItem is not TreeItem folder)
+            return;
+
+        if ((folder.IsExpanded || folder.Folders.Count == 0) && folder.AssetsList.Assets.Count > 0)
+        {
+            // _applicationView.SelectedLeftTabIndex++; // 無限ループ防止のため削除
+            return;
+        }
+
+        var childFolder = folder;
+        while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Assets.Count == 0)
+        {
+            childFolder.IsExpanded = true;
+            childFolder = childFolder.Folders[0];
+        }
+
+        childFolder.IsExpanded = true;
+        childFolder.IsSelected = true;
+    }
+
     private async void OnOpenRecentFile(object? parameter)
     {
+        LogToFile($"Open recent file: {parameter}");
         if (parameter is not string filePath || string.IsNullOrEmpty(filePath)) return;
 
         if (_applicationView.CUE4Parse.Provider.TryGetGameFile(filePath, out var gameFile))
@@ -414,6 +552,7 @@ public partial class MainWindow
 
     private void OnClearRecentFiles(object? parameter)
     {
+        LogToFile("Clear recent files requested.");
         FLogger.Append(ELog.Information, () => FLogger.Text("Attempting to clear recent files.", Constants.WHITE, true));
         UserSettings.Default.RecentFiles.Clear();
         UserSettings.Save();
@@ -536,10 +675,10 @@ public partial class MainWindow
 
     private void OnUserSettingsPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(UserSettings.PreviewTexturesAssetExplorer))
-        {
-            RefreshAssetListPreview();
-        }
+        // if (e.PropertyName == nameof(UserSettings.PreviewTexturesAssetExplorer))
+        // {
+        //     RefreshAssetListPreview();
+        // }
     }
 
     private void RefreshAssetListPreview()
@@ -550,22 +689,16 @@ public partial class MainWindow
         // アセットリストのプレビュー画像をリフレッシュ
         foreach (var item in folder.AssetsList.Assets)
         {
-            if (item is GameFile gameFile)
+            if (item is GameFileViewModel viewModel)
             {
-                var viewModel = new GameFileViewModel(gameFile);
                 if (UserSettings.Default.PreviewTexturesAssetExplorer)
                 {
-                    viewModel.OnVisibleChanged(true);
+                    viewModel.OnIsVisible();
                 }
             }
         }
         
         // ビューを更新
         folder.AssetsList.AssetsView.Refresh();
-    }
-
-    private void TabControlName_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-
     }
 }
