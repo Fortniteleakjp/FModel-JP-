@@ -59,6 +59,12 @@ public partial class MainWindow
         // テクスチャプレビュー設定の変更を監視
         UserSettings.Default.PropertyChanged += OnUserSettingsPropertyChanged;
 
+        // 新しいアセットエクスプローラーのホットキー切り替え
+        if (UserSettings.Default.FeaturePreviewNewAssetExplorer)
+        {
+            _applicationView.IsAssetsExplorerVisible = true;
+        }
+
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
 
@@ -265,7 +271,8 @@ public partial class MainWindow
         LogToFile("AssetsTree double-clicked.");
         if (sender is not TreeView { SelectedItem: TreeItem treeItem } || treeItem.Folders.Count > 0) return;
 
-        LeftTabControl.SelectedIndex++;
+        if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
+            LeftTabControl.SelectedIndex++;
     }
 
     // AssetsExplorerは存在しないため、AssetsFolderNameに修正
@@ -302,10 +309,9 @@ public partial class MainWindow
         if (sender is not TreeView { SelectedItem: TreeItem }) return;
         try
         {
-            //_isHandlingSelectionChanged = true;
-            //if (!_applicationView.IsAssetsExplorerVisible)
-            //    _applicationView.IsAssetsExplorerVisible = true;
-            // _applicationView.SelectedLeftTabIndex = 1; // 無限ループ防止のため削除
+            _isHandlingSelectionChanged = true;
+            if (UserSettings.Default.FeaturePreviewNewAssetExplorer && !_applicationView.IsAssetsExplorerVisible)
+                _applicationView.IsAssetsExplorerVisible = true;
         }
         finally
         {
@@ -471,11 +477,13 @@ public partial class MainWindow
         {
             case GameFileViewModel file:
                 _applicationView.IsAssetsExplorerVisible = false;
-                // ApplicationService.ApplicationView.SelectedLeftTabIndex = 2; // 無限ループ防止のため削除
+                if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
+                    ApplicationService.ApplicationView.SelectedLeftTabIndex = 2;
                 await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [file.Asset]));
                 break;
             case TreeItem folder:
-                // ApplicationService.ApplicationView.SelectedLeftTabIndex = 1; // 無限ループ防止のため削除
+                if (!UserSettings.Default.FeaturePreviewNewAssetExplorer)
+                    ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
 
                 var parent = folder.Parent;
                 while (parent != null)
@@ -696,5 +704,10 @@ public partial class MainWindow
         
         // ビューを更新
         folder.AssetsList.AssetsView.Refresh();
+    }
+
+    private void AssetsExplorerView_Loaded(object sender, RoutedEventArgs e)
+    {
+
     }
 }

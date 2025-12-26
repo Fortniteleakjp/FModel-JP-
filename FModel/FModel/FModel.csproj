@@ -270,6 +270,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\Resources\Converters\InvertBooleanToVisibilityConverter.cs" />
   </ItemGroup>
 
   <ItemGroup>
