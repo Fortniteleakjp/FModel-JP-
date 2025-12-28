@@ -68,7 +68,7 @@ namespace FModel.Views
                 return;
             }
 
-            _applicationView.CUE4Parse.SearchVm.ContentSearchResults.Clear();
+            _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
             StatusTextBlock.Text = "Searching...";
 
             var progressVM = new ProgressWindowViewModel
@@ -98,10 +98,10 @@ namespace FModel.Views
             {
                 var results = await searchTask;
                 
-                _applicationView.CUE4Parse.SearchVm.ContentSearchResults.Clear();
+                _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
                 foreach (var file in results)
                 {
-                    _applicationView.CUE4Parse.SearchVm.ContentSearchResults.Add(file);
+                    _applicationView.CUE4Parse.SearchVm.SearchResults.Add(file);
                 }
                 StatusTextBlock.Text = $"{results.Count}つのファイルがヒットしました";
             }

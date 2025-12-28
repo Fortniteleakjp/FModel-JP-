@@ -12,10 +12,10 @@ public partial class UpdateView
         InitializeComponent();
     }
 
-    private async void OnLoaded(object sender, RoutedEventArgs e)
+    private void OnLoaded(object sender, RoutedEventArgs e)
     {
         if (DataContext is not UpdateViewModel viewModel) return;
-        await viewModel.Load();
+        _ = viewModel.LoadAsync();
     }
 
     private void OnDownloadLatest(object sender, RoutedEventArgs e)

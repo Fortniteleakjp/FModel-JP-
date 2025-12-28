@@ -7,15 +7,20 @@ namespace FModel.ViewModels;
 
 public class AssetsListViewModel
 {
-    public RangeObservableCollection<GameFile> Assets { get; }
-    public ICollectionView AssetsView { get; }
+    public RangeObservableCollection<GameFileViewModel> Assets { get; } = [];
 
-    public AssetsListViewModel()
+    private ICollectionView _assetsView;
+    public ICollectionView AssetsView
     {
-        Assets = new RangeObservableCollection<GameFile>();
-        AssetsView = new ListCollectionView(Assets)
+        get
         {
-            SortDescriptions = { new SortDescription("Path", ListSortDirection.Ascending) }
-        };
+            _assetsView ??= new ListCollectionView(Assets)
+            {
+                SortDescriptions = { new SortDescription("Asset.Path", ListSortDirection.Ascending) }
+            };
+            return _assetsView;
+        }
     }
+
+    public void Add(GameFile gameFile) => Assets.Add(new GameFileViewModel(gameFile));
 }

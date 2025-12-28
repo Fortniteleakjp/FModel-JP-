@@ -10,10 +10,11 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
+using CUE4ParseViewModel = FModel.ViewModels.CUE4Parse.CUE4ParseViewModel;
 
 namespace FModel.ViewModels;
 
-public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewModel
+public class AesManagerViewModel(CUE4ParseViewModel cue4Parse) : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
 
@@ -36,22 +37,26 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
     {
         await _threadWorkerView.Begin(_ =>
         {
-            _keysFromSettings = UserSettings.Default.CurrentDir.AesKeys;
+            _keysFromSettings = UserSettings.Default.CurrentDir?.AesKeys;
+            if (_keysFromSettings == null) return;
+
             _mainKey.Key = Helper.FixKey(_keysFromSettings.MainKey);
             AesKeys = [];
             _uniqueGuids = [];
-            EnumerateAesKeys(_keysFromSettings, cue4Parse.GameDirectory.DirectoryFiles, _mainKey, _uniqueGuids, AesKeys);
+            var directoryFiles = cue4Parse.GameDirectory?.DirectoryFiles ?? Enumerable.Empty<FileItem>();
+            EnumerateAesKeys(_keysFromSettings, directoryFiles, _mainKey, _uniqueGuids, AesKeys);
             AesKeys.ItemPropertyChanged += (s, e) => AesKeysOnItemPropertyChanged(e, _keysFromSettings, AesKeys);
             AesKeysView = new ListCollectionView(AesKeys) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
             if (IsDiffDirectoryAvailable)
             {
-                _diffKeysFromSettings = UserSettings.Default.DiffDir.AesKeys;
-                _diffMainKey.Key = Helper.FixKey(_diffKeysFromSettings.MainKey);
-                DiffAesKeys = [];
-                _diffUniqueGuids = [];
-                if (cue4Parse.DiffGameDirectory != null)
+                _diffKeysFromSettings = UserSettings.Default.DiffDir?.AesKeys;
+                if (_diffKeysFromSettings != null)
                 {
-                    EnumerateAesKeys(_diffKeysFromSettings, cue4Parse.DiffGameDirectory.DirectoryFiles, _diffMainKey, _diffUniqueGuids, DiffAesKeys);
+                    _diffMainKey.Key = Helper.FixKey(_diffKeysFromSettings.MainKey);
+                    DiffAesKeys = [];
+                    _diffUniqueGuids = [];
+                    var diffDirectoryFiles = cue4Parse.DiffGameDirectory?.DirectoryFiles ?? Enumerable.Empty<FileItem>();
+                    EnumerateAesKeys(_diffKeysFromSettings, diffDirectoryFiles, _diffMainKey, _diffUniqueGuids, DiffAesKeys);
                     DiffAesKeys.ItemPropertyChanged += (s, e) => AesKeysOnItemPropertyChanged(e, _diffKeysFromSettings, DiffAesKeys);
                     DiffAesKeysView = new ListCollectionView(DiffAesKeys) { SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending) } };
                 }

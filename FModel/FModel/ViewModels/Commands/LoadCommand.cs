@@ -20,6 +20,7 @@ using FModel.Views.Resources.Controls;
 using K4os.Compression.LZ4.Streams;
 using Microsoft.Win32;
 
+// 型エイリアスを追加
 namespace FModel.ViewModels.Commands;
 
 /// <summary>
@@ -35,6 +36,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
 
     public LoadCommand(LoadingModesViewModel contextViewModel) : base(contextViewModel) { }
+
+    private FModel.ViewModels.CUE4Parse.CUE4ParseViewModel _asDiscordCUE4Parse(FModel.ViewModels.CUE4Parse.CUE4ParseViewModel vm)
+    {
+        return vm;
+    }
 
     public override async void Execute(LoadingModesViewModel contextViewModel, object parameter)
     {
@@ -55,12 +61,12 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 #endif
         _applicationView.CUE4Parse.AssetsFolder.Folders.Clear();
         _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
-        MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
-        Helper.CloseWindow<AdonisWindow>("検索ウィンドウ"); // close search window if opened
+        _applicationView.SelectedLeftTabIndex = 1; // folders tab
+        _applicationView.IsAssetsExplorerVisible = true;
+        Helper.CloseWindow<AdonisWindow>("検索ウインドウ"); // close search window if opened
 
         await Task.WhenAll(
             _applicationView.CUE4Parse.LoadLocalizedResources(), // load locres if not already loaded,
-            _applicationView.CUE4Parse.LoadAllVirtualPaths(), // load virtual paths if not already loaded
             _threadWorkerView.Begin(cancellationToken =>
             {
                 // filter what to show
@@ -70,7 +76,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                     case ELoadingMode.Multiple:
                     {
                         var l = (IList) parameter;
-                        if (l.Count < 1) return;
+                        if (l.Count == 0)
+                        {
+                            UserSettings.Default.LoadingMode = ELoadingMode.All;
+                            goto case ELoadingMode.All;
+                        }
 
                         var directoryFilesToShow = l.Cast<FileItem>();
                         FilterDirectoryFilesToDisplay(cancellationToken, directoryFilesToShow);
@@ -95,7 +105,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                     default: throw new ArgumentOutOfRangeException();
                 }
 
-                _discordHandler.UpdatePresence(_applicationView.CUE4Parse);
+                _discordHandler.UpdatePresence(_asDiscordCUE4Parse(_applicationView.CUE4Parse));
             })
         ).ConfigureAwait(false);
 #if DEBUG

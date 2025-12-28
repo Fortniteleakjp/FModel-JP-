@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
 using CUE4Parse;
 using FModel.Framework;
@@ -37,6 +38,14 @@ public partial class App
         AttachConsole(-1);
 #endif
         base.OnStartup(e);
+
+        if (!Resources.Contains("DiffIcon"))
+        {
+            var geometry = new GeometryGroup();
+            geometry.Children.Add(new RectangleGeometry(new Rect(0, 0, 16, 16)));
+            geometry.Freeze();
+            Resources.Add("DiffIcon", geometry);
+        }
 
         try
         {
@@ -114,6 +123,7 @@ public partial class App
                 path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Debug-Log-{DateTime.Now:yyyy-MM-dd}.log"))
 #else
             .Enrich.With<CallerEnricher>()
+            .MinimumLevel.Verbose()
             .WriteTo.File(outputTemplate: template,
                 path: Path.Combine(UserSettings.Default.OutputDirectory, "Logs", $"FModel-Log-{DateTime.Now:yyyy-MM-dd}.log"))
 #endif
@@ -137,9 +147,10 @@ public partial class App
     {
         Log.Error("{Exception}", e.Exception);
 
+        var baseException = e.Exception.GetBaseException();
         var messageBox = new MessageBoxModel
         {
-            Text = $"An unhandled {e.Exception.GetBaseException().GetType()} occurred: {e.Exception.Message}",
+            Text = $"An unhandled {baseException.GetType()} occurred: {e.Exception.Message}\n\nDetails: {baseException.Message}",
             Caption = "Fatal Error",
             Icon = MessageBoxImage.Error,
             Buttons =
