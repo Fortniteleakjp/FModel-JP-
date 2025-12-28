@@ -328,7 +328,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="NEW エクスプローラー" IsCheckable="True" x:Name="NewExplorerMenuItem" Checked="OnNewExplorerChecked" Unchecked="OnNewExplorerUnchecked"/>
+            <MenuItem Header="NEW エクスプローラー" IsCheckable="True" x:Name="NewExplorerMenuItem" />
         </Menu>
 
         <Grid x:Name="RootGrid" Grid.Row="2">
@@ -898,6 +898,130 @@
                     <TabControl Grid.Row="1"
                                 x:Name="TabControlName"
                                 Style="{StaticResource GameFilesTabControl}" />
+
+                    <!-- NEW エクスプローラー UI -->
+                    <Grid Grid.Row="1" x:Name="NewExplorerGrid" Visibility="{Binding IsChecked, ElementName=NewExplorerMenuItem, Converter={StaticResource BoolToVisibilityConverter}}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="DataContext" Value="{Binding CUE4Parse.AssetsFolder}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedItem, ElementName=AssetsFolderName, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True">
+                                        <Setter Property="DataContext" Value="{Binding SelectedItem, ElementName=AssetsFolderName}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <ListBox x:Name="NewExplorerListBox"
+                                         ItemsSource="{Binding FoldersView, IsAsync=True}"
+                                         MouseDoubleClick="OnNewExplorerListMouseDoubleClick"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                         Background="Transparent" BorderThickness="0"
+                                         Padding="5">
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="120" Height="140" Margin="5" CornerRadius="4"
+                                                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                                                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                                                    BorderThickness="1">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+                                                    <Viewbox Grid.Row="0" Margin="20">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" Data="{StaticResource FolderIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+
+                                                    <Border Grid.Row="1" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                                            CornerRadius="0,0,4,4" Padding="5">
+                                                        <StackPanel>
+                                                            <TextBlock Text="{Binding Header}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                                                       ToolTip="{Binding Header}" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Grid.Column="0" Text="{Binding AssetsList.Assets.Count, StringFormat='{}{0} Items'}" FontSize="10" Opacity="0.7" />
+                                                                <TextBlock Grid.Column="1" Text="{Binding FoldersView.Count, StringFormat='{}{0} Folders'}" FontSize="10" Opacity="0.7" HorizontalAlignment="Right" />
+                                                            </Grid>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <ListBox x:Name="NewExplorerFilesListBox"
+                                         ItemsSource="{Binding AssetsList.Assets, IsAsync=True}"
+                                         MouseDoubleClick="OnNewExplorerFileMouseDoubleClick"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                         Background="Transparent" BorderThickness="0"
+                                         Padding="5">
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="120" Height="140" Margin="5" CornerRadius="4"
+                                                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                                                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                                                    BorderThickness="1">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+                                                    <Viewbox Grid.Row="0" Margin="20">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource NoteIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+
+                                                    <Border Grid.Row="1" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                                            CornerRadius="0,0,4,4" Padding="5">
+                                                        <StackPanel>
+                                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                                                       ToolTip="{Binding Name}" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Grid.Column="0" Text="{Binding Size, Converter={x:Static converters:SizeToStringConverter.Instance}}" FontSize="10" Opacity="0.7" />
+                                                                <TextBlock Grid.Column="1" Text="{Binding Extension}" FontSize="10" Opacity="0.7" HorizontalAlignment="Right" />
+                                                            </Grid>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+
                     <Expander Grid.Row="2" Margin="0 5 0 5" ExpandDirection="Down"
                               IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}">
                         <Grid>

@@ -241,14 +241,16 @@ public partial class MainWindow
 
     private void OnAssetsTreeMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (sender is not TreeView { SelectedItem: TreeItem treeItem } || treeItem.Folders.Count > 0) return;
+        if (sender is not TreeView { SelectedItem: TreeItem treeItem } || treeItem.Folders.Count > 0)
+            return;
 
         LeftTabControl.SelectedIndex++;
     }
 
     private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (sender is not ListBox listBox) return;
+        if (sender is not ListBox listBox)
+            return;
 
         var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
@@ -344,7 +346,8 @@ public partial class MainWindow
 
     private void OnFavoriteDirectoryClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
+        if (AssetsFolderName.SelectedItem is not TreeItem folder)
+            return;
 
         _applicationView.CustomDirectories.Add(new CustomDirectory(folder.Header, folder.PathAtThisPoint));
         FLogger.Append(ELog.Information, () =>
@@ -353,7 +356,8 @@ public partial class MainWindow
 
     private void OnCopyDirectoryPathClick(object sender, RoutedEventArgs e)
     {
-        if (AssetsFolderName.SelectedItem is not TreeItem folder) return;
+        if (AssetsFolderName.SelectedItem is not TreeItem folder)
+            return;
         Clipboard.SetText(folder.PathAtThisPoint);
     }
 
@@ -374,14 +378,16 @@ public partial class MainWindow
 
     private void OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
+        if (!_applicationView.Status.IsReady || sender is not ListBox listBox)
+            return;
         UserSettings.Default.LoadingMode = ELoadingMode.Multiple;
         _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
     }
 
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (!_applicationView.Status.IsReady || sender is not ListBox listBox) return;
+        if (!_applicationView.Status.IsReady || sender is not ListBox listBox)
+            return;
 
         switch (e.Key)
         {
@@ -398,7 +404,8 @@ public partial class MainWindow
 
     private async void OnOpenRecentFile(object? parameter)
     {
-        if (parameter is not string filePath || string.IsNullOrEmpty(filePath)) return;
+        if (parameter is not string filePath || string.IsNullOrEmpty(filePath))
+            return;
 
         if (_applicationView.CUE4Parse.Provider.TryGetGameFile(filePath, out var gameFile))
         {
@@ -427,7 +434,7 @@ public partial class MainWindow
     {
         // 「履歴をクリア」メニュー項目を一時的に保存
         var clearMenuItem = RecentFilesMenuItem.Items.OfType<MenuItem>().FirstOrDefault(item => item.Command == ClearRecentFilesCommand);
-        
+
         // 既存の履歴アイテムをクリア
         RecentFilesMenuItem.Items.Clear();
 
@@ -467,7 +474,8 @@ public partial class MainWindow
 
     private void AddFileToRecent(string filePath)
     {
-        if (string.IsNullOrEmpty(filePath)) return;
+        if (string.IsNullOrEmpty(filePath))
+            return;
 
         // Remove if already exists to move it to the top
         UserSettings.Default.RecentFiles.Remove(filePath);
@@ -485,7 +493,7 @@ public partial class MainWindow
         UserSettings.Save();
     }
 
-//「テスト」内のボタンを押した際に出てくる注意ウインドウ
+    //「テスト」内のボタンを押した際に出てくる注意ウインドウ
     private bool ShowBetaFeatureWarning()
     {
         var message = "これらの機能はβ、α版です。意" +
@@ -562,7 +570,7 @@ public partial class MainWindow
                 }
             }
         }
-        
+
         // ビューを更新
         folder.AssetsList.AssetsView.Refresh();
     }
@@ -571,4 +579,58 @@ public partial class MainWindow
     {
 
     }
+
+    private void NewExplorerMenuItem_Click()
+    {
+
+    }
+
+    private void TabControlName_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+    {
+
+    }
+
+    private void OnNewExplorerListMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        // リストボックスで選択されたアイテムを取得（動的な型解決を使用）
+        if (NewExplorerListBox.SelectedItem is { } folder)
+        {
+            // 選択されたフォルダの IsSelected プロパティを true に設定
+            // これによりツリービューの選択が更新され、連動してNEWエクスプローラーの表示も更新されます
+            try
+            {
+                // folderオブジェクトが IsSelected/IsExpanded プロパティを持っていると仮定
+                dynamic dynamicFolder = folder;
+                dynamicFolder.IsSelected = true;
+                dynamicFolder.IsExpanded = true;
+            }
+            catch
+            {
+                // プロパティが存在しない場合の安全策
+            }
+        }
+    }
+    private void OnNewExplorerFileMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        // クリックされた場所がアイテム上か確認（余白のダブルクリックを無視）
+        var item = NewExplorerFilesListBox.ContainerFromElement(e.OriginalSource as DependencyObject) as ListBoxItem;
+        if (item == null)
+            return;
+
+        // ViewModelを取得してコマンドを実行
+        if (DataContext is ApplicationViewModel vm)
+        {
+            // コマンドパラメータを作成 ("Assets_Extract_New_Tab", 選択されたアイテム)
+            var parameters = new object[] { "Assets_Extract_New_Tab", NewExplorerFilesListBox.SelectedItems };
+
+            if (vm.RightClickMenuCommand.CanExecute(parameters))
+            {
+                vm.RightClickMenuCommand.Execute(parameters);
+            }
+        }
+
+        // NEW エクスプローラー UI を閉じる (メニューのチェックを外す)
+        NewExplorerMenuItem.IsChecked = false;
+    }
+
 }
