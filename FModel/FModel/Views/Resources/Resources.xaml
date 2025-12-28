@@ -789,6 +789,20 @@
                                     Property="Content"
                                     Value="{Binding}" />
                         </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding SelectedItem.DiffContent, ElementName=TabControlName}" Value="{x:Null}" />
+                                <Condition Binding="{Binding SelectedItem.Content, ElementName=TabControlName, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter TargetName="DiffPresenter" Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <ContentPresenter Content="{Binding Content}" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="DiffPresenter" Property="Content" Value="{Binding SelectedItem, ElementName=TabControlName}" />
+                        </MultiDataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>
             </Setter.Value>

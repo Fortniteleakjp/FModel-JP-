@@ -99,6 +99,19 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         contextViewModel.CUE4Parse.ShowAssetDiff(entry1.Path).GetAwaiter().GetResult();
                     }
                     break;
+                case "Assets_Show_ReferenceViewer":
+                    foreach (var entry in entries)
+                    {
+                        Thread.Yield();
+                        cancellationToken.ThrowIfCancellationRequested();
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            var vm = new FModel.ViewModels.ReferenceViewerViewModel(entry);
+                            var win = new FModel.Views.ReferenceViewerWindow(vm);
+                            win.Show();
+                        });
+                    }
+                    break;
             }
         });
     }

@@ -33,11 +33,24 @@ public partial class MainWindow
     private FModel.ViewModels.TabItem _explorerTabVm;
     private void OnNewExplorerChecked(object sender, RoutedEventArgs e)
     {
+        // 現在選択中のファイルまたはフォルダのパスを取得
+        string selectedPath = null;
+        // ファイルリスト(ListBox)で選択されている場合
+        if (AssetsListName?.SelectedItem is GameFile file)
+        {
+            selectedPath = file.Path;
+        }
+        // フォルダツリー(TreeView)で選択されている場合
+        else if (AssetsFolderName?.SelectedItem is TreeItem folder)
+        {
+            selectedPath = folder.PathAtThisPoint;
+        }
+        // どちらも選択されていない場合、selectedPathはnullになり、エクスプローラーはルートを表示します
         if (_explorerTabVm == null)
         {
             // ExplorerTab用のViewModelを生成
             _explorerTabVm = new FModel.ViewModels.TabItem(null, "NEW エクスプローラー");
-            _explorerTabVm.Content = new FModel.Views.ExplorerTab();
+            _explorerTabVm.Content = new FModel.Views.ExplorerTab(selectedPath);
             _applicationView.CUE4Parse.TabControl.AddTab(_explorerTabVm);
         }
         _applicationView.CUE4Parse.TabControl.SelectedTab = _explorerTabVm;
@@ -50,16 +63,6 @@ public partial class MainWindow
             _applicationView.CUE4Parse.TabControl.RemoveTab(_explorerTabVm);
             _explorerTabVm = null;
         }
-    }
-    // NEW エクスプローラー ボタンクリック時の処理
-    private void OnNewExplorerClick(object sender, RoutedEventArgs e)
-    {
-        // TODO: 本格的なエクスプローラーUIをここで開く
-        System.Windows.MessageBox.Show(
-            "新しいエクスプローラーウィンドウを開きます（ここにエクスプローラーUIを実装）",
-            "NEW エクスプローラー",
-            System.Windows.MessageBoxButton.OK,
-            System.Windows.MessageBoxImage.Information);
     }
     public static MainWindow YesWeCats;
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;

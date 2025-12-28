@@ -52,6 +52,9 @@ public class GameFileViewModel : ViewModel
     private static readonly Geometry _txtIcon = (Geometry) Application.Current.FindResource("TxtIcon");
     private static readonly Geometry _animationIcon = (Geometry) Application.Current.FindResource("AnimationIconAlt");
 
+        // 参照ビューア用コマンド
+    public RelayCommand ShowReferencesCommand { get; }
+
     public GameFile Asset { get; }
     private ImageSource _previewImage;
     public ImageSource PreviewImage
@@ -77,6 +80,25 @@ public class GameFileViewModel : ViewModel
     public GameFileViewModel(GameFile asset)
     {
         Asset = asset;
+        ShowReferencesCommand = new RelayCommand(_ => ShowReferences());
+    }
+
+    private void ShowReferences()
+    {
+        // 仮: 参照データを構築（本実装ではJSONやアセットから取得）
+        var root = new ReferenceNodeViewModel
+        {
+            DisplayName = Asset.Name,
+            AssetPathName = Asset.Path,
+            Children = {
+                new ReferenceNodeViewModel { DisplayName = "CP_Athena_Head_F_QuicheLorraineCrisp", AssetPathName = "/BRCosmetics/Characters/CharacterParts/Female/Medium/Heads/CP_Athena_Head_F_QuicheLorraineCrisp.CP_Athena_Head_F_QuicheLorraineCrisp" },
+                new ReferenceNodeViewModel { DisplayName = "CP_Athena_Body_F_QuicheLorraineCrisp", AssetPathName = "/BRCosmetics/Athena/Heroes/Meshes/Bodies/CP_Athena_Body_F_QuicheLorraineCrisp.CP_Athena_Body_F_QuicheLorraineCrisp" },
+                new ReferenceNodeViewModel { DisplayName = "CP_F_MED_QuicheLorraineCrisp_FaceAcc", AssetPathName = "/BRCosmetics/Characters/CharacterParts/FaceAccessories/CP_F_MED_QuicheLorraineCrisp_FaceAcc.CP_F_MED_QuicheLorraineCrisp_FaceAcc" }
+            }
+        };
+        var vm = new ReferenceViewerViewModel(root);
+        var win = new FModel.Views.ReferenceViewerWindow(vm);
+        win.Show();
     }
 
     private async void LoadPreviewAsync()

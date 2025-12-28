@@ -7,11 +7,19 @@
              d:DesignHeight="400" d:DesignWidth="600">
     <Grid>
         <TreeView ItemsSource="{Binding Items}">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemStyle}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Name}"/>
-                        <TextBlock Text=" [DIR]" Foreground="Gray" Margin="5,0,0,0" Visibility="{Binding IsDirectory, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    <StackPanel Orientation="Horizontal" Background="Transparent">
+                        <StackPanel.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding OpenCommand}"/>
+                        </StackPanel.InputBindings>
+                        <Image Source="{Binding Icon}" Width="16" Height="16" Margin="0,0,5,0"/>
+                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
