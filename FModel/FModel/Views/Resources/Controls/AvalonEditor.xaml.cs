@@ -20,6 +20,7 @@ namespace FModel.Views.Resources.Controls;
 public partial class AvalonEditor
 {
     public static TextEditor YesWeEditor;
+    public static System.Windows.Controls.TextBox YesWeSearch;
     private readonly Regex _hexColorRegex = new("\"Hex\": \"(?'target'[0-9A-Fa-f]{3,8})\"$",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     private readonly System.Windows.Controls.ToolTip _toolTip = new();

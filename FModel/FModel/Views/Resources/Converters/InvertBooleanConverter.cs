@@ -18,7 +18,5 @@ public class InvertBooleanConverter : IValueConverter
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
+    => value is bool b ? !b : value;
 }

@@ -66,16 +66,6 @@ public enum ELoadingMode
     AllButPatched,
 }
 
-// public enum EUpdateMode
-// {
-//     [Description("Stable")]
-//     Stable,
-//     [Description("Beta")]
-//     Beta,
-//     [Description("QA Testing")]
-//     Qa
-// }
-
 public enum ECompressedAudio
 {
     [Description("解凍して再生")]
@@ -123,18 +113,39 @@ public enum EBulkType
 public enum EAssetCategory : uint
 {
     All = AssetCategoryExtensions.CategoryBase + (0 << 16),
-    Texture = AssetCategoryExtensions.CategoryBase + (1 << 16),
+    Blueprints = AssetCategoryExtensions.CategoryBase + (1 << 16),
+        BlueprintGeneratedClass = Blueprints + 1,
+        WidgetBlueprintGeneratedClass = Blueprints + 2,
+        AnimBlueprintGeneratedClass = Blueprints + 3,
+        RigVMBlueprintGeneratedClass = Blueprints + 4,
+        UserDefinedEnum = Blueprints + 5,
+        UserDefinedStruct = Blueprints + 6,
+        //Metadata
+        Blueprint = Blueprints + 8,
+        CookedMetaData = Blueprints + 9,
     Mesh = AssetCategoryExtensions.CategoryBase + (2 << 16),
-    StaticMesh = Mesh + 1,
-    SkeletalMesh = Mesh + 2,
-    Skeleton = AssetCategoryExtensions.CategoryBase + (4 << 16),
-    Material = AssetCategoryExtensions.CategoryBase + (5 << 16),
-    Blueprint = AssetCategoryExtensions.CategoryBase + (6 << 16),
-    Audio = AssetCategoryExtensions.CategoryBase + (7 << 16),
-    Animation = AssetCategoryExtensions.CategoryBase + (8 << 16),
-    Font = AssetCategoryExtensions.CategoryBase + (9 << 16),
-    PhysicsAsset = AssetCategoryExtensions.CategoryBase + (10 << 16),
-    Video = AssetCategoryExtensions.CategoryBase + (11 << 16),
-    Data = AssetCategoryExtensions.CategoryBase + (12 << 16),
-    Map = AssetCategoryExtensions.CategoryBase + (13 << 16),
+        StaticMesh = Mesh + 1,
+        SkeletalMesh = Mesh + 2,
+        Skeleton = Mesh + 3,
+    Texture = AssetCategoryExtensions.CategoryBase + (3 << 16),
+    Materials = AssetCategoryExtensions.CategoryBase + (4 << 16),
+        Material = Materials + 1,
+        MaterialEditorData = Materials + 2,
+        MaterialFunction = Materials + 3,
+        MaterialParameterCollection = Materials + 4,
+    Animation = AssetCategoryExtensions.CategoryBase + (5 << 16),
+    Level = AssetCategoryExtensions.CategoryBase + (6 << 16),
+        World = Level + 1,
+        BuildData = Level + 2,
+        LevelSequence = Level + 3,
+        Foliage = Level + 4,
+    Data = AssetCategoryExtensions.CategoryBase + (7 << 16),
+        ItemDefinitionBase = Data + 1,
+        CurveBase = Data + 2,
+        PhysicsAsset = Data + 3,
+    Media = AssetCategoryExtensions.CategoryBase + (8 << 16),
+        Audio = Media + 1,
+        Video = Media + 2,
+        Font = Media + 3,
+    Particle = AssetCategoryExtensions.CategoryBase + (9 << 16),
 }
