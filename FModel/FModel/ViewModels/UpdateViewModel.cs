@@ -37,9 +37,13 @@ public class UpdateViewModel : ViewModel
 
     public async Task Load()
     {
-        Commits.AddRange(await _apiEndpointView.GitHubApi.GetCommitHistoryAsync());
+        var commits = await _apiEndpointView.GitHubApi.GetCommitHistoryAsync();
+        if (commits != null)
+            Commits.AddRange(commits);
 
         var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
+        if (qa == null) return;
+
         var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
 
         for (var i = 0; i < assets.Count; i++)

@@ -670,6 +670,15 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
+                                            <MenuItem Header="参照チェーンを表示" Click="OnShowReferenceChainClick">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
                                             <Separator />
                                             <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.Header>
@@ -764,21 +773,6 @@
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
                                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AudioIcon}" />
-                                                        </Canvas>
-                                                    </Viewbox>
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                            <MenuItem Header="参照ビューア" Command="{Binding DataContext.RightClickMenuCommand}">
-                                                <MenuItem.CommandParameter>
-                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
-                                                        <Binding Source="Assets_Show_ReferenceViewer" />
-                                                        <Binding Path="SelectedItems" />
-                                                    </MultiBinding>
-                                                </MenuItem.CommandParameter>
-                                                <MenuItem.Icon>
-                                                    <Viewbox Width="16" Height="16">
-                                                        <Canvas Width="24" Height="24">
-                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
                                                         </Canvas>
                                                     </Viewbox>
                                                 </MenuItem.Icon>

@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AdonisUI.Controls;
+using CUE4Parse.UE4.Assets;
+using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.Settings;
@@ -258,6 +260,14 @@ public partial class MainWindow
         {
             AddFileToRecent(item.Path);
         }
+    }
+
+    private void OnShowReferenceChainClick(object sender, RoutedEventArgs e)
+    {
+        if (AssetsListName.SelectedItems.Count == 0) return;
+        var assets = AssetsListName.SelectedItems.Cast<GameFile>().ToList();
+        var window = new ReferenceChainWindow(assets);
+        window.Show();
     }
 
     private async void OnFolderExtractClick(object sender, RoutedEventArgs e)

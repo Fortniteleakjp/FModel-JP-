@@ -123,7 +123,7 @@ public class Renderer : IDisposable
 
     public void Animate(UObject anim)
     {
-        if (!Options.ModelIsWaitingAnimation)
+        if (!Services.ApplicationService.ApplicationView.CUE4Parse.ModelIsWaitingAnimation)
         {
             if (anim is UAnimSequenceBase animBase)
             {
@@ -364,7 +364,7 @@ public class Renderer : IDisposable
     private void LoadSkeletalMesh(USkeletalMesh original)
     {
         var guid = new FGuid((uint) original.GetFullName().GetHashCode());
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh)) return;
+            if (Options.Models.ContainsKey(guid) || !original.TryConvert(out var mesh) || mesh.LODs == null || mesh.LODs.Count == 0 || mesh.RefSkeleton == null || mesh.RefSkeleton.Count == 0) return;
 
         var skeletalModel = new SkeletalModel(original, mesh);
         Options.Models[guid] = skeletalModel;
