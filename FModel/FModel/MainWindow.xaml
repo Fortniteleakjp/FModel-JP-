@@ -670,7 +670,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="参照チェーンを表示" Click="OnShowReferenceChainClick">
+                                            <MenuItem Header="参照ビューアを起動" Click="OnShowReferenceChainClick">
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">

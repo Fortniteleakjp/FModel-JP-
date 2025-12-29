@@ -86,6 +86,7 @@ public class GameFileViewModel : ViewModel
     private void ShowReferences()
     {
         // 仮: 参照データを構築（本実装ではJSONやアセットから取得）
+        // 12/30 これはゴミです
         var root = new ReferenceNodeViewModel
         {
             DisplayName = Asset.Name,

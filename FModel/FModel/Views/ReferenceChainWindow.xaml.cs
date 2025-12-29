@@ -9,6 +9,8 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
@@ -32,6 +34,15 @@ namespace FModel.Views
         private readonly IList _selectedItems;
         private double _canvasWidth;
         private double _canvasHeight;
+        private double _zoomScale = 1.0;
+
+        // Dragging variables
+        private bool _isDraggingView;
+        private Point _lastViewMousePosition;
+        private bool _isDraggingNode;
+        private ReferenceNode _draggingNode;
+        private Point _lastNodeMousePosition;
+        private FrameworkElement _draggingElement;
 
         public bool IsLoading
         {
@@ -61,6 +72,12 @@ namespace FModel.Views
         {
             get => _canvasHeight;
             set { _canvasHeight = value; OnPropertyChanged(); }
+        }
+
+        public double ZoomScale
+        {
+            get => _zoomScale;
+            set { _zoomScale = value; OnPropertyChanged(); }
         }
 
         public int MaxDepth
@@ -186,7 +203,7 @@ namespace FModel.Views
                 {
                     CalculatePositions(child, depth + 1, ref currentY, flatList, connections, w, h, hGap, vGap);
                     childYs.Add(child.Y);
-                    connections.Add(new NodeConnection { X1 = node.X + w, Y1 = 0, X2 = child.X, Y2 = child.Y + h / 2 });
+                    connections.Add(new NodeConnection { Source = node, Target = child, X1 = node.X + w, Y1 = 0, X2 = child.X, Y2 = child.Y + h / 2 });
                 }
                 node.Y = (childYs.First() + childYs.Last()) / 2;
                 // 親ノードのY座標が決まったので、接続線の始点を更新
@@ -198,6 +215,107 @@ namespace FModel.Views
             }
 
             flatList.Add(node);
+        }
+
+        // Zooming
+        private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+            var zoomFactor = 1.1;
+            if (e.Delta < 0) zoomFactor = 1.0 / zoomFactor;
+            ZoomScale = Math.Max(0.1, Math.Min(3.0, ZoomScale * zoomFactor));
+        }
+
+        // View Panning (Right Click)
+        private void OnScrollViewerMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _lastViewMousePosition = e.GetPosition(MainScrollViewer);
+            _isDraggingView = true;
+            MainScrollViewer.CaptureMouse();
+        }
+
+        private void OnScrollViewerMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _isDraggingView = false;
+            MainScrollViewer.ReleaseMouseCapture();
+        }
+
+        private void OnScrollViewerMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_isDraggingView)
+            {
+                var currentPos = e.GetPosition(MainScrollViewer);
+                var delta = currentPos - _lastViewMousePosition;
+                MainScrollViewer.ScrollToHorizontalOffset(MainScrollViewer.HorizontalOffset - delta.X);
+                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset - delta.Y);
+                _lastViewMousePosition = currentPos;
+            }
+        }
+
+        // Node Dragging
+        private void OnNodeMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.DataContext is ReferenceNode node)
+            {
+                if (e.ClickCount == 2)
+                {
+                    e.Handled = true;
+                    if (ApplicationService.ApplicationView.CUE4Parse.Provider.TryGetGameFile(node.Path, out var gameFile))
+                    {
+                        ApplicationService.ThreadWorkerView.Begin(cancellationToken => ApplicationService.ApplicationView.CUE4Parse.Extract(cancellationToken, gameFile, true));
+                    }
+                    return;
+                }
+
+                _draggingNode = node;
+                _draggingElement = element;
+                _lastNodeMousePosition = e.GetPosition(MainScrollViewer);
+                _isDraggingNode = true;
+                element.CaptureMouse();
+                e.Handled = true;
+            }
+        }
+
+        private void OnNodeMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _isDraggingNode = false;
+            _draggingElement?.ReleaseMouseCapture();
+            _draggingElement = null;
+            _draggingNode = null;
+        }
+
+        private void OnNodeMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_isDraggingNode && _draggingNode != null)
+            {
+                var currentPos = e.GetPosition(MainScrollViewer);
+                var delta = currentPos - _lastNodeMousePosition;
+                
+                // Adjust delta by ZoomScale
+                _draggingNode.X += delta.X / ZoomScale;
+                _draggingNode.Y += delta.Y / ZoomScale;
+
+                // Expand canvas if dragged outside
+                CanvasWidth = Math.Max(CanvasWidth, _draggingNode.X + 300);
+                CanvasHeight = Math.Max(CanvasHeight, _draggingNode.Y + 150);
+
+                // Update connections
+                foreach (var conn in Connections)
+                {
+                    if (conn.Source == _draggingNode)
+                    {
+                        conn.X1 = _draggingNode.X + 250; // Node Width
+                        conn.Y1 = _draggingNode.Y + 40;  // Node Height / 2
+                    }
+                    else if (conn.Target == _draggingNode)
+                    {
+                        conn.X2 = _draggingNode.X;
+                        conn.Y2 = _draggingNode.Y + 40;
+                    }
+                }
+
+                _lastNodeMousePosition = currentPos;
+            }
         }
 
         // 依存関係（Dependencies / Uses）ツリー構築
@@ -303,11 +421,45 @@ namespace FModel.Views
         }
     }
 
-    public class NodeConnection
+    public class NodeConnection : INotifyPropertyChanged
     {
-        public double X1 { get; set; }
-        public double Y1 { get; set; }
-        public double X2 { get; set; }
-        public double Y2 { get; set; }
+        private double _x1;
+        public double X1 { get => _x1; set { _x1 = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurveData)); } }
+        private double _y1;
+        public double Y1 { get => _y1; set { _y1 = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurveData)); } }
+        private double _x2;
+        public double X2 { get => _x2; set { _x2 = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurveData)); } }
+        private double _y2;
+        public double Y2 { get => _y2; set { _y2 = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurveData)); } }
+
+        public ReferenceNode Source { get; set; }
+        public ReferenceNode Target { get; set; }
+
+        public Geometry CurveData
+        {
+            get
+            {
+                var p1 = new Point(X1, Y1);
+                var p2 = new Point(X2, Y2);
+                var dist = Math.Abs(X2 - X1) / 2;
+                if (dist < 20) dist = 20;
+
+                var cp1 = new Point(X1 + dist, Y1);
+                var cp2 = new Point(X2 - dist, Y2);
+
+                var geometry = new PathGeometry();
+                var figure = new PathFigure { StartPoint = p1, IsClosed = false };
+                figure.Segments.Add(new BezierSegment(cp1, cp2, p2, true));
+                geometry.Figures.Add(figure);
+                geometry.Freeze();
+                return geometry;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

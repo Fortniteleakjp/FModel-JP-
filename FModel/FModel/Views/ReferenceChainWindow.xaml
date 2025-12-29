@@ -6,7 +6,7 @@
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         mc:Ignorable="d"
-        Title="参照チェーン" Height="500" Width="400" WindowStartupLocation="CenterScreen">
+        Title="参照ビューア" Height="500" Width="400" WindowStartupLocation="CenterScreen">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}"/>
     </adonisControls:AdonisWindow.Style>
@@ -44,8 +44,16 @@
         </Grid>
 
         <!-- 結果のビュー -->
-        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="Both">
+        <ScrollViewer Grid.Row="2" x:Name="MainScrollViewer"
+                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="Both"
+                      PreviewMouseWheel="OnPreviewMouseWheel"
+                      MouseRightButtonDown="OnScrollViewerMouseRightButtonDown"
+                      MouseRightButtonUp="OnScrollViewerMouseRightButtonUp"
+                      MouseMove="OnScrollViewerMouseMove">
             <Grid Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}">
+                <Grid.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding ZoomScale}" ScaleY="{Binding ZoomScale}"/>
+                </Grid.LayoutTransform>
                 <!-- Connections (棒) -->
                 <ItemsControl ItemsSource="{Binding Connections}">
                     <ItemsControl.ItemsPanel>
@@ -55,7 +63,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Line X1="{Binding X1}" Y1="{Binding Y1}" X2="{Binding X2}" Y2="{Binding Y2}" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" StrokeThickness="2" Opacity="0.5"/>
+                            <Path Data="{Binding CurveData}" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" StrokeThickness="2" Opacity="0.5"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -75,7 +83,9 @@
                     </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Width="250" Height="80" CornerRadius="4" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" BorderThickness="1">
+                            <Border Width="250" Height="80" CornerRadius="4" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" BorderThickness="1"
+                                    MouseLeftButtonDown="OnNodeMouseLeftButtonDown" MouseLeftButtonUp="OnNodeMouseLeftButtonUp" MouseMove="OnNodeMouseMove"
+                                    Cursor="Hand">
                                 <Grid Margin="10">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
