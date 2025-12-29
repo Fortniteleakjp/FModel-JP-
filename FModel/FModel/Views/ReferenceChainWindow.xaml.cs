@@ -189,7 +189,7 @@ namespace FModel.Views
 
         private void CalculatePositions(ReferenceNode node, int depth, ref double currentY, List<ReferenceNode> flatList, List<NodeConnection> connections, double w, double h, double hGap, double vGap)
         {
-            node.X = depth * (w + hGap) + 20;
+            node.X = depth * (w + hGap) + 100;
 
             if (node.Children.Count == 0)
             {

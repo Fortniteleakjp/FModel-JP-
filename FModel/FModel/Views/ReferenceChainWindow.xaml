@@ -6,7 +6,7 @@
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         mc:Ignorable="d"
-        Title="参照ビューア" Height="500" Width="400" WindowStartupLocation="CenterScreen">
+        Title="参照ビューア" Height="720" Width="1280" WindowStartupLocation="CenterScreen">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}"/>
     </adonisControls:AdonisWindow.Style>
