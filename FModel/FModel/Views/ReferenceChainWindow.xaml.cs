@@ -187,8 +187,8 @@ namespace FModel.Views
             double currentY = 20;
             double nodeWidth = 250;
             double nodeHeight = 80;
-            double horizontalGap = 100;
-            double verticalGap = 20;
+            double horizontalGap = 200;
+            double verticalGap = 40;
 
             foreach (var root in rootNodes)
             {
