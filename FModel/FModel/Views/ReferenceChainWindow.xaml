@@ -30,7 +30,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,0">
             <TextBlock Text="検索深度:" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
             <TextBox Text="{Binding MaxDepth}" Width="50" VerticalAlignment="Center" Margin="0,0,10,0"/>
-            <Button Content="更新" Click="OnRefreshClick" VerticalAlignment="Center"/>
+            <Button Content="更新" Click="OnRefreshClick" VerticalAlignment="Center" IsDefault="True"/>
         </StackPanel>
 
         <!-- 読み込み中の表示 -->
@@ -47,10 +47,10 @@
         <ScrollViewer Grid.Row="2" x:Name="MainScrollViewer"
                       HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="Both"
                       PreviewMouseWheel="OnPreviewMouseWheel"
-                      MouseRightButtonDown="OnScrollViewerMouseRightButtonDown"
-                      MouseRightButtonUp="OnScrollViewerMouseRightButtonUp"
+                      MouseLeftButtonDown="OnScrollViewerMouseLeftButtonDown"
+                      MouseLeftButtonUp="OnScrollViewerMouseLeftButtonUp"
                       MouseMove="OnScrollViewerMouseMove">
-            <Grid Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}">
+            <Grid Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" Margin="2000">
                 <Grid.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding ZoomScale}" ScaleY="{Binding ZoomScale}"/>
                 </Grid.LayoutTransform>

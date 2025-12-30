@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using AdonisUI.Controls;
@@ -220,21 +221,37 @@ namespace FModel.Views
         // Zooming
         private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
+            if ((Keyboard.Modifiers & ModifierKeys.Control) != ModifierKeys.Control)
+                return;
+
             e.Handled = true;
+            var scrollViewer = (ScrollViewer)sender;
+            if (scrollViewer.Content is not FrameworkElement grid) return;
+
+            var mousePos = e.GetPosition(grid);
+            var viewportMousePos = e.GetPosition(scrollViewer);
+
+            var currentZoom = ZoomScale;
             var zoomFactor = 1.1;
             if (e.Delta < 0) zoomFactor = 1.0 / zoomFactor;
-            ZoomScale = Math.Max(0.1, Math.Min(3.0, ZoomScale * zoomFactor));
+            
+            var newZoom = Math.Max(0.1, Math.Min(10.0, currentZoom * zoomFactor));
+            ZoomScale = newZoom;
+            scrollViewer.UpdateLayout();
+
+            scrollViewer.ScrollToHorizontalOffset((grid.Margin.Left + mousePos.X * newZoom) - viewportMousePos.X);
+            scrollViewer.ScrollToVerticalOffset((grid.Margin.Top + mousePos.Y * newZoom) - viewportMousePos.Y);
         }
 
-        // View Panning (Right Click)
-        private void OnScrollViewerMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        // View Panning (Left Click)
+        private void OnScrollViewerMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _lastViewMousePosition = e.GetPosition(MainScrollViewer);
             _isDraggingView = true;
             MainScrollViewer.CaptureMouse();
         }
 
-        private void OnScrollViewerMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        private void OnScrollViewerMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             _isDraggingView = false;
             MainScrollViewer.ReleaseMouseCapture();
