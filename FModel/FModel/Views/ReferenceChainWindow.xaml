@@ -45,7 +45,7 @@
 
         <!-- 結果のビュー -->
         <ScrollViewer Grid.Row="2" x:Name="MainScrollViewer"
-                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="Both"
+                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="None"
                       PreviewMouseWheel="OnPreviewMouseWheel"
                       MouseLeftButtonDown="OnScrollViewerMouseLeftButtonDown"
                       MouseLeftButtonUp="OnScrollViewerMouseLeftButtonUp"
@@ -83,7 +83,7 @@
                     </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Width="250" Height="80" CornerRadius="4" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" BorderThickness="1"
+                            <Border Width="250" Height="80" CornerRadius="4" Background="{Binding Background}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" BorderThickness="1"
                                     MouseLeftButtonDown="OnNodeMouseLeftButtonDown" MouseLeftButtonUp="OnNodeMouseLeftButtonUp" MouseMove="OnNodeMouseMove"
                                     Cursor="Hand">
                                 <Grid Margin="10">

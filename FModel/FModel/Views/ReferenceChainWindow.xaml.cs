@@ -249,6 +249,7 @@ namespace FModel.Views
             _lastViewMousePosition = e.GetPosition(MainScrollViewer);
             _isDraggingView = true;
             MainScrollViewer.CaptureMouse();
+            e.Handled = true;
         }
 
         private void OnScrollViewerMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -362,6 +363,9 @@ namespace FModel.Views
 
                 if (ipackage == null) return;
 
+                var className = GetPackageClassName(ipackage);
+                parentNode.Background = GetBrushForClass(className);
+
                 var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 // パッケージからインポート（依存先）を取得
                 if (ipackage is IoPackage ioPackage)
@@ -369,14 +373,14 @@ namespace FModel.Views
                     foreach (var importIndex in ioPackage.ImportMap)
                     {
                         var resolved = ioPackage.ResolveObjectIndex(importIndex);
-                        if (resolved?.Class?.Name.Text == "Package") dependencies.Add(resolved.Name.Text);
+                        if (resolved != null && resolved.Class != null && resolved.Class.Name.Text == "Package") dependencies.Add(resolved.Name.Text);
                     }
                 }
                 else if (ipackage is Package package)
                 {
                     foreach (var import in package.ImportMap)
                     {
-                        if (import.ClassName.Text == "Package") dependencies.Add(import.ObjectName.Text);
+                        if (import.ClassName.ToString() == "Package") dependencies.Add(import.ObjectName.ToString());
                     }
                 }
 
@@ -411,6 +415,53 @@ namespace FModel.Views
             catch { }
         }
 
+        private string GetPackageClassName(IPackage ipackage)
+        {
+            if (ipackage == null) return null;
+
+            if (ipackage is IoPackage ioPackage)
+            {
+                if (ioPackage.ExportMap.Length > 0)
+                {
+                    var entry = ioPackage.ExportMap[0];
+                    var resolved = ioPackage.ResolveObjectIndex(entry.ClassIndex);
+                    return resolved != null ? resolved.Name.Text : null;
+                }
+            }
+            else if (ipackage is Package package)
+            {
+                if (package.ExportMap.Length > 0)
+                {
+                    return package.ExportMap[0].ClassName.ToString();
+                }
+            }
+            return null;
+        }
+
+        private Brush GetBrushForClass(string className)
+        {
+            var colorCode = className switch
+            {
+                "Texture2D" or "TextureCube" or "TextureRenderTarget2D" => "#5D4037", // Brown
+                "Material" or "MaterialInstanceConstant" => "#2E7D32", // Green
+                "StaticMesh" => "#00838F", // Cyan
+                "SkeletalMesh" => "#6A1B9A", // Purple
+                "Blueprint" or "BlueprintGeneratedClass" => "#1565C0", // Blue
+                "SoundWave" or "SoundCue" => "#EF6C00", // Orange
+                "Font" or "FontFace" => "#616161", // Grey
+                "World" => "#C62828", // Red
+                _ => "#37474F" // Blue Grey (Default)
+            };
+
+            try
+            {
+                var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorCode));
+                brush.Freeze();
+                return brush;
+            }
+            catch { return Brushes.Transparent; }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -430,6 +481,18 @@ namespace FModel.Views
 
         private double _y;
         public double Y { get => _y; set { _y = value; OnPropertyChanged(); } }
+
+        private static readonly Brush DefaultBackground;
+
+        static ReferenceNode()
+        {
+            var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#37474F"));
+            brush.Freeze();
+            DefaultBackground = brush;
+        }
+
+        private Brush _background = DefaultBackground;
+        public Brush Background { get => _background; set { _background = value; OnPropertyChanged(); } }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
