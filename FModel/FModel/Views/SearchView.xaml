@@ -2,6 +2,7 @@
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                             xmlns:behaviors="clr-namespace:FModel.Views.Resources.Behaviors"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
@@ -125,7 +126,12 @@
                             <GridViewColumn Width="900" Header="Path" adonisExtensions:GridViewSortExtension.PropertyName="Path">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock HorizontalAlignment="Left" Text="{Binding Path}" />
+                                        <TextBlock HorizontalAlignment="Left"
+                                                   behaviors:SearchHighlightBehavior.Text="{Binding Path}"
+                                                   behaviors:SearchHighlightBehavior.FilterText="{Binding DataContext.CUE4Parse.SearchVm.FilterText, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                   behaviors:SearchHighlightBehavior.IsRegex="{Binding DataContext.CUE4Parse.SearchVm.HasRegexEnabled, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                   behaviors:SearchHighlightBehavior.MatchCase="{Binding DataContext.CUE4Parse.SearchVm.HasMatchCaseEnabled, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                   behaviors:SearchHighlightBehavior.HighlightBrush="MediumPurple" />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
