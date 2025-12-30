@@ -36,6 +36,7 @@ namespace FModel.Views
         private double _canvasWidth;
         private double _canvasHeight;
         private double _zoomScale = 1.0;
+        private Dictionary<string, Geometry> _iconCache;
 
         // Dragging variables
         private bool _isDraggingView;
@@ -110,6 +111,22 @@ namespace FModel.Views
             InitializeComponent();
             DataContext = this;
             _selectedItems = selectedItems;
+
+            _iconCache = new Dictionary<string, Geometry>();
+            void Cache(string key, string resKey)
+            {
+                if (TryFindResource(resKey) is Geometry g)
+                {
+                    if (g.CanFreeze) g.Freeze();
+                    _iconCache[key] = g;
+                }
+            }
+            Cache("Texture", "TextureIcon");
+            Cache("Model", "ModelIcon");
+            Cache("Audio", "AudioIcon");
+            Cache("Animation", "AnimationIcon");
+            Cache("Info", "InfoIcon");
+            Cache("Note", "NoteIcon");
 
             // ウィンドウ表示後に非同期で読み込みを開始
             Loaded += async (s, e) => await LoadReferencesAsync();
@@ -365,6 +382,7 @@ namespace FModel.Views
 
                 var className = GetPackageClassName(ipackage);
                 parentNode.Background = GetBrushForClass(className);
+                parentNode.IconData = GetIconForClass(className);
 
                 var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 // パッケージからインポート（依存先）を取得
@@ -462,6 +480,21 @@ namespace FModel.Views
             catch { return Brushes.Transparent; }
         }
 
+        private Geometry GetIconForClass(string className)
+        {
+            var key = className switch
+            {
+                "Texture2D" or "TextureCube" or "TextureRenderTarget2D" => "Texture",
+                "Material" or "MaterialInstanceConstant" => "Texture",
+                "StaticMesh" or "SkeletalMesh" => "Model",
+                "Blueprint" or "BlueprintGeneratedClass" => "Note",
+                "SoundWave" or "SoundCue" => "Audio",
+                "AnimSequence" or "AnimMontage" or "BlendSpace" => "Animation",
+                _ => "Info"
+            };
+            return _iconCache.TryGetValue(key, out var g) ? g : _iconCache["Info"];
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -493,6 +526,9 @@ namespace FModel.Views
 
         private Brush _background = DefaultBackground;
         public Brush Background { get => _background; set { _background = value; OnPropertyChanged(); } }
+
+        private Geometry _iconData;
+        public Geometry IconData { get => _iconData; set { _iconData = value; OnPropertyChanged(); } }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)

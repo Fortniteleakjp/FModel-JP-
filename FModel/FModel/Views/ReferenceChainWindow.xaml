@@ -94,7 +94,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Viewbox Width="16" Height="16" Margin="0,0,5,0">
                                             <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{Binding IconData}" />
                                             </Canvas>
                                         </Viewbox>
                                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
