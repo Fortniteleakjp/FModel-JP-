@@ -37,6 +37,7 @@ namespace FModel.Views
         private double _canvasHeight;
         private double _zoomScale = 1.0;
         private Dictionary<string, Geometry> _iconCache;
+        private List<ReferenceNode> _rootNodes;
 
         // Dragging variables
         private bool _isDraggingView;
@@ -168,7 +169,8 @@ namespace FModel.Views
                     return nodes;
                 });
 
-                LayoutNodes(result);
+                _rootNodes = result;
+                LayoutNodes(_rootNodes);
             }
             catch (Exception ex)
             {
@@ -187,8 +189,8 @@ namespace FModel.Views
             double currentY = 20;
             double nodeWidth = 250;
             double nodeHeight = 80;
-            double horizontalGap = 200;
-            double verticalGap = 40;
+            double horizontalGap = 100;
+            double verticalGap = 20;
 
             foreach (var root in rootNodes)
             {
@@ -217,17 +219,46 @@ namespace FModel.Views
             else
             {
                 var childYs = new List<double>();
-                foreach (var child in node.Children)
+                var visibleChildren = node.Children.Take(node.VisibleChildrenCount).ToList();
+
+                foreach (var child in visibleChildren)
                 {
                     CalculatePositions(child, depth + 1, ref currentY, flatList, connections, w, h, hGap, vGap);
                     childYs.Add(child.Y);
                     connections.Add(new NodeConnection { Source = node, Target = child, X1 = node.X + w, Y1 = 0, X2 = child.X, Y2 = child.Y + h / 2 });
                 }
+
+                if (node.Children.Count > node.VisibleChildrenCount)
+                {
+                    var remaining = node.Children.Count - node.VisibleChildrenCount;
+                    var showMoreNode = new ReferenceNode
+                    {
+                        Name = $"+ {remaining} assets",
+                        Path = string.Empty,
+                        IsShowMore = true,
+                        ParentNode = node,
+                        X = (depth + 1) * (w + hGap) + 100,
+                        Y = currentY,
+                        Background = Brushes.DimGray
+                    };
+                    if (_iconCache.TryGetValue("Note", out var icon)) showMoreNode.IconData = icon;
+
+                    currentY += h + vGap;
+                    childYs.Add(showMoreNode.Y);
+                    flatList.Add(showMoreNode);
+                    connections.Add(new NodeConnection { Source = node, Target = showMoreNode, X1 = node.X + w, Y1 = 0, X2 = showMoreNode.X, Y2 = showMoreNode.Y + h / 2 });
+                }
+
                 node.Y = (childYs.First() + childYs.Last()) / 2;
                 // 親ノードのY座標が決まったので、接続線の始点を更新
-                foreach (var child in node.Children)
+                foreach (var child in visibleChildren)
                 {
                     var conn = connections.LastOrDefault(c => c.X2 == child.X && c.Y2 == child.Y + h / 2);
+                    if (conn != null) conn.Y1 = node.Y + h / 2;
+                }
+                if (node.Children.Count > node.VisibleChildrenCount)
+                {
+                    var conn = connections.LastOrDefault(c => c.Target != null && c.Target.IsShowMore && c.Target.ParentNode == node);
                     if (conn != null) conn.Y1 = node.Y + h / 2;
                 }
             }
@@ -292,6 +323,13 @@ namespace FModel.Views
         {
             if (sender is FrameworkElement element && element.DataContext is ReferenceNode node)
             {
+                if (node.IsShowMore)
+                {
+                    node.ParentNode.VisibleChildrenCount = node.ParentNode.Children.Count;
+                    LayoutNodes(_rootNodes);
+                    return;
+                }
+
                 if (e.ClickCount == 2)
                 {
                     e.Handled = true;
@@ -508,6 +546,9 @@ namespace FModel.Views
         public string Name { get; set; }
         public string Path { get; set; }
         public List<ReferenceNode> Children { get; set; } = new List<ReferenceNode>();
+        public int VisibleChildrenCount { get; set; } = 10;
+        public bool IsShowMore { get; set; }
+        public ReferenceNode ParentNode { get; set; }
 
         private double _x;
         public double X { get => _x; set { _x = value; OnPropertyChanged(); } }
