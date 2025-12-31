@@ -183,11 +183,14 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     private void ShowChangelog(UpdateInfoEventArgs args)
     {
-        // 新しいタブを追加
-        var tabTitle = $"リリースノート: {args.CurrentVersion}";
-        _applicationView.CUE4Parse.TabControl.AddTab(tabTitle);
-        // リリースノート用のViewをコンテンツとして設定
-        _applicationView.CUE4Parse.TabControl.SelectedTab.Content = new ReleaseNotesView(args.CurrentVersion);
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            // 新しいタブを追加
+            var tabTitle = $"リリースノート: {args.CurrentVersion}";
+            _applicationView.CUE4Parse.TabControl.AddTab(tabTitle);
+            // リリースノート用のViewをコンテンツとして設定
+            _applicationView.CUE4Parse.TabControl.SelectedTab.Content = new ReleaseNotesView(args.CurrentVersion);
+        });
 
         UserSettings.Default.ShowChangelog = false;
     }
