@@ -187,7 +187,7 @@ public class FModelApiEndpoint : AbstractApiProvider
         var tabTitle = $"リリースノート: {args.CurrentVersion}";
         _applicationView.CUE4Parse.TabControl.AddTab(tabTitle);
         // リリースノート用のViewをコンテンツとして設定
-        _applicationView.CUE4Parse.TabControl.SelectedTab.Content = new ReleaseNotesView();
+        _applicationView.CUE4Parse.TabControl.SelectedTab.Content = new ReleaseNotesView(args.CurrentVersion);
 
         UserSettings.Default.ShowChangelog = false;
     }

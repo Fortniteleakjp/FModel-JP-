@@ -11,6 +11,11 @@ namespace FModel.Views.ReleaseNotes
             InitializeComponent();
         }
 
+        public ReleaseNotesView(string version) : this()
+        {
+            VersionRun.Text = $"v{version}";
+        }
+
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });

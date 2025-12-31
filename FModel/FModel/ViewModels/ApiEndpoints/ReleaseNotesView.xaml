@@ -16,7 +16,10 @@
             </Paragraph>
 
             <Section>
-                <Paragraph FontWeight="Bold" FontSize="18">v4.4.4.1 主な変更点</Paragraph>
+                <Paragraph FontWeight="Bold" FontSize="18">
+                    <Run x:Name="VersionRun">v4.4.4.2</Run>
+                    <Run> 主な変更点</Run>
+                </Paragraph>
                 <List>
                     <ListItem>
                         <Paragraph>
