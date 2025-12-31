@@ -1,0 +1,38 @@
+<UserControl x:Class="FModel.Views.ReleaseNotes.ReleaseNotesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <FlowDocumentScrollViewer>
+        <FlowDocument>
+            <Paragraph FontSize="24" FontWeight="Bold">FModelJP リリースノート</Paragraph>
+            <Paragraph>
+                <Run>FModelJPをご利用いただきありがとうございます！</Run>
+            </Paragraph>
+            <Paragraph>
+                <Run>このページは、アップデート後に一度だけ表示されます。</Run>
+            </Paragraph>
+
+            <Section>
+                <Paragraph FontWeight="Bold" FontSize="18">v4.4.4.1 主な変更点</Paragraph>
+                <List>
+                    <ListItem>
+                        <Paragraph>
+                            <Run>リリースノートの表示を実装しました。</Run>
+                        </Paragraph>
+                    </ListItem>
+                </List>
+            </Section>
+
+            <Paragraph>
+                <Run>すべての変更履歴については、</Run>
+                <Hyperlink NavigateUri="https://github.com/Fortniteleakjp/FModel-JP-/releases" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Run>GitHubのリリース</Run>
+                </Hyperlink>
+                <Run>をご確認ください。</Run>
+            </Paragraph>
+        </FlowDocument>
+    </FlowDocumentScrollViewer>
+</UserControl>

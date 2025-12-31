@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using Serilog;
 using MessageBox = AdonisUI.Controls.MessageBox;
+using FModel.Views.ReleaseNotes;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
@@ -167,11 +168,9 @@ public class FModelApiEndpoint : AbstractApiProvider
                 return;
             }
 
-            var currentVersion = new System.Version(args.CurrentVersion);
-            UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
-
             const string message = "新しいバージョンが利用可能です!";
-            Log.Warning("{message} Version {CurrentVersion} ({Hash})", message, currentVersion, targetHash);
+            Log.Warning("{message} Version {CurrentVersion} ({Hash})", message, args.CurrentVersion, targetHash);
+            UserSettings.Default.ShowChangelog = true;
             Helper.OpenWindow<AdonisWindow>(message, () => new UpdateView { Title = message, ResizeMode = ResizeMode.NoResize }.ShowDialog());
         }
         else
@@ -184,16 +183,11 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     private void ShowChangelog(UpdateInfoEventArgs args)
     {
-        var request = new FRestRequest(args.ChangelogURL);
-        var response = _client.Execute(request);
-        if (!response.IsSuccessful || string.IsNullOrEmpty(response.Content)) return;
-
         // 新しいタブを追加
         var tabTitle = $"リリースノート: {args.CurrentVersion}";
         _applicationView.CUE4Parse.TabControl.AddTab(tabTitle);
-        // MarkdownをFlowDocumentに変換し、タブのコンテンツとして設定
-        var flowDocument = Helper.CreateFlowDocumentFromMarkdown(response.Content);
-        _applicationView.CUE4Parse.TabControl.SelectedTab.RichDocument = flowDocument;
+        // リリースノート用のViewをコンテンツとして設定
+        _applicationView.CUE4Parse.TabControl.SelectedTab.Content = new ReleaseNotesView();
 
         UserSettings.Default.ShowChangelog = false;
     }
