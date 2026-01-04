@@ -5,11 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:local="clr-namespace:FModel.Views"
         mc:Ignorable="d"
         Title="参照ビューア" Height="720" Width="1280" WindowStartupLocation="CenterScreen">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}"/>
     </adonisControls:AdonisWindow.Style>
+    <adonisControls:AdonisWindow.InputBindings>
+        <KeyBinding Key="F" Modifiers="Control" Command="{x:Static local:ReferenceChainWindow.FindCommand}"/>
+    </adonisControls:AdonisWindow.InputBindings>
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -31,6 +35,11 @@
             <TextBlock Text="検索深度:" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
             <TextBox Text="{Binding MaxDepth}" Width="50" VerticalAlignment="Center" Margin="0,0,10,0"/>
             <Button Content="更新" Click="OnRefreshClick" VerticalAlignment="Center" IsDefault="True"/>
+            <TextBlock Text="検索:" VerticalAlignment="Center" Margin="20,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+            <TextBox x:Name="SearchBox" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="150" VerticalAlignment="Center" Margin="0,0,5,0" KeyDown="OnSearchKeyDown"/>
+            <Button Content="検索" Click="OnSearchClick" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <Button Content="&lt;" Click="OnPrevSearchClick" VerticalAlignment="Center" ToolTip="前へ" Margin="0,0,2,0"/>
+            <Button Content="&gt;" Click="OnNextSearchClick" VerticalAlignment="Center" ToolTip="次へ"/>
         </StackPanel>
 
         <!-- 読み込み中の表示 -->
@@ -50,7 +59,7 @@
                       MouseLeftButtonDown="OnScrollViewerMouseLeftButtonDown"
                       MouseLeftButtonUp="OnScrollViewerMouseLeftButtonUp"
                       MouseMove="OnScrollViewerMouseMove">
-            <Grid Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" Margin="50">
+            <Grid Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" Margin="100">
                 <Grid.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding ZoomScale}" ScaleY="{Binding ZoomScale}"/>
                 </Grid.LayoutTransform>
@@ -69,7 +78,7 @@
                 </ItemsControl>
 
                 <!-- Nodes (カード) -->
-                <ItemsControl ItemsSource="{Binding FlatNodes}">
+                <ItemsControl x:Name="NodesItemsControl" ItemsSource="{Binding FlatNodes}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas/>
@@ -83,9 +92,21 @@
                     </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border Width="250" Height="80" CornerRadius="4" Background="{Binding Background}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" BorderThickness="1"
+                            <Border Width="250" Height="80" CornerRadius="4" Background="{Binding Background}"
                                     MouseLeftButtonDown="OnNodeMouseLeftButtonDown" MouseLeftButtonUp="OnNodeMouseLeftButtonUp" MouseMove="OnNodeMouseMove"
                                     Cursor="Hand">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                                                <Setter Property="BorderBrush" Value="#FFD700"/>
+                                                <Setter Property="BorderThickness" Value="3"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <Grid Margin="10">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>

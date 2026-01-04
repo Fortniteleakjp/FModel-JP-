@@ -32,12 +32,17 @@ namespace FModel.Views
         private int _progressValue;
         private int _progressMax = 100;
         private string _progressText = "準備中...";
+        private string _searchText;
         private readonly IList _selectedItems;
         private double _canvasWidth;
         private double _canvasHeight;
         private double _zoomScale = 1.0;
         private Dictionary<string, Geometry> _iconCache;
         private List<ReferenceNode> _rootNodes;
+        private List<ReferenceNode> _searchResults = new List<ReferenceNode>();
+        private int _currentSearchIndex = -1;
+
+        public static readonly RoutedCommand FindCommand = new RoutedCommand();
 
         // Dragging variables
         private bool _isDraggingView;
@@ -107,6 +112,12 @@ namespace FModel.Views
             set { _progressText = value; OnPropertyChanged(); }
         }
 
+        public string SearchText
+        {
+            get => _searchText;
+            set { _searchText = value; OnPropertyChanged(); }
+        }
+
         public ReferenceChainWindow(IList selectedItems)
         {
             InitializeComponent();
@@ -129,8 +140,101 @@ namespace FModel.Views
             Cache("Info", "InfoIcon");
             Cache("Note", "NoteIcon");
 
+            CommandBindings.Add(new CommandBinding(FindCommand, OnFindCommand));
+
             // ウィンドウ表示後に非同期で読み込みを開始
             Loaded += async (s, e) => await LoadReferencesAsync();
+        }
+
+        private void OnFindCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            SearchBox.Focus();
+            SearchBox.SelectAll();
+        }
+
+        private void OnSearchKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                OnSearchClick(sender, e);
+            }
+        }
+
+        private void OnSearchClick(object sender, RoutedEventArgs e)
+        {
+            PerformSearch(true, true);
+        }
+
+        private void OnNextSearchClick(object sender, RoutedEventArgs e)
+        {
+            PerformSearch(true, false);
+        }
+
+        private void OnPrevSearchClick(object sender, RoutedEventArgs e)
+        {
+            PerformSearch(false, false);
+        }
+
+        private void PerformSearch(bool forward, bool newSearch)
+        {
+            if (string.IsNullOrWhiteSpace(SearchText)) return;
+
+            if (newSearch || _searchResults.Count == 0 || _searchResults.All(n => n.Name.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) < 0))
+            {
+                // 新規検索または検索条件変更
+                if (FlatNodes == null) return;
+                
+                // 既存のハイライトをクリア
+                foreach (var n in FlatNodes) n.IsHighlighted = false;
+
+                _searchResults = FlatNodes.Where(n => n.Name.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                _currentSearchIndex = -1;
+
+                if (_searchResults.Count == 0)
+                {
+                    AdonisUI.Controls.MessageBox.Show(this, $"'{SearchText}' が見つかりませんでした。", "検索結果", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
+                    return;
+                }
+            }
+
+            // 前のハイライトを消す
+            if (_currentSearchIndex >= 0 && _currentSearchIndex < _searchResults.Count)
+            {
+                _searchResults[_currentSearchIndex].IsHighlighted = false;
+            }
+
+            // インデックス更新
+            if (newSearch)
+            {
+                _currentSearchIndex = 0;
+            }
+            else
+            {
+                _currentSearchIndex += forward ? 1 : -1;
+                if (_currentSearchIndex >= _searchResults.Count) _currentSearchIndex = 0;
+                if (_currentSearchIndex < 0) _currentSearchIndex = _searchResults.Count - 1;
+            }
+
+            var node = _searchResults[_currentSearchIndex];
+            node.IsHighlighted = true;
+
+            if (node != null)
+            {
+                // ヒットしたノードを拡大表示
+                ZoomScale = 1.5;
+                MainScrollViewer.UpdateLayout();
+
+                double margin = 100;
+                double scale = ZoomScale;
+                double nodeWidth = 250;
+                double nodeHeight = 80;
+
+                double targetX = (node.X * scale) + margin - (MainScrollViewer.ViewportWidth - (nodeWidth * scale)) / 2;
+                double targetY = (node.Y * scale) + margin - (MainScrollViewer.ViewportHeight - (nodeHeight * scale)) / 2;
+
+                MainScrollViewer.ScrollToHorizontalOffset(targetX);
+                MainScrollViewer.ScrollToVerticalOffset(targetY);
+            }
         }
 
         private void OnRefreshClick(object sender, RoutedEventArgs e)
@@ -570,6 +674,9 @@ namespace FModel.Views
 
         private Geometry _iconData;
         public Geometry IconData { get => _iconData; set { _iconData = value; OnPropertyChanged(); } }
+
+        private bool _isHighlighted;
+        public bool IsHighlighted { get => _isHighlighted; set { _isHighlighted = value; OnPropertyChanged(); } }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
