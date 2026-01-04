@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -167,25 +168,66 @@ public partial class SearchView
     }
 }
 
-public class AssetIconConverter : IValueConverter
+public static class AssetMetadata
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    private static readonly ConcurrentDictionary<string, string> _classCache = new();
+
+    public static readonly DependencyProperty GameFileProperty = DependencyProperty.RegisterAttached(
+        "GameFile", typeof(GameFile), typeof(AssetMetadata), new PropertyMetadata(null, OnGameFileChanged));
+
+    public static void SetGameFile(DependencyObject element, GameFile value) => element.SetValue(GameFileProperty, value);
+    public static GameFile GetGameFile(DependencyObject element) => (GameFile) element.GetValue(GameFileProperty);
+
+    public static readonly DependencyProperty IconProperty = DependencyProperty.RegisterAttached(
+        "Icon", typeof(Geometry), typeof(AssetMetadata), new PropertyMetadata(null));
+
+    public static Geometry GetIcon(DependencyObject element) => (Geometry) element.GetValue(IconProperty);
+
+    public static readonly DependencyProperty TextColorProperty = DependencyProperty.RegisterAttached(
+        "TextColor", typeof(Brush), typeof(AssetMetadata), new PropertyMetadata(Brushes.White));
+
+    public static Brush GetTextColor(DependencyObject element) => (Brush) element.GetValue(TextColorProperty);
+
+    private static async void OnGameFileChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (value is GameFile gameFile)
+        if (d is not FrameworkElement element) return;
+
+        // Reset to defaults
+        element.SetCurrentValue(IconProperty, GetGeometry("File"));
+        element.SetCurrentValue(TextColorProperty, Application.Current.TryFindResource(AdonisUI.Brushes.ForegroundBrush) as Brush ?? Brushes.White);
+
+        if (e.NewValue is not GameFile gameFile) return;
+
+        string className;
+        if (_classCache.TryGetValue(gameFile.Path, out var cached))
         {
-            var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
-            if (provider.TryLoadPackage(gameFile.Path, out var package))
-            {
-                var className = GetPackageClassName(package);
-                return GetIconForClass(className);
-            }
+            className = cached;
         }
-        return GetIcon("File");
+        else
+        {
+            className = await Task.Run(() =>
+            {
+                var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
+                if (provider.TryLoadPackage(gameFile.Path, out var package))
+                {
+                    return GetPackageClassName(package);
+                }
+                return null;
+            });
+            
+            if (className != null)
+                _classCache.TryAdd(gameFile.Path, className);
+        }
+
+        // Check if the element is still displaying the same GameFile (virtualization check)
+        if (GetGameFile(element) == gameFile)
+        {
+            element.SetCurrentValue(IconProperty, GetIconForClass(className));
+            element.SetCurrentValue(TextColorProperty, GetBrushForClass(className));
+        }
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
-
-    private string GetPackageClassName(IPackage ipackage)
+    private static string GetPackageClassName(IPackage ipackage)
     {
         if (ipackage == null) return null;
 
@@ -203,7 +245,7 @@ public class AssetIconConverter : IValueConverter
         return null;
     }
 
-    private Geometry GetIconForClass(string className)
+    private static Geometry GetIconForClass(string className)
     {
         var key = className switch
         {
@@ -215,9 +257,24 @@ public class AssetIconConverter : IValueConverter
             "AnimSequence" or "AnimMontage" or "BlendSpace" => "Animation",
             _ => "File"
         };
-        return GetIcon(key);
+        return GetGeometry(key);
     }
 
-    private Geometry GetIcon(string key) => 
+    private static Geometry GetGeometry(string key) => 
         Application.Current.TryFindResource($"{key}Icon") as Geometry ?? Application.Current.TryFindResource("FileIcon") as Geometry;
+
+    private static Brush GetBrushForClass(string className)
+    {
+        var brush = className switch
+        {
+            "Texture2D" or "TextureCube" or "TextureRenderTarget2D" => Brushes.SandyBrown,
+            "Material" or "MaterialInstanceConstant" => Brushes.LightGreen,
+            "StaticMesh" or "SkeletalMesh" => Brushes.Cyan,
+            "Blueprint" or "BlueprintGeneratedClass" => Brushes.LightBlue,
+            "SoundWave" or "SoundCue" => Brushes.Orange,
+            "AnimSequence" or "AnimMontage" or "BlendSpace" => Brushes.Plum,
+            _ => Application.Current.TryFindResource(AdonisUI.Brushes.ForegroundBrush) as Brush ?? Brushes.White
+        };
+        return brush;
+    }
 }

@@ -21,7 +21,7 @@
                     <Run> 主な変更点</Run>
                 </Paragraph>
                 <BlockUIContainer>
-                    <Image Source="https://i.imgur.com/UDmTAQk.png" Stretch="Uniform" MaxHeight="400" Margin="0,10"/>
+                    <Image Source="https://i.imgur.com/AIkqaaM.png" Stretch="Uniform" MaxHeight="400" Margin="0,10"/>
                 </BlockUIContainer>
                 <List>
                     <ListItem>
