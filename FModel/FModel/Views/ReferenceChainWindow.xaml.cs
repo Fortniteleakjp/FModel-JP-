@@ -28,6 +28,8 @@ namespace FModel.Views
         private bool _isLoading;
         private ObservableCollection<ReferenceNode> _flatNodes;
         private ObservableCollection<NodeConnection> _connections;
+        private int _searchMode;
+        private string _assetTypeFilter = "All";
         private int _maxDepth = 10;
         private int _progressValue;
         private int _progressMax = 100;
@@ -86,6 +88,18 @@ namespace FModel.Views
         {
             get => _zoomScale;
             set { _zoomScale = value; OnPropertyChanged(); }
+        }
+
+        public int SearchMode
+        {
+            get => _searchMode;
+            set { _searchMode = value; OnPropertyChanged(); }
+        }
+
+        public string AssetTypeFilter
+        {
+            get => _assetTypeFilter;
+            set { _assetTypeFilter = value; OnPropertyChanged(); }
         }
 
         public int MaxDepth
@@ -263,8 +277,15 @@ namespace FModel.Views
                         {
                             var rootNode = new ReferenceNode { Name = gameFile.Name, Path = gameFile.Path };
                             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                            // 参照先（Dependencies）のみを構築
-                            BuildDependencyTree(rootNode, gameFile, MaxDepth, 0, visited, provider);
+                            
+                            if (SearchMode == 0)
+                            {
+                                BuildDependencyTree(rootNode, gameFile, MaxDepth, 0, visited, provider);
+                            }
+                            else
+                            {
+                                BuildReferencerTree(rootNode, gameFile, MaxDepth, 0, visited, provider);
+                            }
 
                             nodes.Add(rootNode);
                         }
@@ -293,8 +314,8 @@ namespace FModel.Views
             double currentY = 20;
             double nodeWidth = 250;
             double nodeHeight = 80;
-            double horizontalGap = 100;
-            double verticalGap = 20;
+            double horizontalGap = 150; // 線が重なりにくいように間隔を拡大
+            double verticalGap = 40;    // ノード間の垂直間隔も拡大
 
             foreach (var root in rootNodes)
             {
@@ -600,6 +621,18 @@ namespace FModel.Views
                     // パス解決（拡張子なしのパスからGameFileを探す）
                     if (provider.TryGetGameFile(lookupPath + ".uasset", out var depFile))
                     {
+                        // フィルタリング: 子ノードを追加する前にタイプをチェック
+                        if (!string.IsNullOrEmpty(AssetTypeFilter) && AssetTypeFilter != "All")
+                        {
+                            if (provider.TryLoadPackage(depFile.Path, out var depPackage))
+                            {
+                                var depClassName = GetPackageClassName(depPackage);
+                                if (!IsTypeMatch(depClassName, AssetTypeFilter)) continue;
+                            }
+                            else
+                                continue; // パッケージが読み込めない場合はスキップ（安全策）
+                        }
+
                         var childNode = new ReferenceNode { Name = depFile.Name, Path = depFile.Path };
                         parentNode.Children.Add(childNode);
                         BuildDependencyTree(childNode, depFile as GameFile, maxDepth, currentDepth + 1, visited, provider);
@@ -607,6 +640,105 @@ namespace FModel.Views
                 }
             }
             catch { }
+        }
+
+        // 参照元（Referencers）ツリー構築
+        private void BuildReferencerTree(ReferenceNode parentNode, GameFile file, int maxDepth, int currentDepth, ISet<string> visited, CUE4Parse.FileProvider.IFileProvider provider)
+        {
+            if (currentDepth >= maxDepth || !visited.Add(file.Path))
+                return;
+
+            try
+            {
+                // 親ノード（この場合は参照されている側）のスタイル設定
+                if (provider.TryLoadPackage(file.Path, out var ipackage))
+                {
+                    var className = GetPackageClassName(ipackage);
+                    parentNode.Background = GetBrushForClass(className);
+                    parentNode.IconData = GetIconForClass(className);
+                }
+
+                // このファイルをインポートしているファイル（参照元）を探す
+                // 注意: インデックスがないため、全ファイルスキャンが必要となり非常に重い処理です
+                var referencers = FindReferencers(file.PathWithoutExtension, provider);
+
+                foreach (var refFile in referencers)
+                {
+                    // フィルタリング
+                    if (!string.IsNullOrEmpty(AssetTypeFilter) && AssetTypeFilter != "All")
+                    {
+                        if (provider.TryLoadPackage(refFile.Path, out var refPackage))
+                        {
+                            var refClassName = GetPackageClassName(refPackage);
+                            if (!IsTypeMatch(refClassName, AssetTypeFilter)) continue;
+                        }
+                        else
+                            continue;
+                    }
+
+                    var childNode = new ReferenceNode { Name = refFile.Name, Path = refFile.Path };
+                    parentNode.Children.Add(childNode);
+                    BuildReferencerTree(childNode, refFile, maxDepth, currentDepth + 1, visited, provider);
+                }
+            }
+            catch { }
+        }
+
+        private IEnumerable<GameFile> FindReferencers(string targetPackagePath, CUE4Parse.FileProvider.IFileProvider provider)
+        {
+            var results = new System.Collections.Concurrent.ConcurrentBag<GameFile>();
+            var targetPath = targetPackagePath.StartsWith("/") ? targetPackagePath : "/" + targetPackagePath;
+
+            // 並列処理で全ファイルをスキャン
+            Parallel.ForEach(provider.Files, (kvp) =>
+            {
+                var file = kvp.Value;
+                // アセットファイル以外はスキップ
+                if (!file.Name.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) && 
+                    !file.Name.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
+                    return;
+
+                try
+                {
+                    if (provider.TryLoadPackage(file.Path, out var package))
+                    {
+                        // パッケージのインポートリストをチェック
+                        if (package is Package pkg)
+                        {
+                            foreach (var import in pkg.ImportMap)
+                            {
+                                if (import.ObjectName.Text.Contains(targetPath.Substring(targetPath.LastIndexOf('/') + 1)))
+                                {
+                                    results.Add(file as GameFile);
+                                    break;
+                                }
+                            }
+                        }
+                        // IoPackage等の対応は省略（必要に応じて追加）
+                    }
+                }
+                catch { }
+            });
+
+            return results;
+        }
+
+        private bool IsTypeMatch(string className, string filter)
+        {
+            if (string.IsNullOrEmpty(className)) return false;
+            if (filter == "All") return true;
+
+            return filter switch
+            {
+                "Texture" => className.Contains("Texture") || className.Contains("RenderTarget"),
+                "Material" => className.Contains("Material"),
+                "Mesh" => className.Contains("StaticMesh") || className.Contains("SkeletalMesh"),
+                "Animation" => className.Contains("Anim") || className.Contains("BlendSpace") || className.Contains("Skeleton"),
+                "Sound" => className.Contains("Sound") || className.Contains("Audio"),
+                "Blueprint" => className.Contains("Blueprint"),
+                "Config (.ini)" => false,
+                _ => true
+            };
         }
 
         private string GetPackageClassName(IPackage ipackage)

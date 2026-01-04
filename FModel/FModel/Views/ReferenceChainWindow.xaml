@@ -32,6 +32,22 @@
 
         <!-- ツールバー -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,0">
+            <TextBlock Text="モード:" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+            <ComboBox SelectedIndex="{Binding SearchMode}" Width="160" VerticalAlignment="Center" Margin="0,0,10,0">
+                <ComboBoxItem Content="依存関係 (Dependencies)"/>
+                <ComboBoxItem Content="参照元 (Referencers)"/>
+            </ComboBox>
+            <TextBlock Text="フィルタ:" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+            <ComboBox SelectedValue="{Binding AssetTypeFilter}" SelectedValuePath="Content" Width="100" VerticalAlignment="Center" Margin="0,0,10,0">
+                <ComboBoxItem Content="All" IsSelected="True"/>
+                <ComboBoxItem Content="Texture"/>
+                <ComboBoxItem Content="Material"/>
+                <ComboBoxItem Content="Mesh"/>
+                <ComboBoxItem Content="Animation"/>
+                <ComboBoxItem Content="Sound"/>
+                <ComboBoxItem Content="Blueprint"/>
+                <ComboBoxItem Content="Config (.ini)"/>
+            </ComboBox>
             <TextBlock Text="検索深度:" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
             <TextBox Text="{Binding MaxDepth}" Width="50" VerticalAlignment="Center" Margin="0,0,10,0"/>
             <Button Content="更新" Click="OnRefreshClick" VerticalAlignment="Center" IsDefault="True"/>

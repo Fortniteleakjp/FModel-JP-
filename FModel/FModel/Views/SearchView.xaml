@@ -3,6 +3,7 @@
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:behaviors="clr-namespace:FModel.Views.Resources.Behaviors"
+                             xmlns:local="clr-namespace:FModel.Views"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
@@ -27,6 +28,7 @@
                     <x:Type TypeName="vm:ESortMode"/>
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
+            <local:AssetIconConverter x:Key="AssetIconConverter"/>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid Margin="5 5">
@@ -102,6 +104,18 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
+                        <ComboBox Width="120" Margin="5,0,0,0" VerticalContentAlignment="Center"
+                                  SelectedValuePath="Content"
+                                  SelectedValue="{Binding AssetTypeFilter, RelativeSource={RelativeSource AncestorType={x:Type local:SearchView}}}">
+                            <ComboBoxItem Content="All" />
+                            <ComboBoxItem Content="Texture" />
+                            <ComboBoxItem Content="Material" />
+                            <ComboBoxItem Content="Mesh" />
+                            <ComboBoxItem Content="Animation" />
+                            <ComboBoxItem Content="Sound" />
+                            <ComboBoxItem Content="Blueprint" />
+                            <ComboBoxItem Content="Config (.ini)" />
+                        </ComboBox>
                         <Button ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
@@ -126,12 +140,19 @@
                             <GridViewColumn Width="900" Header="Path" adonisExtensions:GridViewSortExtension.PropertyName="Path">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock HorizontalAlignment="Left"
-                                                   behaviors:SearchHighlightBehavior.Text="{Binding Path}"
-                                                   behaviors:SearchHighlightBehavior.FilterText="{Binding DataContext.CUE4Parse.SearchVm.FilterText, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                   behaviors:SearchHighlightBehavior.IsRegex="{Binding DataContext.CUE4Parse.SearchVm.HasRegexEnabled, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                   behaviors:SearchHighlightBehavior.MatchCase="{Binding DataContext.CUE4Parse.SearchVm.HasMatchCaseEnabled, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                   behaviors:SearchHighlightBehavior.HighlightBrush="MediumPurple" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,5,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{Binding Converter={StaticResource AssetIconConverter}}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                       behaviors:SearchHighlightBehavior.Text="{Binding Path}"
+                                                       behaviors:SearchHighlightBehavior.FilterText="{Binding DataContext.CUE4Parse.SearchVm.FilterText, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                       behaviors:SearchHighlightBehavior.IsRegex="{Binding DataContext.CUE4Parse.SearchVm.HasRegexEnabled, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                       behaviors:SearchHighlightBehavior.MatchCase="{Binding DataContext.CUE4Parse.SearchVm.HasMatchCaseEnabled, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                       behaviors:SearchHighlightBehavior.HighlightBrush="MediumPurple" />
+                                        </StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
