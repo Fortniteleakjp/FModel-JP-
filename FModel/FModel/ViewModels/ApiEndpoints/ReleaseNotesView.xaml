@@ -17,7 +17,7 @@
 
             <Section>
                 <Paragraph FontWeight="Bold" FontSize="18">
-                    <Run x:Name="VersionRun">v4.4.4.2</Run>
+                    <Run x:Name="VersionRun">v4.4.4.3</Run>
                     <Run> 主な変更点</Run>
                 </Paragraph>
                 <BlockUIContainer>

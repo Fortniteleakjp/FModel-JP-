@@ -185,11 +185,15 @@ public class FModelApiEndpoint : AbstractApiProvider
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            // 新しいタブを追加
-            var tabTitle = $"リリースノート: {args.CurrentVersion}";
-            _applicationView.CUE4Parse.TabControl.AddTab(tabTitle);
+            var versionText = string.IsNullOrWhiteSpace(args?.CurrentVersion) ? "" : args.CurrentVersion;
+            var tabTitle = string.IsNullOrWhiteSpace(versionText) ? "リリースノート" : $"リリースノート: {versionText}";
+
+            // 固定のフェイクエントリでタブを作成（nullタイトルで辞書キー例外を防止）
+            var fakeEntry = new FakeGameFile(tabTitle);
+            _applicationView.CUE4Parse.TabControl.AddTab(fakeEntry);
+
             // リリースノート用のViewをコンテンツとして設定
-            _applicationView.CUE4Parse.TabControl.SelectedTab.Content = new ReleaseNotesView(args.CurrentVersion);
+            _applicationView.CUE4Parse.TabControl.SelectedTab.Content = new ReleaseNotesView(versionText);
         });
 
         UserSettings.Default.ShowChangelog = false;
