@@ -17,7 +17,7 @@
 
             <Section>
                 <Paragraph FontWeight="Bold" FontSize="18">
-                    <Run x:Name="VersionRun">v4.4.4.3</Run>
+                    <Run x:Name="VersionRun">v4.4.4.4</Run>
                     <Run> 主な変更点</Run>
                 </Paragraph>
                 <BlockUIContainer>
@@ -26,7 +26,7 @@
                 <List>
                     <ListItem>
                         <Paragraph>
-                            <Run>リリースノートの表示を実装しました。</Run>
+                            <Run>検索ウインドウで各アセットタイプ毎に表示する機能を追加</Run>
                         </Paragraph>
                     </ListItem>
                 </List>
