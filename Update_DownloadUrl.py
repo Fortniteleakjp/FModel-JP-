@@ -3,7 +3,7 @@ import sys
 import secrets
 
 sha = sys.argv[1]
-version = f"v4.4.4.4-{sha}"
+version = sys.argv[2]
 
 url = "https://fljpapi2-sjnq.onrender.com/qa/upload"
 headers = {
