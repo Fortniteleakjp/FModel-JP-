@@ -54,12 +54,30 @@
 
         <!-- 結果のビュー -->
         <ScrollViewer Grid.Row="2" x:Name="MainScrollViewer"
-                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="None"
-                      PreviewMouseWheel="OnPreviewMouseWheel"
-                      MouseLeftButtonDown="OnScrollViewerMouseLeftButtonDown"
-                      MouseLeftButtonUp="OnScrollViewerMouseLeftButtonUp"
-                      MouseMove="OnScrollViewerMouseMove">
+                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="None"
+                  Background="Transparent"
+                  PreviewMouseWheel="OnPreviewMouseWheel"
+                  PreviewMouseLeftButtonDown="OnScrollViewerMouseLeftButtonDown"
+                  PreviewMouseLeftButtonUp="OnScrollViewerMouseLeftButtonUp"
+                  PreviewMouseMove="OnScrollViewerMouseMove">
             <Grid Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" Margin="100">
+                <Grid.Background>
+                    <DrawingBrush TileMode="Tile" Viewport="0,0,50,50" ViewportUnits="Absolute">
+                        <DrawingBrush.Drawing>
+                            <GeometryDrawing>
+                                <GeometryDrawing.Geometry>
+                                    <GeometryGroup>
+                                        <LineGeometry StartPoint="0,0" EndPoint="0,50"/>
+                                        <LineGeometry StartPoint="0,0" EndPoint="50,0"/>
+                                    </GeometryGroup>
+                                </GeometryDrawing.Geometry>
+                                <GeometryDrawing.Pen>
+                                    <Pen Brush="#19808080" Thickness="1"/>
+                                </GeometryDrawing.Pen>
+                            </GeometryDrawing>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Grid.Background>
                 <Grid.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding ZoomScale}" ScaleY="{Binding ZoomScale}"/>
                 </Grid.LayoutTransform>
@@ -107,6 +125,12 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="アセットを開く" Click="OnOpenAssetClick"/>
+                                        <MenuItem Header="パスをコピー" Click="OnCopyPathClick"/>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
                                 <Grid Margin="10">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>

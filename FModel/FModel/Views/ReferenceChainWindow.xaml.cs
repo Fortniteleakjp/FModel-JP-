@@ -373,9 +373,6 @@ namespace FModel.Views
         // Zooming
         private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if ((Keyboard.Modifiers & ModifierKeys.Control) != ModifierKeys.Control)
-                return;
-
             e.Handled = true;
             var scrollViewer = (ScrollViewer)sender;
             if (scrollViewer.Content is not FrameworkElement grid) return;
@@ -396,8 +393,22 @@ namespace FModel.Views
         }
 
         // View Panning (Left Click)
+        private bool IsPointerOnNode(object source)
+        {
+            var current = source as DependencyObject;
+            while (current != null)
+            {
+                if (current is FrameworkElement fe && fe.DataContext is ReferenceNode)
+                    return true;
+                current = VisualTreeHelper.GetParent(current);
+            }
+            return false;
+        }
+
         private void OnScrollViewerMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (IsPointerOnNode(e.OriginalSource)) return;
+
             _lastViewMousePosition = e.GetPosition(MainScrollViewer);
             _isDraggingView = true;
             MainScrollViewer.CaptureMouse();
@@ -406,8 +417,11 @@ namespace FModel.Views
 
         private void OnScrollViewerMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            if (!_isDraggingView) return;
+
             _isDraggingView = false;
             MainScrollViewer.ReleaseMouseCapture();
+            e.Handled = true;
         }
 
         private void OnScrollViewerMouseMove(object sender, MouseEventArgs e)
@@ -419,6 +433,7 @@ namespace FModel.Views
                 MainScrollViewer.ScrollToHorizontalOffset(MainScrollViewer.HorizontalOffset - delta.X);
                 MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset - delta.Y);
                 _lastViewMousePosition = currentPos;
+                e.Handled = true;
             }
         }
 
@@ -459,6 +474,25 @@ namespace FModel.Views
             _draggingElement?.ReleaseMouseCapture();
             _draggingElement = null;
             _draggingNode = null;
+        }
+
+        private void OnOpenAssetClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menuItem && menuItem.DataContext is ReferenceNode node)
+            {
+                if (ApplicationService.ApplicationView.CUE4Parse.Provider.TryGetGameFile(node.Path, out var gameFile))
+                {
+                    ApplicationService.ThreadWorkerView.Begin(cancellationToken => ApplicationService.ApplicationView.CUE4Parse.Extract(cancellationToken, gameFile, true));
+                }
+            }
+        }
+
+        private void OnCopyPathClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menuItem && menuItem.DataContext is ReferenceNode node)
+            {
+                Clipboard.SetText(node.Path);
+            }
         }
 
         private void OnNodeMouseMove(object sender, MouseEventArgs e)
