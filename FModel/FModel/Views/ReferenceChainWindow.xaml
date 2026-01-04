@@ -50,7 +50,7 @@
                       MouseLeftButtonDown="OnScrollViewerMouseLeftButtonDown"
                       MouseLeftButtonUp="OnScrollViewerMouseLeftButtonUp"
                       MouseMove="OnScrollViewerMouseMove">
-            <Grid Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" Margin="2000">
+            <Grid Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" Margin="50">
                 <Grid.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding ZoomScale}" ScaleY="{Binding ZoomScale}"/>
                 </Grid.LayoutTransform>
