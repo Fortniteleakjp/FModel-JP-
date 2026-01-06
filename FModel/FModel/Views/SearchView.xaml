@@ -103,18 +103,6 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <ComboBox Width="120" Margin="5,0,0,0" VerticalContentAlignment="Center"
-                                  SelectedValuePath="Content"
-                                  SelectedValue="{Binding AssetTypeFilter, RelativeSource={RelativeSource AncestorType={x:Type local:SearchView}}}">
-                            <ComboBoxItem Content="All" />
-                            <ComboBoxItem Content="Texture" />
-                            <ComboBoxItem Content="Material" />
-                            <ComboBoxItem Content="Mesh" />
-                            <ComboBoxItem Content="Animation" />
-                            <ComboBoxItem Content="Sound" />
-                            <ComboBoxItem Content="Blueprint" />
-                            <ComboBoxItem Content="Config (.ini)" />
-                        </ComboBox>
                         <Button ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
@@ -139,14 +127,8 @@
                             <GridViewColumn Width="900" Header="Path" adonisExtensions:GridViewSortExtension.PropertyName="Path">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" local:AssetMetadata.GameFile="{Binding}">
-                                            <Viewbox Width="16" Height="16" Margin="0,0,5,0">
-                                                <Canvas Width="24" Height="24">
-                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{Binding (local:AssetMetadata.Icon), RelativeSource={RelativeSource AncestorType=StackPanel}}" />
-                                                </Canvas>
-                                            </Viewbox>
+                                        <StackPanel Orientation="Horizontal">
                                             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center"
-                                                       Foreground="{Binding (local:AssetMetadata.TextColor), RelativeSource={RelativeSource AncestorType=StackPanel}}"
                                                        behaviors:SearchHighlightBehavior.Text="{Binding Path}"
                                                        behaviors:SearchHighlightBehavior.FilterText="{Binding DataContext.CUE4Parse.SearchVm.FilterText, RelativeSource={RelativeSource AncestorType=Window}}"
                                                        behaviors:SearchHighlightBehavior.IsRegex="{Binding DataContext.CUE4Parse.SearchVm.HasRegexEnabled, RelativeSource={RelativeSource AncestorType=Window}}"
