@@ -2,6 +2,7 @@ using AdonisUI.Controls;
 using FModel.Extensions;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
+using System.ComponentModel;
 using Microsoft.Win32;
 using Serilog;
 using SkiaSharp;
@@ -26,6 +27,7 @@ public partial class ImageMerger
     private byte[] _imageBuffer;
     private Point _startPoint;
     private ListBoxItem _draggedItem;
+    private readonly List<string> _tempFilePaths = new();
     private bool _isPanning;
     private Point _panStartPoint;
     private double _hOff;
@@ -35,6 +37,16 @@ public partial class ImageMerger
     {
         InitializeComponent();
         this.KeyDown += ImageMerger_KeyDown;
+        this.Closing += ImageMerger_Closing;
+    }
+
+    private void ImageMerger_Closing(object sender, CancelEventArgs e)
+    {
+        foreach (var path in _tempFilePaths)
+        {
+            try { if (File.Exists(path)) File.Delete(path); }
+            catch (Exception ex) { Log.Warning(ex, "Failed to delete temporary image file: {FilePath}", path); }
+        }
     }
 
     private async void DrawPreview(object sender, DragCompletedEventArgs dragCompletedEventArgs)
@@ -370,25 +382,43 @@ public partial class ImageMerger
     {
         if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.V)
         {
-            if (Clipboard.ContainsFileDropList())
+            await PasteFromClipboardAsync();
+        }
+    }
+
+    private async void OnPasteImage(object sender, RoutedEventArgs e)
+    {
+        await PasteFromClipboardAsync();
+    }
+
+    private async Task PasteFromClipboardAsync()
+    {
+        if (Clipboard.ContainsFileDropList())
+        {
+            var files = Clipboard.GetFileDropList().Cast<string>().ToArray();
+            await AddImagesFromFiles(files);
+        }
+        else if (Clipboard.ContainsImage())
+        {
+            var image = Clipboard.GetImage();
+            if (image != null)
             {
-                var files = Clipboard.GetFileDropList().Cast<string>().ToArray();
-                await AddImagesFromFiles(files);
-            }
-            else if (Clipboard.ContainsImage())
-            {
-                var image = Clipboard.GetImage();
-                if (image != null)
+                string tempPath = Path.Combine(Path.GetTempPath(), $"clip_{Guid.NewGuid()}.png");
+                try
                 {
-                    string tempPath = Path.Combine(Path.GetTempPath(), $"clip_{Guid.NewGuid()}.png");
                     using (var fs = new FileStream(tempPath, FileMode.Create))
                     {
                         var encoder = new PngBitmapEncoder();
                         encoder.Frames.Add(BitmapFrame.Create(image));
                         encoder.Save(fs);
                     }
-
+                    _tempFilePaths.Add(tempPath);
                     await AddImagesFromFiles(new[] { tempPath });
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to paste image from clipboard.");
+                    FLogger.Append(ELog.Error, () => FLogger.Text("クリップボードからの画像の貼り付けに失敗しました。", Constants.RED));
                 }
             }
         }

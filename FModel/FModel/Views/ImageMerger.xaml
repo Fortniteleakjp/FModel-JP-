@@ -154,11 +154,13 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="AddButton" Content="+" Click="OnImageAdd" ToolTip="画像を追加" Margin="2" Height="30" FontWeight="Bold"/>
-                <Button x:Name="DeleteButton" Content="-" Click="ModifyItemInList" ToolTip="レイヤーを削除" Margin="2" Height="30" FontWeight="Bold"/>
-                <Button x:Name="UpButton" Content="▲" Click="ModifyItemInList" ToolTip="上へ移動" Margin="2" Height="30"/>
-                <Button x:Name="DownButton" Content="▼" Click="ModifyItemInList" ToolTip="下へ移動" Margin="2" Height="30"/>
+                <Button Grid.Column="0" x:Name="AddButton" Content="+" Click="OnImageAdd" ToolTip="画像を追加" Margin="2" Height="30" FontWeight="Bold"/>
+                <Button Grid.Column="1" x:Name="PasteButton" Content="貼付" Click="OnPasteImage" ToolTip="クリップボードから貼り付け (Ctrl+V)" Margin="2" Height="30"/>
+                <Button Grid.Column="2" x:Name="DeleteButton" Content="-" Click="ModifyItemInList" ToolTip="レイヤーを削除" Margin="2" Height="30" FontWeight="Bold"/>
+                <Button Grid.Column="3" x:Name="UpButton" Content="▲" Click="ModifyItemInList" ToolTip="上へ移動" Margin="2" Height="30"/>
+                <Button Grid.Column="4" x:Name="DownButton" Content="▼" Click="ModifyItemInList" ToolTip="下へ移動" Margin="2" Height="30"/>
             </Grid>
         </Grid>
     </Grid>
