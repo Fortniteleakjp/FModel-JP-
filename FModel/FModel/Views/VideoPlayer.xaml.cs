@@ -26,6 +26,7 @@ namespace FModel.Views
             _timer.Tick += Timer_Tick;
             _timer.Start();
             this.Unloaded += OnUnloaded;
+            this.Loaded += (s, e) => this.Focus();
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -46,18 +47,22 @@ namespace FModel.Views
             }
         }
 
-        private void Play_Click(object sender, RoutedEventArgs e)
+        private void PlayPause_Click(object sender, RoutedEventArgs e)
         {
-            MediaPlayer.Play();
-            _timer.Start();
-            _isPlaying = true;
-        }
-
-        private void Pause_Click(object sender, RoutedEventArgs e)
-        {
-            MediaPlayer.Pause();
-            _timer.Stop();
-            _isPlaying = false;
+            if (_isPlaying)
+            {
+                MediaPlayer.Pause();
+                _timer.Stop();
+                _isPlaying = false;
+                PlayPauseButton.Content = "再生";
+            }
+            else
+            {
+                MediaPlayer.Play();
+                _timer.Start();
+                _isPlaying = true;
+                PlayPauseButton.Content = "一時停止";
+            }
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
@@ -66,6 +71,7 @@ namespace FModel.Views
             _timer.Stop();
             _isPlaying = false;
             MediaPlayer.Position = TimeSpan.Zero;
+            PlayPauseButton.Content = "再生";
             TimeSlider.Value = 0;
             UpdateTimeText();
         }
@@ -84,6 +90,7 @@ namespace FModel.Views
             MediaPlayer.Stop();
             TimeSlider.Value = 0;
             _isPlaying = false;
+            PlayPauseButton.Content = "再生";
         }
 
         private void TimeSlider_ThumbDragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -139,11 +146,7 @@ namespace FModel.Views
         {
             if (e.Key == Key.Space)
             {
-                if (_isPlaying)
-                    Pause_Click(sender, e);
-                else
-                    Play_Click(sender, e);
-                
+                PlayPause_Click(sender, e);
                 e.Handled = true;
             }
         }
