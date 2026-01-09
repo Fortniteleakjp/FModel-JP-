@@ -255,10 +255,48 @@ public partial class MainWindow
             return;
 
         var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
+
+        if (selectedItems.Count == 1 && selectedItems[0] is { } file && file.Extension.Equals("mp4", StringComparison.OrdinalIgnoreCase))
+        {
+            await OpenVideoPlayer(file);
+            AddFileToRecent(file.Path);
+            return;
+        }
+
         await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
         foreach (var item in selectedItems)
         {
             AddFileToRecent(item.Path);
+        }
+    }
+
+    private async void OnPlayVideoClick(object sender, RoutedEventArgs e)
+    {
+        if (AssetsListName.SelectedItem is GameFile file)
+        {
+            await OpenVideoPlayer(file);
+        }
+    }
+
+    private async Task OpenVideoPlayer(GameFile file)
+    {
+        try
+        {
+            var tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}_{file.Name}");
+            await Task.Run(() =>
+            {
+                var bytes = file.Read();
+                File.WriteAllBytes(tempPath, bytes);
+            });
+
+            var videoPlayer = new VideoPlayer(tempPath);
+            var tab = new FModel.ViewModels.TabItem(file, file.Name) { Content = videoPlayer };
+            _applicationView.CUE4Parse.TabControl.AddTab(tab);
+            _applicationView.CUE4Parse.TabControl.SelectedTab = tab;
+        }
+        catch (Exception ex)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to open video: {ex.Message}", Constants.RED));
         }
     }
 

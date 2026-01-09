@@ -181,6 +181,20 @@ public partial class PakFileReader
                     case FPackageFileSummary.PACKAGE_FILE_TAG:
                         break;
                     default:
+                        if (reader.Length >= 8)
+                        {
+                            var signature = reader.Read<uint>();
+                            reader.Position -= 4;
+                            if (signature == 0x70797466) // ftyp
+                            {
+                                var mp4Path = string.Concat(mountPoint, hash, ".mp4");
+                                entry.Path = mp4Path;
+                                if (entry.IsEncrypted) EncryptedFileCount++;
+                                files[mp4Path] = entry;
+                                used.Add(hash);
+                                continue;
+                            }
+                        }
                         continue;
                 };
 
