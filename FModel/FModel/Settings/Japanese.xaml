@@ -1,0 +1,245 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <!-- Menu -->
+    <system:String x:Key="Menu_Directory">ディレクトリ</system:String>
+    <system:String x:Key="Menu_Directory_Selector">セレクター</system:String>
+    <system:String x:Key="Menu_Directory_AES">AESキー</system:String>
+    <system:String x:Key="Menu_Directory_Backup">バックアップファイル</system:String>
+    <system:String x:Key="Menu_Directory_ArchivesInfo">pakファイル情報</system:String>
+    <system:String x:Key="Menu_Package">パッケージ</system:String>
+    <system:String x:Key="Menu_Package_Search">検索</system:String>
+    <system:String x:Key="Menu_Package_ContentSearch">ファイル内検索</system:String>
+    <system:String x:Key="Menu_Package_Favorites">お気に入りのディレクトリ</system:String>
+    <system:String x:Key="Menu_Package_AutoOpenSounds">サウンドを自動で開く</system:String>
+    <system:String x:Key="Menu_Package_RecentFiles">閲覧履歴</system:String>
+    <system:String x:Key="Menu_Package_ClearRecentFiles">履歴をクリア</system:String>
+    <system:String x:Key="Menu_View">表示</system:String>
+    <system:String x:Key="Menu_View_3dViewer">3Dビューアー</system:String>
+    <system:String x:Key="Menu_View_AudioPlayer">オーディオプレイヤー</system:String>
+    <system:String x:Key="Menu_View_ImageMerger">画像結合</system:String>
+    <system:String x:Key="Menu_Profile">プロファイル</system:String>
+    <system:String x:Key="Menu_Profile_AllCosmetics">すべてのコスメティック</system:String>
+    <system:String x:Key="Menu_Profile_NewCosmetics">新しいコスメティック</system:String>
+    <system:String x:Key="Menu_Versioning">バージョン管理</system:String>
+    <system:String x:Key="Menu_Settings">設定</system:String>
+    <system:String x:Key="Menu_Help">ヘルプ</system:String>
+
+    <!-- Settings -->
+    <system:String x:Key="Settings_OutputDirectory">出力先</system:String>
+    <system:String x:Key="Settings_OutputDirectory_Tooltip">ログ ファイル、バックアップ、その他の削除不可のファイルが保存されるフォルダ</system:String>
+    <system:String x:Key="Settings_RawDataDirectory">生データの出力先 *</system:String>
+    <system:String x:Key="Settings_PropertiesDirectory">プロパティディレクトリを保存 *</system:String>
+    <system:String x:Key="Settings_TextureDirectory">テクスチャディレクトリを保存 *</system:String>
+    <system:String x:Key="Settings_AudioDirectory">オーディオディレクトリを保存 *</system:String>
+    <system:String x:Key="Settings_DiscordRPC">Discordに表示するか</system:String>
+    <system:String x:Key="Settings_GameDirectory">読み込むファイル *</system:String>
+    <system:String x:Key="Settings_UEVersion">UEバージョン *</system:String>
+    <system:String x:Key="Settings_UEVersion_Tooltip">パッケージを読み込むときのUEバージョンを指定します</system:String>
+    <system:String x:Key="Settings_MainLanguage">メインの表示言語</system:String>
+    <system:String x:Key="Settings_MainLanguage_Tooltip">パッケージを解析するときに使用・表示される言語</system:String>
+    <system:String x:Key="Settings_FModelLanguage">FModelの言語</system:String>
+    <system:String x:Key="Settings_FModelLanguage_Tooltip">FModelのUI言語設定</system:String>
+
+    <!-- VideoPlayer -->
+    <system:String x:Key="Video_Play">再生</system:String>
+    <system:String x:Key="Video_Pause">一時停止</system:String>
+    <system:String x:Key="Video_Stop">停止</system:String>
+    <system:String x:Key="Video_Volume">Vol</system:String>
+
+    <!-- Settings General -->
+    <system:String x:Key="Settings_KeepDirectoryStructure">保存時にディレクトリ構造を維持</system:String>
+    <system:String x:Key="Settings_RestoreTabs">起動時にタブを復元(※β版です)</system:String>
+    <system:String x:Key="Settings_Versioning">バージョン管理の設定 *</system:String>
+    <system:String x:Key="Settings_CustomVersions">カスタムVersion</system:String>
+    <system:String x:Key="Settings_Options">オプション</system:String>
+    <system:String x:Key="Settings_MapStructTypes">MapStruct型</system:String>
+    <system:String x:Key="Settings_AesReload">起動時のAESの再読み込み</system:String>
+    <system:String x:Key="Settings_AutoData">データを自動取得</system:String>
+    <system:String x:Key="Settings_LocalMapping">マッピングファイルをローカルで指定</system:String>
+    <system:String x:Key="Settings_MappingFilePath">Mapping File Path</system:String>
+    <system:String x:Key="Settings_ScriptBytecode">スクリプトバイトコードをシリアル化</system:String>
+    <system:String x:Key="Settings_InlineShaderMaps">インラインシェーダーマップのシリアル化</system:String>
+    <system:String x:Key="Settings_WwisePrefetch">最大 Wwise Bank (.BNK) プリフェッチ</system:String>
+    <system:String x:Key="Settings_SearchMemory">高度な検索のメモリ使用量</system:String>
+    <system:String x:Key="Settings_DiffConfig">バージョン比較の設定</system:String>
+    <system:String x:Key="Settings_DiffDescription">この機能を使用すると、現在のバージョンと選択したバージョンの比較ができます。&#x0a;ここで、比較の対象を選択してください。(事前にバックアップファイル(大)を作成している必要があります)</system:String>
+    <system:String x:Key="Settings_DiffArchiveFolder">アーカイブフォルダ *</system:String>
+    <system:String x:Key="Settings_DiffUeVersion">比較に使用するUEバージョン *</system:String>
+    <system:String x:Key="Settings_DiffMapping">比較するマッピングファイル</system:String>
+    <system:String x:Key="Settings_DiffMappingPath">比較するマッピングファイルのパス</system:String>
+    <system:String x:Key="Settings_DiffReset">バージョン比較の設定をリセット</system:String>
+    <system:String x:Key="Settings_TexturePlatform">画像を読み込むプラットフォーム *</system:String>
+    <system:String x:Key="Settings_SoundPlayback">サウンドの再生</system:String>
+    <system:String x:Key="Settings_RestartWarning">注意 : * 印がついた項目の変更を適用するには、FModelの再起動が必要です</system:String>
+    <system:String x:Key="Settings_OK">OK</system:String>
+
+    <!-- Settings Tabs -->
+    <system:String x:Key="Settings_Tab_General">一般</system:String>
+    <system:String x:Key="Settings_Tab_Creator">画像生成</system:String>
+    <system:String x:Key="Settings_Tab_Models">Models</system:String>
+    <system:String x:Key="Settings_Tab_Keybindings">キーバインド</system:String>
+    <system:String x:Key="Settings_Tab_MapAes">マップAES</system:String>
+
+    <!-- MainWindow -->
+    <system:String x:Key="Menu_NewExplorer">NEW エクスプローラー</system:String>
+    <system:String x:Key="Tab_Archives">アーカイブ</system:String>
+    <system:String x:Key="Tab_Folders">フォルダー</system:String>
+    <system:String x:Key="Label_LoadingMode">読み込み方式</system:String>
+    <system:String x:Key="Button_Load">読み込む</system:String>
+    <system:String x:Key="Separator_ArchivesList">アーカイブ一覧</system:String>
+    <system:String x:Key="Separator_SelectedArchiveInfo">選択中のアーカイブ情報</system:String>
+    <system:String x:Key="Separator_FolderInfo">フォルダ情報</system:String>
+    <system:String x:Key="Label_MountPoint">フォルダ位置</system:String>
+    <system:String x:Key="Label_FileCount">ファイル数</system:String>
+    <system:String x:Key="Label_EncryptedStatus">ファイルの状態</system:String>
+    <system:String x:Key="Label_Encrypted">暗号化されています</system:String>
+    <system:String x:Key="Label_Decrypted">復号化されています</system:String>
+    <system:String x:Key="Label_Guid">GUID</system:String>
+    <system:String x:Key="Label_FolderFileCount">直下にあるファイル数</system:String>
+    <system:String x:Key="Label_FolderFolderCount">直下にあるフォルダ数</system:String>
+    <system:String x:Key="Label_ContainerArchive">格納先のアーカイブ</system:String>
+    <system:String x:Key="Label_ArchiveMountPoint">アーカイブのフォルダ位置</system:String>
+    <system:String x:Key="Label_ArchiveVersion">アーカイブのバージョン</system:String>
+    <system:String x:Key="Search_Watermark">検索するファイル名を入力してください...</system:String>
+
+    <!-- Context Menu -->
+    <system:String x:Key="Ctx_OpenNewTab">新規タブで開く</system:String>
+    <system:String x:Key="Ctx_ShowMetadata">metadataを表示</system:String>
+    <system:String x:Key="Ctx_CompareFiles">ファイルを比較する</system:String>
+    <system:String x:Key="Ctx_OpenReferenceViewer">参照ビューアを起動</system:String>
+    <system:String x:Key="Ctx_PlayVideo">動画を再生</system:String>
+    <system:String x:Key="Ctx_SaveData">データを保存</system:String>
+    <system:String x:Key="Ctx_SaveJson">json形式で保存</system:String>
+    <system:String x:Key="Ctx_SaveTexture">テクスチャを保存</system:String>
+    <system:String x:Key="Ctx_SaveModel">モデルを保存</system:String>
+    <system:String x:Key="Ctx_SaveAnim">アニメーションを保存</system:String>
+    <system:String x:Key="Ctx_SaveSound">サウンドを保存</system:String>
+    <system:String x:Key="Ctx_Copy">コピー</system:String>
+    <system:String x:Key="Ctx_CopyPath">パス</system:String>
+    <system:String x:Key="Ctx_CopyName">ファイル名</system:String>
+    <system:String x:Key="Ctx_CopyFolderPath">フォルダパス</system:String>
+    <system:String x:Key="Ctx_CopyPathNoExt">ファイルパス (拡張子なし)</system:String>
+    <system:String x:Key="Ctx_CopyFolderPathNoExt">フォルダパス (拡張子なし)</system:String>
+    <system:String x:Key="Ctx_SaveUasset">.uasset 形式で保存</system:String>
+    <system:String x:Key="Ctx_SaveDecompiled">Save Folder's Packages Decompiled Blueprints (.cpp)</system:String>
+    <system:String x:Key="Ctx_AddToFavorites">お気に入りに追加</system:String>
+
+    <!-- About -->
+    <system:String x:Key="About_Title">About</system:String>
+    <system:String x:Key="About_MadeBy">Made with &#x2665; by Asval</system:String>
+    <system:String x:Key="About_Description">説明</system:String>
+    <system:String x:Key="About_Contributors">貢献者</system:String>
+    <system:String x:Key="About_Donators">寄付者</system:String>
+    <system:String x:Key="About_References">参照</system:String>
+
+    <!-- Reference Viewer -->
+    <system:String x:Key="RefViewer_Title">参照ビューア</system:String>
+
+    <!-- Update View -->
+    <system:String x:Key="Update_Title">リリース</system:String>
+    <system:String x:Key="Update_Description">以下のバージョンがダウンロード可能です。バージョンは上から順に、日付順に並んでいます。&#x0a;手動でアップデートを確認したい場合は、メニューの [ヘルプ] > [バージョン管理] からこのウィンドウを開くことができます。注意：ウイルス対策ソフトをダウンロードしている方はアップデートする際はOFFにしてください</system:String>
+    <system:String x:Key="Update_DownloadLatest">最新バージョンをダウンロード</system:String>
+    <system:String x:Key="Update_RemindMe">あとで通知</system:String>
+    <system:String x:Key="Update_Remind_3Days">3日後</system:String>
+    <system:String x:Key="Update_Remind_1Week">1週間後</system:String>
+    <system:String x:Key="Update_Remind_1Month">1ヶ月後</system:String>
+    <system:String x:Key="Update_Remind_Never">通知しない</system:String>
+    <system:String x:Key="Update_NextRefresh">次回の更新</system:String>
+    <system:String x:Key="Update_History">バージョン履歴</system:String>
+    <system:String x:Key="Update_CommitsOn">{0:MMM d, yyyy} のコミット</system:String>
+
+    <!-- Search View -->
+    <system:String x:Key="Search_Title">検索ウィンドウ</system:String>
+    <system:String x:Key="Search_Placeholder">検索したいフォルダ/ファイル名を入力してください...</system:String>
+    <system:String x:Key="Search_Placeholder_Regex">検索したいフォルダ/ファイル名を正規表現で入力してください...</system:String>
+    <system:String x:Key="Search_Tooltip_MatchCase">大文字と小文字を区別</system:String>
+    <system:String x:Key="Search_Tooltip_Regex">正規表現</system:String>
+    <system:String x:Key="Search_Tooltip_Clear">検索フィルターをクリア</system:String>
+    <system:String x:Key="Search_Sort_Asc">アルファベット順</system:String>
+    <system:String x:Key="Search_Sort_Desc">Zから順</system:String>
+    <system:String x:Key="Search_Result_Prefix">読み込まれたファイル : </system:String>
+    <system:String x:Key="Search_Result_Suffix"> 個</system:String>
+    <system:String x:Key="Search_Header_Path">パス</system:String>
+    <system:String x:Key="Search_Header_Archive">アーカイブ</system:String>
+    <system:String x:Key="Search_Header_Size">サイズ</system:String>
+    <system:String x:Key="Search_NoResults">アーカイブにフォルダが見つかりません。少なくとも1つは読み込まれていることを確認してください。</system:String>
+    <system:String x:Key="Ctx_GoToFolder">フォルダに移動する</system:String>
+    <system:String x:Key="Ctx_SaveAsFormat">{0}形式で保存</system:String>
+    <system:String x:Key="Ctx_CopyNameNoExt">ファイル名 (拡張子なし)</system:String>
+
+    <!-- Settings View -->
+    <system:String x:Key="Settings_Title">設定</system:String>
+    <system:String x:Key="Settings_CustomOutput_Tooltip">Customize the directory of more output folders</system:String>
+    <system:String x:Key="Settings_GameTag">GAME</system:String>
+    <system:String x:Key="Settings_DiffTag">バージョンを比較</system:String>
+    <system:String x:Key="Settings_DiffUeVersion_Tooltip">比較に使用するUEのバージョンを指定してください。最新はUE5_7です。</system:String>
+    <system:String x:Key="Settings_TexturePlatform_Tooltip">プラットフォームを指定し、そのプラットフォームに対応した画像を表示します</system:String>
+    <system:String x:Key="Settings_SoundPlayback_Tooltip">圧縮されたサウンドファイルの読み込み方法</system:String>
+    <system:String x:Key="Settings_KeepDirectoryStructure_Tooltip">ゲームのパス通りに保存する場合はチェックを入れてください</system:String>
+    <system:String x:Key="Settings_RestoreTabs_Tooltip">有効にすると、FModelは終了時に開いていたタブを記憶し、次回起動時に復元します</system:String>
+    <system:String x:Key="Settings_AutoData_AES">AES</system:String>
+    <system:String x:Key="Settings_AutoData_Mapping">Mapping</system:String>
+    <system:String x:Key="Settings_SearchMemory_Tooltip">高度な検索が使用できる最大メモリ量をパーセンテージで指定します</system:String>
+
+    <!-- Settings MapAes -->
+    <system:String x:Key="Settings_MapAes_AuthTag">ログイン認証</system:String>
+    <system:String x:Key="Settings_MapAes_AuthStatus">Epic Games APIステータス:</system:String>
+    <system:String x:Key="Settings_MapAes_AuthTitle">Epic Games API</system:String>
+    <system:String x:Key="Settings_MapAes_AuthButton">Epic Games APIを認証</system:String>
+    <system:String x:Key="Settings_MapAes_AesTag">AESキー取得</system:String>
+    <system:String x:Key="Settings_MapAes_MapCode">マップコード:</system:String>
+    <system:String x:Key="Settings_MapAes_GetAes">AESキーを取得</system:String>
+    <system:String x:Key="Settings_MapAes_AesKey">AESキー:</system:String>
+    <system:String x:Key="Settings_MapAes_CopyKey">キーをコピー</system:String>
+    <system:String x:Key="Settings_MapAes_SaveKey">キーを保存</system:String>
+    <system:String x:Key="Settings_MapAes_PacTag">pac化</system:String>
+    <system:String x:Key="Settings_MapAes_BundlesPath">InstalledBundlesフォルダ:</system:String>
+    <system:String x:Key="Settings_MapAes_Project">プロジェクト:</system:String>
+    <system:String x:Key="Settings_MapAes_PieMode">PIEモードで起動:</system:String>
+    <system:String x:Key="Settings_MapAes_ExecutePac">pac化を実行</system:String>
+
+    <!-- Settings Creator -->
+    <system:String x:Key="Settings_Creator_ImageType">画像タイプ</system:String>
+    <system:String x:Key="Settings_Creator_UseShopImage">ショップ画像の使用</system:String>
+    <system:String x:Key="Settings_Creator_WeaponTag">武器画像</system:String>
+    <system:String x:Key="Settings_Creator_DamageProperty">ダメージ値のプロパティ</system:String>
+    <system:String x:Key="Settings_Creator_LocalizeKey">Localize Key</system:String>
+    <system:String x:Key="Settings_Creator_SaveRestart">保存して再起動</system:String>
+
+    <!-- Settings Models -->
+    <system:String x:Key="Settings_Models_Output">Model書き出しフォルダ *</system:String>
+    <system:String x:Key="Settings_Models_Output_Tooltip">これはメッシュ、マテリアル、アニメーションがエクスポートされるフォルダ</system:String>
+    <system:String x:Key="Settings_Models_MeshFormat">メッシュ形式</system:String>
+    <system:String x:Key="Settings_Models_Importer_UEFormat">インポーター（Blender/UE): </system:String>
+    <system:String x:Key="Settings_Models_Importer_ActorX">Importers (Blender): </system:String>
+    <system:String x:Key="Settings_Models_SocketFormat">ソケット形式（ActorX）</system:String>
+    <system:String x:Key="Settings_Models_CompressionFormat">圧縮形式（UEFormat）</system:String>
+    <system:String x:Key="Settings_Models_LodFormat">詳細レベル形式</system:String>
+    <system:String x:Key="Settings_Models_MaxTextureSize">プレビューできる最大テクスチャサイズ</system:String>
+    <system:String x:Key="Settings_Models_PreviewStatic">スタティックメッシュのプレビュー</system:String>
+    <system:String x:Key="Settings_Models_PreviewSkeletal">スケルタルメッシュをプレビュー</system:String>
+    <system:String x:Key="Settings_Models_PreviewAnim">アニメーションをプレビュー</system:String>
+    <system:String x:Key="Settings_Models_PreviewMaterial">マテリアルをプレビュー</system:String>
+    <system:String x:Key="Settings_Models_PreviewLevel">レベル（.umap）をプレビュー</system:String>
+    <system:String x:Key="Settings_Models_SaveEmbedded">メッシュに埋め込まれたマテリアルを保存</system:String>
+    <system:String x:Key="Settings_Models_SaveMorph">メッシュ内のモーフターゲットを保存</system:String>
+    <system:String x:Key="Settings_Models_SaveSkeletonAsMesh">スケルトンを空のメッシュとして扱う</system:String>
+    <system:String x:Key="Settings_Models_NaniteFormat">フォーマット</system:String>
+    <system:String x:Key="Settings_Models_MaterialFormat">マテリアル形式</system:String>
+    <system:String x:Key="Settings_Models_TextureFormat">テクスチャ形式</system:String>
+    <system:String x:Key="Settings_Models_SaveHdr">HDRテクスチャをRadiance.hdrとして保存する</system:String>
+    <system:String x:Key="Settings_Models_PreviewTextureExplorer">アセットエクスプローラでテクスチャをプレビュー</system:String>
+
+    <!-- Settings Keybindings -->
+    <system:String x:Key="Settings_Keys_DirLeft">ディレクトリタブを左に切り替え</system:String>
+    <system:String x:Key="Settings_Keys_DirRight">ディレクトリタブを右に切り替え</system:String>
+    <system:String x:Key="Settings_Keys_AssetLeft">アセットタブを左に切り替え</system:String>
+    <system:String x:Key="Settings_Keys_AssetRight">アセットタブを右に切り替え</system:String>
+    <system:String x:Key="Settings_Keys_AssetAdd">アセットタブを追加</system:String>
+    <system:String x:Key="Settings_Keys_AssetRemove">選択中のアセットタブを削除</system:String>
+    <system:String x:Key="Settings_Keys_AudioAdd">サウンドを追加</system:String>
+    <system:String x:Key="Settings_Keys_AudioPlayPause">現在のサウンドを再生 / 一時停止</system:String>
+    <system:String x:Key="Settings_Keys_AudioPrev">前のサウンド</system:String>
+    <system:String x:Key="Settings_Keys_AudioNext">次のサウンド</system:String>
+</ResourceDictionary>

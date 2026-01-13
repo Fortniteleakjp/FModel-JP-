@@ -38,15 +38,31 @@ public partial class App
 #endif
         base.OnStartup(e);
 
+        var settingsLoaded = false;
         try
         {
             UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
                 File.ReadAllText(UserSettings.FilePath), JsonNetSerializer.SerializerSettings);
+            settingsLoaded = true;
         }
-        catch
+        catch (Exception ex)
         {
-            UserSettings.Default = new UserSettings();
+            Log.Error(ex, "Failed to load settings with strict serializer. Attempting fallback.");
+            try
+            {
+                UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(File.ReadAllText(UserSettings.FilePath));
+                settingsLoaded = true;
+                UserSettings.Save();
+            }
+            catch
+            {
+                if (File.Exists(UserSettings.FilePath))
+                    File.Copy(UserSettings.FilePath, UserSettings.FilePath + ".bak", true);
+                UserSettings.Default = new UserSettings();
+            }
         }
+
+        SetLanguageDictionary();
 
         var createMe = false;
         if (!Directory.Exists(UserSettings.Default.OutputDirectory))
@@ -123,6 +139,28 @@ public partial class App
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);
         Log.Information("Culture {SysLang}", CultureInfo.CurrentCulture);
+
+        if (settingsLoaded)
+            Log.Information("Settings loaded from {FilePath}", UserSettings.FilePath);
+        else
+            Log.Warning("Settings file not found or invalid. Created new default settings.");
+        Log.Information("FModel Language: {Language}", UserSettings.Default.FModelLanguage);
+    }
+
+    private void SetLanguageDictionary()
+    {
+        var dict = new ResourceDictionary();
+        switch (UserSettings.Default.FModelLanguage)
+        {
+            case "Japanese":
+                dict.Source = new Uri("pack://application:,,,/FModel;component/Settings/Japanese.xaml");
+                break;
+            case "English":
+            default:
+                dict.Source = new Uri("pack://application:,,,/FModel;component/Settings/English.xaml");
+                break;
+        }
+        Resources.MergedDictionaries.Add(dict);
     }
 
     private void AppExit(object sender, ExitEventArgs e)

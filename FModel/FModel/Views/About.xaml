@@ -8,7 +8,7 @@
                              Loaded="OnLoaded">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="About" />
+            <Setter Property="Title" Value="{DynamicResource About_Title}" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -21,29 +21,29 @@
     <StackPanel Margin="30 10">
         <StackPanel HorizontalAlignment="Center" Margin="0 0 0 30">
             <TextBlock Text="{Binding Source={x:Static local:Constants.APP_VERSION}, StringFormat={}FModel {0}}" FontSize="15" FontWeight="Medium" Foreground="#9DA3DD" FontStretch="Expanded" />
-            <TextBlock Text="Made with &#x2665; by Asval" FontSize="30" FontWeight="Medium" Foreground="#DAE5F2" HorizontalAlignment="Center" />
+            <TextBlock Text="{DynamicResource About_MadeBy}" FontSize="30" FontWeight="Medium" Foreground="#DAE5F2" HorizontalAlignment="Center" />
         </StackPanel>
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Some Text" FontSize="15" FontWeight="Medium" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="{DynamicResource About_Description}" FontSize="15" FontWeight="Medium" Foreground="#9DA3DD" FontStretch="Expanded" />
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="Medium" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding DescriptionLabel}" />
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Some Text" FontSize="15" FontWeight="Medium" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="{DynamicResource About_Contributors}" FontSize="15" FontWeight="Medium" Foreground="#9DA3DD" FontStretch="Expanded" />
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="Medium" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding ContributorsLabel}" />
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Some Text" FontSize="15" FontWeight="Medium" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="{DynamicResource About_Donators}" FontSize="15" FontWeight="Medium" Foreground="#9DA3DD" FontStretch="Expanded" />
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="Medium" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding DonatorsLabel}" />
 
         <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="Some Text" FontSize="15" FontWeight="Medium" Foreground="#9DA3DD" FontStretch="Expanded" />
+            <TextBlock Text="{DynamicResource About_References}" FontSize="15" FontWeight="Medium" Foreground="#9DA3DD" FontStretch="Expanded" />
             <TextBlock Text="&#09;&#09;&#09;&#09;" FontSize="25" FontWeight="Medium" Height="2" Foreground="Transparent" HorizontalAlignment="Center" />
         </StackPanel>
         <TextBlock FontSize="12" Foreground="#727272" TextWrapping="Wrap" Margin="0 0 0 30" Text="{Binding ReferencesLabel}" />

@@ -52,6 +52,7 @@ public partial class SettingsViewModel : ViewModel
     private string _audioSnapshot;
     private string _modelSnapshot;
     private string _gameSnapshot;
+    private string _fModelLanguageSnapshot;
     private ETexturePlatform _uePlatformSnapshot;
     private EGame _ueGameSnapshot;
     private IList<FCustomVersion> _customVersionsSnapshot;
@@ -148,6 +149,13 @@ public partial class SettingsViewModel : ViewModel
     {
         get => _diffMappingEndpoint;
         set => SetProperty(ref _diffMappingEndpoint, value);
+    }
+
+    private string _selectedFModelLanguage;
+    public string SelectedFModelLanguage
+    {
+        get => _selectedFModelLanguage;
+        set => SetProperty(ref _selectedFModelLanguage, value);
     }
     private ELanguage _selectedAssetLanguage;
     public ELanguage SelectedAssetLanguage
@@ -264,6 +272,7 @@ public partial class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<EMaterialFormat> MaterialExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETextureFormat> TextureExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ETexturePlatform> Platforms { get; private set; }
+    public IEnumerable<string> AvailableLanguages { get; } = new[] { "English", "Japanese" };
 
     // New properties for Epic Games API authentication and AES Key retrieval
     private string _epicAuthStatusText = "Not Authenticated";
@@ -315,6 +324,7 @@ public partial class SettingsViewModel : ViewModel
         _audioSnapshot = UserSettings.Default.AudioDirectory; // _audioSnapshot の初期化
         _modelSnapshot = UserSettings.Default.ModelDirectory;
         _gameSnapshot = UserSettings.Default.GameDirectory;
+        _fModelLanguageSnapshot = UserSettings.Default.FModelLanguage;
         _uePlatformSnapshot = UserSettings.Default.CurrentDir.TexturePlatform;
         _ueGameSnapshot = UserSettings.Default.CurrentDir.UeVersion;
         _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
@@ -361,6 +371,7 @@ public partial class SettingsViewModel : ViewModel
         SelectedCustomVersions = _customVersionsSnapshot;
         SelectedOptions = _optionsSnapshot;
         SelectedMapStructTypes = _mapStructTypesSnapshot;
+        SelectedFModelLanguage = _fModelLanguageSnapshot;
         SelectedAssetLanguage = _assetLanguageSnapshot;
         SelectedCompressedAudio = _compressedAudioSnapshot;
         SelectedCosmeticStyle = _cosmeticStyleSnapshot;
@@ -432,8 +443,9 @@ public partial class SettingsViewModel : ViewModel
             _textureSnapshot != UserSettings.Default.TextureDirectory || // textbox
             _audioSnapshot != UserSettings.Default.AudioDirectory || // textbox
             _modelSnapshot != UserSettings.Default.ModelDirectory || // textbox
-            _gameSnapshot != UserSettings.Default.GameDirectory ||
-            _diffGameSnapshot != UserSettings.Default.DiffGameDirectory) // textbox
+            _gameSnapshot != UserSettings.Default.GameDirectory || // textbox
+            _diffGameSnapshot != UserSettings.Default.DiffGameDirectory || // textbox
+            _fModelLanguageSnapshot != SelectedFModelLanguage)
             restart = true;
 
         if (UserSettings.Default.DiffDir != null)
@@ -451,6 +463,7 @@ public partial class SettingsViewModel : ViewModel
         UserSettings.Default.CurrentDir.Versioning.Options = SelectedOptions;
         UserSettings.Default.CurrentDir.Versioning.MapStructTypes = SelectedMapStructTypes;
 
+        UserSettings.Default.FModelLanguage = SelectedFModelLanguage;
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
         UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;

@@ -17,6 +17,7 @@ using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace FModel.Settings
 {
@@ -41,7 +42,8 @@ namespace FModel.Settings
             Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
             if (Default.DiffDir != null)
                 Default.PerDirectory[Default.DiffDir.GameDirectory] = Default.DiffDir;
-            File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
+            File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented, JsonNetSerializer.SerializerSettings));
+            Log.Information("Settings saved to {FilePath}", FilePath);
         }
 
         public static void Delete()
@@ -55,8 +57,23 @@ namespace FModel.Settings
 
         public static bool IsEndpointValid(DirectorySettings dir, EEndpointType type, out EndpointSettings endpoint)
         {
-            endpoint = dir.Endpoints[(int) type];
+            endpoint = dir.Endpoints[(int)type];
             return endpoint.Overwrite || endpoint.IsValid;
+        }
+
+        private string _fModelLanguage = "English";
+        [JsonProperty]
+        public string FModelLanguage
+        {
+            get => _fModelLanguage;
+            set
+            {
+                if (_fModelLanguage != value)
+                {
+                    Log.Information("Language changed from {OldLanguage} to {NewLanguage}", _fModelLanguage, value);
+                    SetProperty(ref _fModelLanguage, value);
+                }
+            }
         }
 
         [JsonIgnore]
@@ -81,6 +98,7 @@ namespace FModel.Settings
         };
 
         private bool _showChangelog = true;
+        [JsonProperty]
         public bool ShowChangelog
         {
             get => _showChangelog;
@@ -88,6 +106,7 @@ namespace FModel.Settings
         }
 
         private string _outputDirectory;
+        [JsonProperty]
         public string OutputDirectory
         {
             get => _outputDirectory;
@@ -95,6 +114,7 @@ namespace FModel.Settings
         }
 
         private string _rawDataDirectory;
+        [JsonProperty]
         public string RawDataDirectory
         {
             get => _rawDataDirectory;
@@ -102,6 +122,7 @@ namespace FModel.Settings
         }
 
         private string _propertiesDirectory;
+        [JsonProperty]
         public string PropertiesDirectory
         {
             get => _propertiesDirectory;
@@ -109,6 +130,7 @@ namespace FModel.Settings
         }
 
         private string _textureDirectory;
+        [JsonProperty]
         public string TextureDirectory
         {
             get => _textureDirectory;
@@ -116,6 +138,7 @@ namespace FModel.Settings
         }
 
         private string _audioDirectory;
+        [JsonProperty]
         public string AudioDirectory
         {
             get => _audioDirectory;
@@ -123,6 +146,7 @@ namespace FModel.Settings
         }
 
         private string _modelDirectory;
+        [JsonProperty]
         public string ModelDirectory
         {
             get => _modelDirectory;
@@ -130,18 +154,21 @@ namespace FModel.Settings
         }
 
         private string _gameDirectory = string.Empty;
+        [JsonProperty]
         public string GameDirectory
         {
             get => _gameDirectory;
             set => SetProperty(ref _gameDirectory, value);
         }
         private string _diffGameDirectory;
+        [JsonProperty]
         public string DiffGameDirectory
         {
             get => _diffGameDirectory;
             set => SetProperty(ref _diffGameDirectory, value);
         }
         private int _lastOpenedSettingTab;
+        [JsonProperty]
         public int LastOpenedSettingTab
         {
             get => _lastOpenedSettingTab;
@@ -149,6 +176,7 @@ namespace FModel.Settings
         }
 
         private bool _isAutoOpenSounds = true;
+        [JsonProperty]
         public bool IsAutoOpenSounds
         {
             get => _isAutoOpenSounds;
@@ -156,13 +184,15 @@ namespace FModel.Settings
         }
 
         private bool _isLoggerExpanded = true;
+        [JsonProperty]
         public bool IsLoggerExpanded
         {
             get => _isLoggerExpanded;
             set => SetProperty(ref _isLoggerExpanded, value);
         }
 
-        private GridLength _avalonImageSize = new (200);
+        private GridLength _avalonImageSize = new(200);
+        [JsonProperty]
         public GridLength AvalonImageSize
         {
             get => _avalonImageSize;
@@ -170,6 +200,7 @@ namespace FModel.Settings
         }
 
         private string _audioDeviceId;
+        [JsonProperty]
         public string AudioDeviceId
         {
             get => _audioDeviceId;
@@ -177,6 +208,7 @@ namespace FModel.Settings
         }
 
         private float _audioPlayerVolume = 50.0F;
+        [JsonProperty]
         public float AudioPlayerVolume
         {
             get => _audioPlayerVolume;
@@ -184,6 +216,7 @@ namespace FModel.Settings
         }
 
         private ELoadingMode _loadingMode = ELoadingMode.All;
+        [JsonProperty]
         public ELoadingMode LoadingMode
         {
             get => _loadingMode;
@@ -191,6 +224,7 @@ namespace FModel.Settings
         }
 
         private DateTime _lastUpdateCheck = DateTime.MinValue;
+        [JsonProperty]
         public DateTime LastUpdateCheck
         {
             get => _lastUpdateCheck;
@@ -198,6 +232,7 @@ namespace FModel.Settings
         }
 
         private DateTime _nextUpdateCheck = DateTime.Now;
+        [JsonProperty]
         public DateTime NextUpdateCheck
         {
             get => _nextUpdateCheck;
@@ -205,6 +240,7 @@ namespace FModel.Settings
         }
 
         private bool _keepDirectoryStructure = true;
+        [JsonProperty]
         public bool KeepDirectoryStructure
         {
             get => _keepDirectoryStructure;
@@ -212,6 +248,7 @@ namespace FModel.Settings
         }
 
         private ECompressedAudio _compressedAudioMode = ECompressedAudio.PlayDecompressed;
+        [JsonProperty]
         public ECompressedAudio CompressedAudioMode
         {
             get => _compressedAudioMode;
@@ -219,6 +256,7 @@ namespace FModel.Settings
         }
 
         private EAesReload _aesReload = EAesReload.OncePerDay;
+        [JsonProperty]
         public EAesReload AesReload
         {
             get => _aesReload;
@@ -226,6 +264,7 @@ namespace FModel.Settings
         }
 
         private EDiscordRpc _discordRpc = EDiscordRpc.Always;
+        [JsonProperty]
         public EDiscordRpc DiscordRpc
         {
             get => _discordRpc;
@@ -233,6 +272,7 @@ namespace FModel.Settings
         }
 
         private ELanguage _assetLanguage = ELanguage.English;
+        [JsonProperty]
         public ELanguage AssetLanguage
         {
             get => _assetLanguage;
@@ -240,6 +280,7 @@ namespace FModel.Settings
         }
 
         private EIconStyle _cosmeticStyle = EIconStyle.Default;
+        [JsonProperty]
         public EIconStyle CosmeticStyle
         {
             get => _cosmeticStyle;
@@ -247,6 +288,7 @@ namespace FModel.Settings
         }
 
         private bool _cosmeticDisplayAsset;
+        [JsonProperty]
         public bool CosmeticDisplayAsset
         {
             get => _cosmeticDisplayAsset;
@@ -254,6 +296,7 @@ namespace FModel.Settings
         }
 
         private int _imageMergerMargin = 5;
+        [JsonProperty]
         public int ImageMergerMargin
         {
             get => _imageMergerMargin;
@@ -261,6 +304,7 @@ namespace FModel.Settings
         }
 
         private bool _readScriptData;
+        [JsonProperty]
         public bool ReadScriptData
         {
             get => _readScriptData;
@@ -268,6 +312,7 @@ namespace FModel.Settings
         }
 
         private bool _readShaderMaps;
+        [JsonProperty]
         public bool ReadShaderMaps
         {
             get => _readShaderMaps;
@@ -275,6 +320,7 @@ namespace FModel.Settings
         }
 
         private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();
+        [JsonProperty]
         public IDictionary<string, DirectorySettings> PerDirectory
         {
             get => _perDirectory;
@@ -289,13 +335,15 @@ namespace FModel.Settings
         /// TO DELETEEEEEEEEEEEEE
         /// </summary>
         private IDictionary<string, GameSelectorViewModel.DetectedGame> _manualGames = new Dictionary<string, GameSelectorViewModel.DetectedGame>();
+        [JsonProperty]
         public IDictionary<string, GameSelectorViewModel.DetectedGame> ManualGames
         {
             get => _manualGames;
             set => SetProperty(ref _manualGames, value);
         }
 
-        private AuthResponse _lastAuthResponse = new() {AccessToken = "", ExpiresAt = DateTime.Now};
+        private AuthResponse _lastAuthResponse = new() { AccessToken = "", ExpiresAt = DateTime.Now };
+        [JsonProperty]
         public AuthResponse LastAuthResponse
         {
             get => _lastAuthResponse;
@@ -303,6 +351,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _dirLeftTab = new(Key.A);
+        [JsonProperty]
         public Hotkey DirLeftTab
         {
             get => _dirLeftTab;
@@ -310,6 +359,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _dirRightTab = new(Key.D);
+        [JsonProperty]
         public Hotkey DirRightTab
         {
             get => _dirRightTab;
@@ -317,6 +367,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _assetLeftTab = new(Key.Q);
+        [JsonProperty]
         public Hotkey AssetLeftTab
         {
             get => _assetLeftTab;
@@ -324,6 +375,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _assetRightTab = new(Key.E);
+        [JsonProperty]
         public Hotkey AssetRightTab
         {
             get => _assetRightTab;
@@ -331,6 +383,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _assetAddTab = new(Key.T, ModifierKeys.Control);
+        [JsonProperty]
         public Hotkey AssetAddTab
         {
             get => _assetAddTab;
@@ -338,6 +391,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _assetRemoveTab = new(Key.W, ModifierKeys.Control);
+        [JsonProperty]
         public Hotkey AssetRemoveTab
         {
             get => _assetRemoveTab;
@@ -345,6 +399,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _addAudio = new(Key.N, ModifierKeys.Control);
+        [JsonProperty]
         public Hotkey AddAudio
         {
             get => _addAudio;
@@ -352,6 +407,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _playPauseAudio = new(Key.K);
+        [JsonProperty]
         public Hotkey PlayPauseAudio
         {
             get => _playPauseAudio;
@@ -359,6 +415,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _previousAudio = new(Key.J);
+        [JsonProperty]
         public Hotkey PreviousAudio
         {
             get => _previousAudio;
@@ -366,6 +423,7 @@ namespace FModel.Settings
         }
 
         private Hotkey _nextAudio = new(Key.L);
+        [JsonProperty]
         public Hotkey NextAudio
         {
             get => _nextAudio;
@@ -373,6 +431,7 @@ namespace FModel.Settings
         }
 
         private EMeshFormat _meshExportFormat = EMeshFormat.UEFormat;
+        [JsonProperty]
         public EMeshFormat MeshExportFormat
         {
             get => _meshExportFormat;
@@ -380,6 +439,7 @@ namespace FModel.Settings
         }
 
         private ENaniteMeshFormat _naniteMeshExportFormat = ENaniteMeshFormat.OnlyNaniteLOD;
+        [JsonProperty]
         public ENaniteMeshFormat NaniteMeshExportFormat
         {
             get => _naniteMeshExportFormat;
@@ -387,6 +447,7 @@ namespace FModel.Settings
         }
 
         private EMaterialFormat _materialExportFormat = EMaterialFormat.FirstLayer;
+        [JsonProperty]
         public EMaterialFormat MaterialExportFormat
         {
             get => _materialExportFormat;
@@ -394,6 +455,7 @@ namespace FModel.Settings
         }
 
         private ETextureFormat _textureExportFormat = ETextureFormat.Png;
+        [JsonProperty]
         public ETextureFormat TextureExportFormat
         {
             get => _textureExportFormat;
@@ -401,6 +463,7 @@ namespace FModel.Settings
         }
 
         private ESocketFormat _socketExportFormat = ESocketFormat.Bone;
+        [JsonProperty]
         public ESocketFormat SocketExportFormat
         {
             get => _socketExportFormat;
@@ -408,6 +471,7 @@ namespace FModel.Settings
         }
 
         private EFileCompressionFormat _compressionFormat = EFileCompressionFormat.ZSTD;
+        [JsonProperty]
         public EFileCompressionFormat CompressionFormat
         {
             get => _compressionFormat;
@@ -415,6 +479,7 @@ namespace FModel.Settings
         }
 
         private ELodFormat _lodExportFormat = ELodFormat.FirstLod;
+        [JsonProperty]
         public ELodFormat LodExportFormat
         {
             get => _lodExportFormat;
@@ -422,6 +487,7 @@ namespace FModel.Settings
         }
 
         private bool _showSkybox = true;
+        [JsonProperty]
         public bool ShowSkybox
         {
             get => _showSkybox;
@@ -429,6 +495,7 @@ namespace FModel.Settings
         }
 
         private bool _showGrid = true;
+        [JsonProperty]
         public bool ShowGrid
         {
             get => _showGrid;
@@ -436,6 +503,7 @@ namespace FModel.Settings
         }
 
         private bool _animateWithRotationOnly;
+        [JsonProperty]
         public bool AnimateWithRotationOnly
         {
             get => _animateWithRotationOnly;
@@ -443,6 +511,7 @@ namespace FModel.Settings
         }
 
         private Camera.WorldMode _cameraMode = Camera.WorldMode.Arcball;
+        [JsonProperty]
         public Camera.WorldMode CameraMode
         {
             get => _cameraMode;
@@ -450,6 +519,7 @@ namespace FModel.Settings
         }
 
         private int _wwiseMaxBnkPrefetch;
+        [JsonProperty]
         public int WwiseMaxBnkPrefetch
         {
             get => _wwiseMaxBnkPrefetch;
@@ -457,6 +527,7 @@ namespace FModel.Settings
         }
 
         private int _contentSearchMemoryLimitPercentage = 50; // デフォルト値は50%
+        [JsonProperty]
         public int ContentSearchMemoryLimitPercentage
         {
             get => _contentSearchMemoryLimitPercentage;
@@ -464,6 +535,7 @@ namespace FModel.Settings
         }
 
         private int _previewMaxTextureSize = 1024;
+        [JsonProperty]
         public int PreviewMaxTextureSize
         {
             get => _previewMaxTextureSize;
@@ -471,6 +543,7 @@ namespace FModel.Settings
         }
 
         private bool _previewStaticMeshes = true;
+        [JsonProperty]
         public bool PreviewStaticMeshes
         {
             get => _previewStaticMeshes;
@@ -478,6 +551,7 @@ namespace FModel.Settings
         }
 
         private bool _previewSkeletalMeshes = true;
+        [JsonProperty]
         public bool PreviewSkeletalMeshes
         {
             get => _previewSkeletalMeshes;
@@ -485,6 +559,7 @@ namespace FModel.Settings
         }
 
         private bool _previewAnimations = true;
+        [JsonProperty]
         public bool PreviewAnimations
         {
             get => _previewAnimations;
@@ -492,6 +567,7 @@ namespace FModel.Settings
         }
 
         private bool _previewMaterials = true;
+        [JsonProperty]
         public bool PreviewMaterials
         {
             get => _previewMaterials;
@@ -499,6 +575,7 @@ namespace FModel.Settings
         }
 
         private bool _previewWorlds = true;
+        [JsonProperty]
         public bool PreviewWorlds
         {
             get => _previewWorlds;
@@ -506,6 +583,7 @@ namespace FModel.Settings
         }
 
         private bool _saveMorphTargets = true;
+        [JsonProperty]
         public bool SaveMorphTargets
         {
             get => _saveMorphTargets;
@@ -513,6 +591,7 @@ namespace FModel.Settings
         }
 
         private bool _saveEmbeddedMaterials = true;
+        [JsonProperty]
         public bool SaveEmbeddedMaterials
         {
             get => _saveEmbeddedMaterials;
@@ -520,6 +599,7 @@ namespace FModel.Settings
         }
 
         private bool _saveSkeletonAsMesh;
+        [JsonProperty]
         public bool SaveSkeletonAsMesh
         {
             get => _saveSkeletonAsMesh;
@@ -527,6 +607,7 @@ namespace FModel.Settings
         }
 
         private bool _saveHdrTexturesAsHdr = true;
+        [JsonProperty]
         public bool SaveHdrTexturesAsHdr
         {
             get => _saveHdrTexturesAsHdr;
@@ -534,6 +615,7 @@ namespace FModel.Settings
         }
 
         private bool _previewTexturesAssetExplorer = true;
+        [JsonProperty]
         public bool PreviewTexturesAssetExplorer
         {
             get => _previewTexturesAssetExplorer;
@@ -541,6 +623,7 @@ namespace FModel.Settings
         }
 
         private bool _restoreTabsOnStartup = true;
+        [JsonProperty]
         public bool RestoreTabsOnStartup
         {
             get => _restoreTabsOnStartup;
@@ -548,6 +631,7 @@ namespace FModel.Settings
         }
 
         private string _customWeaponDamageProperty = "";
+        [JsonProperty]
         public string CustomWeaponDamageProperty
         {
             get => _customWeaponDamageProperty;
@@ -555,6 +639,7 @@ namespace FModel.Settings
         }
 
         private string _customWeaponDamageLocalizeKey = "";
+        [JsonProperty]
         public string CustomWeaponDamageLocalizeKey
         {
             get => _customWeaponDamageLocalizeKey;
@@ -562,6 +647,7 @@ namespace FModel.Settings
         }
 
         private ObservableCollection<string> _recentFiles = new();
+        [JsonProperty]
         public ObservableCollection<string> RecentFiles
         {
             get => _recentFiles;

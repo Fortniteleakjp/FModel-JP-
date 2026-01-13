@@ -34,6 +34,7 @@ public partial class SettingsView
     private async void OnClick(object sender, RoutedEventArgs e)
     {
         var restart = _applicationView.SettingsView.Save(out var whatShouldIDo);
+        UserSettings.Save();
         if (restart)
             _applicationView.RestartWithWarning();
 
@@ -228,9 +229,23 @@ public partial class SettingsView
         _applicationView.SettingsView.DiffMappingEndpoint.FilePath = string.Empty;
         _applicationView.SettingsView.DiffMappingEndpoint.Overwrite = false;
     }
-
+    private void OnLanguageChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // 画面読み込み時の初期化による発火を防ぐため、IsLoadedを確認します
+        if (IsLoaded)
+        {
+            // 既存の保存・再起動処理を呼び出す
+            SaveAndRestart(sender, e);
+        }
+    }
     private void SaveAndRestart(object sender, RoutedEventArgs e)
     {
+        if (sender is ComboBox comboBox && comboBox.SelectedValue is string selectedLanguage)
+        {
+            _applicationView.SettingsView.SelectedFModelLanguage = selectedLanguage;
+        }
+
+        _applicationView.SettingsView.Save(out _);
         UserSettings.Save();
         _applicationView.Restart();
     }

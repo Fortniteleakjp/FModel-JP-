@@ -451,8 +451,8 @@ namespace FModel.Views
             {
                 var currentPos = e.GetPosition(MainScrollViewer);
                 var delta = currentPos - _lastViewMousePosition;
-                MainScrollViewer.ScrollToHorizontalOffset(MainScrollViewer.HorizontalOffset - delta.X);
-                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset - delta.Y);
+                MainScrollViewer.ScrollToHorizontalOffset(MainScrollViewer.HorizontalOffset + delta.X);
+                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + delta.Y);
                 _lastViewMousePosition = currentPos;
                 e.Handled = true;
             }

@@ -1,7 +1,7 @@
 <Window x:Class="FModel.Views.ReferenceViewerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="参照ビューア" Height="500" Width="600">
+        Title="{DynamicResource RefViewer_Title}" Height="500" Width="600">
     <Grid>
         <TreeView ItemsSource="{Binding References}">
             <TreeView.ItemContainerStyle>

@@ -56,13 +56,13 @@ public enum ELoadingMode
 {
     [Description("Multiple")]
     Multiple,
-    [Description("すべてのファイル")]
+    [Description("すべてのファイル/ALL")]
     All,
-    [Description("追加・移動したファイル")]
+    [Description("追加・移動したファイル/ALL NEW")]
     AllButNew,
-    [Description("更新されたファイル")]
+    [Description("更新されたファイル/ALL MODIFIED")]
     AllButModified,
-    [Description("すべて（パッチ適用済みアセットを除く）")]
+    [Description("すべて（パッチ適用済みアセットを除く）/ALL(Except Patched Asets)")]
     AllButPatched,
 }
 

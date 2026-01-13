@@ -1,7 +1,9 @@
-﻿<adonisControls:AdonisWindow x:Class="FModel.Views.UpdateView"
+<adonisControls:AdonisWindow x:Class="FModel.Views.UpdateView"
+
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:local="clr-namespace:FModel"
+                             xmlns:settings="clr-namespace:FModel.Settings"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
@@ -12,7 +14,7 @@
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.35'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="Releases" />
+            <Setter Property="Title" Value="{DynamicResource Update_Title}" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -31,7 +33,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="10"
-            Text="以下のバージョンがダウンロード可能です。バージョンは上から順に、日付順に並んでいます。&#x0a;手動でアップデートを確認したい場合は、メニューの [ヘルプ] > [バージョン管理] からこのウィンドウを開くことができます。注意：ウイルス対策ソフトをダウンロードしている方はアップデートする際はOFFにしてください"/>
+            Text="{DynamicResource Update_Description}"/>
 
         <Grid Grid.Row="1" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
@@ -52,26 +54,27 @@
 
             <Button Grid.Column="0" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
                     VerticalAlignment="Top" Height="{Binding ActualHeight, ElementName=RemindButton}"
-                    Click="OnDownloadLatest">
-                最新バージョンをダウンロード
-            </Button>
+                    Click="OnDownloadLatest" Content="{DynamicResource Update_DownloadLatest}" />
+
             <StackPanel Grid.Column="2">
-                <adonisControls:SplitButton x:Name="RemindButton" Content="あとで通知" Command="{Binding RemindMeCommand}">
+                <adonisControls:SplitButton x:Name="RemindButton" Content="{DynamicResource Update_RemindMe}" Command="{Binding RemindMeCommand}">
                     <adonisControls:SplitButton.SplitMenu>
                         <ContextMenu>
-                            <MenuItem Header="3日後" Command="{Binding RemindMeCommand}" CommandParameter="Days" />
-                            <MenuItem Header="1週間後" Command="{Binding RemindMeCommand}" CommandParameter="Week" />
-                            <MenuItem Header="1ヶ月後" Command="{Binding RemindMeCommand}" CommandParameter="Month" />
-                            <MenuItem Header="通知しない" Command="{Binding RemindMeCommand}" CommandParameter="Never" />
+                            <MenuItem Header="{DynamicResource Update_Remind_3Days}" Command="{Binding RemindMeCommand}" CommandParameter="Days" />
+                            <MenuItem Header="{DynamicResource Update_Remind_1Week}" Command="{Binding RemindMeCommand}" CommandParameter="Week" />
+                            <MenuItem Header="{DynamicResource Update_Remind_1Month}" Command="{Binding RemindMeCommand}" CommandParameter="Month" />
+                            <MenuItem Header="{DynamicResource Update_Remind_Never}" Command="{Binding RemindMeCommand}" CommandParameter="Never" />
                         </ContextMenu>
                     </adonisControls:SplitButton.SplitMenu>
                 </adonisControls:SplitButton>
-                <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="10" Margin="0 2.5 0 0"
-                           Text="{Binding NextUpdateCheck, Source={x:Static local:Settings.UserSettings.Default}, StringFormat=Next Refresh: {0:MMM d, yyyy}}" />
+                <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" FontSize="10" Margin="0 2.5 0 0">
+                    <Run Text="{DynamicResource Update_NextRefresh}"/>
+                    <Run Text="{Binding NextUpdateCheck, Source={x:Static settings:UserSettings.Default}, StringFormat=': {0:MMM d, yyyy}'}"/>
+                </TextBlock>
             </StackPanel>
         </Grid>
 
-        <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="バージョン履歴" />
+        <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Update_History}" />
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <ItemsControl ItemsSource="{Binding CommitsView}">
                 <ItemsControl.GroupStyle>
@@ -83,7 +86,7 @@
                                         <ControlTemplate TargetType="GroupItem">
                                             <GroupBox adonisExtensions:LayerExtension.Layer="3"
                                                       Header="{Binding Name}"
-                                                      HeaderStringFormat="Commits on {0:MMM d, yyyy}"
+                                                      HeaderStringFormat="{DynamicResource Update_CommitsOn}"
                                                       Margin="0 0 0 5">
                                                 <ItemsPresenter />
                                             </GroupBox>
@@ -108,4 +111,3 @@
         </ScrollViewer>
     </Grid>
 </adonisControls:AdonisWindow>
-

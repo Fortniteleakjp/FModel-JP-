@@ -32,8 +32,8 @@
             </Grid.ColumnDefinitions>
             
             <StackPanel Orientation="Horizontal" Margin="10">
-                <Button x:Name="PlayPauseButton" Content="一時停止" Click="PlayPause_Click" Margin="0,0,5,0" Padding="10,5"/>
-                <Button Content="停止" Click="Stop_Click" Padding="10,5"/>
+                <Button x:Name="PlayPauseButton" Content="{DynamicResource Video_Pause}" Click="PlayPause_Click" Margin="0,0,5,0" Padding="10,5"/>
+                <Button Content="{DynamicResource Video_Stop}" Click="Stop_Click" Padding="10,5"/>
             </StackPanel>
             
             <Slider x:Name="TimeSlider" Grid.Column="1" VerticalAlignment="Center" Margin="10,0" 
@@ -44,7 +44,7 @@
             <TextBlock x:Name="TimeText" Grid.Column="2" Text="00:00 / 00:00" VerticalAlignment="Center" Margin="10" Foreground="White"/>
             
             <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="0,0,10,0" VerticalAlignment="Center">
-                <TextBlock Text="Vol" Foreground="White" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <TextBlock Text="{DynamicResource Video_Volume}" Foreground="White" VerticalAlignment="Center" Margin="0,0,5,0"/>
                 <Slider x:Name="VolumeSlider" Width="80" Minimum="0" Maximum="1" Value="0.5" ValueChanged="VolumeSlider_ValueChanged" VerticalAlignment="Center"/>
             </StackPanel>
             

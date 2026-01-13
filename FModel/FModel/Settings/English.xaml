@@ -1,0 +1,245 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <!-- Menu -->
+    <system:String x:Key="Menu_Directory">Directory</system:String>
+    <system:String x:Key="Menu_Directory_Selector">Selector</system:String>
+    <system:String x:Key="Menu_Directory_AES">AES</system:String>
+    <system:String x:Key="Menu_Directory_Backup">Backups</system:String>
+    <system:String x:Key="Menu_Directory_ArchivesInfo">Archives Information</system:String>
+    <system:String x:Key="Menu_Package">Package</system:String>
+    <system:String x:Key="Menu_Package_Search">Search</system:String>
+    <system:String x:Key="Menu_Package_ContentSearch">Search Content</system:String>
+    <system:String x:Key="Menu_Package_Favorites">Favorite Directories</system:String>
+    <system:String x:Key="Menu_Package_AutoOpenSounds">Auto Open Sounds</system:String>
+    <system:String x:Key="Menu_Package_RecentFiles">Recent Files</system:String>
+    <system:String x:Key="Menu_Package_ClearRecentFiles">Clear History</system:String>
+    <system:String x:Key="Menu_View">View</system:String>
+    <system:String x:Key="Menu_View_3dViewer">3D Viewer</system:String>
+    <system:String x:Key="Menu_View_AudioPlayer">Audio Player</system:String>
+    <system:String x:Key="Menu_View_ImageMerger">Image Merger</system:String>
+    <system:String x:Key="Menu_Profile">Profile</system:String>
+    <system:String x:Key="Menu_Profile_AllCosmetics">All Cosmetics</system:String>
+    <system:String x:Key="Menu_Profile_NewCosmetics">New Cosmetics</system:String>
+    <system:String x:Key="Menu_Versioning">Versioning</system:String>
+    <system:String x:Key="Menu_Settings">Settings</system:String>
+    <system:String x:Key="Menu_Help">Help</system:String>
+
+    <!-- Settings -->
+    <system:String x:Key="Settings_OutputDirectory">Output Directory</system:String>
+    <system:String x:Key="Settings_OutputDirectory_Tooltip">Folder where logs, backups and other non-deletable files are saved</system:String>
+    <system:String x:Key="Settings_RawDataDirectory">Raw Data Output *</system:String>
+    <system:String x:Key="Settings_PropertiesDirectory">Properties Output *</system:String>
+    <system:String x:Key="Settings_TextureDirectory">Textures Output *</system:String>
+    <system:String x:Key="Settings_AudioDirectory">Audio Output *</system:String>
+    <system:String x:Key="Settings_DiscordRPC">Discord RPC</system:String>
+    <system:String x:Key="Settings_GameDirectory">Game Directory *</system:String>
+    <system:String x:Key="Settings_UEVersion">UE Version *</system:String>
+    <system:String x:Key="Settings_UEVersion_Tooltip">Specify the UE version when loading packages</system:String>
+    <system:String x:Key="Settings_MainLanguage">Main Language</system:String>
+    <system:String x:Key="Settings_MainLanguage_Tooltip">Language used/displayed when parsing packages</system:String>
+    <system:String x:Key="Settings_FModelLanguage">FModel Language</system:String>
+    <system:String x:Key="Settings_FModelLanguage_Tooltip">FModel UI Language Setting</system:String>
+
+    <!-- VideoPlayer -->
+    <system:String x:Key="Video_Play">Play</system:String>
+    <system:String x:Key="Video_Pause">Pause</system:String>
+    <system:String x:Key="Video_Stop">Stop</system:String>
+    <system:String x:Key="Video_Volume">Vol</system:String>
+
+    <!-- Settings General -->
+    <system:String x:Key="Settings_KeepDirectoryStructure">Keep Directory Structure</system:String>
+    <system:String x:Key="Settings_RestoreTabs">Restore Tabs on Startup (Beta)</system:String>
+    <system:String x:Key="Settings_Versioning">Versioning Settings *</system:String>
+    <system:String x:Key="Settings_CustomVersions">Custom Versions</system:String>
+    <system:String x:Key="Settings_Options">Options</system:String>
+    <system:String x:Key="Settings_MapStructTypes">MapStruct Types</system:String>
+    <system:String x:Key="Settings_AesReload">Reload AES on Startup</system:String>
+    <system:String x:Key="Settings_AutoData">Auto Data Retrieval</system:String>
+    <system:String x:Key="Settings_LocalMapping">Local Mapping File</system:String>
+    <system:String x:Key="Settings_MappingFilePath">Mapping File Path</system:String>
+    <system:String x:Key="Settings_ScriptBytecode">Serialize Script Bytecode</system:String>
+    <system:String x:Key="Settings_InlineShaderMaps">Serialize Inline Shader Maps</system:String>
+    <system:String x:Key="Settings_WwisePrefetch">Max Wwise Bank (.BNK) Prefetch</system:String>
+    <system:String x:Key="Settings_SearchMemory">Advanced Search Memory Limit</system:String>
+    <system:String x:Key="Settings_DiffConfig">Version Comparison Settings</system:String>
+    <system:String x:Key="Settings_DiffDescription">Use this feature to compare the current version with a selected version.\nSelect the comparison target here. (Requires a backup file (large) created in advance)</system:String>
+    <system:String x:Key="Settings_DiffArchiveFolder">Archive Folder *</system:String>
+    <system:String x:Key="Settings_DiffUeVersion">Comparison UE Version *</system:String>
+    <system:String x:Key="Settings_DiffMapping">Comparison Mapping File</system:String>
+    <system:String x:Key="Settings_DiffMappingPath">Comparison Mapping File Path</system:String>
+    <system:String x:Key="Settings_DiffReset">Reset Comparison Settings</system:String>
+    <system:String x:Key="Settings_TexturePlatform">Texture Platform *</system:String>
+    <system:String x:Key="Settings_SoundPlayback">Sound Playback</system:String>
+    <system:String x:Key="Settings_RestartWarning">Note: Changes marked with * require FModel restart to take effect</system:String>
+    <system:String x:Key="Settings_OK">OK</system:String>
+    
+    <!-- Settings Tabs -->
+    <system:String x:Key="Settings_Tab_General">General</system:String>
+    <system:String x:Key="Settings_Tab_Creator">Image Generation</system:String>
+    <system:String x:Key="Settings_Tab_Models">Models</system:String>
+    <system:String x:Key="Settings_Tab_Keybindings">Keybindings</system:String>
+    <system:String x:Key="Settings_Tab_MapAes">Map AES</system:String>
+
+    <!-- MainWindow -->
+    <system:String x:Key="Menu_NewExplorer">NEW Explorer</system:String>
+    <system:String x:Key="Tab_Archives">Archives</system:String>
+    <system:String x:Key="Tab_Folders">Folders</system:String>
+    <system:String x:Key="Label_LoadingMode">Loading Mode</system:String>
+    <system:String x:Key="Button_Load">Load</system:String>
+    <system:String x:Key="Separator_ArchivesList">Archives List</system:String>
+    <system:String x:Key="Separator_SelectedArchiveInfo">Selected Archive Info</system:String>
+    <system:String x:Key="Separator_FolderInfo">Folder Info</system:String>
+    <system:String x:Key="Label_MountPoint">Mount Point</system:String>
+    <system:String x:Key="Label_FileCount">File Count</system:String>
+    <system:String x:Key="Label_EncryptedStatus">Encrypted Status</system:String>
+    <system:String x:Key="Label_Encrypted">Encrypted</system:String>
+    <system:String x:Key="Label_Decrypted">Decrypted</system:String>
+    <system:String x:Key="Label_Guid">GUID</system:String>
+    <system:String x:Key="Label_FolderFileCount">Files in Folder</system:String>
+    <system:String x:Key="Label_FolderFolderCount">Folders in Folder</system:String>
+    <system:String x:Key="Label_ContainerArchive">Container Archive</system:String>
+    <system:String x:Key="Label_ArchiveMountPoint">Archive Mount Point</system:String>
+    <system:String x:Key="Label_ArchiveVersion">Archive Version</system:String>
+    <system:String x:Key="Search_Watermark">Enter file name to search...</system:String>
+    
+    <!-- Context Menu -->
+    <system:String x:Key="Ctx_OpenNewTab">Open in New Tab</system:String>
+    <system:String x:Key="Ctx_ShowMetadata">Show Metadata</system:String>
+    <system:String x:Key="Ctx_CompareFiles">Compare Files</system:String>
+    <system:String x:Key="Ctx_OpenReferenceViewer">Open Reference Viewer</system:String>
+    <system:String x:Key="Ctx_PlayVideo">Play Video</system:String>
+    <system:String x:Key="Ctx_SaveData">Save Data</system:String>
+    <system:String x:Key="Ctx_SaveJson">Save as JSON</system:String>
+    <system:String x:Key="Ctx_SaveTexture">Save Texture</system:String>
+    <system:String x:Key="Ctx_SaveModel">Save Model</system:String>
+    <system:String x:Key="Ctx_SaveAnim">Save Animation</system:String>
+    <system:String x:Key="Ctx_SaveSound">Save Sound</system:String>
+    <system:String x:Key="Ctx_Copy">Copy</system:String>
+    <system:String x:Key="Ctx_CopyPath">Path</system:String>
+    <system:String x:Key="Ctx_CopyName">File Name</system:String>
+    <system:String x:Key="Ctx_CopyFolderPath">Folder Path</system:String>
+    <system:String x:Key="Ctx_CopyPathNoExt">Path (No Ext)</system:String>
+    <system:String x:Key="Ctx_CopyFolderPathNoExt">Folder Path (No Ext)</system:String>
+    <system:String x:Key="Ctx_SaveUasset">Save as .uasset</system:String>
+    <system:String x:Key="Ctx_SaveDecompiled">Save Decompiled Blueprints (.cpp)</system:String>
+    <system:String x:Key="Ctx_AddToFavorites">Add to Favorites</system:String>
+
+    <!-- About -->
+    <system:String x:Key="About_Title">About</system:String>
+    <system:String x:Key="About_MadeBy">Made with &#x2665; by Asval</system:String>
+    <system:String x:Key="About_Description">Description</system:String>
+    <system:String x:Key="About_Contributors">Contributors</system:String>
+    <system:String x:Key="About_Donators">Donators</system:String>
+    <system:String x:Key="About_References">References</system:String>
+
+    <!-- Reference Viewer -->
+    <system:String x:Key="RefViewer_Title">Reference Viewer</system:String>
+
+    <!-- Update View -->
+    <system:String x:Key="Update_Title">Releases</system:String>
+    <system:String x:Key="Update_Description">The following versions are available for download. Versions are listed in chronological order from top to bottom.&#x0a;If you want to check for updates manually, you can open this window from [Help] > [Versioning] in the menu. Note: If you have antivirus software downloaded, please turn it off when updating.</system:String>
+    <system:String x:Key="Update_DownloadLatest">Download Latest Version</system:String>
+    <system:String x:Key="Update_RemindMe">Remind Me Later</system:String>
+    <system:String x:Key="Update_Remind_3Days">In 3 Days</system:String>
+    <system:String x:Key="Update_Remind_1Week">In 1 Week</system:String>
+    <system:String x:Key="Update_Remind_1Month">In 1 Month</system:String>
+    <system:String x:Key="Update_Remind_Never">Never</system:String>
+    <system:String x:Key="Update_NextRefresh">Next Refresh</system:String>
+    <system:String x:Key="Update_History">Version History</system:String>
+    <system:String x:Key="Update_CommitsOn">Commits on {0:MMM d, yyyy}</system:String>
+
+    <!-- Search View -->
+    <system:String x:Key="Search_Title">Search Window</system:String>
+    <system:String x:Key="Search_Placeholder">Enter folder/file name to search...</system:String>
+    <system:String x:Key="Search_Placeholder_Regex">Enter regex for folder/file name to search...</system:String>
+    <system:String x:Key="Search_Tooltip_MatchCase">Match Case</system:String>
+    <system:String x:Key="Search_Tooltip_Regex">Regex</system:String>
+    <system:String x:Key="Search_Tooltip_Clear">Clear Search Filter</system:String>
+    <system:String x:Key="Search_Sort_Asc">Alphabetical</system:String>
+    <system:String x:Key="Search_Sort_Desc">Reverse Alphabetical</system:String>
+    <system:String x:Key="Search_Result_Prefix">Loaded Files : </system:String>
+    <system:String x:Key="Search_Result_Suffix"></system:String>
+    <system:String x:Key="Search_Header_Path">Path</system:String>
+    <system:String x:Key="Search_Header_Archive">Archive</system:String>
+    <system:String x:Key="Search_Header_Size">Size</system:String>
+    <system:String x:Key="Search_NoResults">No folders found in archives. Please make sure at least one is loaded.</system:String>
+    <system:String x:Key="Ctx_GoToFolder">Go to Folder</system:String>
+    <system:String x:Key="Ctx_SaveAsFormat">Save as {0}</system:String>
+    <system:String x:Key="Ctx_CopyNameNoExt">File Name (No Ext)</system:String>
+
+    <!-- Settings View -->
+    <system:String x:Key="Settings_Title">Settings</system:String>
+    <system:String x:Key="Settings_CustomOutput_Tooltip">Customize the directory of more output folders</system:String>
+    <system:String x:Key="Settings_GameTag">GAME</system:String>
+    <system:String x:Key="Settings_DiffTag">Compare Versions</system:String>
+    <system:String x:Key="Settings_DiffUeVersion_Tooltip">Specify the UE version used for comparison. The latest is UE5_7.</system:String>
+    <system:String x:Key="Settings_TexturePlatform_Tooltip">Specify the platform to display images corresponding to that platform</system:String>
+    <system:String x:Key="Settings_SoundPlayback_Tooltip">How to load compressed sound files</system:String>
+    <system:String x:Key="Settings_KeepDirectoryStructure_Tooltip">Check this to save following the game path structure</system:String>
+    <system:String x:Key="Settings_RestoreTabs_Tooltip">If enabled, FModel will remember open tabs on exit and restore them on next startup</system:String>
+    <system:String x:Key="Settings_AutoData_AES">AES</system:String>
+    <system:String x:Key="Settings_AutoData_Mapping">Mapping</system:String>
+    <system:String x:Key="Settings_SearchMemory_Tooltip">Specify the maximum memory percentage available for advanced search</system:String>
+
+    <!-- Settings MapAes -->
+    <system:String x:Key="Settings_MapAes_AuthTag">Login Auth</system:String>
+    <system:String x:Key="Settings_MapAes_AuthStatus">Epic Games API Status:</system:String>
+    <system:String x:Key="Settings_MapAes_AuthTitle">Epic Games API</system:String>
+    <system:String x:Key="Settings_MapAes_AuthButton">Authenticate Epic Games API</system:String>
+    <system:String x:Key="Settings_MapAes_AesTag">AES Key Retrieval</system:String>
+    <system:String x:Key="Settings_MapAes_MapCode">Map Code:</system:String>
+    <system:String x:Key="Settings_MapAes_GetAes">Get AES Key</system:String>
+    <system:String x:Key="Settings_MapAes_AesKey">AES Key:</system:String>
+    <system:String x:Key="Settings_MapAes_CopyKey">Copy Key</system:String>
+    <system:String x:Key="Settings_MapAes_SaveKey">Save Key</system:String>
+    <system:String x:Key="Settings_MapAes_PacTag">PAC</system:String>
+    <system:String x:Key="Settings_MapAes_BundlesPath">InstalledBundles Folder:</system:String>
+    <system:String x:Key="Settings_MapAes_Project">Project:</system:String>
+    <system:String x:Key="Settings_MapAes_PieMode">Launch in PIE Mode:</system:String>
+    <system:String x:Key="Settings_MapAes_ExecutePac">Execute PAC</system:String>
+
+    <!-- Settings Creator -->
+    <system:String x:Key="Settings_Creator_ImageType">Image Type</system:String>
+    <system:String x:Key="Settings_Creator_UseShopImage">Use Shop Image</system:String>
+    <system:String x:Key="Settings_Creator_WeaponTag">Weapon Image</system:String>
+    <system:String x:Key="Settings_Creator_DamageProperty">Damage Property</system:String>
+    <system:String x:Key="Settings_Creator_LocalizeKey">Localize Key</system:String>
+    <system:String x:Key="Settings_Creator_SaveRestart">Save and Restart</system:String>
+
+    <!-- Settings Models -->
+    <system:String x:Key="Settings_Models_Output">Model Export Folder *</system:String>
+    <system:String x:Key="Settings_Models_Output_Tooltip">Folder where meshes, materials, and animations are exported</system:String>
+    <system:String x:Key="Settings_Models_MeshFormat">Mesh Format</system:String>
+    <system:String x:Key="Settings_Models_Importer_UEFormat">Importer (Blender/UE): </system:String>
+    <system:String x:Key="Settings_Models_Importer_ActorX">Importers (Blender): </system:String>
+    <system:String x:Key="Settings_Models_SocketFormat">Socket Format (ActorX)</system:String>
+    <system:String x:Key="Settings_Models_CompressionFormat">Compression Format (UEFormat)</system:String>
+    <system:String x:Key="Settings_Models_LodFormat">LOD Format</system:String>
+    <system:String x:Key="Settings_Models_MaxTextureSize">Max Preview Texture Size</system:String>
+    <system:String x:Key="Settings_Models_PreviewStatic">Preview Static Meshes</system:String>
+    <system:String x:Key="Settings_Models_PreviewSkeletal">Preview Skeletal Meshes</system:String>
+    <system:String x:Key="Settings_Models_PreviewAnim">Preview Animations</system:String>
+    <system:String x:Key="Settings_Models_PreviewMaterial">Preview Materials</system:String>
+    <system:String x:Key="Settings_Models_PreviewLevel">Preview Levels (.umap)</system:String>
+    <system:String x:Key="Settings_Models_SaveEmbedded">Save Embedded Materials</system:String>
+    <system:String x:Key="Settings_Models_SaveMorph">Save Morph Targets</system:String>
+    <system:String x:Key="Settings_Models_SaveSkeletonAsMesh">Treat Skeleton as Empty Mesh</system:String>
+    <system:String x:Key="Settings_Models_NaniteFormat">Format</system:String>
+    <system:String x:Key="Settings_Models_MaterialFormat">Material Format</system:String>
+    <system:String x:Key="Settings_Models_TextureFormat">Texture Format</system:String>
+    <system:String x:Key="Settings_Models_SaveHdr">Save HDR Textures as Radiance.hdr</system:String>
+    <system:String x:Key="Settings_Models_PreviewTextureExplorer">Preview Textures in Asset Explorer</system:String>
+
+    <!-- Settings Keybindings -->
+    <system:String x:Key="Settings_Keys_DirLeft">Switch Directory Tab Left</system:String>
+    <system:String x:Key="Settings_Keys_DirRight">Switch Directory Tab Right</system:String>
+    <system:String x:Key="Settings_Keys_AssetLeft">Switch Asset Tab Left</system:String>
+    <system:String x:Key="Settings_Keys_AssetRight">Switch Asset Tab Right</system:String>
+    <system:String x:Key="Settings_Keys_AssetAdd">Add Asset Tab</system:String>
+    <system:String x:Key="Settings_Keys_AssetRemove">Remove Selected Asset Tab</system:String>
+    <system:String x:Key="Settings_Keys_AudioAdd">Add Sound</system:String>
+    <system:String x:Key="Settings_Keys_AudioPlayPause">Play/Pause Current Sound</system:String>
+    <system:String x:Key="Settings_Keys_AudioPrev">Previous Sound</system:String>
+    <system:String x:Key="Settings_Keys_AudioNext">Next Sound</system:String>
+</ResourceDictionary>

@@ -73,7 +73,7 @@ public class GitHubCommit : ViewModel
         {
             MessageBox.Show(new MessageBoxModel
             {
-                Text = "あなたは最新バージョンをインストール済みです",
+                Text = "あなたは最新バージョンをインストール済みです/You have the latest version installed.",
                 Caption = "Update FModel",
                 Icon = MessageBoxImage.Information,
                 Buttons = [MessageBoxButtons.Ok()],

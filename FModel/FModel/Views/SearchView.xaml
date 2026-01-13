@@ -15,7 +15,7 @@
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.65'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="検索ウィンドウ" />
+            <Setter Property="Title" Value="{DynamicResource Search_Title}" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -57,24 +57,24 @@
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                                 <Setter Property="Text" Value="{Binding CUE4Parse.SearchVm.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="検索したいフォルダ/ファイル名を入力してください..." />
+                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="{DynamicResource Search_Placeholder}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding CUE4Parse.SearchVm.HasRegexEnabled}" Value="True">
-                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="検索したいフォルダ/ファイル名を正規表現で入力してください..." />
+                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="{DynamicResource Search_Placeholder_Regex}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBox.Style>
                     </TextBox>
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <ToggleButton ToolTip="Match Case" Padding="5" IsChecked="{Binding CUE4Parse.SearchVm.HasMatchCaseEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                        <ToggleButton ToolTip="{DynamicResource Search_Tooltip_MatchCase}" Padding="5" IsChecked="{Binding CUE4Parse.SearchVm.HasMatchCaseEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MatchCaseIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </ToggleButton>
-                        <ToggleButton ToolTip="Regex" Padding="5" IsChecked="{Binding CUE4Parse.SearchVm.HasRegexEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                        <ToggleButton ToolTip="{DynamicResource Search_Tooltip_Regex}" Padding="5" IsChecked="{Binding CUE4Parse.SearchVm.HasRegexEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RegexIcon}" />
@@ -91,10 +91,10 @@
                                             <Style TargetType="TextBlock">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding}" Value="Asc">
-                                                        <Setter Property="Text" Value="アルファベット順"/>
+                                                        <Setter Property="Text" Value="{DynamicResource Search_Sort_Asc}"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding}" Value="Desc">
-                                                        <Setter Property="Text" Value="Zから順"/>
+                                                        <Setter Property="Text" Value="{DynamicResource Search_Sort_Desc}"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -103,7 +103,7 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
+                        <Button ToolTip="{DynamicResource Search_Tooltip_Clear}" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
@@ -111,8 +111,9 @@
                             </Viewbox>
                         </Button>
                     </StackPanel>
-                    <TextBlock Grid.Column="2" Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat={}読み込まれたファイル : {0:### ### ###} 個}"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" FontStyle="Italic"/>
+                    <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" FontStyle="Italic">
+                        <Run Text="{DynamicResource Search_Result_Prefix}"/><Run Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat='{}{0:### ### ###}'}"/><Run Text="{DynamicResource Search_Result_Suffix}"/>
+                    </TextBlock>
                 </Grid>
 
                 <ListView Grid.Row="1" x:Name="SearchListView" VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding CUE4Parse.SearchVm.SearchResultsView, IsAsync=True}">
@@ -124,7 +125,7 @@
                     </ListView.Resources>
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="900" Header="Path" adonisExtensions:GridViewSortExtension.PropertyName="Path">
+                            <GridViewColumn Width="900" Header="{DynamicResource Search_Header_Path}" adonisExtensions:GridViewSortExtension.PropertyName="Path">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
@@ -138,14 +139,14 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="225" Header="Archive" adonisExtensions:GridViewSortExtension.PropertyName="Archive">
+                            <GridViewColumn Width="225" Header="{DynamicResource Search_Header_Archive}" adonisExtensions:GridViewSortExtension.PropertyName="Archive">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock HorizontalAlignment="Left" Text="{Binding Vfs.Name}" />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Width="100" Header="Size" adonisExtensions:GridViewSortExtension.PropertyName="Size">
+                            <GridViewColumn Width="100" Header="{DynamicResource Search_Header_Size}" adonisExtensions:GridViewSortExtension.PropertyName="Size">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock HorizontalAlignment="Right" Text="{Binding Size, Converter={x:Static converters:SizeToStringConverter.Instance}}" Margin="0 0 15 0" />
@@ -162,7 +163,7 @@
                                         <Setter.Value>
                                             <ControlTemplate>
                                                 <Grid>
-                                                    <TextBlock Text="アーカイブにフォルダが見つかりません。少なくとも1つは読み込まれていることを確認してください。" FontWeight="SemiBold" TextAlignment="Center"
+                                                    <TextBlock Text="{DynamicResource Search_NoResults}" FontWeight="SemiBold" TextAlignment="Center"
                                                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" Margin="0 10 0 0" />
                                                 </Grid>
                                             </ControlTemplate>
@@ -174,7 +175,7 @@
                     </ListView.Style>
                     <ListView.ContextMenu>
                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <MenuItem Header="フォルダに移動する" Click="OnAssetDoubleClick">
+                            <MenuItem Header="{DynamicResource Ctx_GoToFolder}" Click="OnAssetDoubleClick">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -183,7 +184,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="新規タブで開く" Click="OnAssetExtract">
+                            <MenuItem Header="{DynamicResource Ctx_OpenNewTab}" Click="OnAssetExtract">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -193,14 +194,9 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <Separator />
-                            <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
-                                <MenuItem.Header>
-                                    <TextBlock
-                                        Text="{Binding DataContext.SelectedItem.Extension,
-                                                        FallbackValue='データを保存',
-                                                        StringFormat='{}{0}形式で保存',
-                                                        RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                                </MenuItem.Header>
+                            <MenuItem Command="{Binding DataContext.RightClickMenuCommand}"
+                                      Header="{Binding DataContext.SelectedItem.Extension, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      HeaderStringFormat="{DynamicResource Ctx_SaveAsFormat}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Export_Data" />
@@ -215,7 +211,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="json形式で保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="{DynamicResource Ctx_SaveJson}" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Properties" />
@@ -230,7 +226,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="テクスチャを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="{DynamicResource Ctx_SaveTexture}" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Textures" />
@@ -245,7 +241,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="モデルを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="{DynamicResource Ctx_SaveModel}" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Models" />
@@ -260,7 +256,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="アニメーションを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                            <MenuItem Header="{DynamicResource Ctx_SaveAnim}" Command="{Binding DataContext.RightClickMenuCommand}">
                                 <MenuItem.CommandParameter>
                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                         <Binding Source="Assets_Save_Animations" />
@@ -275,7 +271,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                                    <MenuItem Header="サウンドを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                                    <MenuItem Header="{DynamicResource Ctx_SaveSound}" Command="{Binding DataContext.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                 <Binding Source="Assets_Save_Audio" />
@@ -291,7 +287,7 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                             <Separator />
-                            <MenuItem Header="コピー">
+                            <MenuItem Header="{DynamicResource Ctx_Copy}">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
                                         <Canvas Width="24" Height="24">
@@ -299,7 +295,7 @@
                                         </Canvas>
                                     </Viewbox>
                                 </MenuItem.Icon>
-                                <MenuItem Header="ファイルパス" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="{DynamicResource Ctx_CopyPath}" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Path" />
@@ -307,7 +303,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="ファイル名" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="{DynamicResource Ctx_CopyName}" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Name" />
@@ -315,7 +311,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="フォルダパス" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="{DynamicResource Ctx_CopyFolderPath}" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="Directory_Path" />
@@ -323,7 +319,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="ファイルパス (拡張子なし)" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="{DynamicResource Ctx_CopyPathNoExt}" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Path_No_Extension" />
@@ -331,7 +327,7 @@
                                         </MultiBinding>
                                     </MenuItem.CommandParameter>
                                 </MenuItem>
-                                <MenuItem Header="ファイル名 (拡張子なし)" Command="{Binding DataContext.CopyCommand}">
+                                <MenuItem Header="{DynamicResource Ctx_CopyNameNoExt}" Command="{Binding DataContext.CopyCommand}">
                                     <MenuItem.CommandParameter>
                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                             <Binding Source="File_Name_No_Extension" />

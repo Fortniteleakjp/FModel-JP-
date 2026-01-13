@@ -13,7 +13,7 @@
                              ResizeMode="NoResize"
                              IconVisibility="Collapsed"
                              SizeToContent="Height"
-                             Title="設定"
+                             Title="{DynamicResource Settings_Title}"
                              MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.10'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}">
     <adonisControls:AdonisWindow.Resources>
@@ -55,6 +55,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -66,11 +67,11 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="出力先" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="ログ ファイル、バックアップ、その他の削除不可のファイルが保存されるフォルダ" />
-                    <TextBox x:Name="ImJackedBro" Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding OutputDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Settings_OutputDirectory}" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="{DynamicResource Settings_OutputDirectory_Tooltip}" />
+                    <TextBox x:Name="ImJackedBro" Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding OutputDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseOutput" Margin="0 0 0 5" />
 
-                    <CheckBox Grid.Row="0" Grid.Column="6" Margin="5 0 0 5" ToolTip="Customize the directory of more output folders"
+                    <CheckBox Grid.Row="0" Grid.Column="6" Margin="5 0 0 5" ToolTip="{DynamicResource Settings_CustomOutput_Tooltip}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               IsChecked="{Binding SettingsView.UseCustomOutputFolders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" HorizontalAlignment="Right"
@@ -90,24 +91,24 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="生データの出力先 *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding RawDataDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Settings_RawDataDirectory}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
+                        <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding RawDataDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseRawData" Margin="0 0 0 5" />
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="プロパティディレクトリを保存 *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="1" Grid.Column="2" IsReadOnly="True" Text="{Binding PropertiesDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Settings_PropertiesDirectory}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
+                        <TextBox Grid.Row="1" Grid.Column="2" IsReadOnly="True" Text="{Binding PropertiesDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="1" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseProperties" Margin="0 0 0 5" />
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="テクスチャディレクトリを保存 *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="2" Grid.Column="2" IsReadOnly="True" Text="{Binding TextureDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource Settings_TextureDirectory}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
+                        <TextBox Grid.Row="2" Grid.Column="2" IsReadOnly="True" Text="{Binding TextureDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="2" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseTexture" Margin="0 0 0 5" />
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="オーディオディレクトリを保存 *" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
-                        <TextBox Grid.Row="3" Grid.Column="2" IsReadOnly="True" Text="{Binding AudioDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource Settings_AudioDirectory}" VerticalAlignment="Center" HorizontalAlignment="Right" FontSize="11" FontStyle="Italic" Margin="0 0 0 5" />
+                        <TextBox Grid.Row="3" Grid.Column="2" IsReadOnly="True" Text="{Binding AudioDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" Margin="0 0 0 5" />
                         <Button Grid.Row="3" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseAudio" Margin="0 0 0 5" />
                     </Grid>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Discordに表示するか" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource Settings_DiscordRPC}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.DiscordRpcs}" SelectedItem="{Binding SettingsView.SelectedDiscordRpc, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <ComboBox.ItemTemplate>
@@ -117,13 +118,13 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="GAME"></Separator>
+                    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_GameTag}"></Separator>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="読み込むファイル *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True" Text="{Binding GameDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Settings_GameDirectory}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True" Text="{Binding GameDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="4" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseDirectories" Margin="0 0 0 5" />
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="UEバージョン *" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="パッケージを読み込むときのUEバージョンを指定します" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource Settings_UEVersion}" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="{DynamicResource Settings_UEVersion_Tooltip}" />
                     <controls:FilterableComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="5" SelectedItem="{Binding SettingsView.SelectedUeGame, Mode=TwoWay}"
                                                  ItemsSource="{Binding SettingsView.UeGames}"
                                                  Style="{StaticResource UComboBox}"
@@ -141,7 +142,7 @@
                               Grid.ColumnSpan="7"
                               Margin="0,4,0,0"
                               Style="{StaticResource ExpanderButtonLikeHeader}"
-                              Header="バージョン比較の設定"
+                              Header="{DynamicResource Settings_DiffConfig}"
                               IsEnabled="{Binding GameDirectory, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:StringNotEmptyToBoolConverter.Instance}}">
                         <Expander.Resources>
                             <Style TargetType="TextBlock">
@@ -173,7 +174,7 @@
                                        Grid.Column="0"
                                        Grid.ColumnSpan="7"
                                        Style="{StaticResource CustomSeparator}"
-                                       Tag="バージョンを比較"></Separator>
+                                       Tag="{DynamicResource Settings_DiffTag}"></Separator>
 
                             <TextBlock Grid.Row="1"
                                        Grid.Column="0"
@@ -181,14 +182,12 @@
                                        HorizontalAlignment="Center"
                                        Margin="0 0 0 10"
                                        TextAlignment="Center"
-                                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}">
-                                この機能を使用すると、現在のバージョンと選択したバージョンの比較ができます。<LineBreak />
-                                ここで、比較の対象を選択してください。(事前にバックアップファイル(大)を作成している必要があります)
-                            </TextBlock>
+                                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}"
+                                       Text="{DynamicResource Settings_DiffDescription}" />
 
                             <TextBlock Grid.Row="2"
                                        Grid.Column="0"
-                                       Text="アーカイブフォルダ *"
+                                       Text="{DynamicResource Settings_DiffArchiveFolder}"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5" />
                             <TextBox Grid.Row="2"
@@ -206,10 +205,10 @@
 
                             <TextBlock Grid.Row="3"
                                        Grid.Column="0"
-                                       Text="比較に使用するUEバージョン *"
+                                       Text="{DynamicResource Settings_DiffUeVersion}"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5"
-                                       ToolTip="比較に使用するUEのバージョンを指定してください。最新はUE5_7です。" />
+                                       ToolTip="{DynamicResource Settings_DiffUeVersion_Tooltip}" />
                             <controls:FilterableComboBox Grid.Row="3"
                                                          Grid.Column="2"
                                                          Grid.ColumnSpan="5"
@@ -227,7 +226,7 @@
 
                             <TextBlock Grid.Row="4"
                                        Grid.Column="0"
-                                       Text="比較するマッピングファイル"
+                                       Text="{DynamicResource Settings_DiffMapping}"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5" />
                             <CheckBox Grid.Row="4"
@@ -249,7 +248,7 @@
 
                             <TextBlock Grid.Row="5"
                                        Grid.Column="0"
-                                       Text="比較するマッピングファイルのパス"
+                                       Text="{DynamicResource Settings_DiffMappingPath}"
                                        VerticalAlignment="Center"
                                        Margin="0 0 0 5"
                                        DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
@@ -272,7 +271,7 @@
                             <Button Grid.Row="6"
                                     Grid.Column="0"
                                     Grid.ColumnSpan="7"
-                                    Content="バージョン比較の設定をリセット"
+                                    Content="{DynamicResource Settings_DiffReset}"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Padding="8,4"
@@ -290,10 +289,10 @@
 
                     <TextBlock Grid.Row="13"
                                Grid.Column="0"
-                               Text="画像を読み込むプラットフォーム *"
+                               Text="{DynamicResource Settings_TexturePlatform}"
                                VerticalAlignment="Center"
                                Margin="0 0 0 5"
-                               ToolTip="プラットフォームを指定し、そのプラットフォームに対応した画像を表示します" />
+                               ToolTip="{DynamicResource Settings_TexturePlatform_Tooltip}" />
                     <ComboBox Grid.Row="13"
                               Grid.Column="2"
                               Grid.ColumnSpan="5"
@@ -308,7 +307,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="14" Grid.Column="0" Text="サウンドの再生" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="圧縮されたサウンドファイルの読み込み方法" />
+                    <TextBlock Grid.Row="14" Grid.Column="0" Text="{DynamicResource Settings_SoundPlayback}" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="{DynamicResource Settings_SoundPlayback_Tooltip}" />
                     <ComboBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.CompressedAudios}" SelectedItem="{Binding SettingsView.SelectedCompressedAudio, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -318,7 +317,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="メインの表示言語" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="パッケージを解析するときに使用・表示される言語" />
+                    <TextBlock Grid.Row="15" Grid.Column="0" Text="{DynamicResource Settings_MainLanguage}" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="{DynamicResource Settings_MainLanguage_Tooltip}" />
                     <ComboBox Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.AssetLanguages}" SelectedItem="{Binding SettingsView.SelectedAssetLanguage, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -327,20 +326,29 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
+                    
+                    <TextBlock Grid.Row="16" Grid.Column="0" Text="{DynamicResource Settings_FModelLanguage}" VerticalAlignment="Center" Margin="0 0 0 5" ToolTip="{DynamicResource Settings_FModelLanguage_Tooltip}" />
+                    <ComboBox Grid.Row="16" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                              SelectedValue="{Binding SettingsView.SelectedFModelLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
+                              SelectedValuePath="Tag">
+                        <ComboBoxItem Content="English" Tag="English" />
+                        <ComboBoxItem Content="日本語" Tag="Japanese" />
+                    </ComboBox>
 
-                    <TextBlock Grid.Row="16" Grid.Column="0" Text="保存時にディレクトリ構造を維持" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="ゲームのパス通りに保存する場合はチェックを入れてください" />
-                    <CheckBox Grid.Row="16" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding KeepDirectoryStructure, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 0"/>
-
-                    <TextBlock Grid.Row="17" Grid.Column="0" Text="起動時にタブを復元(※β版です)" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="有効にすると、FModelは終了時に開いていたタブを記憶し、次回起動時に復元します" />
+                    <TextBlock Grid.Row="17" Grid.Column="0" Text="{DynamicResource Settings_KeepDirectoryStructure}" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="{DynamicResource Settings_KeepDirectoryStructure_Tooltip}" />
                     <CheckBox Grid.Row="17" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding KeepDirectoryStructure, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 0"/>
+
+                    <TextBlock Grid.Row="18" Grid.Column="0" Text="{DynamicResource Settings_RestoreTabs}" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="{DynamicResource Settings_RestoreTabs_Tooltip}" />
+                    <CheckBox Grid.Row="18" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               IsChecked="{Binding SettingsView.SelectedRestoreTabsOnStartup, Mode=TwoWay}" Margin="0 5 0 0"/>
 
-                    <Separator Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="詳細設定"></Separator>
+                    <Separator Grid.Row="19" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_Versioning}"></Separator>
 
-                    <TextBlock Grid.Row="19" Grid.Column="0" Text="バージョン管理の設定 *" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
+                    <TextBlock Grid.Row="20" Grid.Column="0" Text="{DynamicResource Settings_Versioning}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
@@ -349,15 +357,15 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Content="カスタムVersion" Click="OpenCustomVersions" />
-                        <Button Grid.Column="2" Content="オプション" Click="OpenOptions" />
-                        <Button Grid.Column="4" Content="MapStruct型" Click="OpenMapStructTypes" />
+                        <Button Grid.Column="0" Content="{DynamicResource Settings_CustomVersions}" Click="OpenCustomVersions" />
+                        <Button Grid.Column="2" Content="{DynamicResource Settings_Options}" Click="OpenOptions" />
+                        <Button Grid.Column="4" Content="{DynamicResource Settings_MapStructTypes}" Click="OpenMapStructTypes" />
                     </Grid>
 
-                    <TextBlock Grid.Row="20" Grid.Column="0" Text="起動時のAESの再読み込み" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="21" Grid.Column="0" Text="{DynamicResource Settings_AesReload}" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <ComboBox Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <ComboBox Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
                               Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -368,8 +376,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="21" Grid.Column="0" Text="データを自動取得" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="22" Grid.Column="0" Text="{DynamicResource Settings_AutoData}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="22" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                           DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -377,45 +385,45 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Content="AES" Click="OpenAesEndpoint" />
-                        <Button Grid.Column="2" Content="Mapping" Click="OpenMappingEndpoint" />
+                        <Button Grid.Column="0" Content="{DynamicResource Settings_AutoData_AES}" Click="OpenAesEndpoint" />
+                        <Button Grid.Column="2" Content="{DynamicResource Settings_AutoData_Mapping}" Click="OpenMappingEndpoint" />
                     </Grid>
 
-                    <TextBlock Grid.Row="22" Grid.Column="0" Text="マッピングファイルをローカルで指定" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="22" Grid.Column="2" Margin="0 5 0 10"
+                    <TextBlock Grid.Row="23" Grid.Column="0" Text="{DynamicResource Settings_LocalMapping}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="23" Grid.Column="2" Margin="0 5 0 10"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SettingsView.MappingEndpoint.Overwrite, Mode=TwoWay}" />
 
-                    <TextBlock Grid.Row="23" Grid.Column="0" Text="Mapping File Path" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="24" Grid.Column="0" Text="{DynamicResource Settings_MappingFilePath}" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <TextBox Grid.Row="23" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5" Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
+                    <TextBox Grid.Row="24" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5" Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                              Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <Button Grid.Row="23" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
+                    <Button Grid.Row="24" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                    <TextBlock Grid.Row="24" Grid.Column="0" Text="スクリプトバイトコードをシリアル化" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="24" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding ReadScriptData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
-
-                    <TextBlock Grid.Row="25" Grid.Column="0" Text="インラインシェーダーマップのシリアル化" VerticalAlignment="center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="25" Grid.Column="0" Text="{DynamicResource Settings_ScriptBytecode}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="25" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding ReadShaderMaps, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
+                              IsChecked="{Binding ReadScriptData, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
-                    <TextBlock Grid.Row="26" Grid.Column="0" Text="最大 Wwise Bank (.BNK) プリフェッチ" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="26" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
+                    <TextBlock Grid.Row="26" Grid.Column="0" Text="{DynamicResource Settings_InlineShaderMaps}" VerticalAlignment="center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="26" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding ReadShaderMaps, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
+
+                    <TextBlock Grid.Row="27" Grid.Column="0" Text="{DynamicResource Settings_WwisePrefetch}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Slider Grid.Row="27" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
-                            Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                            Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"/>
 
                     <!-- 新しいUI要素 -->
-                    <TextBlock Grid.Row="27" Grid.Column="0" Text="高度な検索のメモリ使用量" VerticalAlignment="Center" Margin="0 0 0 5"
-                               ToolTip="高度な検索が使用できる最大メモリ量をパーセンテージで指定します" />
-                    <Slider Grid.Row="27" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="100" TickFrequency="5"
+                    <TextBlock Grid.Row="28" Grid.Column="0" Text="{DynamicResource Settings_SearchMemory}" VerticalAlignment="Center" Margin="0 0 0 5"
+                               ToolTip="{DynamicResource Settings_SearchMemory_Tooltip}" />
+                    <Slider Grid.Row="28" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="100" TickFrequency="5"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
-                            Value="{Binding ContentSearchMemoryLimitPercentage, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                            Value="{Binding ContentSearchMemoryLimitPercentage, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"/>
 
                 </Grid>
             </DataTemplate>
@@ -446,41 +454,41 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Epic Games認証セクション -->
-                    <Separator Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="ログイン認証"></Separator>
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Epic Games APIステータス:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Separator Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_MapAes_AuthTag}"></Separator>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Settings_MapAes_AuthStatus}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Text="{Binding SettingsView.EpicAuthStatusText}"
                                Foreground="{Binding SettingsView.EpicAuthStatusForeground}"
                                VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Epic Games API" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" Content="Epic Games APIを認証"
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource Settings_MapAes_AuthTitle}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" Content="{DynamicResource Settings_MapAes_AuthButton}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.AuthenticateEpicGamesCommand}" Margin="0 0 0 5" />
 
                     <!-- AESキー取得セクション -->
-                    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="AESキー取得"></Separator>
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="マップコード:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_MapAes_AesTag}"></Separator>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Settings_MapAes_MapCode}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                              Text="{Binding SettingsView.MapCodeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
-                    <Button Grid.Row="4" Grid.Column="6" Content="AESキーを取得"
+                    <Button Grid.Row="4" Grid.Column="6" Content="{DynamicResource Settings_MapAes_GetAes}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.GetAesKeyCommand}" Margin="0 0 0 5" />
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="AESキー:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource Settings_MapAes_AesKey}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                              Text="{Binding SettingsView.RetrievedAesKey, Mode=OneWay}" Margin="0 0 0 5" />
-                    <Button Grid.Row="5" Grid.Column="4" Content="キーをコピー"
+                    <Button Grid.Row="5" Grid.Column="4" Content="{DynamicResource Settings_MapAes_CopyKey}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.CopyAesKeyCommand}" Margin="0 0 0 5" />
-                    <Button Grid.Row="5" Grid.Column="6" Content="キーを保存"
+                    <Button Grid.Row="5" Grid.Column="6" Content="{DynamicResource Settings_MapAes_SaveKey}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.SaveAesKeyCommand}" Margin="0 0 0 5" />
 
                     <!-- pac化セクション -->
-                    <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="pac化"></Separator>
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="InstalledBundlesフォルダ:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_MapAes_PacTag}"></Separator>
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="{DynamicResource Settings_MapAes_BundlesPath}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                              Text="{Binding SettingsView.InstalledBundlesPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
@@ -488,7 +496,7 @@
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.BrowseInstalledBundlesCommand}" Margin="0 0 0 5" />
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="プロジェクト:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="{DynamicResource Settings_MapAes_Project}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <ComboBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="5"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               ItemsSource="{Binding SettingsView.IslandProjects}"
@@ -496,13 +504,13 @@
                               DisplayMemberPath="DisplayName"
                               Margin="0 0 0 5" />
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="PIEモードで起動:" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="{DynamicResource Settings_MapAes_PieMode}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="9" Grid.Column="2" Margin="0 5 0 10"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SettingsView.IsPieMode, Mode=TwoWay}" />
 
-                    <Button Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="5" Content="pac化を実行"
+                    <Button Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="5" Content="{DynamicResource Settings_MapAes_ExecutePac}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.ExecutePacCommand}" Margin="0 5 0 5" />
 
@@ -560,7 +568,7 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="画像タイプ" VerticalAlignment="Center" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Settings_Creator_ImageType}" VerticalAlignment="Center" Margin="0 0 0 5" />
                         <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding SettingsView.CosmeticStyles}" SelectedItem="{Binding SettingsView.SelectedCosmeticStyle, Mode=TwoWay}"
                                   DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                             <ComboBox.ItemTemplate>
@@ -570,20 +578,20 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="ショップ画像の使用" VerticalAlignment="Center" Margin="0 0 0 5" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Settings_Creator_UseShopImage}" VerticalAlignment="Center" Margin="0 0 0 5" />
                         <CheckBox Grid.Row="1" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                                  IsChecked="{Binding CosmeticDisplayAsset, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                                  IsChecked="{Binding CosmeticDisplayAsset, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                                   Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 10"/>
 
-                        <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" Tag="武器画像" />
+                        <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_Creator_WeaponTag}" />
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="ダメージ値のプロパティ" VerticalAlignment="Center" Margin="0 5 0 5" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource Settings_Creator_DamageProperty}" VerticalAlignment="Center" Margin="0 5 0 5" />
                         <TextBox Grid.Row="3" Grid.Column="2" Text="{Binding CustomWeaponDamageProperty, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 5" />
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Localize Key" VerticalAlignment="Center" Margin="0 5 0 5" />
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Settings_Creator_LocalizeKey}" VerticalAlignment="Center" Margin="0 5 0 5" />
                         <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding CustomWeaponDamageLocalizeKey, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 5" />
                         
-                        <Button Grid.Row="5" Grid.Column="2" Content="保存して再起動" Click="SaveAndRestart" Margin="0 10 0 0"/>
+                        <Button Grid.Row="5" Grid.Column="2" Content="{DynamicResource Settings_Creator_SaveRestart}" Click="SaveAndRestart" Margin="0 10 0 0"/>
                     </Grid>
                 </Grid>
             </DataTemplate>
@@ -621,12 +629,12 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Model書き出しフォルダ *" VerticalAlignment="Center" Margin="0 0 0 5"
-                               ToolTip="これはメッシュ、マテリアル、アニメーションがエクスポートされるフォルダ" />
-                    <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding ModelDirectory, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Settings_Models_Output}" VerticalAlignment="Center" Margin="0 0 0 5"
+                               ToolTip="{DynamicResource Settings_Models_Output_Tooltip}" />
+                    <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding ModelDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
                     <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseModels" Margin="0 0 0 5" />
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="メッシュ形式" VerticalAlignment="Center" Margin="0 0 0 5"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Settings_Models_MeshFormat}" VerticalAlignment="Center" Margin="0 0 0 5"/>
                     <ComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.MeshExportFormats}" SelectedItem="{Binding SettingsView.SelectedMeshExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -646,7 +654,7 @@
                                             <Setter.Value>
                                                 <DataTemplate>
                                                     <TextBlock>
-                                                        <Run Text="インポーター（Blender/UE): " />
+                                                        <Run Text="{DynamicResource Settings_Models_Importer_UEFormat}" />
                                                         <Hyperlink NavigateUri="https://github.com/h4lfheart/UEFormat">
                                                             github.com/h4lfheart/UEFormat
                                                         </Hyperlink>
@@ -661,7 +669,7 @@
                                             <Setter.Value>
                                                 <DataTemplate>
                                                     <TextBlock>
-                                                        <Run Text="Importers (Blender): " />
+                                                        <Run Text="{DynamicResource Settings_Models_Importer_ActorX}" />
                                                         <Hyperlink NavigateUri="https://github.com/DarklightGames/io_scene_psk_psa">
                                                             github.com/DarklightGames/io_scene_psk_psa
                                                         </Hyperlink>
@@ -676,7 +684,7 @@
                         </ContentControl.Style>
                     </ContentControl>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="ソケット形式（ActorX）" VerticalAlignment="Center" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.SocketSettingsEnabled}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource Settings_Models_SocketFormat}" VerticalAlignment="Center" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.SocketSettingsEnabled}"/>
                     <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.SocketExportFormats}" SelectedItem="{Binding SettingsView.SelectedSocketExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.SocketSettingsEnabled}">
                         <ComboBox.ItemTemplate>
@@ -686,7 +694,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="圧縮形式（UEFormat）" VerticalAlignment="Center" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.CompressionSettingsEnabled}"/>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Settings_Models_CompressionFormat}" VerticalAlignment="Center" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.CompressionSettingsEnabled}"/>
                     <ComboBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.CompressionFormats}" SelectedItem="{Binding SettingsView.SelectedCompressionFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.CompressionSettingsEnabled}">
                         <ComboBox.ItemTemplate>
@@ -696,7 +704,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="詳細レベル形式" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource Settings_Models_LodFormat}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <ComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.LodExportFormats}" SelectedItem="{Binding SettingsView.SelectedLodExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -708,54 +716,54 @@
 
                     <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="プレビューできる最大テクスチャサイズ" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="{DynamicResource Settings_Models_MaxTextureSize}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <Slider Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" TickPlacement="None" Minimum="4" Maximum="4096" Ticks="4,8,16,32,64,128,256,512,1024,2048,4096"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5"
-                            Value="{Binding PreviewMaxTextureSize, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"/>
+                            Value="{Binding PreviewMaxTextureSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"/>
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="スタティックメッシュのプレビュー" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewStatic}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding PreviewStaticMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding PreviewStaticMeshes, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="スケルタルメッシュをプレビュー" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewSkeletal}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding PreviewSkeletalMeshes, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding PreviewSkeletalMeshes, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="アニメーションをプレビュー" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewAnim}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding PreviewAnimations, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding PreviewAnimations, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="マテリアルをプレビュー" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewMaterial}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding PreviewMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding PreviewMaterials, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="レベル（.umap）をプレビュー" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewLevel}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding PreviewWorlds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding PreviewWorlds, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="メッシュに埋め込まれたマテリアルを保存" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="13" Grid.Column="0" Text="{DynamicResource Settings_Models_SaveEmbedded}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding SaveEmbeddedMaterials, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding SaveEmbeddedMaterials, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="14" Grid.Column="0" Text="メッシュ内のモーフターゲットを保存" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="14" Grid.Column="0" Text="{DynamicResource Settings_Models_SaveMorph}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding SaveMorphTargets, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding SaveMorphTargets, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="スケルトンを空のメッシュとして扱う" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="15" Grid.Column="0" Text="{DynamicResource Settings_Models_SaveSkeletonAsMesh}" VerticalAlignment="Center" />
                     <CheckBox Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding SaveSkeletonAsMesh, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding SaveSkeletonAsMesh, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 0"/>
 
                     <Separator Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="17" Grid.Column="0" Text="フォーマット" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="17" Grid.Column="0" Text="{DynamicResource Settings_Models_NaniteFormat}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <ComboBox Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.NaniteMeshExportFormats}" SelectedItem="{Binding SettingsView.SelectedNaniteMeshExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -765,7 +773,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="18" Grid.Column="0" Text="マテリアル形式" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="18" Grid.Column="0" Text="{DynamicResource Settings_Models_MaterialFormat}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <ComboBox Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.MaterialExportFormats}" SelectedItem="{Binding SettingsView.SelectedMaterialExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -775,7 +783,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="19" Grid.Column="0" Text="テクスチャ形式" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="19" Grid.Column="0" Text="{DynamicResource Settings_Models_TextureFormat}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <ComboBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
@@ -785,14 +793,14 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="20" Grid.Column="0" Text="HDRテクスチャをRadiance.hdrとして保存する" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="20" Grid.Column="0" Text="{DynamicResource Settings_Models_SaveHdr}" VerticalAlignment="Center" />
                     <CheckBox Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding SaveHdrTexturesAsHdr, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding SaveHdrTexturesAsHdr, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="21" Grid.Column="0" Text="アセットエクスプローラでテクスチャをプレビュー" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="21" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewTextureExplorer}" VerticalAlignment="Center" />
                     <CheckBox Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
                 </Grid>
             </DataTemplate>
@@ -817,42 +825,42 @@
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="ディレクトリタブを左に切り替え" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Settings_Keys_DirLeft}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="0" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding DirLeftTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="ディレクトリタブを右に切り替え" VerticalAlignment="Center" />
+                                            HotKey="{Binding DirLeftTab, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Settings_Keys_DirRight}" VerticalAlignment="Center" />
                     <controls:HotkeyTextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
-                                            HotKey="{Binding DirRightTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                                            HotKey="{Binding DirRightTab, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
 
                     <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="アセットタブを左に切り替え" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource Settings_Keys_AssetLeft}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding AssetLeftTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="アセットタブを右に切り替え" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding AssetLeftTab, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Settings_Keys_AssetRight}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding AssetRightTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="アセットタブを追加" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding AssetRightTab, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource Settings_Keys_AssetAdd}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding AssetAddTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="選択中のアセットタブを削除" VerticalAlignment="Center" />
+                                            HotKey="{Binding AssetAddTab, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="{DynamicResource Settings_Keys_AssetRemove}" VerticalAlignment="Center" />
                     <controls:HotkeyTextBox Grid.Row="6" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
-                                            HotKey="{Binding AssetRemoveTab, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                                            HotKey="{Binding AssetRemoveTab, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
 
                     <Separator Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="サウンドを追加" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="{DynamicResource Settings_Keys_AudioAdd}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="8" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding AddAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="現在のサウンドを再生 / 一時停止" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding AddAudio, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="{DynamicResource Settings_Keys_AudioPlayPause}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="9" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding PlayPauseAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="前のサウンド" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding PlayPauseAudio, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="{DynamicResource Settings_Keys_AudioPrev}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="10" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding PreviousAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="次のサウンド" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding PreviousAudio, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="{DynamicResource Settings_Keys_AudioNext}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="11" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding NextAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                                            HotKey="{Binding NextAudio, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
                 </Grid>
             </DataTemplate>
         </ResourceDictionary>
@@ -878,7 +886,7 @@
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M17,13c-2.21,0-4,1.79-4,4c0,2.21,1.79,4,4,4s4-1.79,4-4C21,14.79,19.21,13,17,13z M17,14.38c0.62,0,1.12,0.51,1.12,1.12 s-0.51,1.12-1.12,1.12s-1.12-0.51-1.12-1.12S16.38,14.38,17,14.38z M17,19.75c-0.93,0-1.74-0.46-2.24-1.17 c0.05-0.72,1.51-1.08,2.24-1.08s2.19,0.36,2.24,1.08C18.74,19.29,17.93,19.75,17,19.75z" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="一般" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Settings_Tab_General}" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
@@ -890,7 +898,7 @@
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource CreatorIcon}" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="画像生成" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Settings_Tab_Creator}" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
                 <TreeViewItem.Style>
@@ -916,7 +924,7 @@
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M19,14.87V9.13c0-0.72-0.38-1.38-1-1.73l-5-2.88c-0.31-0.18-0.65-0.27-1-0.27s-0.69,0.09-1,0.27L6,7.39 C5.38,7.75,5,8.41,5,9.13v5.74c0,0.72,0.38,1.38,1,1.73l5,2.88c0.31,0.18,0.65,0.27,1,0.27s0.69-0.09,1-0.27l5-2.88 C18.62,16.25,19,15.59,19,14.87z M11,17.17l-4-2.3v-4.63l4,2.33V17.17z M12,10.84L8.04,8.53L12,6.25l3.96,2.28L12,10.84z M17,14.87l-4,2.3v-4.6l4-2.33V14.87z" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="Models" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Settings_Tab_Models}" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
@@ -928,7 +936,7 @@
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource KeyboardIcon}" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="キーバインド" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Settings_Tab_Keybindings}" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
@@ -940,7 +948,7 @@
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource KeyIcon}" />
                             </Canvas>
                         </Viewbox>
-                        <TextBlock Text="マップAES" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource Settings_Tab_MapAes}" HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
@@ -958,11 +966,11 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" Text="注意 : * 印がついた項目の変更を適用するには、FModelの再起動が必要です"
+                <TextBlock Grid.Column="0" Text="{DynamicResource Settings_RestartWarning}"
                            HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" Margin="0 0 10 0"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="{DynamicResource Settings_OK}" Click="OnClick" />
             </Grid>
         </Border>
     </Grid>

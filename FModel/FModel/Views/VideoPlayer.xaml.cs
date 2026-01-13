@@ -54,14 +54,14 @@ namespace FModel.Views
                 MediaPlayer.Pause();
                 _timer.Stop();
                 _isPlaying = false;
-                PlayPauseButton.Content = "再生";
+                PlayPauseButton.Content = FindResource("Video_Play");
             }
             else
             {
                 MediaPlayer.Play();
                 _timer.Start();
                 _isPlaying = true;
-                PlayPauseButton.Content = "一時停止";
+                PlayPauseButton.Content = FindResource("Video_Pause");
             }
         }
 
@@ -71,7 +71,7 @@ namespace FModel.Views
             _timer.Stop();
             _isPlaying = false;
             MediaPlayer.Position = TimeSpan.Zero;
-            PlayPauseButton.Content = "再生";
+            PlayPauseButton.Content = FindResource("Video_Play");
             TimeSlider.Value = 0;
             UpdateTimeText();
         }
@@ -90,7 +90,7 @@ namespace FModel.Views
             MediaPlayer.Stop();
             TimeSlider.Value = 0;
             _isPlaying = false;
-            PlayPauseButton.Content = "再生";
+            PlayPauseButton.Content = FindResource("Video_Play");
         }
 
         private void TimeSlider_ThumbDragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)

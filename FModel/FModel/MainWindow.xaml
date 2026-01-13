@@ -49,8 +49,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
-            <MenuItem Header="ディレクトリ">
-                <MenuItem Header="セレクター" Command="{Binding MenuCommand}" CommandParameter="Directory_Selector">
+            <MenuItem Header="{DynamicResource Menu_Directory}">
+                <MenuItem Header="{DynamicResource Menu_Directory_Selector}" Command="{Binding MenuCommand}" CommandParameter="Directory_Selector">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -59,7 +59,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="AESキー" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding Status.IsReady}">
+                <MenuItem Header="{DynamicResource Menu_Directory_AES}" Command="{Binding MenuCommand}" CommandParameter="Directory_AES" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -68,7 +68,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="バックアップファイル" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding Status.IsReady}">
+                <MenuItem Header="{DynamicResource Menu_Directory_Backup}" Command="{Binding MenuCommand}" CommandParameter="Directory_Backup" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -77,7 +77,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="pakファイル情報" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding Status.IsReady}">
+                <MenuItem Header="{DynamicResource Menu_Directory_ArchivesInfo}" Command="{Binding MenuCommand}" CommandParameter="Directory_ArchivesInfo" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -87,8 +87,8 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="パッケージ">
-                <MenuItem Header="検索" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
+            <MenuItem Header="{DynamicResource Menu_Package}">
+                <MenuItem Header="{DynamicResource Menu_Package_Search}" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -97,7 +97,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="ファイル内検索" IsEnabled="{Binding Status.IsReady}" Click="OnContentSearchViewClick">
+                <MenuItem Header="{DynamicResource Menu_Package_ContentSearch}" IsEnabled="{Binding Status.IsReady}" Click="OnContentSearchViewClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -106,7 +106,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="お気に入りのディレクトリ" ItemsSource="{Binding CustomDirectories.Directories}" IsEnabled="{Binding Status.IsReady}">
+                <MenuItem Header="{DynamicResource Menu_Package_Favorites}" ItemsSource="{Binding CustomDirectories.Directories}" IsEnabled="{Binding Status.IsReady}">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -116,10 +116,10 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="サウンドを自動で開く" IsCheckable="True" StaysOpenOnClick="True"
+                <MenuItem Header="{DynamicResource Menu_Package_AutoOpenSounds}" IsCheckable="True" StaysOpenOnClick="True"
                           IsChecked="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" />
                 <Separator />
-                <MenuItem Header="閲覧履歴" x:Name="RecentFilesMenuItem">
+                <MenuItem Header="{DynamicResource Menu_Package_RecentFiles}" x:Name="RecentFilesMenuItem">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -127,7 +127,7 @@
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
-                    <MenuItem Header="履歴をクリア" Command="{Binding DataContext.ClearRecentFilesCommand, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}}">
+                    <MenuItem Header="{DynamicResource Menu_Package_ClearRecentFiles}" Command="{Binding DataContext.ClearRecentFilesCommand, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}}">
                         <MenuItem.Icon>
                             <Viewbox Width="16" Height="16">
                                 <Canvas Width="24" Height="24">
@@ -138,8 +138,8 @@
                     </MenuItem>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="表示">
-                <MenuItem Header="3Dビューアー" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
+            <MenuItem Header="{DynamicResource Menu_View}">
+                <MenuItem Header="{DynamicResource Menu_View_3dViewer}" Command="{Binding MenuCommand}" CommandParameter="Views_3dViewer">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -148,7 +148,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="オーディオプレイヤー" Command="{Binding MenuCommand}" CommandParameter="Views_AudioPlayer">
+                <MenuItem Header="{DynamicResource Menu_View_AudioPlayer}" Command="{Binding MenuCommand}" CommandParameter="Views_AudioPlayer">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -157,7 +157,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="画像結合" Command="{Binding MenuCommand}" CommandParameter="Views_ImageMerger">
+                <MenuItem Header="{DynamicResource Menu_View_ImageMerger}" Command="{Binding MenuCommand}" CommandParameter="Views_ImageMerger">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -168,8 +168,8 @@
                 </MenuItem>
 
             </MenuItem>
-            <MenuItem Header="プロファイル" IsEnabled="{Binding Status.IsReady}">
-                <MenuItem Header="すべてのコスメティック" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
+            <MenuItem Header="{DynamicResource Menu_Profile}" IsEnabled="{Binding Status.IsReady}">
+                <MenuItem Header="{DynamicResource Menu_Profile_AllCosmetics}" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -178,7 +178,7 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="新しいコスメティック" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
+                <MenuItem Header="{DynamicResource Menu_Profile_NewCosmetics}" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
@@ -188,7 +188,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="バージョン管理" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
+            <MenuItem Header="{DynamicResource Menu_Versioning}" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
             <MenuItem Header="テスト" IsEnabled="{Binding Status.IsReady}">
                 <MenuItem Header="All Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
                     <MenuItem.Icon>
@@ -262,8 +262,8 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="設定" Command="{Binding MenuCommand}" CommandParameter="Settings" />
-            <MenuItem Header="ヘルプ" >
+            <MenuItem Header="{DynamicResource Menu_Settings}" Command="{Binding MenuCommand}" CommandParameter="Settings" />
+            <MenuItem Header="{DynamicResource Menu_Help}" >
                 <MenuItem Header="寄付 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
@@ -328,7 +328,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="NEW エクスプローラー" IsCheckable="True" x:Name="NewExplorerMenuItem" />
+            <MenuItem Header="{DynamicResource Menu_NewExplorer}" IsCheckable="True" x:Name="NewExplorerMenuItem" />
         </Menu>
 
         <Grid x:Name="RootGrid" Grid.Row="2">
@@ -341,7 +341,7 @@
             <GroupBox Grid.Column="0" adonisExtensions:LayerExtension.Layer="2"
                       Padding="{adonisUi:Space 0}" Background="Transparent">
                 <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange">
-                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="アーカイブ">
+                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="{DynamicResource Tab_Archives}">
                         <DockPanel>
                             <Grid DockPanel.Dock="Top">
                                 <Grid.RowDefinitions>
@@ -355,7 +355,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="読み込み方式" VerticalAlignment="Center" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Label_LoadingMode}" VerticalAlignment="Center" />
                                 <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
                                           SelectedItem="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
                                     <ComboBox.ItemTemplate>
@@ -365,7 +365,7 @@
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
 
-                                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="読み込む"
+                                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="{DynamicResource Button_Load}"
                                         Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding Status.IsReady}"
                                         CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
                             </Grid>
@@ -377,9 +377,9 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="アーカイブ一覧" />
+                                <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_ArchivesList}" />
                                 <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Style="{StaticResource DirectoryFilesListBox}" MouseDoubleClick="OnMouseDoubleClick" />
-                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="選択中のアーカイブ情報" />
+                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_SelectedArchiveInfo}" />
                                 <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">
                                         <Grid.RowDefinitions>
@@ -394,30 +394,30 @@
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=DirectoryFilesListBox, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="フォルダ位置" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{DynamicResource Label_MountPoint}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FileCount, ElementName=DirectoryFilesListBox, FallbackValue='0', StringFormat={}{0} Files}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="ファイル数" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{DynamicResource Label_FileCount}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="復号化されています" />
+                                                    <Setter Property="Text" Value="{DynamicResource Label_Decrypted}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding SelectedItem.IsEncrypted, ElementName=DirectoryFilesListBox}" Value="True">
-                                                            <Setter Property="Text" Value="暗号化されています" />
+                                                            <Setter Property="Text" Value="{DynamicResource Label_Encrypted}" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="ファイルの状態" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{DynamicResource Label_EncryptedStatus}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Guid, ElementName=DirectoryFilesListBox, FallbackValue='00000000000000000000000000000000'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="GUID" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{DynamicResource Label_Guid}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
                         </DockPanel>
                     </TabItem>
-                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="フォルダー">
+                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="{DynamicResource Tab_Folders}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -471,7 +471,7 @@
                             <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header=".uasset 形式で保存" Click="OnFolderExportClick">
+                                        <MenuItem Header="{DynamicResource Ctx_SaveUasset}" Click="OnFolderExportClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -480,7 +480,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header=".json 形式で保存" Click="OnFolderSaveClick">
+                                        <MenuItem Header="{DynamicResource Ctx_SaveJson}" Click="OnFolderSaveClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -489,7 +489,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="Save Folder's Packages Decompiled Blueprints (.cpp)" Click="OnFolderSaveDecompiled">
+                                        <MenuItem Header="{DynamicResource Ctx_SaveDecompiled}" Click="OnFolderSaveDecompiled">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -498,7 +498,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="テクスチャを保存" Click="OnFolderTextureClick">
+                                        <MenuItem Header="{DynamicResource Ctx_SaveTexture}" Click="OnFolderTextureClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -507,7 +507,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="モデルを保存" Click="OnFolderModelClick">
+                                        <MenuItem Header="{DynamicResource Ctx_SaveModel}" Click="OnFolderModelClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -516,7 +516,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="アニメーションを保存" Click="OnFolderAnimationClick">
+                                        <MenuItem Header="{DynamicResource Ctx_SaveAnim}" Click="OnFolderAnimationClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -526,7 +526,7 @@
                                             </MenuItem.Icon>
                                         </MenuItem>
                                         <Separator />
-                                        <MenuItem Header="お気に入りに追加" Click="OnFavoriteDirectoryClick">
+                                        <MenuItem Header="{DynamicResource Ctx_AddToFavorites}" Click="OnFavoriteDirectoryClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -535,7 +535,7 @@
                                                 </Viewbox>
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem Header="パスをコピー" Click="OnCopyDirectoryPathClick">
+                                        <MenuItem Header="{DynamicResource Ctx_CopyPath}" Click="OnCopyDirectoryPathClick">
                                             <MenuItem.Icon>
                                                 <Viewbox Width="16" Height="16">
                                                     <Canvas Width="24" Height="24">
@@ -547,7 +547,7 @@
                                     </ContextMenu>
                                 </TreeView.ContextMenu>
                             </TreeView>
-                            <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="フォルダ情報" />
+                            <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_FolderInfo}" />
                             <StackPanel Grid.Row="4" Orientation="Vertical" Margin="0 0 0 5">
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.RowDefinitions>
@@ -563,15 +563,15 @@
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="直下にあるファイル数" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{DynamicResource Label_FolderFileCount}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="直下にあるフォルダ数" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{DynamicResource Label_FolderFolderCount}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.Archive, ElementName=AssetsFolderName, FallbackValue='None'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="格納先のアーカイブ" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{DynamicResource Label_ContainerArchive}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.MountPoint, ElementName=AssetsFolderName, FallbackValue='/', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="アーカイブのフォルダ位置" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{DynamicResource Label_ArchiveMountPoint}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Version, ElementName=AssetsFolderName, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="アーカイブのバージョン" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{DynamicResource Label_ArchiveVersion}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                 </Grid>
                             </StackPanel>
                         </Grid>
@@ -595,7 +595,7 @@
                                 </Grid>
                                 <TextBox Grid.Column="0" Grid.ColumnSpan="2" x:Name="AssetsSearchName" AcceptsTab="False" AcceptsReturn="False"
                                          Padding="25 0 0 0" HorizontalAlignment="Stretch" TextChanged="OnFilterTextChanged"
-                                         adonisExtensions:WatermarkExtension.Watermark="検索するファイル名を入力してください..." />
+                                         adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}" />
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                                     <Button ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
@@ -620,7 +620,7 @@
                                 <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick" PreviewKeyDown="OnPreviewKeyDown">
                                     <ListBox.ContextMenu>
                                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                                            <MenuItem Header="新規タブで開く" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="{DynamicResource Ctx_OpenNewTab}" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Extract_New_Tab" />
@@ -635,7 +635,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="metadataを表示" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="{DynamicResource Ctx_ShowMetadata}" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Show_Metadata" />
@@ -650,7 +650,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="ファイルを比較する"
+                                            <MenuItem Header="{DynamicResource Ctx_CompareFiles}"
                                                       IsEnabled="{Binding DiffGameDirectory, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:StringNotEmptyToBoolConverter.Instance}}"
                                                       Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
@@ -670,7 +670,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="参照ビューアを起動" Click="OnShowReferenceChainClick">
+                                            <MenuItem Header="{DynamicResource Ctx_OpenReferenceViewer}" Click="OnShowReferenceChainClick">
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
@@ -679,7 +679,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                           <MenuItem Header="動画を再生" Click="OnPlayVideoClick">
+                                           <MenuItem Header="{DynamicResource Ctx_PlayVideo}" Click="OnPlayVideoClick">
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
@@ -721,7 +721,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="json形式で保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="{DynamicResource Ctx_SaveJson}" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Save_Properties" />
@@ -736,7 +736,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="テクスチャを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="{DynamicResource Ctx_SaveTexture}" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Save_Textures" />
@@ -751,7 +751,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="モデルを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="{DynamicResource Ctx_SaveModel}" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Save_Models" />
@@ -766,7 +766,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="アニメーションを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="{DynamicResource Ctx_SaveAnim}" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Save_Animations" />
@@ -781,7 +781,7 @@
                                                     </Viewbox>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="サウンドを保存" Command="{Binding DataContext.RightClickMenuCommand}">
+                                            <MenuItem Header="{DynamicResource Ctx_SaveSound}" Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                         <Binding Source="Assets_Save_Audio" />
@@ -797,7 +797,7 @@
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                             <Separator />
-                                            <MenuItem Header="コピー">
+                                            <MenuItem Header="{DynamicResource Ctx_Copy}">
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
                                                         <Canvas Width="24" Height="24">
@@ -805,7 +805,7 @@
                                                         </Canvas>
                                                     </Viewbox>
                                                 </MenuItem.Icon>
-                                                <MenuItem Header="パス" Command="{Binding DataContext.CopyCommand}">
+                                                <MenuItem Header="{DynamicResource Ctx_CopyPath}" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                             <Binding Source="File_Path" />
@@ -813,7 +813,7 @@
                                                         </MultiBinding>
                                                     </MenuItem.CommandParameter>
                                                 </MenuItem>
-                                                <MenuItem Header="ファイル名" Command="{Binding DataContext.CopyCommand}">
+                                                <MenuItem Header="{DynamicResource Ctx_CopyName}" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                             <Binding Source="File_Name" />
@@ -821,7 +821,7 @@
                                                         </MultiBinding>
                                                     </MenuItem.CommandParameter>
                                                 </MenuItem>
-                                                <MenuItem Header="フォルダパス" Command="{Binding DataContext.CopyCommand}">
+                                                <MenuItem Header="{DynamicResource Ctx_CopyFolderPath}" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                             <Binding Source="Directory_Path" />
@@ -829,7 +829,7 @@
                                                         </MultiBinding>
                                                     </MenuItem.CommandParameter>
                                                 </MenuItem>
-                                                <MenuItem Header="ファイルパス (拡張子なし)" Command="{Binding DataContext.CopyCommand}">
+                                                <MenuItem Header="{DynamicResource Ctx_CopyPathNoExt}" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                             <Binding Source="File_Path_No_Extension" />
@@ -837,7 +837,7 @@
                                                         </MultiBinding>
                                                     </MenuItem.CommandParameter>
                                                 </MenuItem>
-                                                <MenuItem Header="フォルダパス (拡張子なし)" Command="{Binding DataContext.CopyCommand}">
+                                                <MenuItem Header="{DynamicResource Ctx_CopyFolderPathNoExt}" Command="{Binding DataContext.CopyCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                             <Binding Source="File_Name_No_Extension" />
@@ -849,7 +849,7 @@
                                         </ContextMenu>
                                     </ListBox.ContextMenu>
                                 </ListBox>
-                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="フォルダ情報" />
+                                <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_FolderInfo}" />
                                 <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">
                                         <Grid.RowDefinitions>
@@ -865,26 +865,26 @@
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.Offset, ElementName=AssetsListName, FallbackValue=0, StringFormat='{}0x{0:X}'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="オフセット" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Offset" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.Size, ElementName=AssetsListName, FallbackValue=0, Converter={x:Static converters:SizeToStringConverter.Instance}}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="ファイルサイズ" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{DynamicResource Label_FileCount}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding SelectedItem.CompressionMethod, ElementName=AssetsListName, FallbackValue='不明'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="圧縮形式" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Compression" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Text" Value="復号化されています" />
+                                                    <Setter Property="Text" Value="{DynamicResource Label_Decrypted}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding SelectedItem.IsEncrypted, ElementName=AssetsListName}" Value="True">
-                                                            <Setter Property="Text" Value="暗号化されています" />
+                                                            <Setter Property="Text" Value="{DynamicResource Label_Encrypted}" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="ファイルの状態" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{DynamicResource Label_EncryptedStatus}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Vfs.Name, ElementName=AssetsListName, FallbackValue='なし'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="格納先のアーカイブ" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{DynamicResource Label_ContainerArchive}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     </Grid>
                                 </StackPanel>
                             </Grid>
