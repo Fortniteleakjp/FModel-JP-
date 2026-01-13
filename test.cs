@@ -596,6 +596,7 @@ public IActionResult GetIni([FromQuery] string path)
                     }
                 }
             }
+            
 
             provider.Dispose();
         }
