@@ -42,6 +42,7 @@ public partial class App
         {
             UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
                 File.ReadAllText(UserSettings.FilePath), JsonNetSerializer.SerializerSettings);
+            if (UserSettings.Default == null) throw new Exception("Settings loaded as null");
             settingsLoaded = true;
         }
         catch (Exception ex)
@@ -50,6 +51,7 @@ public partial class App
             try
             {
                 UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(File.ReadAllText(UserSettings.FilePath));
+                if (UserSettings.Default == null) throw new Exception("Settings loaded as null");
                 settingsLoaded = true;
                 UserSettings.Save();
             }
@@ -151,17 +153,24 @@ public partial class App
     private void SetLanguageDictionary()
     {
         var dict = new ResourceDictionary();
-        switch (UserSettings.Default.FModelLanguage)
+        try
         {
-            case "Japanese":
-                dict.Source = new Uri("pack://application:,,,/FModel;component/Settings/Japanese.xaml");
-                break;
-            case "English":
-            default:
-                dict.Source = new Uri("pack://application:,,,/FModel;component/Settings/English.xaml");
-                break;
+            switch (UserSettings.Default.FModelLanguage)
+            {
+                case "Japanese":
+                    dict.Source = new Uri("pack://application:,,,/FModel;component/Settings/Japanese.xaml");
+                    break;
+                case "English":
+                default:
+                    dict.Source = new Uri("pack://application:,,,/FModel;component/Settings/English.xaml");
+                    break;
+            }
+            Resources.MergedDictionaries.Add(dict);
         }
-        Resources.MergedDictionaries.Add(dict);
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to load language dictionary.");
+        }
     }
 
     private void AppExit(object sender, ExitEventArgs e)

@@ -159,7 +159,7 @@
     <system:String x:Key="Search_Sort_Asc">Alphabetical</system:String>
     <system:String x:Key="Search_Sort_Desc">Reverse Alphabetical</system:String>
     <system:String x:Key="Search_Result_Prefix">Loaded Files : </system:String>
-    <system:String x:Key="Search_Result_Suffix"></system:String>
+    <x:Static Member="system:String.Empty" x:Key="Search_Result_Suffix" />
     <system:String x:Key="Search_Header_Path">Path</system:String>
     <system:String x:Key="Search_Header_Archive">Archive</system:String>
     <system:String x:Key="Search_Header_Size">Size</system:String>
