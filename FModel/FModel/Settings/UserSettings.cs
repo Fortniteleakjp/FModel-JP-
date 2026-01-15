@@ -160,7 +160,7 @@ namespace FModel.Settings
             get => _gameDirectory;
             set => SetProperty(ref _gameDirectory, value);
         }
-        private string _diffGameDirectory;
+        private string _diffGameDirectory = string.Empty;
         [JsonProperty]
         public string DiffGameDirectory
         {
@@ -191,9 +191,9 @@ namespace FModel.Settings
             set => SetProperty(ref _isLoggerExpanded, value);
         }
 
-        private GridLength _avalonImageSize = new(200);
+        private double _avalonImageSize = 200;
         [JsonProperty]
-        public GridLength AvalonImageSize
+        public double AvalonImageSize
         {
             get => _avalonImageSize;
             set => SetProperty(ref _avalonImageSize, value);
@@ -319,12 +319,19 @@ namespace FModel.Settings
             set => SetProperty(ref _readShaderMaps, value);
         }
 
-        private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();
+        private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>(StringComparer.OrdinalIgnoreCase);
         [JsonProperty]
         public IDictionary<string, DirectorySettings> PerDirectory
         {
-            get => _perDirectory;
-            set => SetProperty(ref _perDirectory, value);
+            get => _perDirectory ??= new Dictionary<string, DirectorySettings>(StringComparer.OrdinalIgnoreCase);
+            set
+            {
+                if (value != null)
+                    _perDirectory = new Dictionary<string, DirectorySettings>(value, StringComparer.OrdinalIgnoreCase);
+                else
+                    _perDirectory = new Dictionary<string, DirectorySettings>(StringComparer.OrdinalIgnoreCase);
+                RaisePropertyChanged(nameof(PerDirectory));
+            }
         }
 
         [JsonIgnore]
@@ -338,7 +345,7 @@ namespace FModel.Settings
         [JsonProperty]
         public IDictionary<string, GameSelectorViewModel.DetectedGame> ManualGames
         {
-            get => _manualGames;
+            get => _manualGames ??= new Dictionary<string, GameSelectorViewModel.DetectedGame>();
             set => SetProperty(ref _manualGames, value);
         }
 
@@ -650,7 +657,7 @@ namespace FModel.Settings
         [JsonProperty]
         public ObservableCollection<string> RecentFiles
         {
-            get => _recentFiles;
+            get => _recentFiles ??= new ObservableCollection<string>();
             set => SetProperty(ref _recentFiles, value);
         }
     }

@@ -5,6 +5,7 @@ using FModel.ViewModels;
 using Ookii.Dialogs.Wpf;
 using System.Windows;
 using CUE4Parse.Utils;
+using FModel.Settings;
 
 namespace FModel.Views;
 
@@ -45,7 +46,7 @@ public partial class DirectorySelector
         var folderBrowser = new VistaFolderBrowserDialog { ShowNewFolderButton = false };
         if (folderBrowser.ShowDialog() == true)
         {
-            HelloGameMyNameIsDirectory.Text = folderBrowser.SelectedPath;
+            HelloGameMyNameIsDirectory.Text = folderBrowser.SelectedPath.ToLower();
 
             // install_folder/
             //     ├─ Engine/
@@ -78,9 +79,10 @@ public partial class DirectorySelector
             string.IsNullOrEmpty(HelloGameMyNameIsDirectory.Text))
             return;
 
-        gameLauncherViewModel.AddUndetectedDir(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text);
+        gameLauncherViewModel.AddUndetectedDir(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text.ToLower());
         HelloMyNameIsGame.Clear();
         HelloGameMyNameIsDirectory.Clear();
+        UserSettings.Save();
     }
 
     private void OnDeleteDirectory(object sender, RoutedEventArgs e)
@@ -89,5 +91,6 @@ public partial class DirectorySelector
             return;
 
         gameLauncherViewModel.DeleteSelectedGame();
+        UserSettings.Save();
     }
 }

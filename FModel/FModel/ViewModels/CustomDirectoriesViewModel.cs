@@ -47,6 +47,17 @@ public class CustomDirectoriesViewModel : ViewModel
 
         dir.Header = newDir.Header;
         dir.Tag = newDir.DirectoryPath;
+        if (dir.ItemsSource is IEnumerable<MenuItem> items)
+        {
+            foreach (var item in items)
+            {
+                if (item.CommandParameter is CustomDirectory cd)
+                {
+                    cd.Header = newDir.Header;
+                    cd.DirectoryPath = newDir.DirectoryPath;
+                }
+            }
+        }
         Save();
     }
 
@@ -62,10 +73,11 @@ public class CustomDirectoriesViewModel : ViewModel
         for (var i = 2; i < _directories.Count; i++)
         {
             if (_directories[i] is not MenuItem m) continue;
-            directories.Add(new CustomDirectory(m.Header.ToString(), m.Tag.ToString()));
+            directories.Add(new CustomDirectory(m.Header?.ToString() ?? string.Empty, m.Tag?.ToString() ?? string.Empty));
         }
 
         UserSettings.Default.CurrentDir.Directories = directories;
+        UserSettings.Save();
     }
 
     private IEnumerable<Control> EnumerateDirectories()
@@ -82,13 +94,14 @@ public class CustomDirectoriesViewModel : ViewModel
 
         foreach (var setting in UserSettings.Default.CurrentDir.Directories)
         {
-            if (setting.DirectoryPath.EndsWith('/'))
-                setting.DirectoryPath = setting.DirectoryPath[..^1];
+            var path = setting.DirectoryPath;
+            if (path.EndsWith('/'))
+                path = path[..^1];
 
             yield return new MenuItem
             {
                 Header = setting.Header,
-                Tag = setting.DirectoryPath,
+                Tag = path,
                 HorizontalContentAlignment = HorizontalAlignment.Left,
                 VerticalContentAlignment = VerticalAlignment.Center,
                 ItemsSource = EnumerateCommands(setting)

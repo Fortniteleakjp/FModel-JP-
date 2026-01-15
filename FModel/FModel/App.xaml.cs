@@ -36,7 +36,6 @@ public partial class App
 #if DEBUG
         AttachConsole(-1);
 #endif
-        base.OnStartup(e);
 
         var settingsLoaded = false;
         try
@@ -145,6 +144,8 @@ public partial class App
         else
             Log.Warning("Settings file not found or invalid. Created new default settings.");
         Log.Information("FModel Language: {Language}", UserSettings.Default.FModelLanguage);
+
+        base.OnStartup(e);
     }
 
     private void SetLanguageDictionary()
@@ -199,6 +200,12 @@ public partial class App
         }
 
         e.Handled = true;
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        UserSettings.Save();
+        base.OnExit(e);
     }
 
     private string GetOperatingSystemProductName()

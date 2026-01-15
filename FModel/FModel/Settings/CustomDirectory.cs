@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 using FModel.Framework;
+using Newtonsoft.Json;
 
 namespace FModel.Settings;
 
@@ -51,6 +52,7 @@ public class CustomDirectory : ViewModel
     }
 
     private string _header;
+    [JsonProperty]
     public string Header
     {
         get => _header;
@@ -58,6 +60,7 @@ public class CustomDirectory : ViewModel
     }
 
     private string _directoryPath;
+    [JsonProperty]
     public string DirectoryPath
     {
         get => _directoryPath;

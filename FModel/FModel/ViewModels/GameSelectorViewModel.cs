@@ -83,6 +83,7 @@ public class GameSelectorViewModel : ViewModel
     public void AddUndetectedDir(string gameDirectory, bool isDiff = false) => AddUndetectedDir(gameDirectory.SubstringAfterLast('\\'), gameDirectory, isDiff);
     public void AddUndetectedDir(string gameName, string gameDirectory, bool isDiff = false)
     {
+        gameDirectory = gameDirectory.ToLower();
         var setting = DirectorySettings.Default(gameName, gameDirectory, true);
         UserSettings.Default.PerDirectory[gameDirectory] = setting;
         _detectedDirectories.Add(setting);
@@ -146,7 +147,7 @@ public class GameSelectorViewModel : ViewModel
                 if (installationList.AppName.Equals(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
                 {
                     Log.Debug("Found {GameName} in LauncherInstalled.dat", gameName);
-                    return DirectorySettings.Default(installationList.AppName, gameDir, ue: ueVersion);
+                    return DirectorySettings.Default(installationList.AppName, gameDir.ToLower(), ue: ueVersion);
                 }
             }
         }
@@ -166,7 +167,7 @@ public class GameSelectorViewModel : ViewModel
                 if (key.Contains(gameName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(gameDir))
                 {
                     Log.Debug("Found {GameName} in RiotClientInstalls.json", gameName);
-                    return DirectorySettings.Default(gameName, gameDir, ue: ueVersion);
+                    return DirectorySettings.Default(gameName, gameDir.ToLower(), ue: ueVersion);
                 }
             }
         }
@@ -180,7 +181,7 @@ public class GameSelectorViewModel : ViewModel
         if (steamInfo is not null)
         {
             Log.Debug("Found {GameName} in steam manifests", steamInfo.Name);
-            return DirectorySettings.Default(steamInfo.Name, $"{steamInfo.GameRoot}{pakDirectory}", ue: ueVersion, aes: aesKey);
+            return DirectorySettings.Default(steamInfo.Name, $"{steamInfo.GameRoot}{pakDirectory}".ToLower(), ue: ueVersion, aes: aesKey);
         }
 
         return null;
@@ -202,7 +203,7 @@ public class GameSelectorViewModel : ViewModel
         if (Directory.Exists(gameDir))
         {
             Log.Debug("Found {GameName} in the registry", key);
-            return DirectorySettings.Default(key, gameDir, ue: ueVersion);
+            return DirectorySettings.Default(key, gameDir.ToLower(), ue: ueVersion);
         }
 
         return null;
@@ -227,7 +228,7 @@ public class GameSelectorViewModel : ViewModel
         if (Directory.Exists(gameDir))
         {
             Log.Debug("Found {GameName} in the registry", key);
-            return DirectorySettings.Default(displayName, gameDir, ue: ueVersion);
+            return DirectorySettings.Default(displayName, gameDir.ToLower(), ue: ueVersion);
         }
 
         return null;
