@@ -55,16 +55,16 @@ namespace FModel.Views.Resources.Behaviors
             var matchCase = GetMatchCase(textBlock);
             var highlightBrush = GetHighlightBrush(textBlock);
 
-            textBlock.Inlines.Clear();
-
-            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(filter))
-            {
-                textBlock.Text = text;
-                return;
-            }
-
             try
             {
+                textBlock.Inlines.Clear();
+
+                if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(filter))
+                {
+                    textBlock.Text = text;
+                    return;
+                }
+
                 if (isRegex)
                 {
                     var regexOptions = matchCase ? RegexOptions.None : RegexOptions.IgnoreCase;
@@ -108,7 +108,14 @@ namespace FModel.Views.Resources.Behaviors
             }
             catch
             {
-                textBlock.Text = text;
+                try
+                {
+                    textBlock.Text = text;
+                }
+                catch
+                {
+                    // ignored
+                }
             }
         }
     }

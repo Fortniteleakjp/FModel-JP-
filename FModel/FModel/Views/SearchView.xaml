@@ -111,9 +111,11 @@
                             </Viewbox>
                         </Button>
                     </StackPanel>
-                    <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" FontStyle="Italic">
-                        <Run Text="{DynamicResource Search_Result_Prefix}"/><Run Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat='{}{0:### ### ###}'}"/><Run Text="{DynamicResource Search_Result_Suffix}"/>
-                    </TextBlock>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <TextBlock Text="{DynamicResource Search_Result_Prefix}" FontStyle="Italic" />
+                        <TextBlock Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat='{}{0:### ### ###}'}" FontStyle="Italic" />
+                        <TextBlock Text="{DynamicResource Search_Result_Suffix}" FontStyle="Italic" />
+                    </StackPanel>
                 </Grid>
 
                 <ListView Grid.Row="1" x:Name="SearchListView" VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding CUE4Parse.SearchVm.SearchResultsView, IsAsync=True}">
