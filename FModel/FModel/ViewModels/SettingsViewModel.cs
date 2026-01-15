@@ -599,6 +599,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
     private async void GetAesKey(object parameter)
     {
         RetrievedAesKey = "Retrieving AES Key...";
+        var userAgent = "FortniteGame/++Fortnite+Release-39.00-CL-48801071 (http-eventloop) Windows/10.0.26100.1.768.64bit"; // Default fallback
         var mapCode = MapCodeInput?.Trim() ?? "";
         Log.Information("AESキー取得開始: MapCode={MapCode}", mapCode);
         FLogger.Append(ELog.Information, () => FLogger.Text($"Attempting to get AES key for map code: {MapCodeInput}", Constants.WHITE, true));
@@ -633,6 +634,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
             var minor = match.Groups[2].Value;
             var cl = match.Groups[3].Value;
             Log.Information("バージョン情報解析完了: Major={Major}, Minor={Minor}, CL={CL}", major, minor, cl);
+            userAgent = $"FortniteGame/++Fortnite+{versionStr} (http-eventloop) Windows/10.0.26100.1.768.64bit";
 
             // Get map content info
             var contentUrl = $"https://content-service.bfda.live.use1a.on.epicgames.com/api/content/v2/link/{MapCodeInput}/cooked-content-package?role=client&platform=windows&major={major}&minor={minor}&patch={cl}";
@@ -676,7 +678,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 FLogger.Append(ELog.Information, () => FLogger.Text($"AES Key retrieved: {RetrievedAesKey}", Constants.GREEN, true));
 
                 // マニフェストのダウンロードとPAK化処理
-                await DownloadAndCreatePak(contentData.Value, MapCodeInput);
+                await DownloadAndCreatePak(contentData.Value, MapCodeInput, userAgent);
             }
             else
             {
@@ -685,7 +687,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 FLogger.Append(ELog.Information, () => FLogger.Text(RetrievedAesKey, Constants.WHITE, true));
 
                 // 暗号化されていない場合でもPAK化を試みる
-                await DownloadAndCreatePak(contentData.Value, MapCodeInput);
+                await DownloadAndCreatePak(contentData.Value, MapCodeInput, userAgent);
             }
         }
         catch (Exception ex)
@@ -713,7 +715,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
         };
     }
 
-    private async Task DownloadAndCreatePak(JsonElement contentData, string mapCode)
+    private async Task DownloadAndCreatePak(JsonElement contentData, string mapCode, string userAgent)
     {
         try
         {
@@ -826,20 +828,14 @@ public partial class SettingsViewModel // partial 修飾子を追加
             var outputDir = Path.Combine(UserSettings.Default.OutputDirectory, "MapAES", mapCode);
             Directory.CreateDirectory(outputDir);
             
-            // チャンクベースURLを構築（パラメータが取得できない場合はデフォルト値を使用）
-            var versionToUse = version ?? "1";
-            var cookJobIdToUse = cookJobId ?? "default";
-            var chunkBaseUrl = $"https://cooked-content-live-cdn.epicgames.com/valkyrie/cooked-content/{rootModuleId}/39.0.48801071/v{versionToUse}/{cookJobIdToUse}/alt/ChunksV4";
-            
-            Log.Information("チャンクベースURL: {ChunkBaseUrl} (version: {Version}, cookJobId: {CookJobId})", 
-                chunkBaseUrl, versionToUse, cookJobIdToUse);
+            // Use baseUrl from response as chunkBaseUrl
+            var chunkBaseUrl = baseUrl.TrimEnd('/') + "/alt";
             
             // チャンクダウンロード用HttpClient（Authorizationヘッダーなし）
             using var httpClient = new HttpClient();
             // Authorizationヘッダーは追加しない（Epic公式仕様）
             
             // Fortnite User-Agentを設定
-            var userAgent = "FortniteGame/++Fortnite+Release-39.00-CL-48801071 (http-eventloop) Windows/10.0.26100.1.768.64bit";
             httpClient.DefaultRequestHeaders.UserAgent.Clear();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -950,7 +946,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 }
                 // ファイルを出力ディレクトリに抽出
                 FLogger.Append(ELog.Information, () => FLogger.Text($"ファイルを抽出中: {outputDir}", Constants.WHITE, true));
-                await ExtractFilesFromManifest(manifest, outputDir, mapCode, chunkBaseUrl);
+                await ExtractFilesFromManifest(manifest, outputDir, mapCode, chunkBaseUrl, userAgent);
                 FLogger.Append(ELog.Information, () => FLogger.Text($"マニフェスト処理完了: {outputDir}", Constants.GREEN, true));
             }
             catch (Exception ex)
@@ -967,7 +963,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
         }
     }
 
-    private async Task ExtractFilesFromManifest(FBuildPatchAppManifest manifest, string outputDir, string mapCode, string chunkBaseUrl)
+    private async Task ExtractFilesFromManifest(FBuildPatchAppManifest manifest, string outputDir, string mapCode, string chunkBaseUrl, string userAgent)
     {
         try
         {
@@ -980,7 +976,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
             Log.Information("チャンクベースURLが設定されたマニフェストを使用: {ChunkBaseUrl}", chunkBaseUrl);
             
             // グローバルHttpClient設定を試行
-            SetGlobalHttpClientDefaults();
+            SetGlobalHttpClientDefaults(userAgent);
             
             // カスタムチャンクダウンロードを試行
             var useCustomDownload = true; // テスト用フラグ
@@ -988,7 +984,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
             if (useCustomDownload)
             {
                 Log.Information("カスタムチャンクダウンロードを使用します");
-                await ExtractFilesUsingCustomDownload(manifest, outputDir, chunkBaseUrl);
+                await ExtractFilesUsingCustomDownload(manifest, outputDir, chunkBaseUrl, userAgent);
             }
             else
             {
@@ -1034,11 +1030,12 @@ public partial class SettingsViewModel // partial 修飾子を追加
         }
     }
 
-    private async Task ExtractFilesUsingCustomDownload(FBuildPatchAppManifest manifest, string outputDir, string chunkBaseUrl)
+    private async Task ExtractFilesUsingCustomDownload(FBuildPatchAppManifest manifest, string outputDir, string chunkBaseUrl, string userAgent)
     {
         try
         {
             Log.Information("カスタムチャンクダウンロードでファイルを抽出中...");
+            FLogger.Append(ELog.Information, () => FLogger.Text($"カスタムチャンクダウンロード開始. BaseUrl: {chunkBaseUrl}", Constants.WHITE, true));
             
             // 認証付きHttpClientを作成
             using var httpClient = new HttpClient();
@@ -1052,7 +1049,6 @@ public partial class SettingsViewModel // partial 修飾子を追加
             }
             
             // Fortnite User-Agentを設定
-            var userAgent = "FortniteGame/++Fortnite+Release-39.00-CL-48801071 (http-eventloop) Windows/10.0.26100.1.768.64bit";
             httpClient.DefaultRequestHeaders.UserAgent.Clear();
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -1061,6 +1057,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
             httpClient.DefaultRequestHeaders.AcceptEncoding.ParseAdd("deflate, gzip");
             
             Log.Information("カスタムHttpClient設定完了: UserAgent={UserAgent}", userAgent);
+            FLogger.Append(ELog.Information, () => FLogger.Text($"UserAgent: {userAgent}", Constants.WHITE, true));
             
             // Epic Manifest Parserの内部HttpClientを徹底的に置き換え
             ReplaceAllEpicManifestParserHttpClients(httpClient, manifest);
@@ -1084,39 +1081,6 @@ public partial class SettingsViewModel // partial 修飾子を追加
                     
                     Log.Information("カスタムダウンロード開始: {FileName}", fileName);
                     
-                    // まずGetStreamメソッドを試す
-                    try
-                    {
-                        Log.Information("Epic Manifest ParserのGetStreamメソッドでファイルを抽出します: {FileName}", fileName);
-                        FLogger.Append(ELog.Information, () => FLogger.Text($"GetStreamメソッドでファイルを抽出: {fileName}", Constants.WHITE, true));
-                        
-                        // GetStream実行直前に追加のHttpClient置換を実行
-                        ReplaceAllEpicManifestParserHttpClients(httpClient, manifest);
-                        
-                        using var fileStream = fileManifest.GetStream();
-                        using var outputFileStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
-                        await fileStream.CopyToAsync(outputFileStream);
-                        
-                        var fileInfo = new FileInfo(outputPath);
-                        Log.Information("GetStreamでファイル抽出成功: {FileName} ({Size} bytes)", fileName, fileInfo.Length);
-                        FLogger.Append(ELog.Information, () => FLogger.Text($"GetStream成功: {fileName} ({fileInfo.Length} bytes)", Constants.GREEN, true));
-                        
-                        processedFiles++;
-                        
-                        if (processedFiles % 1 == 0) // 全ファイルの進行状況を表示
-                        {
-                            FLogger.Append(ELog.Information, () => FLogger.Text(
-                                $"進行状況: {processedFiles}/{totalFiles} ファイル ({processedFiles * 100.0 / totalFiles:F1}%)", 
-                                Constants.WHITE, true));
-                        }
-                        continue;
-                    }
-                    catch (Exception getStreamEx)
-                    {
-                        Log.Error(getStreamEx, "GetStreamでのファイル抽出に失敗、カスタムチャンクダウンロードを試します: {FileName}", fileName);
-                        FLogger.Append(ELog.Error, () => FLogger.Text($"GetStream失敗: {fileName} - {getStreamEx.Message}", Constants.RED, true));
-                    }
-                    
                     // チャンク情報を取得
                     var chunkParts = GetChunkParts(fileManifest);
                     var fileSize = GetFileSize(fileManifest);
@@ -1126,19 +1090,6 @@ public partial class SettingsViewModel // partial 修飾子を追加
                     if (chunkParts == null || !chunkParts.Any())
                     {
                         Log.Warning("チャンク情報がありません: {FileName}", fileName);
-                        
-                        // フォールバック: 元のGetStreamメソッドを試す
-                        try
-                        {
-                            using var fileStream = fileManifest.GetStream();
-                            using var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
-                            await fileStream.CopyToAsync(outputStream);
-                            Log.Information("フォールバックでファイル抽出成功: {FileName}", fileName);
-                        }
-                        catch (Exception fallbackEx)
-                        {
-                            Log.Error(fallbackEx, "フォールバック抽出に失敗: {FileName}", fileName);
-                        }
                         continue;
                     }
                     
@@ -1257,7 +1208,8 @@ public partial class SettingsViewModel // partial 修飾子を追加
                     
                     // チャンクURLを構築
                     var chunkUrl = BuildChunkUrl(chunkBaseUrl, chunkInfo, chunkGuid);
-                    Log.Information("チャンクダウンロード: {ChunkUrl}", chunkUrl);
+                    Log.Information("File: {FileName} - Chunk {ChunkIndex}/{TotalChunks} - Downloading URL: {ChunkUrl}", fileName, chunkIndex, totalChunks, chunkUrl);
+                    FLogger.Append(ELog.Information, () => FLogger.Text($"[DEBUG] File: {fileName}, Chunk: {chunkIndex}/{totalChunks}, URL: {chunkUrl}", Constants.YELLOW, true));
                     
                     // チャンクをダウンロード
                     if (string.IsNullOrEmpty(chunkUrl))
@@ -1269,8 +1221,57 @@ public partial class SettingsViewModel // partial 修飾子を追加
                     var chunkData = await httpClient.GetByteArrayAsync(chunkUrl as string);
                     Log.Information("チャンクダウンロード成功: {Size} bytes", chunkData.Length);
                     
-                    // チャンクを解凍 (必要に応じて)
-                    var decompressedData = TryDecompressChunk(chunkData);
+                    // Oodle解凍をメインで使用
+                    byte[] decompressedData = null;
+                    var uncompressedSize = GetChunkUncompressedSize(chunkInfo);
+                    if (uncompressedSize > 0)
+                    {
+                        try
+                        {
+                            // Oodleを最優先で使用
+                            OodleHelper.Decompress(chunkData, 0, chunkData.Length, decompressedData = new byte[uncompressedSize], 0, (int)uncompressedSize);
+                        }
+                        catch (Exception oodleEx)
+                        {
+                            Log.Warning(oodleEx, "Oodle解凍失敗、Zlibで再試行");
+                            // Oodle失敗時のみZlibで再試行
+                            try
+                            {
+                                decompressedData = new byte[uncompressedSize];
+                                ZlibHelper.Decompress(chunkData, 0, chunkData.Length, decompressedData, 0, (int)uncompressedSize);
+                            }
+                            catch (Exception zlibEx)
+                            {
+                                Log.Warning(zlibEx, "ZlibHelperでの解凍にも失敗しました");
+                                // 最後のフォールバック: ZLibStream/DeflateStream
+                                try
+                                {
+                                    using var compressedStream = new MemoryStream(chunkData);
+                                    using var zlibStream = new ZLibStream(compressedStream, CompressionMode.Decompress);
+                                    using var decompressedStream = new MemoryStream();
+                                    await zlibStream.CopyToAsync(decompressedStream);
+                                    decompressedData = decompressedStream.ToArray();
+                                }
+                                catch
+                                {
+                                    using var compressedStream = new MemoryStream(chunkData);
+                                    if (chunkData.Length > 2 && (chunkData[0] & 0x0F) == 8)
+                                    {
+                                        compressedStream.Position = 2;
+                                    }
+                                    using var deflateStream = new DeflateStream(compressedStream, CompressionMode.Decompress);
+                                    using var decompressedStream = new MemoryStream();
+                                    await deflateStream.CopyToAsync(decompressedStream);
+                                    decompressedData = decompressedStream.ToArray();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        decompressedData = chunkData;
+                    }
+                    Log.Information("チャンク解凍成功: {Compressed} -> {Uncompressed} bytes", chunkData.Length, decompressedData.Length);
                     
                     // ファイルに書き込みのパラメータを取得
                     var offset = GetChunkOffset(chunkPart);
@@ -1367,6 +1368,28 @@ public partial class SettingsViewModel // partial 修飾子を追加
         }
     }
     
+    private long GetChunkUncompressedSize(object chunkInfo)
+    {
+        try
+        {
+            var prop = chunkInfo.GetType().GetProperty("UncompressedSize");
+            if (prop != null)
+            {
+                return Convert.ToInt64(prop.GetValue(chunkInfo));
+            }
+            var field = chunkInfo.GetType().GetField("UncompressedSize", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (field != null)
+            {
+                return Convert.ToInt64(field.GetValue(chunkInfo));
+            }
+            return 0;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+    
     private object FindChunkInfo(FBuildPatchAppManifest manifest, string chunkGuid)
     {
         try
@@ -1381,112 +1404,45 @@ public partial class SettingsViewModel // partial 修飾子を追加
     
     private string BuildChunkUrl(string chunkBaseUrl, object chunkInfo, string chunkGuid)
     {
-        try
+        var baseWithSlash = string.IsNullOrEmpty(chunkBaseUrl) || chunkBaseUrl.EndsWith("/") ? chunkBaseUrl : chunkBaseUrl + "/";
+
+        if (chunkInfo != null)
         {
-            if (chunkInfo == null)
+            try
             {
-                Log.Error("チャンク情報がnullです");
-                return null;
-            }
-            
-            // リフレクションで利用可能なプロパティを調べる
-            var type = chunkInfo.GetType();
-            var properties = type.GetProperties();
-            var propertyNames = string.Join(", ", properties.Select(p => $"{p.Name}({p.PropertyType.Name})"));
-            Log.Information("FChunkInfoの全プロパティ: {Properties}", propertyNames);
-            
-            // 一般的なハッシュプロパティ名を試す
-            string[] possibleHashProperties = { "ChunkHash", "Hash", "DataHash", "Guid", "Id" };
-            string[] possibleShaProperties = { "ChunkShaHash", "ShaHash", "Sha1Hash", "CheckSum", "Checksum" };
-            
-            object hashValue = null;
-            object shaValue = null;
-            
-            foreach (var propName in possibleHashProperties)
-            {
-                var prop = type.GetProperty(propName);
-                if (prop != null && prop.CanRead)
+                var type = chunkInfo.GetType();
+                var hashProp = type.GetProperty("Hash");
+                var groupProp = type.GetProperty("GroupNumber");
+                var guidProp = type.GetProperty("Guid");
+
+                if (hashProp != null && groupProp != null && guidProp != null)
                 {
-                    hashValue = prop.GetValue(chunkInfo);
-                    if (hashValue != null)
+                    var hashVal = hashProp.GetValue(chunkInfo);
+                    var groupVal = groupProp.GetValue(chunkInfo);
+                    var guidVal = guidProp.GetValue(chunkInfo);
+
+                    if (hashVal is ulong hash && groupVal is byte group)
                     {
-                        Log.Debug("ハッシュプロパティが見つかりました: {PropName} = {Value}", propName, hashValue);
-                        break;
+                        var guidStr = guidVal?.ToString()?.Replace("-", "")?.ToUpper() ?? chunkGuid.Replace("-", "").ToUpper();
+                        var hashStr = hash.ToString("X16");
+                        var groupStr = group.ToString("D2");
+
+                        var v4Url = $"{baseWithSlash}ChunksV4/{groupStr}/{hashStr}_{guidStr}.chunk";
+                        Log.Information("チャンクURL構築 (V4): {Url}", v4Url);
+                        return v4Url;
                     }
                 }
             }
-            
-            foreach (var propName in possibleShaProperties)
+            catch (Exception ex)
             {
-                var prop = type.GetProperty(propName);
-                if (prop != null && prop.CanRead)
-                {
-                    shaValue = prop.GetValue(chunkInfo);
-                    if (shaValue != null)
-                    {
-                        Log.Debug("SHAプロパティが見つかりました: {PropName} = {Value}", propName, shaValue);
-                        break;
-                    }
-                }
+                Log.Warning(ex, "チャンクURL構築中にエラーが発生しました (V4)");
             }
-            
-            // GUIDをファイル名として使用するフォールバック
-            if (hashValue == null && shaValue == null)
-            {
-                Log.Warning("ハッシュプロパティが見つからないため、GUIDを使用します: {ChunkGuid}", chunkGuid);
-                var chunkFileName = $"{chunkGuid}.chunk";
-                var subDir = chunkGuid != null && chunkGuid.Length >= 2 
-                    ? chunkGuid.Substring(0, 2).ToUpper()
-                    : "00";
-                var fullUrl = $"{chunkBaseUrl}/{subDir}/{chunkFileName}";
-                Log.Information("チャンクURL構築(フォールバック): {Url}", fullUrl);
-                return fullUrl;
-            }
-            
-            // ハッシュとSHAが取得できた場合のファイル名構築
-            var chunkHash = hashValue ?? chunkGuid;
-            var chunkShaHash = shaValue ?? chunkGuid;
-            var chunkFileName2 = $"{chunkHash}_{chunkShaHash}.chunk";
-            
-            // GUIDの最初の2文字を取得してサブディレクトリを作成
-            var subDir2 = chunkGuid != null && chunkGuid.Length >= 2 
-                ? chunkGuid.Substring(0, 2).ToUpper()
-                : "00";
-            
-            var fullUrl2 = $"{chunkBaseUrl}/{subDir2}/{chunkFileName2}";
-            Log.Information("チャンクURL構築: {Url}", fullUrl2);
-            
-            return fullUrl2;
         }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "チャンクURL構築エラー: ChunkGuid={ChunkGuid}", chunkGuid);
-            return null;
-        }
-    }
-    
-    private byte[] TryDecompressChunk(byte[] chunkData)
-    {
-        try
-        {
-            Log.Information("チャンクデータ処理開始: {Size} bytes", chunkData.Length);
-            
-            if (chunkData == null || chunkData.Length == 0)
-            {
-                Log.Warning("空のチャンクデータ");
-                return new byte[0];
-            }
-            
-            // チャンクデータをそのまま使用
-            // Epic Manifest Parserが必要に応じて解凍を行う
-            Log.Information("チャンクデータをそのまま使用: {Size} bytes", chunkData.Length);
-            return chunkData;
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "チャンクデータ処理エラー");
-            return chunkData ?? new byte[0];
-        }
+
+        // Fallback: BaseUrl + Guid
+        var fullUrl = $"{baseWithSlash}{chunkGuid}.chunk";
+        Log.Information("チャンクURL構築 (Fallback): {Url}", fullUrl);
+        return fullUrl;
     }
     
     private long GetChunkOffset(dynamic chunkPart)
@@ -1559,14 +1515,12 @@ public partial class SettingsViewModel // partial 修飾子を追加
         }
     }
 
-    private void SetGlobalHttpClientDefaults()
+    private void SetGlobalHttpClientDefaults(string userAgent)
     {
         try
         {
             // .NET HttpClientのグローバルデフォルトを設定
             System.Net.ServicePointManager.DefaultConnectionLimit = 100;
-            
-            var userAgent = "FortniteGame/++Fortnite+Release-39.00-CL-48801071 (http-eventloop) Windows/10.0.26100.1.768.64bit";
             var accessToken = UserSettings.Default.LastAuthResponse?.AccessToken;
             
             Log.Information("グローバルHttpClient設定を試行: User-Agent={UserAgent}, HasToken={HasToken}", userAgent, !string.IsNullOrEmpty(accessToken));
@@ -1748,22 +1702,6 @@ public partial class SettingsViewModel // partial 修飾子を追加
         }
     }
     
-    private void TrySetGlobalHttpDefaults(string userAgent, string accessToken)
-    {
-        try
-        {
-            // システムレベルのHTTP設定を試す
-            System.Net.ServicePointManager.Expect100Continue = false;
-            System.Net.ServicePointManager.UseNagleAlgorithm = false;
-            
-            Log.Information("グローバルHTTP設定を適用しました");
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "グローバルHTTP設定に失敗");
-        }
-    }
-    
     private void ReplaceAllEpicManifestParserHttpClients(HttpClient authenticatedClient, FBuildPatchAppManifest manifest)
     {
         try
@@ -1823,26 +1761,39 @@ public partial class SettingsViewModel // partial 修飾子を追加
     {
         if (obj == null) return;
         
-        // 循環参照を防ぐため、既に訪問したオブジェクトはスキップ
         if (visited.Contains(obj))
         {
             return;
         }
         
-        // プリミティブ型や基本的な型はスキップ
         var type = obj.GetType();
-        if (type.IsPrimitive || type == typeof(string) || type == typeof(DateTime) || 
+
+        if (type == typeof(string)) return;
+
+        visited.Add(obj);
+
+        if (obj is System.Collections.IEnumerable enumerable)
+        {
+            foreach (var item in enumerable)
+            {
+                ReplaceHttpClientsInObjectInternal(item, authenticatedClient, visited);
+            }
+            
+            if (type.Namespace?.StartsWith("System.") == true)
+            {
+                return;
+            }
+        }
+        
+        if (type.IsPrimitive || type == typeof(DateTime) || 
             type == typeof(Guid) || type == typeof(TimeSpan) || type.IsEnum ||
             type.Namespace?.StartsWith("System.") == true)
         {
             return;
         }
         
-        visited.Add(obj);
-        
         try
         {
-            // インスタンスフィールドをチェック
             var fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             foreach (var field in fields)
             {
@@ -1853,13 +1804,11 @@ public partial class SettingsViewModel // partial 修飾子を追加
                         field.SetValue(obj, authenticatedClient);
                         Log.Information("インスタンスHttpClientフィールドを置き換え: {TypeName}.{FieldName}", type.Name, field.Name);
                     }
-                    // HttpClientを含む他のオブジェクトも再帰的に処理（安全に）
                     else if (field.FieldType.IsClass && !field.FieldType.IsPrimitive && 
-                            field.FieldType != typeof(string) && !field.FieldType.IsEnum &&
-                            !field.FieldType.Namespace?.StartsWith("System.") == true)
+                            field.FieldType != typeof(string) && !field.FieldType.IsEnum)
                     {
                         var nestedObj = field.GetValue(obj);
-                        if (nestedObj != null && !visited.Contains(nestedObj))
+                        if (nestedObj != null)
                         {
                             ReplaceHttpClientsInObjectInternal(nestedObj, authenticatedClient, visited);
                         }
@@ -1871,7 +1820,6 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 }
             }
             
-            // インスタンスプロパティをチェック
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             foreach (var property in properties)
             {
@@ -1882,14 +1830,12 @@ public partial class SettingsViewModel // partial 修飾子を追加
                         property.SetValue(obj, authenticatedClient);
                         Log.Information("インスタンスHttpClientプロパティを置き換え: {TypeName}.{PropertyName}", type.Name, property.Name);
                     }
-                    // プロパティからのネストしたオブジェクトの再帰処理（安全に）
                     else if (property.PropertyType.IsClass && !property.PropertyType.IsPrimitive && 
                             property.PropertyType != typeof(string) && !property.PropertyType.IsEnum &&
-                            property.CanRead && property.GetIndexParameters().Length == 0 &&
-                            !property.PropertyType.Namespace?.StartsWith("System.") == true)
+                            property.CanRead && property.GetIndexParameters().Length == 0)
                     {
                         var nestedObj = property.GetValue(obj);
-                        if (nestedObj != null && !visited.Contains(nestedObj))
+                        if (nestedObj != null)
                         {
                             ReplaceHttpClientsInObjectInternal(nestedObj, authenticatedClient, visited);
                         }
@@ -1905,9 +1851,21 @@ public partial class SettingsViewModel // partial 修飾子を追加
         {
             Log.Debug(ex, "オブジェクト {TypeName} のHttpClient置き換えに失敗", obj.GetType().Name);
         }
-        finally
+    }
+    
+    private void TrySetGlobalHttpDefaults(string userAgent, string accessToken)
+    {
+        try
         {
-            visited.Remove(obj);
+            // システムレベルのHTTP設定を試す
+            System.Net.ServicePointManager.Expect100Continue = false;
+            System.Net.ServicePointManager.UseNagleAlgorithm = false;
+            
+            Log.Information("グローバルHTTP設定を適用しました");
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "グローバルHTTP設定に失敗");
         }
     }
     
