@@ -209,7 +209,7 @@
                 <Setter Property="Template">
                     <Setter.Value>                        <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No archives found in the specified directory" FontWeight="Bold" TextAlignment="Center"
+                                <TextBlock Text="{DynamicResource Msg_NoArchivesFound}" FontWeight="Bold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -266,7 +266,7 @@
                 <Setter Property="Template">
                     <Setter.Value>                        <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="再生できる音声ファイルがありません" FontWeight="Bold" TextAlignment="Center"
+                                <TextBlock Text="{DynamicResource Msg_NoAudioFiles}" FontWeight="Bold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -297,15 +297,7 @@
                         <TextBlock Text="{Binding Header}" HorizontalAlignment="Left">
                             <TextBlock.ToolTip>
                                 <ToolTip>
-                                    <TextBlock>
-                                        <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}'{0}' 直下には {1} 個のフォルダと {2} つのファイルがあります">
-                                                <Binding Path="Header" />
-                                                <Binding Path="FoldersView.Count" />
-                                                <Binding Path="AssetsList.Assets.Count" />
-                                            </MultiBinding>
-                                        </TextBlock.Text>
-                                    </TextBlock>
+                                    <TextBlock><Run Text="'" /><Run Text="{Binding Header, Mode=OneWay}" /><Run Text="'" /><Run Text="{DynamicResource Label_FolderContentInfo_Contains}" /><Run Text="{Binding FoldersView.Count, Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_FoldersAnd}" /><Run Text="{Binding AssetsList.Assets.Count, Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_Files}" /></TextBlock>
                                 </ToolTip>
                             </TextBlock.ToolTip>
                         </TextBlock>
@@ -572,7 +564,7 @@
                 <Setter Property="Template">
                     <Setter.Value>                        <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="アーカイブにフォルダが見つかりません。少なくとも1つはロードされていることを確認してください。" FontWeight="Bold" TextAlignment="Center"
+                                <TextBlock Text="{DynamicResource Msg_NoFoldersFound}" FontWeight="Bold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -632,7 +624,7 @@
                 <Setter Property="Template">
                     <Setter.Value>                        <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No package found in folder" FontWeight="Bold" TextAlignment="Center"
+                                <TextBlock Text="{DynamicResource Msg_NoPackagesFound}" FontWeight="Bold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -679,10 +671,10 @@
                     </Image.InputBindings>
                     <Image.ContextMenu>
                         <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
-                            <MenuItem Header="Disable Alpha Channel"
+                            <MenuItem Header="{DynamicResource Ctx_DisableAlpha}"
                                       IsCheckable="True"
                                       IsChecked="{Binding DataContext.SelectedImage.NoAlpha}" />
-                            <MenuItem Header="Open Image"
+                            <MenuItem Header="{DynamicResource Ctx_OpenImage}"
                                       Command="{Binding DataContext.ImageCommand}"
                                       CommandParameter="Open">
                                 <MenuItem.Icon>
@@ -700,7 +692,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Copy Image"
+                            <MenuItem Header="{DynamicResource Ctx_CopyImage}"
                                       Command="{Binding DataContext.ImageCommand}"
                                       CommandParameter="Copy">
                                 <MenuItem.Icon>
@@ -714,7 +706,7 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Save Image"
+                            <MenuItem Header="{DynamicResource Ctx_SaveImage}"
                                       Command="{Binding DataContext.ImageCommand}"
                                       CommandParameter="Save">
                                 <MenuItem.Icon>
@@ -901,7 +893,7 @@
                     <Setter Property="ContextMenu">
                         <Setter.Value>
                             <ContextMenu>
-                                <MenuItem Header="このタブを閉じる" Command="{Binding TabCommand}" CommandParameter="Close_Tab">
+                                <MenuItem Header="{DynamicResource Ctx_CloseTab}" Command="{Binding TabCommand}" CommandParameter="Close_Tab">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -910,7 +902,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="すべてのタブを閉じる" Command="{Binding TabCommand}" CommandParameter="Close_All_Tabs">
+                                <MenuItem Header="{DynamicResource Ctx_CloseAllTabs}" Command="{Binding TabCommand}" CommandParameter="Close_All_Tabs">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -919,7 +911,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="このタブ以外をすべて閉じる" Command="{Binding TabCommand}" CommandParameter="Close_Other_Tabs">
+                                <MenuItem Header="{DynamicResource Ctx_CloseOtherTabs}" Command="{Binding TabCommand}" CommandParameter="Close_Other_Tabs">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -931,7 +923,7 @@
                                 <Separator />
                                 <MenuItem Command="{Binding TabCommand}" CommandParameter="Asset_Export_Data">
                                     <MenuItem.Header>
-                                        <TextBlock Text="{Binding Entry.Extension, FallbackValue='Export Raw Data', StringFormat='{}{0}形式で保存'}" />
+                                        <TextBlock><Run Text="{DynamicResource Ctx_SaveAsFormat_Prefix}" /><Run Text="{Binding Entry.Extension, FallbackValue='Export Raw Data', Mode=OneWay}" /><Run Text="{DynamicResource Ctx_SaveAsFormat_Suffix}" /></TextBlock>
                                     </MenuItem.Header>
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
@@ -941,7 +933,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="json形式で保存" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Properties">
+                                <MenuItem Header="{DynamicResource Ctx_SaveJson}" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Properties">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -950,7 +942,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="テクスチャを保存" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Textures">
+                                <MenuItem Header="{DynamicResource Ctx_SaveTexture}" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Textures">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -959,7 +951,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="モデルを保存" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Models">
+                                <MenuItem Header="{DynamicResource Ctx_SaveModel}" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Models">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -968,7 +960,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="アニメーションを保存" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Animations">
+                                <MenuItem Header="{DynamicResource Ctx_SaveAnim}" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Animations">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -977,7 +969,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                    <MenuItem Header="サウンドを保存" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Audio">
+                                    <MenuItem Header="{DynamicResource Ctx_SaveSound}" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Audio">
                                         <MenuItem.Icon>
                                             <Viewbox Width="16" Height="16">
                                                 <Canvas Width="24" Height="24">
@@ -987,7 +979,7 @@
                                         </MenuItem.Icon>
                                     </MenuItem>
                                 <Separator />
-                                <MenuItem Header="ポップアップで表示" Command="{Binding TabCommand}" CommandParameter="Open_Properties">
+                                <MenuItem Header="{DynamicResource Ctx_OpenProperties}" Command="{Binding TabCommand}" CommandParameter="Open_Properties">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -998,7 +990,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="フォルダを表示" Command="{Binding GoToCommand}" CommandParameter="{Binding Entry.Directory}">
+                                <MenuItem Header="{DynamicResource Ctx_GoToFolder}" Command="{Binding GoToCommand}" CommandParameter="{Binding Entry.Directory}">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">
@@ -1007,7 +999,7 @@
                                         </Viewbox>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="ファイルパスをコピー" Command="{Binding TabCommand}" CommandParameter="Copy_Asset_Path">
+                                <MenuItem Header="{DynamicResource Ctx_CopyAssetPath}" Command="{Binding TabCommand}" CommandParameter="Copy_Asset_Path">
                                     <MenuItem.Icon>
                                         <Viewbox Width="16" Height="16">
                                             <Canvas Width="24" Height="24">

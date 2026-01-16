@@ -102,6 +102,9 @@
     <system:String x:Key="Label_ArchiveMountPoint">Archive Mount Point</system:String>
     <system:String x:Key="Label_ArchiveVersion">Archive Version</system:String>
     <system:String x:Key="Search_Watermark">Enter file name to search...</system:String>
+    <system:String x:Key="Label_FolderContentInfo_Contains"> contains </system:String>
+    <system:String x:Key="Label_FolderContentInfo_FoldersAnd"> folders and </system:String>
+    <system:String x:Key="Label_FolderContentInfo_Files"> files</system:String>
     
     <!-- Context Menu -->
     <system:String x:Key="Ctx_OpenNewTab">Open in New Tab</system:String>
@@ -166,6 +169,8 @@
     <system:String x:Key="Search_NoResults">No folders found in archives. Please make sure at least one is loaded.</system:String>
     <system:String x:Key="Ctx_GoToFolder">Go to Folder</system:String>
     <system:String x:Key="Ctx_SaveAsFormat">Save as {0}</system:String>
+    <system:String x:Key="Ctx_SaveAsFormat_Prefix">Save as </system:String>
+    <x:Static Member="system:String.Empty" x:Key="Ctx_SaveAsFormat_Suffix" />
     <system:String x:Key="Ctx_CopyNameNoExt">File Name (No Ext)</system:String>
 
     <!-- Settings View -->
@@ -242,4 +247,29 @@
     <system:String x:Key="Settings_Keys_AudioPlayPause">Play/Pause Current Sound</system:String>
     <system:String x:Key="Settings_Keys_AudioPrev">Previous Sound</system:String>
     <system:String x:Key="Settings_Keys_AudioNext">Next Sound</system:String>
+
+    <!-- Tab Context Menu -->
+    <system:String x:Key="Ctx_CloseTab">Close Tab</system:String>
+    <system:String x:Key="Ctx_CloseAllTabs">Close All Tabs</system:String>
+    <system:String x:Key="Ctx_CloseOtherTabs">Close Other Tabs</system:String>
+    <system:String x:Key="Ctx_OpenProperties">Open Properties</system:String>
+    <system:String x:Key="Ctx_CopyAssetPath">Copy File Path</system:String>
+
+    <!-- Image Context Menu -->
+    <system:String x:Key="Ctx_DisableAlpha">Disable Alpha Channel</system:String>
+    <system:String x:Key="Ctx_OpenImage">Open Image</system:String>
+    <system:String x:Key="Ctx_CopyImage">Copy Image</system:String>
+    <system:String x:Key="Ctx_SaveImage">Save Image</system:String>
+
+    <!-- Messages -->
+    <system:String x:Key="Msg_NoAudioFiles">No playable audio files found</system:String>
+    <system:String x:Key="Msg_NoArchivesFound">No archives found in the specified directory</system:String>
+    <system:String x:Key="Msg_NoPackagesFound">No package found in folder</system:String>
+    <system:String x:Key="Msg_NoFoldersFound">No folders found in archives. Please make sure at least one is loaded.</system:String>
+
+    <!-- Commit Control -->
+    <system:String x:Key="Commit_CommittedBy_Part1"> committed on </system:String>
+    <x:Static Member="system:String.Empty" x:Key="Commit_CommittedBy_Part2" />
+    <system:String x:Key="Commit_LatestVersion">Latest Version</system:String>
+    <system:String x:Key="Commit_CurrentVersion">Current Version</system:String>
 </ResourceDictionary>

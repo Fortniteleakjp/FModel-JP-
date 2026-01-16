@@ -54,14 +54,7 @@
                             <ImageBrush ImageSource="{Binding Author.AvatarUrl}" />
                         </Ellipse.Fill>
                     </Ellipse>
-                    <TextBlock Grid.Column="2" FontSize="11">
-                        <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0} が {1} にコミット">
-                                <Binding Path="Author.Login" />
-                                <Binding Path="Commit.Author.Date" Converter="{x:Static converters:RelativeDateTimeConverter.Instance}" />
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
+                    <TextBlock Grid.Column="2" FontSize="11"><Run Text="{Binding Author.Login, Mode=OneWay}" /><Run Text="{DynamicResource Commit_CommittedBy_Part1}" /><Run Text="{Binding Commit.Author.Date, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, Mode=OneWay}" /><Run Text="{DynamicResource Commit_CommittedBy_Part2}" /></TextBlock>
                 </Grid>
             </Grid>
 
@@ -83,10 +76,10 @@
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
-                                        <Setter Property="Text" Value="最新のバージョン" />
+                                        <Setter Property="Text" Value="{DynamicResource Commit_LatestVersion}" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                        <Setter Property="Text" Value="現在のバージョン" />
+                                        <Setter Property="Text" Value="{DynamicResource Commit_CurrentVersion}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

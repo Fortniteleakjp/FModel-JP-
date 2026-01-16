@@ -437,15 +437,7 @@
                                 <StackPanel Grid.Column="0" Orientation="Horizontal">
                                     <Image Source="/FModel;component/Resources/label.png"
                                            Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
-                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
-                                        <TextBlock.Text>
-                                            <MultiBinding StringFormat="{}'{0}' 直下には {1} 個のフォルダと {2} つのファイルがあります">
-                                                <Binding Path="SelectedItem.Header" ElementName="AssetsFolderName" FallbackValue="None" />
-                                                <Binding Path="SelectedItem.FoldersView.Count" ElementName="AssetsFolderName" FallbackValue="0" />
-                                                <Binding Path="SelectedItem.AssetsList.Assets.Count" ElementName="AssetsFolderName" FallbackValue="0" />
-                                            </MultiBinding>
-                                        </TextBlock.Text>
-                                    </TextBlock>
+                                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"><Run Text="'" /><Run Text="{Binding SelectedItem.Header, ElementName=AssetsFolderName, FallbackValue='None', Mode=OneWay}" /><Run Text="'" /><Run Text="{DynamicResource Label_FolderContentInfo_Contains}" /><Run Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue='0', Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_FoldersAnd}" /><Run Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue='0', Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_Files}" /></TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Bring Selected Folder To View" Padding="4"
