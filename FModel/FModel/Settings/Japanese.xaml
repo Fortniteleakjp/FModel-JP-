@@ -272,4 +272,15 @@
     <system:String x:Key="Commit_CommittedBy_Part2"> にコミット</system:String>
     <system:String x:Key="Commit_LatestVersion">最新のバージョン</system:String>
     <system:String x:Key="Commit_CurrentVersion">現在のバージョン</system:String>
+
+    <!-- Content Search View -->
+    <system:String x:Key="ContentSearch_Title">高度な検索</system:String>
+    <system:String x:Key="ContentSearch_Button_Search">検索</system:String>
+    <system:String x:Key="ContentSearch_Watermark_Search">ファイルの内容を検索...</system:String>
+    <system:String x:Key="ContentSearch_Watermark_FolderInput">フォルダパスを入力...</system:String>
+    <system:String x:Key="ContentSearch_Button_Add">追加</system:String>
+    <system:String x:Key="ContentSearch_Button_Remove">削除</system:String>
+    <system:String x:Key="ContentSearch_Header_Name">名前</system:String>
+    <system:String x:Key="ContentSearch_Header_Path">パス</system:String>
+    <system:String x:Key="ContentSearch_Status_Ready">準備OK</system:String>
 </ResourceDictionary>

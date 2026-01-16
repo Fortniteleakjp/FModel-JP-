@@ -272,4 +272,15 @@
     <x:Static Member="system:String.Empty" x:Key="Commit_CommittedBy_Part2" />
     <system:String x:Key="Commit_LatestVersion">Latest Version</system:String>
     <system:String x:Key="Commit_CurrentVersion">Current Version</system:String>
+
+    <!-- Content Search View -->
+    <system:String x:Key="ContentSearch_Title">Advanced Search</system:String>
+    <system:String x:Key="ContentSearch_Button_Search">Search</system:String>
+    <system:String x:Key="ContentSearch_Watermark_Search">Search file contents...</system:String>
+    <system:String x:Key="ContentSearch_Watermark_FolderInput">Enter folder path...</system:String>
+    <system:String x:Key="ContentSearch_Button_Add">Add</system:String>
+    <system:String x:Key="ContentSearch_Button_Remove">Remove</system:String>
+    <system:String x:Key="ContentSearch_Header_Name">Name</system:String>
+    <system:String x:Key="ContentSearch_Header_Path">Path</system:String>
+    <system:String x:Key="ContentSearch_Status_Ready">Ready</system:String>
 </ResourceDictionary>

@@ -10,7 +10,7 @@
                              xmlns:viewModels="clr-namespace:FModel.ViewModels"
                              mc:Ignorable="d"
                              d:DataContext="{d:DesignInstance viewModels:ApplicationViewModel}"
-                             Title="高度な検索" Height="450" Width="800"
+                             Title="{DynamicResource ContentSearch_Title}" Height="450" Width="800"
                              IconVisibility="Collapsed"
                              WindowStartupLocation="CenterScreen">
     <Grid>
@@ -22,9 +22,9 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Margin="5">
-            <Button DockPanel.Dock="Right" Content="検索" Width="80" Margin="5,0,0,0" Click="OnSearchClick"/>
+            <Button DockPanel.Dock="Right" Content="{DynamicResource ContentSearch_Button_Search}" Width="80" Margin="5,0,0,0" Click="OnSearchClick"/>
             <TextBox x:Name="SearchTextBox" KeyDown="OnSearchKeyDown"
-                     adonisExtensions:WatermarkExtension.Watermark="ファイルの内容を検索..."/>
+                     adonisExtensions:WatermarkExtension.Watermark="{DynamicResource ContentSearch_Watermark_Search}"/>
         </DockPanel>
 
         <GroupBox Header="{Binding FilterStatusText, RelativeSource={RelativeSource AncestorType=local:ContentSearchView}}"
@@ -50,9 +50,9 @@
                 </ListBox>
                 <StackPanel Grid.Column="1" Margin="5,0,0,0">
                     <TextBox x:Name="FolderInputTextBox" KeyDown="OnFolderInputKeyDown" Margin="0,0,0,5"
-                             adonisExtensions:WatermarkExtension.Watermark="フォルダパスを入力..."/>
-                    <Button x:Name="AddFolderButton" Content="追加" Click="OnAddFolderClick" Margin="0,0,0,5"/>
-                    <Button x:Name="RemoveFolderButton" Content="削除" Click="OnRemoveFolderClick"/>
+                             adonisExtensions:WatermarkExtension.Watermark="{DynamicResource ContentSearch_Watermark_FolderInput}"/>
+                    <Button x:Name="AddFolderButton" Content="{DynamicResource ContentSearch_Button_Add}" Click="OnAddFolderClick" Margin="0,0,0,5"/>
+                    <Button x:Name="RemoveFolderButton" Content="{DynamicResource ContentSearch_Button_Remove}" Click="OnRemoveFolderClick"/>
                 </StackPanel>
             </Grid>
         </GroupBox>
@@ -64,15 +64,15 @@
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" d:ItemsSource="{d:SampleData ItemCount=5}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
-                    <GridViewColumn Header="Path" DisplayMemberBinding="{Binding Path}" Width="550"/>
+                    <GridViewColumn Header="{DynamicResource ContentSearch_Header_Name}" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                    <GridViewColumn Header="{DynamicResource ContentSearch_Header_Path}" DisplayMemberBinding="{Binding Path}" Width="550"/>
                 </GridView>
             </ListView.View>
         </ListView>
 
         <StatusBar Grid.Row="3">
             <StatusBarItem>
-                <TextBlock x:Name="StatusTextBlock" Text="準備OK"/>
+                <TextBlock x:Name="StatusTextBlock" Text="{DynamicResource ContentSearch_Status_Ready}"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
