@@ -409,6 +409,24 @@ public partial class MainWindow
         Clipboard.SetText(folder.PathAtThisPoint);
     }
 
+    private void OnAssetsFolderSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (NewExplorerSearchBox != null)
+        {
+            NewExplorerSearchBox.Text = string.Empty;
+        }
+
+        if (e.NewValue is FModel.ViewModels.TreeItem treeItem)
+        {
+            treeItem.FoldersView.Filter = null;
+            treeItem.AssetsList.AssetsView.Filter = null;
+        }
+        else if (_applicationView?.CUE4Parse?.AssetsFolder != null)
+        {
+            _applicationView.CUE4Parse.AssetsFolder.FoldersView.Filter = null;
+        }
+    }
+
     private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
     {
         AssetsSearchName.Text = string.Empty;
@@ -636,6 +654,46 @@ public partial class MainWindow
     private void TabControlName_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
     {
 
+    }
+
+    private void OnNewExplorerFilterTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (sender is not TextBox textBox) return;
+        var filterText = textBox.Text;
+        var filters = filterText.Trim().Split(' ');
+
+        var dataContext = NewExplorerGrid.DataContext;
+
+        if (dataContext is FModel.ViewModels.AssetsFolderViewModel rootVm)
+        {
+            rootVm.FoldersView.Filter = o =>
+            {
+                if (string.IsNullOrWhiteSpace(filterText)) return true;
+                return o is FModel.ViewModels.TreeItem item && filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
+            };
+            rootVm.FoldersView.Refresh();
+        }
+        else if (dataContext is FModel.ViewModels.TreeItem treeItem)
+        {
+            treeItem.FoldersView.Filter = o =>
+            {
+                if (string.IsNullOrWhiteSpace(filterText)) return true;
+                return o is FModel.ViewModels.TreeItem item && filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
+            };
+            treeItem.FoldersView.Refresh();
+
+            treeItem.AssetsList.AssetsView.Filter = o =>
+            {
+                if (string.IsNullOrWhiteSpace(filterText)) return true;
+                return o is CUE4Parse.FileProvider.Objects.GameFile file && filters.All(x => file.Name.Contains(x, StringComparison.OrdinalIgnoreCase));
+            };
+            treeItem.AssetsList.AssetsView.Refresh();
+        }
+    }
+
+    private void OnNewExplorerDeleteSearchClick(object sender, RoutedEventArgs e)
+    {
+        NewExplorerSearchBox.Text = string.Empty;
     }
 
     private void OnNewExplorerListMouseDoubleClick(object sender, MouseButtonEventArgs e)

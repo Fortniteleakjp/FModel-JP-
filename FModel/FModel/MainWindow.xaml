@@ -460,7 +460,7 @@
                             </Grid>
 
                             <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
-                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick">
+                            <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick" SelectedItemChanged="OnAssetsFolderSelectedItemChanged">
                                 <TreeView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="{DynamicResource Ctx_SaveUasset}" Click="OnFolderExportClick">
@@ -919,6 +919,30 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
+                        <Grid Grid.Row="0" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
+                                <Viewbox Width="16" Height="16">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
+                                    </Canvas>
+                                </Viewbox>
+                            </Grid>
+                            <TextBox Grid.Column="0" x:Name="NewExplorerSearchBox" AcceptsTab="False" AcceptsReturn="False"
+                                     Padding="25 0 0 0" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
+                                     adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}" />
+                            <Button Grid.Column="1" ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerDeleteSearchClick">
+                                <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                    <Canvas Width="24" Height="24">
+                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
+                                    </Canvas>
+                                </Viewbox>
+                            </Button>
+                        </Grid>
+
                         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <StackPanel>
                                 <ListBox x:Name="NewExplorerListBox"
@@ -972,7 +996,7 @@
                                     </ListBox.ItemTemplate>
                                 </ListBox>
                                 <ListBox x:Name="NewExplorerFilesListBox"
-                                         ItemsSource="{Binding AssetsList.Assets, IsAsync=True}"
+                                         ItemsSource="{Binding AssetsList.AssetsView, IsAsync=True}"
                                          MouseDoubleClick="OnNewExplorerFileMouseDoubleClick"
                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
@@ -995,7 +1019,21 @@
                                                         <RowDefinition Height="Auto" />
                                                     </Grid.RowDefinitions>
 
+                                                    <Image x:Name="ThumbnailImage" Grid.Row="0" Margin="10" Stretch="Uniform"
+                                                           controls:FileIconLoader.GameFile="{Binding}"
+                                                           Visibility="Collapsed"/>
+
                                                     <Viewbox Grid.Row="0" Margin="20">
+                                                        <Viewbox.Style>
+                                                            <Style TargetType="Viewbox">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Visibility, ElementName=ThumbnailImage}" Value="Visible">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Viewbox.Style>
                                                         <Canvas Width="24" Height="24">
                                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource NoteIcon}" />
                                                         </Canvas>
@@ -1004,7 +1042,10 @@
                                                     <Border Grid.Row="1" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
                                                             CornerRadius="0,0,4,4" Padding="5">
                                                         <StackPanel>
-                                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                                            <TextBlock controls:HighlightText.Text="{Binding Name}"
+                                                                       controls:HighlightText.Highlight="{Binding Text, ElementName=NewExplorerSearchBox}"
+                                                                       controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
+                                                                       FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                                                        ToolTip="{Binding Name}" HorizontalAlignment="Center" Margin="0,0,0,2"/>
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
