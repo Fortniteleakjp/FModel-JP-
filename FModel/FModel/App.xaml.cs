@@ -200,12 +200,12 @@ public partial class App
         };
 
         MessageBox.Show(messageBox);
-        if (messageBox.Result == MessageBoxResult.Custom && (EErrorKind) messageBox.ButtonPressed.Id != EErrorKind.Ignore)
+        if (messageBox.Result == MessageBoxResult.Custom && messageBox.ButtonPressed != null && (EErrorKind) messageBox.ButtonPressed.Id != EErrorKind.Ignore)
         {
             if ((EErrorKind) messageBox.ButtonPressed.Id == EErrorKind.ResetSettings)
                 UserSettings.Delete();
 
-            ApplicationService.ApplicationView.Restart();
+            ApplicationService.ApplicationView?.Restart();
         }
 
         e.Handled = true;

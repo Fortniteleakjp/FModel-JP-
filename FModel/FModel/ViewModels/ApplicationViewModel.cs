@@ -157,6 +157,7 @@ public class ApplicationViewModel : ViewModel
             return existing;
 
         var vm = new GameSelectorViewModel(diffPath);
+        if (vm.SelectedDirectory == null) return null;
 
         UserSettings.Default.DiffGameDirectory = vm.SelectedDirectory.GameDirectory.ToLower();
         UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory.ToLower()] = vm.SelectedDirectory;
