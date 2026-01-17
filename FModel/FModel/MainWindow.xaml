@@ -693,11 +693,9 @@
                                             <Separator />
                                             <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.Header>
-                                                    <TextBlock
-                                                        Text="{Binding DataContext.SelectedItem.Extension,
-                                                                   FallbackValue='データを保存',
-                                                                StringFormat='{}{0}形式で保存',
-                                                                   RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <TextBlock>
+                                                        <Run Text="{DynamicResource Ctx_SaveAsFormat_Prefix}" /><Run Text="{Binding DataContext.SelectedItem.Extension, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue='Data'}" /><Run Text="{DynamicResource Ctx_SaveAsFormat_Suffix}" />
+                                                    </TextBlock>
                                                 </MenuItem.Header>
                                                 <MenuItem.CommandParameter>
                                                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
