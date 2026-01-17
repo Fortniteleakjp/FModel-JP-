@@ -77,6 +77,18 @@ namespace FModel.Views.Resources.Controls
                             }
                         }
 
+                        if (string.IsNullOrEmpty(assetPath) && obj.TryGetValue(out FStructFallback[] contextualPresentations, "ContextualPresentations"))
+                        {
+                            foreach (var presentation in contextualPresentations)
+                            {
+                                if (presentation.TryGetValue(out FSoftObjectPath renderImage, "RenderImage"))
+                                {
+                                    assetPath = renderImage.AssetPathName.Text;
+                                    break;
+                                }
+                            }
+                        }
+
                         if (string.IsNullOrEmpty(assetPath))
                         {
                             if (obj.TryGetValue(out FSoftObjectPath softPath, "LargeIcon"))
