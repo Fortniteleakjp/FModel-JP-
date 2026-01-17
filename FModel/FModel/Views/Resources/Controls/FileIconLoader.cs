@@ -64,16 +64,32 @@ namespace FModel.Views.Resources.Controls
 
                         // Case 2: DataList contains LargeIcon
                         string assetPath = null;
-                        if (obj.TryGetValue(out FSoftObjectPath softPath, "LargeIcon"))
+
+                        if (obj.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
                         {
-                            assetPath = softPath.AssetPathName.Text;
-                        }
-                        else if (obj.TryGetValue(out FStructFallback structFallback, "LargeIcon"))
-                        {
-                            if (structFallback.TryGetValue(out FSoftObjectPath innerPath, "AssetPathName") || 
-                                structFallback.TryGetValue(out innerPath, "ResourceObject"))
+                            foreach (var data in dataList)
                             {
-                                assetPath = innerPath.AssetPathName.Text;
+                                if (data.NonConstStruct != null && data.NonConstStruct.TryGetValue(out FSoftObjectPath largeIcon, "LargeIcon"))
+                                {
+                                    assetPath = largeIcon.AssetPathName.Text;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (string.IsNullOrEmpty(assetPath))
+                        {
+                            if (obj.TryGetValue(out FSoftObjectPath softPath, "LargeIcon"))
+                            {
+                                assetPath = softPath.AssetPathName.Text;
+                            }
+                            else if (obj.TryGetValue(out FStructFallback structFallback, "LargeIcon"))
+                            {
+                                if (structFallback.TryGetValue(out FSoftObjectPath innerPath, "AssetPathName") || 
+                                    structFallback.TryGetValue(out innerPath, "ResourceObject"))
+                                {
+                                    assetPath = innerPath.AssetPathName.Text;
+                                }
                             }
                         }
 
