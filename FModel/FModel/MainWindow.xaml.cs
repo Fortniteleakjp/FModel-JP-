@@ -206,6 +206,8 @@ public partial class MainWindow
             LeftTabControl.SelectedIndex--;
         else if (UserSettings.Default.DirRightTab.IsTriggered(e.Key) && LeftTabControl.SelectedIndex < LeftTabControl.Items.Count - 1)
             LeftTabControl.SelectedIndex++;
+        else
+            return;
     }
 
     private void OnSearchViewClick(object sender, RoutedEventArgs e)
