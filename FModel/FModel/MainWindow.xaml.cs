@@ -132,6 +132,7 @@ public partial class MainWindow
 
         await ApplicationViewModel.InitOodle();
         await ApplicationViewModel.InitZlib();
+        await ApplicationViewModel.InitACL();
         await _applicationView.CUE4Parse.Initialize();
         await _applicationView.AesManager.InitAes();
         await _applicationView.UpdateProvider(true);

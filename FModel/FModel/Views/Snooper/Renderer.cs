@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
@@ -127,13 +128,13 @@ public class Renderer : IDisposable
         {
             if (anim is UAnimSequenceBase animBase)
             {
-                /*if (Options.TryGetModel(out var selected) &&
+                if (Options.TryGetModel(out var selected) &&
                     selected is SkeletalModel { IsVisible: true } skeletalModel &&
-                    skeletalModel.Skeleton.Guid == animBase.SkeletonGuid)
+                    animBase.Skeleton.TryLoad(out USkeleton skel) && skeletalModel.Skeleton.Guid == skel.Guid)
                 {
                     // do nothing, selected model has the correct skeleton for this animation
                 }
-                else */if (animBase.Skeleton.TryLoad(out USkeleton skeleton))
+                else if (animBase.Skeleton.TryLoad(out USkeleton skeleton))
                 {
                     LoadSkeleton(skeleton);
                 }
@@ -303,15 +304,15 @@ public class Renderer : IDisposable
     public void Update(Snooper wnd, float deltaSeconds)
     {
         if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
-        foreach (var animation in Options.Animations)
+        Parallel.ForEach(Options.Animations, animation =>
         {
             animation.TimeCalculation(Options.Tracker.ElapsedTime);
             foreach (var guid in animation.AttachedModels)
             {
-                if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel skeletalModel) continue;
+                if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel skeletalModel) return;
                 skeletalModel.Skeleton.UpdateAnimationMatrices(animation, AnimateWithRotationOnly);
             }
-        }
+        });
 
         {
             foreach (var model in Options.Models.Values)
@@ -373,13 +374,22 @@ public class Renderer : IDisposable
 
     private void LoadSkeleton(USkeleton original)
     {
-        var guid = original.Guid;
-        if (Options.Models.ContainsKey(guid) || !original.TryConvert(out _, out var box)) return;
+        if (original == null) return;
 
-        var fakeSkeletalModel = new SkeletalModel(original, box);
-        Options.Models[guid] = fakeSkeletalModel;
-        Options.SelectModel(guid);
-        IsSkeletonTreeOpen = true;
+        var guid = original.Guid;
+        try
+        {
+            if (Options.Models.ContainsKey(guid) || !original.TryConvert(out _, out var box)) return;
+
+            var fakeSkeletalModel = new SkeletalModel(original, box);
+            Options.Models[guid] = fakeSkeletalModel;
+            Options.SelectModel(guid);
+            IsSkeletonTreeOpen = true;
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     private void LoadMaterialInstance(UMaterialInstance original)

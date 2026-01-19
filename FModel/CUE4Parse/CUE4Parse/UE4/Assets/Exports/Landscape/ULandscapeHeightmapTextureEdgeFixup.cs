@@ -1,3 +1,4 @@
+using System;
 using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Versions;
@@ -38,16 +39,44 @@ public class FHeightmapTextureEdgeSnapshot
     public FHeightmapTextureEdgeSnapshot(FAssetArchive Ar)
     {
         EdgeLength = Ar.Read<int>();
-        EdgeData = Ar.ReadArray<uint>();
+        try
+        {
+            EdgeData = Ar.ReadArray<uint>();
+        }
+        catch (ArgumentException)
+        {
+            EdgeData = new uint[0];
+        }
         if (FHeightmapTextureEdgeSnapshotCustomVersion.Get(Ar) <= FHeightmapTextureEdgeSnapshotCustomVersion.Type.BeforeCornerDataWasRemoved)
         {
-            CornerData = Ar.ReadArray<uint>(4);
+            try
+            {
+                CornerData = Ar.ReadArray<uint>(4);
+            }
+            catch (ArgumentException)
+            {
+                CornerData = new uint[4];
+            }
         }
-        SnapshotEdgeHashes = Ar.ReadArray<uint>(EdgeHashesLength);
+        try
+        {
+            SnapshotEdgeHashes = Ar.ReadArray<uint>(EdgeHashesLength);
+        }
+        catch (ArgumentException)
+        {
+            SnapshotEdgeHashes = new uint[EdgeHashesLength];
+        }
 
         if (FHeightmapTextureEdgeSnapshotCustomVersion.Get(Ar) > FHeightmapTextureEdgeSnapshotCustomVersion.Type.BeforeInitialHashWasAdded)
         {
-            InitialEdgeHashes = Ar.ReadArray<uint>(EdgeHashesLength);
+            try
+            {
+                InitialEdgeHashes = Ar.ReadArray<uint>(EdgeHashesLength);
+            }
+            catch (ArgumentException)
+            {
+                InitialEdgeHashes = new uint[EdgeHashesLength];
+            }
         }
     }
 }

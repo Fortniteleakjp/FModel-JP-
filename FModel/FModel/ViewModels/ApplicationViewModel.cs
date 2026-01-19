@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using CUE4Parse_Conversion.Textures.BC;
@@ -111,23 +112,26 @@ public class ApplicationViewModel : ViewModel
         UserSettings.Default.DiffDir = ResolveDiffDirectory();
 
     CUE4Parse = new FModel.ViewModels.CUE4Parse.CUE4ParseViewModel();
-        CUE4Parse.Provider.VfsRegistered += (sender, count) =>
+        if (CUE4Parse.Provider != null)
         {
-            if (sender is not IAesVfsReader reader) return;
-            Status.UpdateStatusLabel($"{count} Archives ({reader.Name})", "Registered");
-            CUE4Parse.GameDirectory.Add(reader);
-        };
-        CUE4Parse.Provider.VfsMounted += (sender, count) =>
-        {
-            if (sender is not IAesVfsReader reader) return;
-            Status.UpdateStatusLabel($"{count:N0} Packages ({reader.Name})", "Mounted");
-            CUE4Parse.GameDirectory.Verify(reader);
-        };
-        CUE4Parse.Provider.VfsUnmounted += (sender, _) =>
-        {
-            if (sender is not IAesVfsReader reader) return;
-            CUE4Parse.GameDirectory.Disable(reader);
-        };
+            CUE4Parse.Provider.VfsRegistered += (sender, count) =>
+            {
+                if (sender is not IAesVfsReader reader) return;
+                Status.UpdateStatusLabel($"{count} Archives ({reader.Name})", "Registered");
+                CUE4Parse.GameDirectory.Add(reader);
+            };
+            CUE4Parse.Provider.VfsMounted += (sender, count) =>
+            {
+                if (sender is not IAesVfsReader reader) return;
+                Status.UpdateStatusLabel($"{count:N0} Packages ({reader.Name})", "Mounted");
+                CUE4Parse.GameDirectory.Verify(reader);
+            };
+            CUE4Parse.Provider.VfsUnmounted += (sender, _) =>
+            {
+                if (sender is not IAesVfsReader reader) return;
+                CUE4Parse.GameDirectory.Disable(reader);
+            };
+        }
 
         if (CUE4Parse.DiffProvider != null)
         {
@@ -306,6 +310,51 @@ public class ApplicationViewModel : ViewModel
         if (new FileInfo(imguiPath).Length == 0)
         {
             FLogger.Append(ELog.Error, () => FLogger.Text("Could not download ImGui settings", Constants.WHITE, true));
+        }
+    }
+
+    public static async Task InitACL()
+    {
+        var aclPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "CUE4Parse-Natives.dll");
+
+        bool IsValidDll(string path)
+        {
+            if (!File.Exists(path)) return false;
+            IntPtr handle = IntPtr.Zero;
+            try
+            {
+                handle = NativeLibrary.Load(path);
+                return NativeLibrary.TryGetExport(handle, "nAllocate", out _);
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                if (handle != IntPtr.Zero) NativeLibrary.Free(handle);
+            }
+        }
+
+        if (!IsValidDll(aclPath))
+        {
+            try { if (File.Exists(aclPath)) File.Delete(aclPath); } catch { /* ignored */ }
+            await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/FabianGula/CUE4Parse/releases/download/natives/CUE4Parse-Natives.dll", aclPath);
+            
+            if (!IsValidDll(aclPath))
+            {
+                try { if (File.Exists(aclPath)) File.Delete(aclPath); } catch { /* ignored */ }
+                await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/Fortniteleakjp/oo2core_9_Linux/raw/refs/heads/main/CUE4Parse-Natives.dll", aclPath);
+            }
+        }
+
+        try
+        {
+            NativeLibrary.Load(aclPath);
+        }
+        catch (Exception e)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to load CUE4Parse-Natives: {e.Message}", Constants.RED, true));
         }
     }
 
