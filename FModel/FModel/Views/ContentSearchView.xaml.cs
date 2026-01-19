@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Threading; // Dispatcher を解決するために追加
 
+using CUE4Parse.UE4.Assets;
 using AdonisUI.Controls; // AdonisWindow を解決するために追加
 
 namespace FModel.Views
@@ -32,6 +33,42 @@ namespace FModel.Views
         {
             get => (string)GetValue(FilterStatusTextProperty);
             set => SetValue(FilterStatusTextProperty, value);
+        }
+
+        public static readonly DependencyProperty AssetTypeFilterProperty =
+            DependencyProperty.Register(nameof(AssetTypeFilter), typeof(string), typeof(ContentSearchView), new PropertyMetadata("All"));
+
+        public string AssetTypeFilter
+        {
+            get => (string)GetValue(AssetTypeFilterProperty);
+            set => SetValue(AssetTypeFilterProperty, value);
+        }
+
+        public static readonly DependencyProperty MinFileSizeProperty =
+            DependencyProperty.Register(nameof(MinFileSize), typeof(double), typeof(ContentSearchView), new PropertyMetadata(0.0));
+
+        public double MinFileSize
+        {
+            get => (double)GetValue(MinFileSizeProperty);
+            set => SetValue(MinFileSizeProperty, value);
+        }
+
+        public static readonly DependencyProperty MaxFileSizeProperty =
+            DependencyProperty.Register(nameof(MaxFileSize), typeof(double), typeof(ContentSearchView), new PropertyMetadata(0.0));
+
+        public double MaxFileSize
+        {
+            get => (double)GetValue(MaxFileSizeProperty);
+            set => SetValue(MaxFileSizeProperty, value);
+        }
+
+        public static readonly DependencyProperty FileNameFilterProperty =
+            DependencyProperty.Register(nameof(FileNameFilter), typeof(string), typeof(ContentSearchView), new PropertyMetadata(string.Empty));
+
+        public string FileNameFilter
+        {
+            get => (string)GetValue(FileNameFilterProperty);
+            set => SetValue(FileNameFilterProperty, value);
         }
 
         public ContentSearchView()
@@ -90,7 +127,12 @@ namespace FModel.Views
             
             progressWindow.Closing += (s, a) => _cts.Cancel();
             
-            var searchTask = SearchInFilesAsync(searchTerm, progress, token);
+            var assetType = AssetTypeFilter;
+            var minSize = MinFileSize;
+            var maxSize = MaxFileSize;
+            var fileName = FileNameFilter;
+
+            var searchTask = SearchInFilesAsync(searchTerm, assetType, minSize, maxSize, fileName, progress, token);
             
             progressWindow.Show();
             
@@ -122,21 +164,24 @@ namespace FModel.Views
             }
         }
         
-        private Task<List<GameFile>> SearchInFilesAsync(string searchTerm, IProgress<(int, int, string)> progress, CancellationToken token)
+        private Task<List<GameFile>> SearchInFilesAsync(string searchTerm, string assetTypeFilter, double minSize, double maxSize, string fileNameFilter, IProgress<(int, int, string)> progress, CancellationToken token)
         {
             return Task.Run(() =>
             {
                 var allFiles = _applicationView.CUE4Parse.SearchVm.SearchResults.Where(f => !f.IsUePackagePayload);
 
-                List<GameFile> filesToSearch;
+                var query = allFiles.AsEnumerable();
+
                 if (SearchFolders.Any())
-                {
-                    filesToSearch = allFiles.Where(f => SearchFolders.Any(folder => f.Path.StartsWith(folder, StringComparison.OrdinalIgnoreCase))).ToList();
-                }
-                else
-                {
-                    filesToSearch = allFiles.ToList();
-                }
+                    query = query.Where(f => SearchFolders.Any(folder => f.Path.StartsWith(folder, StringComparison.OrdinalIgnoreCase)));
+
+                if (!string.IsNullOrEmpty(fileNameFilter))
+                    query = query.Where(f => f.Name.Contains(fileNameFilter, StringComparison.OrdinalIgnoreCase));
+
+                if (minSize > 0) query = query.Where(f => f.Size >= minSize * 1024 * 1024);
+                if (maxSize > 0) query = query.Where(f => f.Size <= maxSize * 1024 * 1024);
+
+                var filesToSearch = query.ToList();
 
                 var totalFiles = filesToSearch.Count;
                 var foundFiles = new System.Collections.Concurrent.ConcurrentBag<GameFile>();
@@ -156,6 +201,13 @@ namespace FModel.Views
                             // GetExports()は重いので、より軽量なGetDisplayData()を使用
                             var result = _applicationView.CUE4Parse.Provider.GetLoadPackageResult(file);
                             if (!result.Package.CanDeserialize) return;
+
+                            if (!string.IsNullOrEmpty(assetTypeFilter) && assetTypeFilter != "All")
+                            {
+                                var className = GetPackageClassName(result.Package);
+                                if (!IsTypeMatch(className, assetTypeFilter)) return;
+                            }
+
                             contentString = JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.None);
                         }
                         else
@@ -237,6 +289,46 @@ namespace FModel.Views
             {
                 FilterStatusText = "検索フォルダフィルタ (すべてのファイルを検索)";
             }
+        }
+
+        private string GetPackageClassName(IPackage ipackage)
+        {
+            if (ipackage == null) return null;
+
+            if (ipackage is IoPackage ioPackage)
+            {
+                if (ioPackage.ExportMap.Length > 0)
+                {
+                    var entry = ioPackage.ExportMap[0];
+                    var resolved = ioPackage.ResolveObjectIndex(entry.ClassIndex);
+                    return resolved != null ? resolved.Name.Text : null;
+                }
+            }
+            else if (ipackage is Package package)
+            {
+                if (package.ExportMap.Length > 0)
+                {
+                    return package.ExportMap[0].ClassName.ToString();
+                }
+            }
+            return null;
+        }
+
+        private bool IsTypeMatch(string className, string filter)
+        {
+            if (string.IsNullOrEmpty(className)) return false;
+            if (filter == "All") return true;
+
+            return filter switch
+            {
+                "Texture" => className.Contains("Texture") || className.Contains("RenderTarget"),
+                "Material" => className.Contains("Material"),
+                "Mesh" => className.Contains("StaticMesh") || className.Contains("SkeletalMesh"),
+                "Animation" => className.Contains("Anim") || className.Contains("BlendSpace") || className.Contains("Skeleton"),
+                "Sound" => className.Contains("Sound") || className.Contains("Audio"),
+                "Blueprint" => className.Contains("Blueprint"),
+                _ => className.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            };
         }
     }
 }

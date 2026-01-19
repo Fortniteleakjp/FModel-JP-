@@ -17,6 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -57,7 +58,48 @@
             </Grid>
         </GroupBox>
 
-        <ListView x:Name="SearchResultsListView" Grid.Row="2" Margin="5,0,5,5"
+        <GroupBox Header="フィルター設定" Grid.Row="2" Margin="5">
+            <Grid Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="アセットタイプ:" VerticalAlignment="Center" Margin="0,0,5,5"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,0,10,5"
+                          SelectedValue="{Binding AssetTypeFilter, RelativeSource={RelativeSource AncestorType=Window}}"
+                          SelectedValuePath="Content">
+                    <ComboBoxItem Content="All"/>
+                    <ComboBoxItem Content="Texture"/>
+                    <ComboBoxItem Content="Material"/>
+                    <ComboBoxItem Content="Mesh"/>
+                    <ComboBoxItem Content="Animation"/>
+                    <ComboBoxItem Content="Sound"/>
+                    <ComboBoxItem Content="Blueprint"/>
+                </ComboBox>
+
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="ファイル名:" VerticalAlignment="Center" Margin="0,0,5,5"/>
+                <TextBox Grid.Row="0" Grid.Column="3" Margin="0,0,0,5"
+                         Text="{Binding FileNameFilter, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="ファイル名の一部を入力して絞り込み"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="サイズ (MB):" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal">
+                    <TextBox Width="60" Text="{Binding MinFileSize, RelativeSource={RelativeSource AncestorType=Window}}" VerticalAlignment="Center"/>
+                    <TextBlock Text=" - " VerticalAlignment="Center" Margin="5,0"/>
+                    <TextBox Width="60" Text="{Binding MaxFileSize, RelativeSource={RelativeSource AncestorType=Window}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="(0 = 指定なし)" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray" FontStyle="Italic"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <ListView x:Name="SearchResultsListView" Grid.Row="3" Margin="5,0,5,5"
                   ItemsSource="{Binding CUE4Parse.SearchVm.ContentSearchResults}"
                   MouseDoubleClick="OnAssetDoubleClick"
                   Style="{DynamicResource {x:Type ListView}}"
@@ -70,7 +112,7 @@
             </ListView.View>
         </ListView>
 
-        <StatusBar Grid.Row="3">
+        <StatusBar Grid.Row="4">
             <StatusBarItem>
                 <TextBlock x:Name="StatusTextBlock" Text="{DynamicResource ContentSearch_Status_Ready}"/>
             </StatusBarItem>
