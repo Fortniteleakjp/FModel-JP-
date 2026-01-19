@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.IO;
 using System.Linq;
 using FModel.ViewModels;
@@ -46,7 +46,7 @@ public partial class DirectorySelector
         var folderBrowser = new VistaFolderBrowserDialog { ShowNewFolderButton = false };
         if (folderBrowser.ShowDialog() == true)
         {
-            HelloGameMyNameIsDirectory.Text = folderBrowser.SelectedPath.ToLower();
+            HelloGameMyNameIsDirectory.Text = folderBrowser.SelectedPath;
 
             // install_folder/
             //     ├─ Engine/
@@ -79,7 +79,7 @@ public partial class DirectorySelector
             string.IsNullOrEmpty(HelloGameMyNameIsDirectory.Text))
             return;
 
-        gameLauncherViewModel.AddUndetectedDir(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text.ToLower());
+        gameLauncherViewModel.AddUndetectedDir(HelloMyNameIsGame.Text, HelloGameMyNameIsDirectory.Text);
         HelloMyNameIsGame.Clear();
         HelloGameMyNameIsDirectory.Clear();
         UserSettings.Save();

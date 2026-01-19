@@ -153,7 +153,7 @@ public class ApplicationViewModel : ViewModel
     }
     public static DirectorySettings ResolveDiffDirectory()
     {
-        var diffPath = UserSettings.Default.DiffGameDirectory?.ToLower();
+        var diffPath = UserSettings.Default.DiffGameDirectory;
         if (string.IsNullOrEmpty(diffPath))
             return null;
 
@@ -163,13 +163,13 @@ public class ApplicationViewModel : ViewModel
         var vm = new GameSelectorViewModel(diffPath);
         if (vm.SelectedDirectory == null) return null;
 
-        UserSettings.Default.DiffGameDirectory = vm.SelectedDirectory.GameDirectory.ToLower();
-        UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory.ToLower()] = vm.SelectedDirectory;
+        UserSettings.Default.DiffGameDirectory = vm.SelectedDirectory.GameDirectory;
+        UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory] = vm.SelectedDirectory;
         return vm.SelectedDirectory;
     }
     public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched, bool allowDiffSelection = false)
     {
-        var gameDirectory = UserSettings.Default.GameDirectory?.ToLower();
+        var gameDirectory = UserSettings.Default.GameDirectory;
         if (!bAlreadyLaunched && !string.IsNullOrEmpty(gameDirectory) && UserSettings.Default.PerDirectory.TryGetValue(gameDirectory, out var currentDir))
             return currentDir;
 
@@ -180,7 +180,7 @@ public class ApplicationViewModel : ViewModel
         var result = new DirectorySelector(gameLauncherViewModel).ShowDialog();
         if (!result.HasValue || !result.Value) return null;
 
-        UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory.ToLower();
+        UserSettings.Default.GameDirectory = gameLauncherViewModel.SelectedDirectory.GameDirectory;
         if (string.IsNullOrEmpty(UserSettings.Default.GameDirectory))
             return null;
 
