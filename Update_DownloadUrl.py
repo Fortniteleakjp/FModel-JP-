@@ -3,7 +3,8 @@ import sys
 import secrets
 
 sha = sys.argv[1]
-version = sys.argv[2]
+# version = sys.argv[2]
+version = f"4.4.4.1.{sha}"
 
 url = "https://fljpapi2-sjnq.onrender.com/qa/upload"
 headers = {
@@ -11,7 +12,7 @@ headers = {
 }
 data = {
     "changelogUrl": "https://fmodeljp.fljpapi.jp/view/1",
-    "downloadUrl": f"https://github.com/Fortniteleakjp/FModel-JP-/releases/download/qa/{sha}.zip",
+    "downloadUrl": f"https://github.com/Fortniteleakjp/FModel-JP-/releases/download/qa/{version}.zip",
     "version": version
 }
 
