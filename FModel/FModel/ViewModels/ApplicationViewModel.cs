@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using CUE4Parse_Conversion.Textures.BC;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
@@ -77,6 +79,24 @@ public class ApplicationViewModel : ViewModel
     private MenuCommand _menuCommand;
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
+
+    public ICommand SaveSoundCommand => _saveSoundCommand ??= new SimpleRelayCommand(OnSaveSound);
+    private ICommand _saveSoundCommand;
+
+    private void OnSaveSound(object parameter)
+    {
+        if (parameter is not IList items || items.Count == 0) return;
+        RightClickMenuCommand.Execute(new object[] { "Assets_Save_Audio", items });
+    }
+
+    private class SimpleRelayCommand : ICommand
+    {
+        private readonly Action<object> _execute;
+        public SimpleRelayCommand(Action<object> execute) => _execute = execute;
+        public bool CanExecute(object parameter) => true;
+        public void Execute(object parameter) => _execute(parameter);
+        public event EventHandler CanExecuteChanged { add { } remove { } }
+    }
 
     public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID})";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -20,6 +20,7 @@ public sealed class Timeline : UserControl
     private Grid _timelineGrid;
     private Grid _lengthGrid;
     private Border _progressLine;
+    private TextBlock _cursorTimeText;
 
     static Timeline()
     {
@@ -252,10 +253,39 @@ public sealed class Timeline : UserControl
 
         _timelineArea = GetTemplateChild("PART_TimelineArea") as Border;
         _position = GetTemplateChild("PART_MousePosition") as Rectangle;
-        _timelineArea.MouseEnter += (_, _) => _position.Visibility = Visibility.Visible;
-        _timelineArea.MouseLeave += (_, _) => _position.Visibility = Visibility.Collapsed;
-        _timelineArea.MouseMove += (_, args)
-            => _position.Margin = new Thickness(args.GetPosition(_timelineArea).X, 0, _position.ActualWidth, 0);
+
+        _cursorTimeText = new TextBlock
+        {
+            Foreground = Brushes.White,
+            Background = new SolidColorBrush(Color.FromArgb(180, 0, 0, 0)),
+            Padding = new Thickness(4, 2, 4, 2),
+            VerticalAlignment = VerticalAlignment.Top,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Visibility = Visibility.Collapsed,
+            IsHitTestVisible = false,
+            FontSize = 10
+        };
+        Panel.SetZIndex(_cursorTimeText, 100);
+        _controlContainer?.Children.Add(_cursorTimeText);
+
+        _timelineArea.MouseEnter += (_, _) =>
+        {
+            _position.Visibility = Visibility.Visible;
+            _cursorTimeText.Visibility = Visibility.Visible;
+        };
+        _timelineArea.MouseLeave += (_, _) =>
+        {
+            _position.Visibility = Visibility.Collapsed;
+            _cursorTimeText.Visibility = Visibility.Collapsed;
+        };
+        _timelineArea.MouseMove += (_, args) =>
+        {
+            var pos = args.GetPosition(_timelineArea);
+            _position.Margin = new Thickness(pos.X, 0, _position.ActualWidth, 0);
+            if (Source?.PlayedFile == null || _timelineArea.ActualWidth <= 0) return;
+            _cursorTimeText.Text = TimeSpan.FromSeconds(Source.PlayedFile.Duration.TotalSeconds * (pos.X / _timelineArea.ActualWidth)).ToString(@"mm\:ss\.ff");
+            _cursorTimeText.Margin = new Thickness(args.GetPosition(_controlContainer).X - (_cursorTimeText.ActualWidth / 2), -20, 0, 0);
+        };
         _timelineArea.MouseLeftButtonDown += (_, args)
             => Source.SkipTo(args.GetPosition(_timelineArea).X / _timelineArea.ActualWidth);
 

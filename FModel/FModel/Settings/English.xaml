@@ -283,4 +283,18 @@
     <system:String x:Key="ContentSearch_Header_Name">Name</system:String>
     <system:String x:Key="ContentSearch_Header_Path">Path</system:String>
     <system:String x:Key="ContentSearch_Status_Ready">Ready</system:String>
+
+    <!-- Audio Player -->
+    <system:String x:Key="AudioPlayer_PlaybackDevice">Playback Device</system:String>
+    <system:String x:Key="AudioPlayer_Volume">Volume</system:String>
+    <system:String x:Key="AudioPlayer_Encoding">Encoding</system:String>
+    <system:String x:Key="AudioPlayer_Duration">Duration</system:String>
+    <system:String x:Key="AudioPlayer_BytesPerSecond">Bitrate</system:String>
+    <system:String x:Key="AudioPlayer_LoadedSounds">Loaded Sounds</system:String>
+    <system:String x:Key="AudioPlayer_SearchPlaceholder">Search files...</system:String>
+    <system:String x:Key="AudioPlayer_Ctx_Play">Play</system:String>
+    <system:String x:Key="AudioPlayer_Ctx_Remove">Remove</system:String>
+    <system:String x:Key="AudioPlayer_Ctx_Save">Save Sound</system:String>
+    <system:String x:Key="AudioPlayer_Ctx_SavePlaylist">Save as Playlist</system:String>
+
 </ResourceDictionary>

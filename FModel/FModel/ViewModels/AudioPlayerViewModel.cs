@@ -25,6 +25,7 @@ using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Resources.Controls.Aup;
 using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
 using Serilog;
 
 namespace FModel.ViewModels;
@@ -310,6 +311,38 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             });
             if (_audioFiles.Count > 1)
                 FLogger.Append(ELog.Information, () => FLogger.Text($"Successfully saved {_audioFiles.Count} audio files", Constants.WHITE, true));
+        });
+    }
+
+    public void Save(IEnumerable<AudioFile> files)
+    {
+        var audioFiles = files.ToList();
+        if (audioFiles.Count == 0) return;
+
+        if (audioFiles.Count == 1)
+        {
+            Save(audioFiles[0]);
+            return;
+        }
+
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            var dialog = new VistaFolderBrowserDialog
+            {
+                Description = "Select a folder to save the audio files",
+                UseDescriptionForTitle = true
+            };
+
+            if (dialog.ShowDialog() != true) return;
+
+            foreach (var file in audioFiles)
+            {
+                if (file.Data == null) continue;
+                var path = Path.Combine(dialog.SelectedPath, file.FileName);
+                File.WriteAllBytes(path, file.Data);
+            }
+            
+            FLogger.Append(ELog.Information, () => FLogger.Text($"Successfully saved {audioFiles.Count} audio files", Constants.WHITE, true));
         });
     }
 

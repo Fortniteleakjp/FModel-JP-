@@ -283,4 +283,18 @@
     <system:String x:Key="ContentSearch_Header_Name">名前</system:String>
     <system:String x:Key="ContentSearch_Header_Path">パス</system:String>
     <system:String x:Key="ContentSearch_Status_Ready">準備OK</system:String>
+
+    <!-- Audio Player -->
+    <system:String x:Key="AudioPlayer_PlaybackDevice">再生デバイス</system:String>
+    <system:String x:Key="AudioPlayer_Volume">音量</system:String>
+    <system:String x:Key="AudioPlayer_Encoding">エンコード</system:String>
+    <system:String x:Key="AudioPlayer_Duration">長さ</system:String>
+    <system:String x:Key="AudioPlayer_BytesPerSecond">１秒あたりの容量</system:String>
+    <system:String x:Key="AudioPlayer_LoadedSounds">読み込んでいるサウンド</system:String>
+    <system:String x:Key="AudioPlayer_SearchPlaceholder">検索するファイル名を入力してください...</system:String>
+    <system:String x:Key="AudioPlayer_Ctx_Play">再生</system:String>
+    <system:String x:Key="AudioPlayer_Ctx_Remove">削除</system:String>
+    <system:String x:Key="AudioPlayer_Ctx_Save">サウンドを保存</system:String>
+    <system:String x:Key="AudioPlayer_Ctx_SavePlaylist">サウンドをつなげて保存</system:String>
+
 </ResourceDictionary>

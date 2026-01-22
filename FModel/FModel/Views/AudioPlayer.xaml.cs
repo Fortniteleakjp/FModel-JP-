@@ -82,6 +82,12 @@ public partial class AudioPlayer
         _applicationView.AudioPlayer.PlayPauseOnForce();
     }
 
+    private void OnSaveAudioFiles(object sender, RoutedEventArgs e)
+    {
+        if (AudioListBox.SelectedItems.Count > 0)
+            _applicationView.AudioPlayer.Save(AudioListBox.SelectedItems.Cast<AudioFile>());
+    }
+
     private void OnFilterTextChanged(object sender, TextChangedEventArgs e)
     {
         if (sender is not TextBox textBox)
