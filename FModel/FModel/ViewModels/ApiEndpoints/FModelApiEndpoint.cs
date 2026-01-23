@@ -160,7 +160,8 @@ public class FModelApiEndpoint : AbstractApiProvider
             UserSettings.Default.LastUpdateCheck = DateTime.Now;
 
             var targetHash = ((CustomMandatory) args.Mandatory).CommitHash;
-            if (targetHash == Constants.APP_COMMIT_ID)
+            if (string.Equals(targetHash, Constants.APP_COMMIT_ID, StringComparison.OrdinalIgnoreCase) || 
+                (!string.IsNullOrEmpty(Constants.APP_COMMIT_ID) && !string.IsNullOrEmpty(targetHash) && Constants.APP_COMMIT_ID.StartsWith(targetHash, StringComparison.OrdinalIgnoreCase)))
             {
                 if (UserSettings.Default.ShowChangelog)
                     ShowChangelog(args);
