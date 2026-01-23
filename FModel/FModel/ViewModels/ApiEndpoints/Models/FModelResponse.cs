@@ -155,53 +155,65 @@ public class CommunityDesign
         DrawSetShort = response.DrawSetShort;
 
         Fonts = new Dictionary<string, FontDesign>();
-        foreach (var (k, font) in response.Fonts)
+        if (response.Fonts != null)
         {
-            var typeface = new Dictionary<ELanguage, string>();
-            foreach (var (key, value) in font.Typeface)
+            foreach (var (k, font) in response.Fonts)
             {
-                typeface[key.ToEnum(ELanguage.English)] = value;
-            }
+                var typeface = new Dictionary<ELanguage, string>();
+                if (font.Typeface != null)
+                {
+                    foreach (var (key, value) in font.Typeface)
+                    {
+                        typeface[key.ToEnum(ELanguage.English)] = value;
+                    }
+                }
 
-            Fonts[k] = new FontDesign
-            {
-                Typeface = typeface,
-                FontSize = font.FontSize,
-                FontScale = font.FontScale,
-                FontColor = SKColor.Parse(font.FontColor),
-                SkewValue = font.SkewValue,
-                ShadowValue = font.ShadowValue,
-                MaxLineCount = font.MaxLineCount,
-                Alignment = font.Alignment.ToEnum(SKTextAlign.Center),
-                X = font.X,
-                Y = font.Y
-            };
+                Fonts[k] = new FontDesign
+                {
+                    Typeface = typeface,
+                    FontSize = font.FontSize,
+                    FontScale = font.FontScale,
+                    FontColor = SKColor.Parse(font.FontColor),
+                    SkewValue = font.SkewValue,
+                    ShadowValue = font.ShadowValue,
+                    MaxLineCount = font.MaxLineCount,
+                    Alignment = font.Alignment.ToEnum(SKTextAlign.Center),
+                    X = font.X,
+                    Y = font.Y
+                };
+            }
         }
 
         var tags = new Dictionary<string, SKBitmap>();
-        foreach (var (key, value) in response.GameplayTags.Tags)
+        if (response.GameplayTags?.Tags != null)
         {
-            tags[key] = Utils.GetB64Bitmap(value);
+            foreach (var (key, value) in response.GameplayTags.Tags)
+            {
+                tags[key] = Utils.GetB64Bitmap(value);
+            }
         }
 
         GameplayTags = new GameplayTagDesign
         {
-            X = response.GameplayTags.X,
-            Y = response.GameplayTags.Y,
-            DrawCustomOnly = response.GameplayTags.DrawCustomOnly,
-            Custom = Utils.GetB64Bitmap(response.GameplayTags.Custom),
+            X = response.GameplayTags?.X ?? 0,
+            Y = response.GameplayTags?.Y ?? 0,
+            DrawCustomOnly = response.GameplayTags?.DrawCustomOnly ?? false,
+            Custom = Utils.GetB64Bitmap(response.GameplayTags?.Custom),
             Tags = tags
         };
 
         Rarities = new Dictionary<string, RarityDesign>();
-        foreach (var (key, value) in response.Rarities)
+        if (response.Rarities != null)
         {
-            Rarities[key] = new RarityDesign
+            foreach (var (key, value) in response.Rarities)
             {
-                Background = Utils.GetB64Bitmap(value.Background),
-                Upper = Utils.GetB64Bitmap(value.Upper),
-                Lower = Utils.GetB64Bitmap(value.Lower)
-            };
+                Rarities[key] = new RarityDesign
+                {
+                    Background = Utils.GetB64Bitmap(value.Background),
+                    Upper = Utils.GetB64Bitmap(value.Upper),
+                    Lower = Utils.GetB64Bitmap(value.Lower)
+                };
+            }
         }
     }
 }
