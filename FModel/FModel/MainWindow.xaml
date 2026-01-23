@@ -694,7 +694,7 @@
                                             <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
                                                 <MenuItem.Header>
                                                     <TextBlock>
-                                                        <Run Text="{DynamicResource Ctx_SaveAsFormat_Prefix}" /><Run Text="{Binding DataContext.SelectedItem.Extension, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue='Data'}" /><Run Text="{DynamicResource Ctx_SaveAsFormat_Suffix}" />
+                                                        <Run Text="{DynamicResource Ctx_SaveAsFormat_Prefix}" /><Run Text="{Binding DataContext.SelectedItem.Extension, RelativeSource={RelativeSource AncestorType=ContextMenu}, FallbackValue='Data', Mode=OneWay}" /><Run Text="{DynamicResource Ctx_SaveAsFormat_Suffix}" />
                                                     </TextBlock>
                                                 </MenuItem.Header>
                                                 <MenuItem.CommandParameter>
