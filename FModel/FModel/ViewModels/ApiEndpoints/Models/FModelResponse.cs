@@ -53,12 +53,12 @@ public class Version
 [DebuggerDisplay("{" + nameof(Mode) + "}")]
 public class Info
 {
-    [J] public string Mode { get; private set; }
-    [J] public string Version { get; private set; }
-    [J] public string DownloadUrl { get; private set; }
-    [J] public string ChangelogUrl { get; private set; }
-    [J] public string CommunityDesign { get; private set; }
-    [J] public string CommunityPreview { get; private set; }
+    [J("mode")] public string Mode { get; private set; }
+    [J("version")] public string Version { get; private set; }
+    [J("downloadUrl")] public string DownloadUrl { get; private set; }
+    [J("changelogUrl")] public string ChangelogUrl { get; private set; }
+    [J("communityDesign")] public string CommunityDesign { get; private set; }
+    [J("communityPreview")] public string CommunityPreview { get; private set; }
 }
 
 [DebuggerDisplay("{" + nameof(Name) + "}")]

@@ -31,6 +31,7 @@ public class FModelApiEndpoint : AbstractApiProvider
     private Dictionary<string, Dictionary<string, string>> _bigBackups;
     private Game _game;
     private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
+    private string _remoteData; // 保存用
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
     public FModelApiEndpoint(RestClient client) : base(client) { }
@@ -137,19 +138,49 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
     {
-        _infos = JsonConvert.DeserializeObject<Info>(args.RemoteData);
-        if (_infos != null)
+        try
         {
-            args.UpdateInfo = new UpdateInfoEventArgs
+            _remoteData = args.RemoteData; // 保存
+            _infos = JsonConvert.DeserializeObject<Info>(args.RemoteData);
+            if (_infos != null)
             {
-                CurrentVersion = _infos.Version.SubstringBefore('-'),
-                ChangelogURL = _infos.ChangelogUrl,
-                DownloadURL = _infos.DownloadUrl,
-                Mandatory = new CustomMandatory
+                var version = _infos.Version;
+                var currentVersion = version;
+                var commitHash = string.Empty;
+
+                if (!string.IsNullOrEmpty(version))
                 {
-                    CommitHash = _infos.Version.SubstringAfter('-')
+                    if (version.Contains('-'))
+                    {
+                        currentVersion = version.SubstringBefore('-');
+                        commitHash = version.SubstringAfter('-');
+                    }
+                    else if (version.LastIndexOf('.') is var lastDot && lastDot > 0 && version.Length - lastDot - 1 >= 7)
+                    {
+                        currentVersion = version.Substring(0, lastDot);
+                        commitHash = version.Substring(lastDot + 1);
+                    }
                 }
-            };
+
+                args.UpdateInfo = new UpdateInfoEventArgs
+                {
+                    CurrentVersion = currentVersion,
+                    ChangelogURL = _infos.ChangelogUrl,
+                    DownloadURL = _infos.DownloadUrl,
+                    Mandatory = new CustomMandatory
+                    {
+                        CommitHash = commitHash
+                    }
+                };
+            }
+            else
+            {
+                Log.Error("Failed to deserialize update info: RemoteData is null or invalid JSON");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Exception during update info parsing: {Message}", ex.Message);
         }
     }
 
@@ -176,8 +207,9 @@ public class FModelApiEndpoint : AbstractApiProvider
         }
         else
         {
+            Log.Error("Update check failed: No valid update info received. CurrentVersion is null or empty.");
             MessageBox.Show(
-                "アップデートサーバーに接続できません。インターネット接続を確認するか、後でもう一度お試しください。",
+                $"アップデートサーバーに接続できません。インターネット接続を確認するか、後でもう一度お試しください。",
                 "アップデートのチェックに失敗しました", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
