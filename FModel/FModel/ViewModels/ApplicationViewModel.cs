@@ -14,6 +14,9 @@ using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
+using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.IO.Objects;
+using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -86,7 +89,91 @@ public class ApplicationViewModel : ViewModel
     private void OnSaveSound(object parameter)
     {
         if (parameter is not IList items || items.Count == 0) return;
-        RightClickMenuCommand.Execute(new object[] { "Assets_Save_Audio", items });
+
+        var gameFiles = items.Cast<GameFile>().ToList();
+        var uassetFiles = gameFiles.Where(x => x.Extension.Equals("uasset", StringComparison.OrdinalIgnoreCase)).ToList();
+        var otherFiles = gameFiles.Except(uassetFiles).ToList();
+
+        if (uassetFiles.Count > 0)
+            RightClickMenuCommand.Execute(new object[] { "Assets_Save_Audio", uassetFiles });
+
+        if (otherFiles.Count > 0)
+            SaveEncodedAudioFiles(otherFiles);
+    }
+
+    private async void SaveEncodedAudioFiles(List<GameFile> files)
+    {
+        if (files.Count == 1)
+        {
+            var file = files[0];
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Save Audio",
+                FileName = Path.ChangeExtension(file.Name, ".wav"),
+                Filter = "WAV Files (*.wav)|*.wav",
+                InitialDirectory = UserSettings.Default.AudioDirectory
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                await SaveEncodedAudioFile(file, saveFileDialog.FileName);
+            }
+        }
+        else
+        {
+            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog
+            {
+                Description = "Select a folder to save the audio files",
+                UseDescriptionForTitle = true
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                await ApplicationService.ThreadWorkerView.Begin(token =>
+                {
+                    foreach (var file in files)
+                    {
+                        if (token.IsCancellationRequested) break;
+                        var path = Path.Combine(dialog.SelectedPath, Path.ChangeExtension(file.Name, ".wav"));
+                        SaveEncodedAudioFile(file, path).Wait();
+                    }
+                });
+            }
+        }
+    }
+
+    private async Task SaveEncodedAudioFile(GameFile file, string outputPath)
+    {
+        try
+        {
+            var data = await Task.Run(() => file.Read());
+            var tempPath = Path.Combine(Path.GetTempPath(), file.Name);
+            var extension = file.Extension.ToLowerInvariant();
+            if (string.IsNullOrEmpty(extension) || (!extension.Equals("rada") && !extension.Equals("binka")))
+            {
+                 if (file.Name.EndsWith(".rada", StringComparison.OrdinalIgnoreCase)) extension = "rada";
+                 else if (file.Name.EndsWith(".binka", StringComparison.OrdinalIgnoreCase)) extension = "binka";
+            }
+
+            if (AudioPlayerViewModel.TryDecode(extension, tempPath, data, out var wavPath))
+            {
+                if (File.Exists(outputPath)) File.Delete(outputPath);
+                File.Move(wavPath, outputPath);
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                    FLogger.Link(Path.GetFileName(outputPath), outputPath, true);
+                });
+            }
+            else
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert {file.Name}", Constants.RED, true));
+            }
+        }
+        catch (Exception e)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Error saving {file.Name}: {e.Message}", Constants.RED, true));
+        }
     }
 
     private class SimpleRelayCommand : ICommand

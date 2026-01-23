@@ -1248,10 +1248,32 @@ public partial class CUE4ParseViewModel : ViewModel
         if (isBulk)
         {
             Directory.CreateDirectory(savedAudioPath.SubstringBeforeLast('/'));
-            using var stream = new FileStream(savedAudioPath, FileMode.Create, FileAccess.Write);
-            using var writer = new BinaryWriter(stream);
-            writer.Write(data);
-            writer.Flush();
+            if (ext.Equals("rada", StringComparison.OrdinalIgnoreCase) || ext.Equals("binka", StringComparison.OrdinalIgnoreCase))
+            {
+                // Convert to WAV
+                var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                if (AudioPlayerViewModel.TryDecode(ext, tempPath, data, out var wavPath))
+                {
+                    File.Move(wavPath, savedAudioPath.Replace($".{ext.ToLowerInvariant()}", ".wav"));
+                    Log.Information("Successfully saved {FilePath}", savedAudioPath.Replace($".{ext.ToLowerInvariant()}", ".wav"));
+                }
+                else
+                {
+                    // Fallback to original
+                    using var stream = new FileStream(savedAudioPath, FileMode.Create, FileAccess.Write);
+                    using var writer = new BinaryWriter(stream);
+                    writer.Write(data);
+                    writer.Flush();
+                    Log.Error("Failed to convert {FilePath}", savedAudioPath);
+                }
+            }
+            else
+            {
+                using var stream = new FileStream(savedAudioPath, FileMode.Create, FileAccess.Write);
+                using var writer = new BinaryWriter(stream);
+                writer.Write(data);
+                writer.Flush();
+            }
             return;
         }
 

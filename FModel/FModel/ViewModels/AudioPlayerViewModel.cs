@@ -727,29 +727,32 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         return vgmProcess?.ExitCode == 0 && File.Exists(wavFilePath);
     }
 
-    private bool TryDecode(string extension, out string rawFilePath)
+    public static bool TryDecode(string extension, string inputFilePath, byte[] data, out string outputFilePath)
     {
-        rawFilePath = string.Empty;
+        outputFilePath = string.Empty;
         var decoderPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", $"{extension}dec.exe");
         if (!File.Exists(decoderPath))
-        {
             return false;
-        }
 
-        Directory.CreateDirectory(SelectedAudioFile.FilePath.SubstringBeforeLast("/"));
-        File.WriteAllBytes(SelectedAudioFile.FilePath, SelectedAudioFile.Data);
+        var dir = Path.GetDirectoryName(inputFilePath);
+        if (!string.IsNullOrEmpty(dir))
+            Directory.CreateDirectory(dir);
 
-        rawFilePath = Path.ChangeExtension(SelectedAudioFile.FilePath, ".wav");
+        File.WriteAllBytes(inputFilePath, data);
+
+        outputFilePath = Path.ChangeExtension(inputFilePath, ".wav");
         var decoderProcess = Process.Start(new ProcessStartInfo
         {
             FileName = decoderPath,
-            Arguments = $"-i \"{SelectedAudioFile.FilePath}\" -o \"{rawFilePath}\"",
+            Arguments = $"-i \"{inputFilePath}\" -o \"{outputFilePath}\"",
             UseShellExecute = false,
             CreateNoWindow = true
         });
         decoderProcess?.WaitForExit(5000);
 
-        File.Delete(SelectedAudioFile.FilePath);
-        return decoderProcess?.ExitCode == 0 && File.Exists(rawFilePath);
+        File.Delete(inputFilePath);
+        return decoderProcess?.ExitCode == 0 && File.Exists(outputFilePath);
     }
+
+    private bool TryDecode(string extension, out string rawFilePath) => TryDecode(extension, SelectedAudioFile.FilePath, SelectedAudioFile.Data, out rawFilePath);
 }
