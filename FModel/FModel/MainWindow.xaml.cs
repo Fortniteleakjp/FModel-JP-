@@ -416,20 +416,8 @@ public partial class MainWindow
 
     private void OnAssetsFolderSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
     {
-        if (NewExplorerSearchBox != null)
-        {
-            NewExplorerSearchBox.Text = string.Empty;
-        }
-
-        if (e.NewValue is FModel.ViewModels.TreeItem treeItem)
-        {
-            treeItem.FoldersView.Filter = null;
-            treeItem.AssetsList.AssetsView.Filter = null;
-        }
-        else if (_applicationView?.CUE4Parse?.AssetsFolder != null)
-        {
-            _applicationView.CUE4Parse.AssetsFolder.FoldersView.Filter = null;
-        }
+        var target = e.NewValue ?? _applicationView?.CUE4Parse?.AssetsFolder;
+        ApplyNewExplorerFilter(target);
     }
 
     private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
@@ -663,17 +651,73 @@ public partial class MainWindow
 
     private void OnNewExplorerFilterTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (sender is not TextBox textBox) return;
-        var filterText = textBox.Text;
-        var filters = filterText.Trim().Split(' ');
+        ApplyNewExplorerFilter();
+    }
 
-        var dataContext = NewExplorerGrid.DataContext;
+    private void OnNewExplorerClassFilterChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ApplyNewExplorerFilter();
+    }
+
+    private void ApplyNewExplorerFilter(object dataContext = null)
+    {
+        if (NewExplorerSearchBox == null || NewExplorerClassFilter == null) return;
+
+        var filterText = NewExplorerSearchBox.Text;
+        var filters = filterText.Trim().Split(' ');
+        var hasTextFilter = !string.IsNullOrWhiteSpace(filterText);
+
+        var selectedItem = NewExplorerClassFilter.SelectedItem as ComboBoxItem;
+        var selectedClass = selectedItem?.Content?.ToString();
+        var hasClassFilter = !string.IsNullOrEmpty(selectedClass) && selectedClass != "All Classes";
+
+        bool FilterAsset(object o)
+        {
+            if (o is not GameFile file) return false;
+
+            // Text Filter
+            if (hasTextFilter)
+            {
+                if (!filters.All(x => file.Name.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                    return false;
+            }
+
+            // Class Filter
+            if (hasClassFilter)
+            {
+                // Optimization: Skip if not uasset/umap
+                if (!file.Path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) &&
+                    !file.Path.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+
+                try
+                {
+                    if (_applicationView.CUE4Parse.Provider.TryLoadPackage(file, out var package))
+                    {
+                        var export = package.GetExports().FirstOrDefault();
+                        if (export == null) return false;
+                        return string.Equals(export.ExportType, selectedClass, StringComparison.OrdinalIgnoreCase);
+                    }
+                    return false;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        dataContext ??= NewExplorerGrid.DataContext;
 
         if (dataContext is FModel.ViewModels.AssetsFolderViewModel rootVm)
         {
             rootVm.FoldersView.Filter = o =>
             {
-                if (string.IsNullOrWhiteSpace(filterText)) return true;
+                if (!hasTextFilter) return true;
                 return o is FModel.ViewModels.TreeItem item && filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
             };
             rootVm.FoldersView.Refresh();
@@ -682,16 +726,12 @@ public partial class MainWindow
         {
             treeItem.FoldersView.Filter = o =>
             {
-                if (string.IsNullOrWhiteSpace(filterText)) return true;
+                if (!hasTextFilter) return true;
                 return o is FModel.ViewModels.TreeItem item && filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
             };
             treeItem.FoldersView.Refresh();
 
-            treeItem.AssetsList.AssetsView.Filter = o =>
-            {
-                if (string.IsNullOrWhiteSpace(filterText)) return true;
-                return o is CUE4Parse.FileProvider.Objects.GameFile file && filters.All(x => file.Name.Contains(x, StringComparison.OrdinalIgnoreCase));
-            };
+            treeItem.AssetsList.AssetsView.Filter = FilterAsset;
             treeItem.AssetsList.AssetsView.Refresh();
         }
     }

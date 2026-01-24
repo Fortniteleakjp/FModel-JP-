@@ -1040,6 +1040,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
                                 <Viewbox Width="16" Height="16">
@@ -1058,6 +1059,19 @@
                                     </Canvas>
                                 </Viewbox>
                             </Button>
+                            <ComboBox Grid.Column="2" x:Name="NewExplorerClassFilter" Margin="5 0 0 0" MinWidth="120"
+                                      SelectionChanged="OnNewExplorerClassFilterChanged" SelectedIndex="0">
+                                <ComboBoxItem Content="All Classes" />
+                                <ComboBoxItem Content="Texture2D" />
+                                <ComboBoxItem Content="StaticMesh" />
+                                <ComboBoxItem Content="SkeletalMesh" />
+                                <ComboBoxItem Content="Material" />
+                                <ComboBoxItem Content="MaterialInstance" />
+                                <ComboBoxItem Content="SoundWave" />
+                                <ComboBoxItem Content="Blueprint" />
+                                <ComboBoxItem Content="DataTable" />
+                                <ComboBoxItem Content="StringTable" />
+                            </ComboBox>
                         </Grid>
 
                         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
@@ -1132,6 +1146,25 @@
                                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
+                                    <ListBox.ContextMenu>
+                                        <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                            <MenuItem Header="{DynamicResource Ctx_ShowMetadata}" Command="{Binding Source={x:Static services:ApplicationService.ApplicationView}, Path=RightClickMenuCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_Show_Metadata" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </ListBox.ContextMenu>
                                     <ListBox.Style>
                                         <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
                                             <Setter Property="Template">

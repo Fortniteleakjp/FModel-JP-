@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,6 +21,8 @@ namespace FModel.Views.Resources.Controls
 {
     public static class FileIconLoader
     {
+        private static readonly SemaphoreSlim _semaphore = new(10);
+
         public static readonly DependencyProperty GameFileProperty =
             DependencyProperty.RegisterAttached("GameFile", typeof(GameFile), typeof(FileIconLoader), new PropertyMetadata(null, OnGameFileChanged));
 
@@ -44,8 +47,13 @@ namespace FModel.Views.Resources.Controls
                 image.Source = null;
                 image.Visibility = Visibility.Collapsed;
 
-                var bitmap = await Task.Run(async () =>
+                await _semaphore.WaitAsync();
+                try
                 {
+                    if (GetGameFile(image) != file) return;
+
+                    var bitmap = await Task.Run(async () =>
+                    {
                     var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
                     if (provider == null) return null;
                     if (!file.Extension.Equals("uasset", StringComparison.OrdinalIgnoreCase)) return null;
@@ -121,12 +129,17 @@ namespace FModel.Views.Resources.Controls
                     }
 
                     return null;
-                });
+                    });
 
-                if (bitmap != null)
+                    if (bitmap != null && GetGameFile(image) == file)
+                    {
+                        image.Source = bitmap;
+                        image.Visibility = Visibility.Visible;
+                    }
+                }
+                finally
                 {
-                    image.Source = bitmap;
-                    image.Visibility = Visibility.Visible;
+                    _semaphore.Release();
                 }
             }
             catch

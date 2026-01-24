@@ -259,8 +259,15 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
                 compressedData.CompressedByteStream = Ar.ReadBytes(Ar.Read<int>());
                 if (format.Text.StartsWith("ACL"))
                 {
-                    CompressedDataStructure = new UAnimBoneCompressionCodec_ACLSafe().AllocateAnimData();
-                    CompressedDataStructure.Bind(compressedData.CompressedByteStream);
+                    try
+                    {
+                        CompressedDataStructure = new UAnimBoneCompressionCodec_ACLSafe().AllocateAnimData();
+                        CompressedDataStructure.Bind(compressedData.CompressedByteStream);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e, "Failed to load ACL animation data");
+                    }
                 }
             }
             else
@@ -326,10 +333,17 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
 
             if (BoneCompressionCodec != null)
             {
-                CompressedDataStructure = BoneCompressionCodec.AllocateAnimData();
-                CompressedDataStructure.SerializeCompressedData(Ar);
-                CompressedDataStructure.Bind(serializedByteStream);
-                NumFrames = CompressedDataStructure.CompressedNumberOfFrames;
+                try
+                {
+                    CompressedDataStructure = BoneCompressionCodec.AllocateAnimData();
+                    CompressedDataStructure.SerializeCompressedData(Ar);
+                    CompressedDataStructure.Bind(serializedByteStream);
+                    NumFrames = CompressedDataStructure.CompressedNumberOfFrames;
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Failed to load ACL animation data");
+                }
             }
             else
             {
@@ -381,15 +395,15 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
         // This logic should be the same everywhere. Note: CompressedTrackToSkeletonMapTable appeared in UE4.12, so it will always be
         // empty when loading animations from older engines.
 
-        public int GetNumTracks() => CompressedTrackToSkeletonMapTable.Length > 0 ?
+        public int GetNumTracks() => (CompressedTrackToSkeletonMapTable?.Length ?? 0) > 0 ?
             CompressedTrackToSkeletonMapTable.Length :
             TrackToSkeletonMapTable?.Length ?? 0;
 
-        public int GetTrackBoneIndex(int trackIndex) => CompressedTrackToSkeletonMapTable.Length > 0 ?
+        public int GetTrackBoneIndex(int trackIndex) => (CompressedTrackToSkeletonMapTable?.Length ?? 0) > 0 ?
             CompressedTrackToSkeletonMapTable[trackIndex].BoneTreeIndex :
             TrackToSkeletonMapTable?[trackIndex].BoneTreeIndex ?? -1;
 
-        public FTrackToSkeletonMap[] GetTrackMap() => CompressedTrackToSkeletonMapTable.Length > 0 ? CompressedTrackToSkeletonMapTable : TrackToSkeletonMapTable ?? [];
+        public FTrackToSkeletonMap[] GetTrackMap() => (CompressedTrackToSkeletonMapTable?.Length ?? 0) > 0 ? CompressedTrackToSkeletonMapTable : TrackToSkeletonMapTable ?? [];
 
         public int FindTrackForBoneIndex(int boneIndex) {
             var trackMap = GetTrackMap();
