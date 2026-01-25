@@ -12,6 +12,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
@@ -43,6 +45,7 @@ namespace FModel.Views
         private List<ReferenceNode> _rootNodes;
         private List<ReferenceNode> _searchResults = new List<ReferenceNode>();
         private int _currentSearchIndex = -1;
+        private AnimationClock _scrollClock;
 
         public static readonly RoutedCommand FindCommand = new RoutedCommand();
 
@@ -236,24 +239,55 @@ namespace FModel.Views
             {
                 // ヒットしたノードを拡大表示
                 ZoomScale = 1.5;
-                MainScrollViewer.UpdateLayout();
+                
+                // レイアウト更新を待ってからスクロール位置を計算・移動
+                Dispatcher.Invoke(() =>
+                {
+                    MainScrollViewer.UpdateLayout();
 
-                double margin = 100;
-                double scale = ZoomScale;
-                double nodeWidth = 250;
-                double nodeHeight = 80;
+                    double margin = 100;
+                    double scale = ZoomScale;
+                    double nodeWidth = 250;
+                    double nodeHeight = 80;
 
-                double targetX = (node.X * scale) + margin - (MainScrollViewer.ViewportWidth - (nodeWidth * scale)) / 2;
-                double targetY = (node.Y * scale) + margin - (MainScrollViewer.ViewportHeight - (nodeHeight * scale)) / 2;
+                    double targetX = (node.X * scale) + margin - (MainScrollViewer.ViewportWidth - (nodeWidth * scale)) / 2;
+                    double targetY = (node.Y * scale) + margin - (MainScrollViewer.ViewportHeight - (nodeHeight * scale)) / 2;
 
-                MainScrollViewer.ScrollToHorizontalOffset(targetX);
-                MainScrollViewer.ScrollToVerticalOffset(targetY);
+                    SmoothScrollTo(targetX, targetY);
+                }, DispatcherPriority.Loaded);
             }
         }
 
         private void OnRefreshClick(object sender, RoutedEventArgs e)
         {
             _ = LoadReferencesAsync();
+        }
+
+        private void SmoothScrollTo(double targetX, double targetY)
+        {
+            if (_scrollClock != null)
+            {
+                _scrollClock.Controller.Stop();
+            }
+
+            var startX = MainScrollViewer.HorizontalOffset;
+            var startY = MainScrollViewer.VerticalOffset;
+
+            // アニメーションの作成
+            var animation = new DoubleAnimation(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(500)))
+            {
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
+            };
+
+            _scrollClock = animation.CreateClock();
+            _scrollClock.CurrentTimeInvalidated += (s, e) =>
+            {
+                if (_scrollClock?.CurrentProgress == null) return;
+                var progress = _scrollClock.CurrentProgress.Value;
+                MainScrollViewer.ScrollToHorizontalOffset(startX + (targetX - startX) * progress);
+                MainScrollViewer.ScrollToVerticalOffset(startY + (targetY - startY) * progress);
+            };
+            _scrollClock.Controller.Begin();
         }
 
         private async Task LoadReferencesAsync()
@@ -400,8 +434,8 @@ namespace FModel.Views
         {
             var scrollViewer = (ScrollViewer)sender;
 
-            // Ctrlキーが押されていない場合は通常のスクロール動作を行う
-            if ((Keyboard.Modifiers & ModifierKeys.Control) != ModifierKeys.Control)
+            // Ctrlキーが押されている場合は通常のスクロール動作を行う（上下移動）
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
                 return;
             }
