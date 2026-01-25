@@ -297,4 +297,18 @@
     <system:String x:Key="AudioPlayer_Ctx_Save">Save Sound</system:String>
     <system:String x:Key="AudioPlayer_Ctx_SavePlaylist">Save as Playlist</system:String>
 
+    <!-- Backup Manager -->
+    <system:String x:Key="Backup_Title">Manage Backup Files</system:String>
+    <system:String x:Key="Backup_Desc_Intro">Backup files save the current game archive information.&#x0a;It is required when loading added/updated archives.&#x0a;FModel compares the selected backup file with the current archive and displays only files matching the specified conditions.</system:String>
+    <system:String x:Key="Backup_Desc_Small_Title">Save Backup (Small)</system:String>
+    <system:String x:Key="Backup_Desc_Small_Detail">: Traditional backup file.&#x0a;Ideal for checking file additions/location changes.</system:String>
+    <system:String x:Key="Backup_Desc_Large_Title">Save Backup (Large)</system:String>
+    <system:String x:Key="Backup_Desc_Large_Detail">: Huge backup file including internal file data. Requires same capacity as the game to save.</system:String>
+    <system:String x:Key="Backup_Btn_CreateSmall">Save Backup (Small)</system:String>
+    <system:String x:Key="Backup_Btn_CreateLarge">Save Backup (Large)</system:String>
+    <system:String x:Key="Backup_Sep_CloudSmall">Cloud Backup Files (Small)</system:String>
+    <system:String x:Key="Backup_Btn_Download">Download</system:String>
+    <system:String x:Key="Backup_Sep_CloudLarge">Cloud Backup Files (Large)</system:String>
+    <system:String x:Key="Backup_Btn_DownloadLarge">Download (Large)</system:String>
+
 </ResourceDictionary>

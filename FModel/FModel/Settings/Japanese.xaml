@@ -297,4 +297,18 @@
     <system:String x:Key="AudioPlayer_Ctx_Save">サウンドを保存</system:String>
     <system:String x:Key="AudioPlayer_Ctx_SavePlaylist">サウンドをつなげて保存</system:String>
 
+    <!-- Backup Manager -->
+    <system:String x:Key="Backup_Title">バックアップファイルを管理</system:String>
+    <system:String x:Key="Backup_Desc_Intro">バックアップファイルは、現在のゲームのアーカイブ情報を保存するものです。&#x0a;追加 / 更新 された アーカイブ を読み込む際に必要になります。&#x0a;FModelは、選択されたバックアップファイルと現在のアーカイブを比較し、指定した条件に一致するファイルのみを表示します。</system:String>
+    <system:String x:Key="Backup_Desc_Small_Title">バックアップファイルを保存 (小)</system:String>
+    <system:String x:Key="Backup_Desc_Small_Detail">：従来のバックアップファイルです。&#x0a;ファイルの追加・場所変更の確認に最適です</system:String>
+    <system:String x:Key="Backup_Desc_Large_Title">バックアップファイルを保存 (大)</system:String>
+    <system:String x:Key="Backup_Desc_Large_Detail">：ファイル内部のデータも含んだ巨大なバックアップファイルです。保存には、ゲームと同じ容量が必要です。</system:String>
+    <system:String x:Key="Backup_Btn_CreateSmall">バックアップファイルを保存 (小)</system:String>
+    <system:String x:Key="Backup_Btn_CreateLarge">バックアップファイルを保存 (大)</system:String>
+    <system:String x:Key="Backup_Sep_CloudSmall">クラウド上のバックアップファイル (小)</system:String>
+    <system:String x:Key="Backup_Btn_Download">ダウンロード</system:String>
+    <system:String x:Key="Backup_Sep_CloudLarge">クラウド上のバックアップファイル (大)</system:String>
+    <system:String x:Key="Backup_Btn_DownloadLarge">ダウンロード (大)</system:String>
+
 </ResourceDictionary>

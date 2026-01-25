@@ -15,7 +15,7 @@
         <Style TargetType="adonisControls:AdonisWindow"
                BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
             <Setter Property="Title"
-                    Value="バックアップファイルを管理" />
+                    Value="{DynamicResource Backup_Title}" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -56,22 +56,13 @@
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    FontSize="12">
-            <Run>
-                バックアップファイルは、現在のゲームのアーカイブ情報を保存するものです。
-                追加 / 更新 された アーカイブ を読み込む際に必要になります。
-                FModelは、選択されたバックアップファイルと現在のアーカイブを比較し、指定した条件に一致するファイルのみを表示します。
-            </Run>
+            <Run Text="{DynamicResource Backup_Desc_Intro}" />
             <LineBreak /><LineBreak />
-            <Run FontWeight="Bold">バックアップファイルを保存 (小)</Run>
-            <Run>
-                ：従来のバックアップファイルです。
-                ファイルの追加・場所変更の確認に最適です
-            </Run>
+            <Run FontWeight="Bold" Text="{DynamicResource Backup_Desc_Small_Title}" />
+            <Run Text="{DynamicResource Backup_Desc_Small_Detail}" />
             <LineBreak /><LineBreak />
-            <Run FontWeight="Bold">バックアップファイルを保存 (大)</Run>
-            <Run>
-                ：ファイル内部のデータも含んだ巨大なバックアップファイルです。保存には、ゲームと同じ容量が必要です。
-            </Run>
+            <Run FontWeight="Bold" Text="{DynamicResource Backup_Desc_Large_Title}" />
+            <Run Text="{DynamicResource Backup_Desc_Large_Detail}" />
         </TextBlock>
 
         <Grid Grid.Row="2"
@@ -86,7 +77,7 @@
                     Grid.Column="0"
                     Cursor="Hand"
                     Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
-                    Content="バックアップファイルを保存 (小)"
+                    Content="{DynamicResource Backup_Btn_CreateSmall}"
                     Margin="4,0"
                     Padding="10,5"
                     IsEnabled="{Binding IsCreatingBackup, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
@@ -94,7 +85,7 @@
                     Grid.Column="1"
                     Cursor="Hand"
                     Style="{StaticResource OrangeAccentButton}"
-                    Content="バックアップファイルを保存 (大)"
+                    Content="{DynamicResource Backup_Btn_CreateLarge}"
                     Margin="4,0"
                     Padding="10,5"
                     Background="#FFF9A000"
@@ -105,7 +96,7 @@
                    Grid.Column="0"
                    Grid.ColumnSpan="3"
                    Style="{StaticResource CustomSeparator}"
-                   Tag="クラウド上のバックアップファイル (小)" />
+                   Tag="{DynamicResource Backup_Sep_CloudSmall}" />
         <ComboBox Grid.Row="4"
                   Grid.Column="1"
                   ItemsSource="{Binding BackupsView}"
@@ -133,7 +124,7 @@
         </ComboBox>
         <Button
                 Grid.Column="1"
-                Content="ダウンロード"
+                Content="{DynamicResource Backup_Btn_Download}"
                 Click="OnDownloadClick" Margin="5,2,-5,36" Grid.Row="7" Grid.ColumnSpan="2" Grid.RowSpan="3">
             <Button.Style>
                 <Style TargetType="Button"
@@ -154,7 +145,7 @@
         <Separator Grid.Row="9"
                    Grid.Column="0"
                    Style="{StaticResource CustomSeparator}"
-                   Tag="クラウド上のバックアップファイル (大)" Grid.ColumnSpan="3" Margin="5,25,-5,3" Grid.RowSpan="2" />
+                   Tag="{DynamicResource Backup_Sep_CloudLarge}" Grid.ColumnSpan="3" Margin="5,25,-5,3" Grid.RowSpan="2" />
 
         <ComboBox Grid.Row="10"
                   Grid.Column="0"
@@ -186,7 +177,7 @@
 
         <Button Grid.Row="10"
                 Grid.Column="1"
-                Content="ダウンロード (大)"
+                Content="{DynamicResource Backup_Btn_DownloadLarge}"
                 Click="OnDownloadBigBackupClick" Margin="5,47,-5,-65" Grid.ColumnSpan="2">
             <Button.Style>
                 <Style TargetType="Button"
