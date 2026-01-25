@@ -429,7 +429,7 @@ public partial class CUE4ParseViewModel : ViewModel
         var dialog = new OpenFileDialog
         {
             Filter = "Loli Backup Files (*.loli)|*.loli",
-            Title = "比較する .loli ファイルを選択してください"
+            Title = Application.Current.FindResource("PakComparer_Dialog_Title") as string
         };
 
         if (dialog.ShowDialog() != true) return;
@@ -474,7 +474,7 @@ public partial class CUE4ParseViewModel : ViewModel
                         {
                             Name = $"{old.Name} -> {current.Name}",
                             Guid = current.EncryptionKeyGuid.ToString(),
-                            Status = "名前変更",
+                            Status = Application.Current.FindResource("PakComparer_Status_Renamed") as string,
                             SizeDiff = current.Length - old.Length,
                             CountDiff = currentFileCount - old.FileCount,
                             OldSize = old.Length,
@@ -489,7 +489,7 @@ public partial class CUE4ParseViewModel : ViewModel
                         {
                             Name = current.Name,
                             Guid = current.EncryptionKeyGuid.ToString(),
-                            Status = "変更あり",
+                            Status = Application.Current.FindResource("PakComparer_Status_Modified") as string,
                             SizeDiff = current.Length - old.Length,
                             CountDiff = currentFileCount - old.FileCount,
                             OldSize = old.Length,
@@ -506,7 +506,7 @@ public partial class CUE4ParseViewModel : ViewModel
                     {
                         Name = old.Name,
                         Guid = old.Guid,
-                        Status = "削除",
+                        Status = Application.Current.FindResource("PakComparer_Status_Removed") as string,
                         SizeDiff = -old.Length,
                         CountDiff = -old.FileCount,
                         OldSize = old.Length,
@@ -527,7 +527,7 @@ public partial class CUE4ParseViewModel : ViewModel
                 {
                     Name = current.Name,
                     Guid = current.EncryptionKeyGuid.ToString(),
-                    Status = "新規",
+                    Status = Application.Current.FindResource("PakComparer_Status_New") as string,
                     SizeDiff = current.Length,
                     CountDiff = currentFileCount,
                     OldSize = 0,
@@ -541,7 +541,7 @@ public partial class CUE4ParseViewModel : ViewModel
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"比較中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(string.Format(Application.Current.FindResource("PakComparer_Error_Message") as string, ex.Message), Application.Current.FindResource("PakComparer_Error_Title") as string, MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

@@ -7,6 +7,7 @@
     <system:String x:Key="Menu_Directory_AES">AES</system:String>
     <system:String x:Key="Menu_Directory_Backup">Backups</system:String>
     <system:String x:Key="Menu_Directory_ArchivesInfo">Archives Information</system:String>
+    <system:String x:Key="Menu_Directory_ComparePak">Compare Pak Files</system:String>
     <system:String x:Key="Menu_Package">Package</system:String>
     <system:String x:Key="Menu_Package_Search">Search</system:String>
     <system:String x:Key="Menu_Package_ContentSearch">Search Content</system:String>
@@ -311,4 +312,21 @@
     <system:String x:Key="Backup_Sep_CloudLarge">Cloud Backup Files (Large)</system:String>
     <system:String x:Key="Backup_Btn_DownloadLarge">Download (Large)</system:String>
 
+    <!-- Pak Comparer -->
+    <system:String x:Key="PakComparer_Title">Pak File Comparison Results</system:String>
+    <system:String x:Key="PakComparer_Header_FileName">File Name</system:String>
+    <system:String x:Key="PakComparer_Header_Status">Status</system:String>
+    <system:String x:Key="PakComparer_Header_OldSize">Old Size</system:String>
+    <system:String x:Key="PakComparer_Header_NewSize">New Size</system:String>
+    <system:String x:Key="PakComparer_Header_SizeDiff">Size Diff</system:String>
+    <system:String x:Key="PakComparer_Header_OldCount">Old File Count</system:String>
+    <system:String x:Key="PakComparer_Header_NewCount">New File Count</system:String>
+    <system:String x:Key="PakComparer_Header_CountDiff">File Count Diff</system:String>
+    <system:String x:Key="PakComparer_Status_Modified">Modified</system:String>
+    <system:String x:Key="PakComparer_Status_Removed">Removed</system:String>
+    <system:String x:Key="PakComparer_Status_New">New</system:String>
+    <system:String x:Key="PakComparer_Status_Renamed">Renamed</system:String>
+    <system:String x:Key="PakComparer_Dialog_Title">Select .loli file to compare</system:String>
+    <system:String x:Key="PakComparer_Error_Title">Error</system:String>
+    <system:String x:Key="PakComparer_Error_Message">An error occurred during comparison: {0}</system:String>
 </ResourceDictionary>

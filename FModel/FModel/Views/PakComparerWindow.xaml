@@ -3,7 +3,7 @@
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
-                             Title="Pakファイル比較結果" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+                             Title="{DynamicResource PakComparer_Title}" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}"/>
     </adonisControls:AdonisWindow.Style>
@@ -18,7 +18,7 @@
     <Grid>
         <DataGrid ItemsSource="{Binding Diffs}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="ファイル名" Width="*" SortMemberPath="Name">
+                <DataGridTemplateColumn Header="{DynamicResource PakComparer_Header_FileName}" Width="*" SortMemberPath="Name">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel>
@@ -28,13 +28,13 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="状態" Binding="{Binding Status}" Width="100"/>
-                <DataGridTextColumn Header="旧サイズ" Binding="{Binding OldSize, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
-                <DataGridTextColumn Header="新サイズ" Binding="{Binding NewSize, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
-                <DataGridTextColumn Header="サイズ差分" Binding="{Binding SizeDiff, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
-                <DataGridTextColumn Header="旧ファイル数" Binding="{Binding OldCount}" Width="100"/>
-                <DataGridTextColumn Header="新ファイル数" Binding="{Binding NewCount}" Width="100"/>
-                <DataGridTextColumn Header="ファイル数差分" Binding="{Binding CountDiff}" Width="100"/>
+                <DataGridTextColumn Header="{DynamicResource PakComparer_Header_Status}" Binding="{Binding Status}" Width="100"/>
+                <DataGridTextColumn Header="{DynamicResource PakComparer_Header_OldSize}" Binding="{Binding OldSize, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
+                <DataGridTextColumn Header="{DynamicResource PakComparer_Header_NewSize}" Binding="{Binding NewSize, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
+                <DataGridTextColumn Header="{DynamicResource PakComparer_Header_SizeDiff}" Binding="{Binding SizeDiff, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
+                <DataGridTextColumn Header="{DynamicResource PakComparer_Header_OldCount}" Binding="{Binding OldCount}" Width="100"/>
+                <DataGridTextColumn Header="{DynamicResource PakComparer_Header_NewCount}" Binding="{Binding NewCount}" Width="100"/>
+                <DataGridTextColumn Header="{DynamicResource PakComparer_Header_CountDiff}" Binding="{Binding CountDiff}" Width="100"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
