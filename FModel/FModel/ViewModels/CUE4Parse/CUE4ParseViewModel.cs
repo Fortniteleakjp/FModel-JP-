@@ -19,6 +19,7 @@ using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
+using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
@@ -611,6 +612,11 @@ public partial class CUE4ParseViewModel : ViewModel
                     FLogger.Text("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true));
             }
         });
+    }
+
+    public void OpenReferenceChain(IEnumerable<GameFile> assets)
+    {
+        new ReferenceChainWindow(assets.ToList()).Show();
     }
 
     public void ExtractSelected(CancellationToken cancellationToken, IEnumerable<GameFile> assetItems)
