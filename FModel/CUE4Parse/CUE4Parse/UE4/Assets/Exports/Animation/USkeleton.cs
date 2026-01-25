@@ -14,17 +14,17 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
 {
     public class USkeleton : UObject
     {
-        public EBoneTranslationRetargetingMode[] BoneTree { get; private set; } = [];
+        public EBoneTranslationRetargetingMode[] BoneTree { get; private set; }
         public FReferenceSkeleton ReferenceSkeleton { get; private set; }
         public FGuid Guid { get; private set; }
         public FGuid VirtualBoneGuid { get; private set; }
-        public Dictionary<FName, FReferencePose> AnimRetargetSources { get; private set; } = [];
-        public Dictionary<FName, FSmartNameMapping> NameMappings { get; private set; } = [];
-        public FName[] ExistingMarkerNames { get; private set; } = [];
-        public FPackageIndex[] Sockets { get; private set; } = [];
-        public FVirtualBone[] VirtualBones { get; private set; } = [];
+        public Dictionary<FName, FReferencePose> AnimRetargetSources { get; private set; }
+        public Dictionary<FName, FSmartNameMapping> NameMappings { get; private set; }
+        public FName[] ExistingMarkerNames { get; private set; }
+        public FPackageIndex[] Sockets { get; private set; }
+        public FVirtualBone[] VirtualBones { get; private set; }
 
-        public int BoneCount => ReferenceSkeleton?.FinalRefBoneInfo.Length ?? 0;
+        public int BoneCount => ReferenceSkeleton.FinalRefBoneInfo.Length;
 
         public override void Deserialize(FAssetArchive Ar, long validPos)
         {
@@ -40,8 +40,8 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
                 }
             }
             VirtualBoneGuid = GetOrDefault<FGuid>(nameof(VirtualBoneGuid));
-            Sockets = GetOrDefault(nameof(Sockets), Sockets);
-            VirtualBones = GetOrDefault(nameof(VirtualBones), VirtualBones);
+            Sockets = GetOrDefault(nameof(Sockets), Array.Empty<FPackageIndex>());
+            VirtualBones = GetOrDefault(nameof(VirtualBones), Array.Empty<FVirtualBone>());
 
             if (Ar.Ver >= EUnrealEngineObjectUE4Version.REFERENCE_SKELETON_REFACTOR)
             {

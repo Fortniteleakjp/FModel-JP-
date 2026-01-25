@@ -1,10 +1,11 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.IO.Compression;
+
 using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.Readers;
 
@@ -85,14 +86,15 @@ public static class ZlibHelper
             nameof(CUE4Parse),
             typeof(ZlibHelper).Assembly.GetName().Version?.ToString() ?? "1.0.0"));
         client.Timeout = TimeSpan.FromSeconds(30);
+
         url ??= DOWNLOAD_URL;
         var dllPath = path ?? DLL_NAME;
         try
         {
-            var dllPath = path ?? DLL_NAME;
             {
                 using var dllResponse = await client.GetAsync(url).ConfigureAwait(false);
                 dllResponse.EnsureSuccessStatusCode();
+
                 await using var dllFs = File.Create(dllPath);
                 if (url.EndsWith(".gz", StringComparison.OrdinalIgnoreCase))
                 {

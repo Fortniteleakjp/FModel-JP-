@@ -93,7 +93,7 @@ public static class FRigVMObjectVersion
             < EGame.GAME_UE5_5 => Type.VMRemoveTooltipFromFunctionHeader,
             < EGame.GAME_UE5_6 => Type.FunctionHeaderLayoutStoresCategoryExpansion,
             < EGame.GAME_UE5_7 => Type.ByteCodeCleanup,
-            < EGame.GAME_UE5_8 => Type.LocalizedRegistryWithRelativeSeekOffset,
+            < EGame.GAME_UE5_8 => Type.LocalizedRegistry,
             _ => Type.LatestVersion
         };
     }

@@ -1,4 +1,4 @@
-﻿using CUE4Parse.UE4.Readers;
+using CUE4Parse.UE4.Readers;
 
 namespace CUE4Parse.UE4.Assets.Exports.CustomizableObject.Mutable;
 
@@ -11,6 +11,5 @@ public class Model
     public Model(FArchive Ar)
     {
         Version = Ar.Read<int>();
-        Program = new FProgram(Ar);
     }
 }

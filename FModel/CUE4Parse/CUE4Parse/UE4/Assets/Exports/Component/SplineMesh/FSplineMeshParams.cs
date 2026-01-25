@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -86,7 +86,7 @@ public class FSplineMeshParams : IUStruct
     public string GetSHAHash()
     {
         var hash = SHA256.Create();
-        var data = new byte[168];
+        var data = new byte[160];
         BitConverter.GetBytes(StartPos.X).CopyTo(data, 0);
         BitConverter.GetBytes(StartPos.Y).CopyTo(data, 8);
         BitConverter.GetBytes(StartPos.Z).CopyTo(data, 16);
@@ -98,17 +98,17 @@ public class FSplineMeshParams : IUStruct
         BitConverter.GetBytes(StartRoll).CopyTo(data, 64);
         BitConverter.GetBytes(StartOffset.X).CopyTo(data, 68);
         BitConverter.GetBytes(StartOffset.Y).CopyTo(data, 76);
-        BitConverter.GetBytes(EndPos.X).CopyTo(data, 84);
-        BitConverter.GetBytes(EndPos.Y).CopyTo(data, 92);
-        BitConverter.GetBytes(EndPos.Z).CopyTo(data, 100);
-        BitConverter.GetBytes(EndTangent.X).CopyTo(data, 108);
-        BitConverter.GetBytes(EndTangent.Y).CopyTo(data, 116);
-        BitConverter.GetBytes(EndTangent.Z).CopyTo(data, 124);
-        BitConverter.GetBytes(EndScale.X).CopyTo(data, 132);
-        BitConverter.GetBytes(EndScale.Y).CopyTo(data, 140);
-        BitConverter.GetBytes(EndRoll).CopyTo(data, 148);
-        BitConverter.GetBytes(EndOffset.X).CopyTo(data, 152);
-        BitConverter.GetBytes(EndOffset.Y).CopyTo(data, 160);
+        BitConverter.GetBytes(EndPos.X).CopyTo(data, 80);
+        BitConverter.GetBytes(EndPos.Y).CopyTo(data, 88);
+        BitConverter.GetBytes(EndPos.Z).CopyTo(data, 96);
+        BitConverter.GetBytes(EndTangent.X).CopyTo(data, 104);
+        BitConverter.GetBytes(EndTangent.Y).CopyTo(data, 112);
+        BitConverter.GetBytes(EndTangent.Z).CopyTo(data, 120);
+        BitConverter.GetBytes(EndScale.X).CopyTo(data, 128);
+        BitConverter.GetBytes(EndScale.Y).CopyTo(data, 136);
+        BitConverter.GetBytes(EndRoll).CopyTo(data, 144);
+        BitConverter.GetBytes(EndOffset.X).CopyTo(data, 148);
+        BitConverter.GetBytes(EndOffset.Y).CopyTo(data, 156);
         return BitConverter.ToString(hash.ComputeHash(data)).Replace("-", "");
     }
 }

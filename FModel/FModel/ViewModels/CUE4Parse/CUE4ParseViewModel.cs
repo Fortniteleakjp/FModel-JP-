@@ -19,7 +19,6 @@ using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
-using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
@@ -408,7 +407,7 @@ public partial class CUE4ParseViewModel : ViewModel
             Provider?.Initialize();
             // DiffProviderが初期化されている場合、こちらも初期化する
             DiffProvider?.Initialize();
-            _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.WwiseMaxBnkPrefetch));
+            _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.GameDirectory));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
             if (Provider != null)
             {
