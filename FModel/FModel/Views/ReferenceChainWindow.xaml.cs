@@ -315,7 +315,11 @@ namespace FModel.Views
             double nodeWidth = 250;
             double nodeHeight = 80;
             double horizontalGap = 150; // 線が重なりにくいように間隔を拡大
-            double verticalGap = 40;    // ノード間の垂直間隔も拡大
+            
+            // ウィンドウの大きさを基に配置を変える
+            // ウィンドウの高さに応じて垂直方向の間隔を調整（最小40、最大150程度）
+            // これにより、ウィンドウが大きい場合はノードが密集せずに配置される
+            double verticalGap = Math.Max(40, Math.Min(150, ActualHeight / 10));
 
             foreach (var root in rootNodes)
             {
@@ -394,8 +398,15 @@ namespace FModel.Views
         // Zooming
         private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            e.Handled = true;
             var scrollViewer = (ScrollViewer)sender;
+
+            // Ctrlキーが押されていない場合は通常のスクロール動作を行う
+            if ((Keyboard.Modifiers & ModifierKeys.Control) != ModifierKeys.Control)
+            {
+                return;
+            }
+
+            e.Handled = true;
             if (scrollViewer.Content is not FrameworkElement grid) return;
 
             var mousePos = e.GetPosition(grid);
@@ -451,8 +462,9 @@ namespace FModel.Views
             {
                 var currentPos = e.GetPosition(MainScrollViewer);
                 var delta = currentPos - _lastViewMousePosition;
-                MainScrollViewer.ScrollToHorizontalOffset(MainScrollViewer.HorizontalOffset + delta.X);
-                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + delta.Y);
+                // ドラッグ方向とスクロール方向を合わせる(逆になってたの修正)
+                MainScrollViewer.ScrollToHorizontalOffset(MainScrollViewer.HorizontalOffset - delta.X);
+                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset - delta.Y);
                 _lastViewMousePosition = currentPos;
                 e.Handled = true;
             }
