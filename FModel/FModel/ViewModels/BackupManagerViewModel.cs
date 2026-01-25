@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.IO;
+using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -145,12 +147,20 @@ public class BackupManagerViewModel : ViewModel
             // UnloadedVfs (アーカイブ一覧に表示されているもの)
             foreach (var vfs in provider.UnloadedVfs)
             {
-                entries.Add(new LoliEntry(vfs.Name, vfs.EncryptionKeyGuid.ToString(), vfs.Length, vfs.FileCount));
+                var fileCount = vfs.FileCount;
+                if (vfs is IoStoreReader reader && reader.TocResource != null)
+                    fileCount = (int) reader.TocResource.Header.TocEntryCount;
+                Log.Information("[Backup] Archive: {Name} | GUID: {Guid} | Size: {Size} | Files: {Count}", vfs.Name, vfs.EncryptionKeyGuid, vfs.Length, fileCount);
+                entries.Add(new LoliEntry(vfs.Name, vfs.EncryptionKeyGuid.ToString(), vfs.Length, fileCount));
             }
             // MountedVfs (ロード済みのもの)
             foreach (var vfs in provider.MountedVfs)
             {
-                entries.Add(new LoliEntry(vfs.Name, vfs.EncryptionKeyGuid.ToString(), vfs.Length, vfs.FileCount));
+                var fileCount = vfs.FileCount;
+                if (vfs is IoStoreReader reader && reader.TocResource != null)
+                    fileCount = (int) reader.TocResource.Header.TocEntryCount;
+                Log.Information("[Backup] Archive: {Name} | GUID: {Guid} | Size: {Size} | Files: {Count}", vfs.Name, vfs.EncryptionKeyGuid, vfs.Length, fileCount);
+                entries.Add(new LoliEntry(vfs.Name, vfs.EncryptionKeyGuid.ToString(), vfs.Length, fileCount));
             }
 
             var json = JsonConvert.SerializeObject(entries, Formatting.Indented);

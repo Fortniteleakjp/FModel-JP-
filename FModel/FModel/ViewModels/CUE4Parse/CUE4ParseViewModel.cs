@@ -463,6 +463,11 @@ public partial class CUE4ParseViewModel : ViewModel
                 var oldGuid = new FGuid(old.Guid.Replace("-", ""));
                 if (currentPaks.TryGetValue(oldGuid, out var current))
                 {
+                    var currentFileCount = current.FileCount;
+                    if (current is IoStoreReader reader && reader.TocResource != null)
+                        currentFileCount = (int) reader.TocResource.Header.TocEntryCount;
+                    Log.Information("[Compare] Archive: {Name} | GUID: {Guid} | OldFiles: {OldCount} | NewFiles: {NewCount}", current.Name, current.EncryptionKeyGuid, old.FileCount, currentFileCount);
+
                     if (!string.Equals(old.Name, current.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         diffs.Add(new PakDiff
@@ -471,14 +476,14 @@ public partial class CUE4ParseViewModel : ViewModel
                             Guid = current.EncryptionKeyGuid.ToString(),
                             Status = "名前変更",
                             SizeDiff = current.Length - old.Length,
-                            CountDiff = current.FileCount - old.FileCount,
+                            CountDiff = currentFileCount - old.FileCount,
                             OldSize = old.Length,
                             NewSize = current.Length,
                             OldCount = old.FileCount,
-                            NewCount = current.FileCount
+                            NewCount = currentFileCount
                         });
                     }
-                    else if (current.Length != old.Length || current.FileCount != old.FileCount)
+                    else if (current.Length != old.Length || currentFileCount != old.FileCount)
                     {
                         diffs.Add(new PakDiff
                         {
@@ -486,11 +491,11 @@ public partial class CUE4ParseViewModel : ViewModel
                             Guid = current.EncryptionKeyGuid.ToString(),
                             Status = "変更あり",
                             SizeDiff = current.Length - old.Length,
-                            CountDiff = current.FileCount - old.FileCount,
+                            CountDiff = currentFileCount - old.FileCount,
                             OldSize = old.Length,
                             NewSize = current.Length,
                             OldCount = old.FileCount,
-                            NewCount = current.FileCount
+                            NewCount = currentFileCount
                         });
                     }
                     currentPaks.Remove(oldGuid);
@@ -514,17 +519,21 @@ public partial class CUE4ParseViewModel : ViewModel
 
             foreach (var current in currentPaks.Values)
             {
+                var currentFileCount = current.FileCount;
+                if (current is IoStoreReader reader && reader.TocResource != null)
+                    currentFileCount = (int) reader.TocResource.Header.TocEntryCount;
+
                 diffs.Add(new PakDiff
                 {
                     Name = current.Name,
                     Guid = current.EncryptionKeyGuid.ToString(),
                     Status = "新規",
                     SizeDiff = current.Length,
-                    CountDiff = current.FileCount,
+                    CountDiff = currentFileCount,
                     OldSize = 0,
                     NewSize = current.Length,
                     OldCount = 0,
-                    NewCount = current.FileCount
+                    NewCount = currentFileCount
                 });
             }
 
