@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AdonisUI.Controls;
+using Microsoft.Win32;
 using CUE4Parse;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
@@ -61,6 +62,7 @@ using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using K4os.Compression.LZ4.Streams;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Serilog;
@@ -69,6 +71,9 @@ using Svg.Skia;
 using UE4Config.Parsing;
 using Application = System.Windows.Application;
 using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace FModel.ViewModels.CUE4Parse;
 
@@ -188,6 +193,7 @@ public partial class CUE4ParseViewModel : ViewModel
     private Lazy<FModProvider> _fmodProviderLazy;
     public FModProvider FmodProvider => _fmodProviderLazy?.Value;
     public ConcurrentBag<string> UnknownExtensions = [];
+    public System.Windows.Input.ICommand ComparePakCommand { get; }
 
     public CUE4ParseViewModel()
     {
@@ -310,6 +316,8 @@ public partial class CUE4ParseViewModel : ViewModel
                     }
             }
         }
+
+        ComparePakCommand = new RelayCommand(_ => ComparePak());
     }
 
     public async Task Initialize()
@@ -414,6 +422,69 @@ public partial class CUE4ParseViewModel : ViewModel
                 Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");
             }
         });
+    }
+
+    private void ComparePak()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "Loli Backup Files (*.loli)|*.loli",
+            Title = "比較する .loli ファイルを選択してください"
+        };
+
+        if (dialog.ShowDialog() != true) return;
+
+        try
+        {
+            string json;
+            try
+            {
+                using var fileStream = new FileStream(dialog.FileName, FileMode.Open, FileAccess.Read);
+                using var decompressedStream = LZ4Stream.Decode(fileStream);
+                using var reader = new StreamReader(decompressedStream);
+                json = reader.ReadToEnd();
+            }
+            catch
+            {
+                json = File.ReadAllText(dialog.FileName);
+            }
+            var oldPaks = JsonConvert.DeserializeObject<List<BackupManagerViewModel.LoliEntry>>(json);
+            
+            // 現在のPakリスト (Unloaded + Mounted)
+            var currentPaks = Provider.UnloadedVfs
+                .Concat(Provider.MountedVfs)
+                .GroupBy(x => x.Name)
+                .ToDictionary(x => x.Key, x => x.First());
+
+            var diffs = new List<PakDiff>();
+
+            foreach (var old in oldPaks)
+            {
+                if (currentPaks.TryGetValue(old.Name, out var current))
+                {
+                    if (current.Length != old.Length || current.FileCount != old.FileCount)
+                    {
+                        diffs.Add(new PakDiff { Name = old.Name, Status = "変更あり", SizeDiff = current.Length - old.Length, CountDiff = current.FileCount - old.FileCount });
+                    }
+                    currentPaks.Remove(old.Name);
+                }
+                else
+                {
+                    diffs.Add(new PakDiff { Name = old.Name, Status = "削除", SizeDiff = -old.Length, CountDiff = -old.FileCount });
+                }
+            }
+
+            foreach (var current in currentPaks.Values)
+            {
+                diffs.Add(new PakDiff { Name = current.Name, Status = "新規", SizeDiff = current.Length, CountDiff = current.FileCount });
+            }
+
+            new PakComparerWindow(diffs).Show();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"比較中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     /// <summary>
@@ -1353,5 +1424,13 @@ public partial class CUE4ParseViewModel : ViewModel
     private static bool HasFlag(EBulkType a, EBulkType b)
     {
         return (a & b) == b;
+    }
+
+    public class PakDiff
+    {
+        public string Name { get; set; }
+        public string Status { get; set; }
+        public long SizeDiff { get; set; }
+        public int CountDiff { get; set; }
     }
 }

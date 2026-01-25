@@ -86,6 +86,15 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Header="pakファイル比較" Command="{Binding CUE4Parse.ComparePakCommand}" IsEnabled="{Binding Status.IsReady}">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DiffIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{DynamicResource Menu_Package}">
                 <MenuItem Header="{DynamicResource Menu_Package_Search}" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">

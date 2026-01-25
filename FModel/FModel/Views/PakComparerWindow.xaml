@@ -1,0 +1,28 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.PakComparerWindow"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                             Title="Pakファイル比較結果" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}"/>
+    </adonisControls:AdonisWindow.Style>
+    <adonisControls:AdonisWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/FModel;component/Views/Resources/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </adonisControls:AdonisWindow.Resources>
+
+    <Grid>
+        <DataGrid ItemsSource="{Binding Diffs}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ファイル名" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="状態" Binding="{Binding Status}" Width="100"/>
+                <DataGridTextColumn Header="サイズ差分" Binding="{Binding SizeDiff, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
+                <DataGridTextColumn Header="ファイル数差分" Binding="{Binding CountDiff}" Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</adonisControls:AdonisWindow>

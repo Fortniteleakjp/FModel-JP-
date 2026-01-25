@@ -23,6 +23,7 @@ using Serilog;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using Newtonsoft.Json;
 
 namespace FModel.ViewModels;
 
@@ -59,6 +60,8 @@ public class BackupManagerViewModel : ViewModel
     }
     public ObservableCollection<Backup> Backups { get; }
     public ICollectionView BackupsView { get; }
+    public System.Windows.Input.ICommand CreateLoliBackupCommand { get; }
+
     public BackupManagerViewModel(string gameName)
     {
         _gameName = gameName;
@@ -67,6 +70,13 @@ public class BackupManagerViewModel : ViewModel
         BigBackupsView = new ListCollectionView(BigBackups);
 
         BackupsView = new ListCollectionView(Backups) { SortDescriptions = { new SortDescription("FileName", ListSortDirection.Ascending) } };
+        
+        CreateLoliBackupCommand = new RelayCommand(async _ =>
+        {
+            IsCreatingBackup = true;
+            try { await CreateLoliBackup(); }
+            finally { IsCreatingBackup = false; }
+        });
     }
     public async Task Initialize()
     {
@@ -119,6 +129,42 @@ public class BackupManagerViewModel : ViewModel
             SaveCheck(fullPath, fileName, "created", "create");
         });
     }
+
+    public async Task CreateLoliBackup()
+    {
+        await _threadWorkerView.Begin(_ =>
+        {
+            var backupFolder = Path.Combine(UserSettings.Default.OutputDirectory, "Backups");
+            Directory.CreateDirectory(backupFolder);
+            var fileName = $"{_gameName}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.loli";
+            var fullPath = Path.Combine(backupFolder, fileName);
+
+            var entries = new List<LoliEntry>();
+            var provider = _applicationView.CUE4Parse.Provider;
+
+            // UnloadedVfs (アーカイブ一覧に表示されているもの)
+            foreach (var vfs in provider.UnloadedVfs)
+            {
+                entries.Add(new LoliEntry(vfs.Name, vfs.EncryptionKeyGuid.ToString(), vfs.Length, vfs.FileCount));
+            }
+            // MountedVfs (ロード済みのもの)
+            foreach (var vfs in provider.MountedVfs)
+            {
+                entries.Add(new LoliEntry(vfs.Name, vfs.EncryptionKeyGuid.ToString(), vfs.Length, vfs.FileCount));
+            }
+
+            var json = JsonConvert.SerializeObject(entries, Formatting.Indented);
+            {
+                using var fileStream = new FileStream(fullPath, FileMode.Create);
+                using var compressedStream = LZ4Stream.Encode(fileStream, LZ4Level.L00_FAST);
+                using var writer = new StreamWriter(compressedStream);
+                writer.Write(json);
+            }
+
+            SaveCheck(fullPath, fileName, "created", "create");
+        });
+    }
+
     public async Task Download()
     {
         if (SelectedBackup == null)
@@ -342,12 +388,29 @@ public class BackupManagerViewModel : ViewModel
             }
         });
     }
-}
-    public enum EBackupVersion : byte
+
+    public class LoliEntry
     {
-        BeforeVersionWasAdded = 0,
-        Initial,
-        PerfectPath, // no more leading slash and ToLower
-        LatestPlusOne,
-        Latest = LatestPlusOne - 1
+        public string Name { get; set; }
+        public string Guid { get; set; }
+        public long Length { get; set; }
+        public int FileCount { get; set; }
+
+        public LoliEntry(string name, string guid, long length, int fileCount)
+        {
+            Name = name;
+            Guid = guid;
+            Length = length;
+            FileCount = fileCount;
+        }
     }
+}
+
+public enum EBackupVersion : byte
+{
+    BeforeVersionWasAdded = 0,
+    Initial,
+    PerfectPath, // no more leading slash and ToLower
+    LatestPlusOne,
+    Latest = LatestPlusOne - 1
+}
