@@ -453,30 +453,79 @@ public partial class CUE4ParseViewModel : ViewModel
             // 現在のPakリスト (Unloaded + Mounted)
             var currentPaks = Provider.UnloadedVfs
                 .Concat(Provider.MountedVfs)
-                .GroupBy(x => x.Name)
+                .GroupBy(x => x.EncryptionKeyGuid)
                 .ToDictionary(x => x.Key, x => x.First());
 
             var diffs = new List<PakDiff>();
 
             foreach (var old in oldPaks)
             {
-                if (currentPaks.TryGetValue(old.Name, out var current))
+                var oldGuid = new FGuid(old.Guid.Replace("-", ""));
+                if (currentPaks.TryGetValue(oldGuid, out var current))
                 {
-                    if (current.Length != old.Length || current.FileCount != old.FileCount)
+                    if (!string.Equals(old.Name, current.Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        diffs.Add(new PakDiff { Name = old.Name, Status = "変更あり", SizeDiff = current.Length - old.Length, CountDiff = current.FileCount - old.FileCount });
+                        diffs.Add(new PakDiff
+                        {
+                            Name = $"{old.Name} -> {current.Name}",
+                            Guid = current.EncryptionKeyGuid.ToString(),
+                            Status = "名前変更",
+                            SizeDiff = current.Length - old.Length,
+                            CountDiff = current.FileCount - old.FileCount,
+                            OldSize = old.Length,
+                            NewSize = current.Length,
+                            OldCount = old.FileCount,
+                            NewCount = current.FileCount
+                        });
                     }
-                    currentPaks.Remove(old.Name);
+                    else if (current.Length != old.Length || current.FileCount != old.FileCount)
+                    {
+                        diffs.Add(new PakDiff
+                        {
+                            Name = current.Name,
+                            Guid = current.EncryptionKeyGuid.ToString(),
+                            Status = "変更あり",
+                            SizeDiff = current.Length - old.Length,
+                            CountDiff = current.FileCount - old.FileCount,
+                            OldSize = old.Length,
+                            NewSize = current.Length,
+                            OldCount = old.FileCount,
+                            NewCount = current.FileCount
+                        });
+                    }
+                    currentPaks.Remove(oldGuid);
                 }
                 else
                 {
-                    diffs.Add(new PakDiff { Name = old.Name, Status = "削除", SizeDiff = -old.Length, CountDiff = -old.FileCount });
+                    diffs.Add(new PakDiff
+                    {
+                        Name = old.Name,
+                        Guid = old.Guid,
+                        Status = "削除",
+                        SizeDiff = -old.Length,
+                        CountDiff = -old.FileCount,
+                        OldSize = old.Length,
+                        NewSize = 0,
+                        OldCount = old.FileCount,
+                        NewCount = 0
+                    });
                 }
             }
 
             foreach (var current in currentPaks.Values)
             {
-                diffs.Add(new PakDiff { Name = current.Name, Status = "新規", SizeDiff = current.Length, CountDiff = current.FileCount });
+                diffs.Add(new PakDiff
+                {
+                    Name = current.Name,
+                    Guid = current.EncryptionKeyGuid.ToString(),
+                    Status = "新規",
+                    SizeDiff = current.Length,
+                    CountDiff = current.FileCount,
+                    OldSize = 0,
+                    NewSize = current.Length,
+                    OldCount = 0,
+                    NewCount = current.FileCount
+                });
             }
 
             new PakComparerWindow(diffs).Show();
@@ -1429,8 +1478,13 @@ public partial class CUE4ParseViewModel : ViewModel
     public class PakDiff
     {
         public string Name { get; set; }
+        public string Guid { get; set; }
         public string Status { get; set; }
         public long SizeDiff { get; set; }
         public int CountDiff { get; set; }
+        public long OldSize { get; set; }
+        public long NewSize { get; set; }
+        public int OldCount { get; set; }
+        public int NewCount { get; set; }
     }
 }

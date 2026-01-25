@@ -18,9 +18,22 @@
     <Grid>
         <DataGrid ItemsSource="{Binding Diffs}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ファイル名" Binding="{Binding Name}" Width="*"/>
+                <DataGridTemplateColumn Header="ファイル名" Width="*" SortMemberPath="Name">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text="{Binding Guid}" FontSize="10" Opacity="0.7" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="状態" Binding="{Binding Status}" Width="100"/>
+                <DataGridTextColumn Header="旧サイズ" Binding="{Binding OldSize, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
+                <DataGridTextColumn Header="新サイズ" Binding="{Binding NewSize, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
                 <DataGridTextColumn Header="サイズ差分" Binding="{Binding SizeDiff, Converter={x:Static converters:SizeToStringConverter.Instance}}" Width="100"/>
+                <DataGridTextColumn Header="旧ファイル数" Binding="{Binding OldCount}" Width="100"/>
+                <DataGridTextColumn Header="新ファイル数" Binding="{Binding NewCount}" Width="100"/>
                 <DataGridTextColumn Header="ファイル数差分" Binding="{Binding CountDiff}" Width="100"/>
             </DataGrid.Columns>
         </DataGrid>
