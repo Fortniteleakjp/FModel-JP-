@@ -1,4 +1,4 @@
-﻿﻿using System.Windows;
+﻿using System.Windows;
 using FModel.ViewModels;
 
 namespace FModel.Views;
@@ -52,5 +52,10 @@ public partial class BackupManager
     private async void OnDownloadBigBackupClick(object sender, RoutedEventArgs e)
     {
         await _viewModel.DownloadBigBackup();
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+
     }
 }

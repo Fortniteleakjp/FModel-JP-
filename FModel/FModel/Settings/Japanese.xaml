@@ -7,6 +7,7 @@
     <system:String x:Key="Menu_Directory_AES">AESキー</system:String>
     <system:String x:Key="Menu_Directory_Backup">バックアップファイル</system:String>
     <system:String x:Key="Menu_Directory_ArchivesInfo">pakファイル情報</system:String>
+    <system:String x:Key="Menu_Directory_CreateLoli">pakバックアップ作成 (.loli)</system:String>
     <system:String x:Key="Menu_Directory_ComparePak">pakファイル比較</system:String>
     <system:String x:Key="Menu_Package">パッケージ</system:String>
     <system:String x:Key="Menu_Package_Search">検索</system:String>

@@ -98,11 +98,11 @@
                 Grid.Column="0" Grid.ColumnSpan="3"
                 Cursor="Hand"
                 Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
-                Content="アーカイブ情報を保存 (.loli)"
-                Margin="4,0"
+                Content="pakの比較ファイルを保存 (.loli)"
+                Margin="9,7,-1,0"
                 Padding="10,5"
                 Command="{Binding CreateLoliBackupCommand}"
-                IsEnabled="{Binding IsCreatingBackup, Converter={x:Static converters:InvertBooleanConverter.Instance}}" />
+                IsEnabled="{Binding IsCreatingBackup, Converter={x:Static converters:InvertBooleanConverter.Instance}}" Click="Button_Click" Grid.RowSpan="3" />
 
         <Separator Grid.Row="5"
                    Grid.Column="0"
@@ -112,7 +112,7 @@
         <ComboBox Grid.Row="6"
                   Grid.Column="1"
                   ItemsSource="{Binding BackupsView}"
-                  SelectedItem="{Binding SelectedBackup, Mode=TwoWay}" Margin="5,0,-5,31" Grid.RowSpan="4" Grid.ColumnSpan="2">
+                  SelectedItem="{Binding SelectedBackup, Mode=TwoWay}" Margin="5,12,-5,19" Grid.RowSpan="4" Grid.ColumnSpan="2">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding FileName}"
@@ -137,7 +137,7 @@
         <Button
                 Grid.Column="1"
                 Content="{DynamicResource Backup_Btn_Download}"
-                Click="OnDownloadClick" Margin="5,2,-5,36" Grid.Row="9" Grid.ColumnSpan="2" Grid.RowSpan="3">
+                Click="OnDownloadClick" Margin="5,30,-5,30" Grid.Row="9" Grid.ColumnSpan="2" Grid.RowSpan="3">
             <Button.Style>
                 <Style TargetType="Button"
                        BasedOn="{StaticResource {x:Type Button}}">
@@ -190,7 +190,7 @@
         <Button Grid.Row="12"
                 Grid.Column="1"
                 Content="{DynamicResource Backup_Btn_DownloadLarge}"
-                Click="OnDownloadBigBackupClick" Margin="5,47,-5,-65" Grid.ColumnSpan="2">
+                Click="OnDownloadBigBackupClick" Margin="5,43,-5,-69" Grid.ColumnSpan="2">
             <Button.Style>
                 <Style TargetType="Button"
                        BasedOn="{StaticResource {x:Type Button}}">

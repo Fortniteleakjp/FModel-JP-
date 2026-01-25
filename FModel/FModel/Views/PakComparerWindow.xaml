@@ -17,6 +17,24 @@
 
     <Grid>
         <DataGrid ItemsSource="{Binding Diffs}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding StatusType}" Value="New">
+                            <Setter Property="Background" Value="#2000FF00" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding StatusType}" Value="Modified">
+                            <Setter Property="Background" Value="#20FFFF00" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding StatusType}" Value="Removed">
+                            <Setter Property="Background" Value="#20FF0000" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding StatusType}" Value="Renamed">
+                            <Setter Property="Background" Value="#2000FFFF" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="{DynamicResource PakComparer_Header_FileName}" Width="*" SortMemberPath="Name">
                     <DataGridTemplateColumn.CellTemplate>

@@ -74,6 +74,8 @@ using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using K4os.Compression.LZ4;
+using K4os.Compression.LZ4.Streams;
 
 namespace FModel.ViewModels.CUE4Parse;
 
@@ -194,6 +196,7 @@ public partial class CUE4ParseViewModel : ViewModel
     public FModProvider FmodProvider => _fmodProviderLazy?.Value;
     public ConcurrentBag<string> UnknownExtensions = [];
     public System.Windows.Input.ICommand ComparePakCommand { get; }
+    public System.Windows.Input.ICommand CreateLoliBackupCommand { get; }
 
     public CUE4ParseViewModel()
     {
@@ -318,6 +321,7 @@ public partial class CUE4ParseViewModel : ViewModel
         }
 
         ComparePakCommand = new RelayCommand(_ => ComparePak());
+        CreateLoliBackupCommand = new RelayCommand(async _ => await CreateLoliBackup());
     }
 
     public async Task Initialize()
@@ -424,6 +428,46 @@ public partial class CUE4ParseViewModel : ViewModel
         });
     }
 
+    public async Task CreateLoliBackup()
+    {
+        await _threadWorkerView.Begin(_ =>
+        {
+            var backupFolder = Path.Combine(UserSettings.Default.OutputDirectory, "Backups");
+            Directory.CreateDirectory(backupFolder);
+            var fileName = $"{Provider.ProjectName}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.loli";
+            var fullPath = Path.Combine(backupFolder, fileName);
+
+            var entries = new List<BackupManagerViewModel.LoliEntry>();
+            
+            // UnloadedVfs
+            foreach (var vfs in Provider.UnloadedVfs)
+            {
+                var fileCount = vfs.FileCount;
+                if (vfs is IoStoreReader reader && reader.TocResource != null)
+                    fileCount = (int) reader.TocResource.Header.TocEntryCount;
+                entries.Add(new BackupManagerViewModel.LoliEntry(vfs.Name, vfs.EncryptionKeyGuid.ToString(), vfs.Length, fileCount));
+            }
+            // MountedVfs
+            foreach (var vfs in Provider.MountedVfs)
+            {
+                var fileCount = vfs.FileCount;
+                if (vfs is IoStoreReader reader && reader.TocResource != null)
+                    fileCount = (int) reader.TocResource.Header.TocEntryCount;
+                entries.Add(new BackupManagerViewModel.LoliEntry(vfs.Name, vfs.EncryptionKeyGuid.ToString(), vfs.Length, fileCount));
+            }
+
+            var json = JsonConvert.SerializeObject(entries, Formatting.Indented);
+            {
+                using var fileStream = new FileStream(fullPath, FileMode.Create);
+                using var compressedStream = LZ4Stream.Encode(fileStream, LZ4Level.L00_FAST);
+                using var writer = new StreamWriter(compressedStream);
+                writer.Write(json);
+            }
+
+            SaveCheck(fullPath, fileName, "created", "create");
+        });
+    }
+
     private void ComparePak()
     {
         var dialog = new OpenFileDialog
@@ -475,6 +519,7 @@ public partial class CUE4ParseViewModel : ViewModel
                             Name = $"{old.Name} -> {current.Name}",
                             Guid = current.EncryptionKeyGuid.ToString(),
                             Status = Application.Current.FindResource("PakComparer_Status_Renamed") as string,
+                            StatusType = EPakDiffStatus.Renamed,
                             SizeDiff = current.Length - old.Length,
                             CountDiff = currentFileCount - old.FileCount,
                             OldSize = old.Length,
@@ -490,6 +535,7 @@ public partial class CUE4ParseViewModel : ViewModel
                             Name = current.Name,
                             Guid = current.EncryptionKeyGuid.ToString(),
                             Status = Application.Current.FindResource("PakComparer_Status_Modified") as string,
+                            StatusType = EPakDiffStatus.Modified,
                             SizeDiff = current.Length - old.Length,
                             CountDiff = currentFileCount - old.FileCount,
                             OldSize = old.Length,
@@ -507,6 +553,7 @@ public partial class CUE4ParseViewModel : ViewModel
                         Name = old.Name,
                         Guid = old.Guid,
                         Status = Application.Current.FindResource("PakComparer_Status_Removed") as string,
+                        StatusType = EPakDiffStatus.Removed,
                         SizeDiff = -old.Length,
                         CountDiff = -old.FileCount,
                         OldSize = old.Length,
@@ -528,6 +575,7 @@ public partial class CUE4ParseViewModel : ViewModel
                     Name = current.Name,
                     Guid = current.EncryptionKeyGuid.ToString(),
                     Status = Application.Current.FindResource("PakComparer_Status_New") as string,
+                    StatusType = EPakDiffStatus.New,
                     SizeDiff = current.Length,
                     CountDiff = currentFileCount,
                     OldSize = 0,
@@ -542,6 +590,24 @@ public partial class CUE4ParseViewModel : ViewModel
         catch (Exception ex)
         {
             MessageBox.Show(string.Format(Application.Current.FindResource("PakComparer_Error_Message") as string, ex.Message), Application.Current.FindResource("PakComparer_Error_Title") as string, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void SaveCheck(string fullPath, string fileName, string type1, string type2)
+    {
+        if (new FileInfo(fullPath).Length > 0)
+        {
+            Log.Information("{FileName} successfully {Type}", fileName, type1);
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text($"Successfully {type1} ", Constants.WHITE);
+                FLogger.Link(fileName, fullPath, true);
+            });
+        }
+        else
+        {
+            Log.Error("{FileName} could not be {Type}", fileName, type1);
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not {type2} '{fileName}'", Constants.WHITE, true));
         }
     }
 
@@ -1489,11 +1555,20 @@ public partial class CUE4ParseViewModel : ViewModel
         public string Name { get; set; }
         public string Guid { get; set; }
         public string Status { get; set; }
+        public EPakDiffStatus StatusType { get; set; }
         public long SizeDiff { get; set; }
         public int CountDiff { get; set; }
         public long OldSize { get; set; }
         public long NewSize { get; set; }
         public int OldCount { get; set; }
         public int NewCount { get; set; }
+    }
+
+    public enum EPakDiffStatus
+    {
+        New,
+        Modified,
+        Removed,
+        Renamed
     }
 }
