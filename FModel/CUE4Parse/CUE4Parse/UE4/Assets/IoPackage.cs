@@ -20,7 +20,7 @@ namespace CUE4Parse.UE4.Assets;
 [SkipObjectRegistration]
 public sealed class IoPackage : AbstractUePackage
 {
-    private readonly IoGlobalData? _globalData;
+    private readonly IoGlobalData _globalData;
 
     public override FPackageFileSummary Summary { get; }
     public override FNameEntrySerialized[] NameMap { get; }
@@ -51,7 +51,7 @@ public sealed class IoPackage : AbstractUePackage
         IVfsFileProvider? provider = null)
         : base(uasset.Name.SubstringBeforeLast('.'), provider)
     {
-        _globalData = provider?.GlobalData;
+        _globalData = provider?.GlobalData ?? throw new ParserException("Found IoStore Package but global data is missing, can't serialize");
 
         var uassetAr = new FAssetArchive(uasset, this);
 
@@ -129,11 +129,11 @@ public sealed class IoPackage : AbstractUePackage
 
             // Import map
             uassetAr.Position = summary.ImportMapOffset;
-            ImportMap = uassetAr.ReadArray<FPackageObjectIndex>(Summary.ImportCount);
+            ImportMap = uasset.ReadArray<FPackageObjectIndex>(Summary.ImportCount);
 
             // Export map
             uassetAr.Position = summary.ExportMapOffset;
-            ExportMap = uassetAr.ReadArray(Summary.ExportCount, () => new FExportMapEntry(uassetAr));
+            ExportMap = uasset.ReadArray(Summary.ExportCount, () => new FExportMapEntry(uassetAr));
             ExportsLazy = new Lazy<UObject>[Summary.ExportCount];
 
             // Export bundle entries
@@ -178,11 +178,11 @@ public sealed class IoPackage : AbstractUePackage
 
             // Import map
             uassetAr.Position = summary.ImportMapOffset;
-            ImportMap = uassetAr.ReadArray<FPackageObjectIndex>(Summary.ImportCount);
+            ImportMap = uasset.ReadArray<FPackageObjectIndex>(Summary.ImportCount);
 
             // Export map
             uassetAr.Position = summary.ExportMapOffset;
-            ExportMap = uassetAr.ReadArray(Summary.ExportCount, () => new FExportMapEntry(uassetAr));
+            ExportMap = uasset.ReadArray(Summary.ExportCount, () => new FExportMapEntry(uassetAr));
             ExportsLazy = new Lazy<UObject>[Summary.ExportCount];
 
             // Export bundles
@@ -348,14 +348,8 @@ public sealed class IoPackage : AbstractUePackage
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public FName CreateFNameFromMappedName(FMappedName mappedName)
-    {
-        if (mappedName.IsGlobal && _globalData == null)
-        {
-            throw new ParserException($"Found IoStore Package '{Name}' but global data is missing, can't serialize");
-        }
-        return new FName(mappedName, mappedName.IsGlobal ? _globalData!.GlobalNameMap : NameMap);
-    }
+    public FName CreateFNameFromMappedName(FMappedName mappedName) =>
+        new(mappedName, mappedName.IsGlobal ? _globalData.GlobalNameMap : NameMap);
 
     private void LoadExportBundles(FArchive Ar, int graphDataSize, out FExportBundleHeader[] bundleHeadersArray, out FExportBundleEntry[] bundleEntriesArray)
     {
@@ -434,7 +428,7 @@ public sealed class IoPackage : AbstractUePackage
 
         if (index.IsScriptImport)
         {
-            if (_globalData != null && _globalData.ScriptObjectEntriesMap.TryGetValue(index, out var scriptObjectEntry))
+            if (_globalData.ScriptObjectEntriesMap.TryGetValue(index, out var scriptObjectEntry))
             {
                 return new ResolvedScriptObject(scriptObjectEntry, this);
             }

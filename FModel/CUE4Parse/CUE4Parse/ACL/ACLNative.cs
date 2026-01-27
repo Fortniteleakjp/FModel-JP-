@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace CUE4Parse.ACL
@@ -7,15 +7,11 @@ namespace CUE4Parse.ACL
     {
         public const string LIB_NAME = "CUE4Parse-Natives";
 
-        public static IntPtr nAllocate(int size, int alignment = 16)
-        {
-            return Marshal.AllocHGlobal(size);
-        }
+        [DllImport(LIB_NAME)]
+        public static extern IntPtr nAllocate(int size, int alignment = 16);
 
-        public static void nDeallocate(IntPtr ptr, int size)
-        {
-            Marshal.FreeHGlobal(ptr);
-        }
+        [DllImport(LIB_NAME)]
+        public static extern void nDeallocate(IntPtr ptr, int size);
 
         // pure c# way:
         //var rawPtr = Marshal.AllocHGlobal(size + 8);

@@ -146,6 +146,12 @@ namespace CUE4Parse.FileProvider.Vfs
                         openContainerStreamFunc ??= it => new FStreamArchive(it, stream!, Versions);
                         reader = new IoStoreReader(archive, openContainerStreamFunc);
                         break;
+                    case "UONDEMANDTOC":
+                        if (OnDemandOptions is null)
+                            return;
+                        var chunkToc = new IoChunkToc(archive);
+                        RegisterVfs(chunkToc, OnDemandOptions);
+                        return;
                     default:
                         return;
                 }
@@ -174,6 +180,12 @@ namespace CUE4Parse.FileProvider.Vfs
                         openContainerStreamFunc ??= _ => utocArchive!;
                         reader = new IoStoreReader(pakOrUtocArchive, openContainerStreamFunc);
                         break;
+                    case "UONDEMANDTOC":
+                        if (OnDemandOptions is null)
+                            return;
+                        var chunkToc = new IoChunkToc(pakOrUtocArchive);
+                        RegisterVfs(chunkToc, OnDemandOptions);
+                        return;
                     default:
                         return;
                 }
@@ -200,6 +212,12 @@ namespace CUE4Parse.FileProvider.Vfs
                         openContainerStreamFunc ??= it => new FRandomAccessStreamArchive(it, utocStream!, Versions);
                         reader = new IoStoreReader(pakOrUtocArchive, openContainerStreamFunc);
                         break;
+                    case "UONDEMANDTOC":
+                        if (OnDemandOptions is null)
+                            return;
+                        var chunkToc = new IoChunkToc(pakOrUtocArchive);
+                        RegisterVfs(chunkToc, OnDemandOptions);
+                        return;
                     default:
                         return;
                 }
@@ -210,14 +228,22 @@ namespace CUE4Parse.FileProvider.Vfs
                 Log.Warning(e.ToString());
             }
         }
-        public async Task RegisterVfs(IoChunkToc chunkToc, IoStoreOnDemandOptions options)
+
+        public void RegisterVfs(IoChunkToc chunkToc, IoStoreOnDemandOptions options) => RegisterVfsAsync(chunkToc).GetAwaiter().GetResult();
+        public async Task RegisterVfsAsync(IoChunkToc chunkToc)
         {
-            var downloader = new IoStoreOnDemandDownloader(options);
+            if (OnDemandOptions is null)
+                return;
+
+            var downloader = new IoStoreOnDemandDownloader(OnDemandOptions);
             foreach (var container in chunkToc.Containers)
             {
                 PostLoadReader(new IoStoreOnDemandReader(
-                    new FStreamArchive($"{container.ContainerName}.utoc", await downloader.Download($"{container.UTocHash.ToString().ToLower()}.utoc"), Versions),
-                    container.Entries, downloader));
+                    new FStreamArchive($"{container.ContainerName}.utoc",
+                    await downloader.Download($"{chunkToc.Header.ChunksDirectory}/{container.UTocHash.ToString().ToLower()}.utoc").ConfigureAwait(false), Versions),
+                    chunkToc,
+                    container,
+                    downloader));
             }
         }
 
@@ -294,7 +320,7 @@ namespace CUE4Parse.FileProvider.Vfs
             {
                 foreach (var reader in _unloadedVfs.Keys.Where(it => it.EncryptionKeyGuid == guid))
                 {
-                    reader.AesKey = key;
+                    if (reader.Game == EGame.GAME_FragPunk && reader.Name.Contains("global")) reader.AesKey = key;
                     VerifyGlobalData(reader);
 
                     if (!reader.HasDirectoryIndex)
@@ -462,20 +488,10 @@ namespace CUE4Parse.FileProvider.Vfs
         {
             if (GlobalData != null || reader is not IoStoreReader ioStoreReader) return;
 
-            if (ioStoreReader.IsEncrypted && ioStoreReader.AesKey == null && CustomEncryption == null)
-                return;
-
-            try
+            if (ioStoreReader.Name.Equals("global.utoc", StringComparison.OrdinalIgnoreCase) ||
+                ioStoreReader.Name.Equals("global_console_win.utoc", StringComparison.OrdinalIgnoreCase))
             {
                 GlobalData = new IoGlobalData(ioStoreReader);
-            }
-            catch (Exception e)
-            {
-                if (ioStoreReader.Name.IndexOf("global", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    ioStoreReader.Name.IndexOf("pakchunk0", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    Log.Warning(e, "Failed to load global data from {Name}", ioStoreReader.Name);
-                }
             }
         }
 
