@@ -265,10 +265,27 @@ public class ApplicationViewModel : ViewModel
             return null;
 
         if (UserSettings.Default.PerDirectory.TryGetValue(diffPath, out var existing))
+        {
+            if (string.IsNullOrEmpty(existing.Endpoints[1].FilePath) &&
+                UserSettings.Default.CurrentDir != null &&
+                !string.IsNullOrEmpty(UserSettings.Default.CurrentDir.Endpoints[1].FilePath))
+            {
+                existing.Endpoints[1].FilePath = UserSettings.Default.CurrentDir.Endpoints[1].FilePath;
+                existing.Endpoints[1].Overwrite = true;
+            }
             return existing;
+        }
 
         var vm = new GameSelectorViewModel(diffPath);
         if (vm.SelectedDirectory == null) return null;
+
+        if (string.IsNullOrEmpty(vm.SelectedDirectory.Endpoints[1].FilePath) &&
+            UserSettings.Default.CurrentDir != null &&
+            !string.IsNullOrEmpty(UserSettings.Default.CurrentDir.Endpoints[1].FilePath))
+        {
+            vm.SelectedDirectory.Endpoints[1].FilePath = UserSettings.Default.CurrentDir.Endpoints[1].FilePath;
+            vm.SelectedDirectory.Endpoints[1].Overwrite = true;
+        }
 
         UserSettings.Default.DiffGameDirectory = vm.SelectedDirectory.GameDirectory;
         UserSettings.Default.PerDirectory[vm.SelectedDirectory.GameDirectory] = vm.SelectedDirectory;
