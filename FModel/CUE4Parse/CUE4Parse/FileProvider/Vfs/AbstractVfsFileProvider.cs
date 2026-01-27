@@ -294,7 +294,7 @@ namespace CUE4Parse.FileProvider.Vfs
             {
                 foreach (var reader in _unloadedVfs.Keys.Where(it => it.EncryptionKeyGuid == guid))
                 {
-                    if (reader.Game == EGame.GAME_FragPunk && reader.Name.Contains("global")) reader.AesKey = key;
+                    reader.AesKey = key;
                     VerifyGlobalData(reader);
 
                     if (!reader.HasDirectoryIndex)
@@ -462,10 +462,20 @@ namespace CUE4Parse.FileProvider.Vfs
         {
             if (GlobalData != null || reader is not IoStoreReader ioStoreReader) return;
 
-            if (ioStoreReader.Name.Equals("global.utoc", StringComparison.OrdinalIgnoreCase) ||
-                ioStoreReader.Name.Equals("global_console_win.utoc", StringComparison.OrdinalIgnoreCase))
+            if (ioStoreReader.IsEncrypted && ioStoreReader.AesKey == null && CustomEncryption == null)
+                return;
+
+            try
             {
                 GlobalData = new IoGlobalData(ioStoreReader);
+            }
+            catch (Exception e)
+            {
+                if (ioStoreReader.Name.IndexOf("global", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    ioStoreReader.Name.IndexOf("pakchunk0", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    Log.Warning(e, "Failed to load global data from {Name}", ioStoreReader.Name);
+                }
             }
         }
 
