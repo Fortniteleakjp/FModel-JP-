@@ -131,7 +131,15 @@ Fortnite等のクリエイティブマップコードを入力するだけで、
 
 ---
 
-## 🙏 クレジット
+## 💬 コミュニティ / サポート
+
+質問やバグ報告、要望などはDiscordサーバーまでお願いします。
+
+👉 **[Discordに参加する](https://discord.gg/EFvQSnte2a)**
+
+---
+
+## � クレジット
 
 - Original Tool: **4sval / FModel**
 - Japaneseization: **qKuafn**
