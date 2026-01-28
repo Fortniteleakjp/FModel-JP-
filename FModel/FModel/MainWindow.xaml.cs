@@ -22,8 +22,6 @@ using FModel.Framework; // RelayCommand を使用するためのやつ
 using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
 using Microsoft.Win32;
 using FModel.Features.Athena;
-using System.Text.RegularExpressions;
-using System.Net.Http;
 
 namespace FModel;
 
@@ -784,228 +782,58 @@ public partial class MainWindow
         NewExplorerMenuItem.IsChecked = false;
     }
 
-    private async void OnBatchExecuteClick(object sender, RoutedEventArgs e)
+    private void OnAssetListClick(object sender, RoutedEventArgs e)
     {
-        if (!_applicationView.Status.IsReady) return;
-
-        var pattern = BatchSearchBox.Text;
-        var classFilterItem = BatchClassComboBox.SelectedItem as ComboBoxItem;
-        var classFilter = classFilterItem?.Content?.ToString();
-        var classIndex = BatchClassComboBox.SelectedIndex;
-        var ignoreCase = BatchIgnoreCaseCheckBox.IsChecked == true;
-
-        List<GameFile> filteredFiles = null;
-
-        await _threadWorkerView.Begin(token =>
+        if (sender is Button { Tag: string path })
         {
-            var files = _applicationView.CUE4Parse.Provider.Files.Values;
-            var result = new List<GameFile>();
-            
-            Regex regex = null;
-            if (!string.IsNullOrEmpty(pattern))
+            if (path.StartsWith("Search:"))
             {
-                try
+                var query = path.Substring(7);
+                var files = _applicationView.CUE4Parse.Provider.Files.Values
+                    .Where(x => x.Name.StartsWith(query, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                if (files.Count > 0)
                 {
-                    regex = new Regex(pattern, ignoreCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+                    if (AssetsFolderName.SelectedItem is TreeItem selected)
+                        selected.IsSelected = false;
+                    _applicationView.CUE4Parse.AssetsFolder.Folders?.Clear();
+                    _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(files);
+                    LeftTabControl.SelectedIndex = 2;
+                    FLogger.Append(ELog.Information, () => FLogger.Text($"Found {files.Count} items matching '{query}'", Constants.WHITE));
                 }
-                catch
+                else
                 {
-                    // 正規表現が無効な場合は無視するか、通常の文字列検索として扱う
+                    FLogger.Append(ELog.Warning, () => FLogger.Text($"No assets found matching: {query}", Constants.YELLOW));
                 }
+                return;
             }
-
-            foreach (var file in files)
+            var parts = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) return;
+            var currentFolders = _applicationView.CUE4Parse.AssetsFolder.Folders;
+            TreeItem targetItem = null;
+            var pathItems = new List<TreeItem>();
+            foreach (var part in parts)
             {
-                if (token.IsCancellationRequested) return;
-
-                // 名前フィルタ
-                if (regex != null)
+                if (currentFolders == null)
                 {
-                    if (!regex.IsMatch(file.Name)) continue;
+                    targetItem = null;
+                    break;
                 }
-                else if (!string.IsNullOrEmpty(pattern))
-                {
-                     if (file.Name.IndexOf(pattern, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) < 0) continue;
-                }
-
-                // クラスフィルタ (インデックス0は "すべて")
-                if (classIndex > 0 && !string.IsNullOrEmpty(classFilter))
-                {
-                    // 最適化: 拡張子が .uasset でないものはスキップ
-                    if (!file.Path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase)) continue;
-
-                    // パッケージをロードしてクラスを確認 (重い処理)
-                    try
-                    {
-                        if (_applicationView.CUE4Parse.Provider.TryLoadPackage(file.Path, out var package))
-                        {
-                            var export = package.GetExports().FirstOrDefault();
-                            if (export == null || export.ExportType != classFilter) continue;
-                        }
-                        else continue;
-                    }
-                    catch { continue; }
-                }
-
-                result.Add(file);
+                targetItem = currentFolders.FirstOrDefault(x => x.Header.Equals(part, StringComparison.OrdinalIgnoreCase));
+                if (targetItem == null) break;
+                pathItems.Add(targetItem);
+                currentFolders = targetItem.Folders;
             }
-            filteredFiles = result;
-        });
-
-        if (filteredFiles != null && filteredFiles.Count > 0)
-        {
-            string actionCommand = null;
-
-            if (BatchActionExport.IsChecked == true) actionCommand = "Assets_Extract_New_Tab";
-            else if (BatchActionJson.IsChecked == true) actionCommand = "Assets_Save_Properties";
-            else if (BatchActionTexture.IsChecked == true) actionCommand = "Assets_Save_Textures";
-            
-            if (actionCommand != null)
+            if (targetItem != null)
             {
-                var parameters = new object[] { actionCommand, filteredFiles };
-                if (_applicationView.RightClickMenuCommand.CanExecute(parameters))
-                {
-                    _applicationView.RightClickMenuCommand.Execute(parameters);
-                }
-
-                // ポストプロセス処理
-                if (BatchPostActionNetwork.IsChecked == true || BatchPostActionScript.IsChecked == true)
-                {
-                    // UIスレッドで設定値を取得
-                    bool isJson = BatchActionJson.IsChecked == true;
-                    bool isTexture = BatchActionTexture.IsChecked == true;
-                    var rawDir = UserSettings.Default.RawDataDirectory;
-                    var propDir = UserSettings.Default.PropertiesDirectory;
-                    var texDir = UserSettings.Default.TextureDirectory;
-
-                    // Network Settings
-                    var url = NetworkUrlBox.Text;
-                    var methodString = (NetworkMethodComboBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "GET";
-                    var payloadTypeIndex = NetworkPayloadTypeComboBox.SelectedIndex;
-                    var headersText = NetworkHeadersBox.Text;
-                    var bodyText = NetworkRequestBodyBox.Text;
-
-                    // Script Settings
-                    var scriptPath = ScriptPathBox.Text;
-                    var scriptArgs = ScriptArgsBox.Text;
-
-                    bool isNetwork = BatchPostActionNetwork.IsChecked == true;
-
-                    if (isNetwork && string.IsNullOrWhiteSpace(url))
-                    {
-                        FLogger.Append(ELog.Warning, () => FLogger.Text("ネットワークリクエストのURLが入力されていません。", Constants.YELLOW));
-                    }
-                    else if (!isNetwork && string.IsNullOrWhiteSpace(scriptPath))
-                    {
-                        FLogger.Append(ELog.Warning, () => FLogger.Text("実行するプログラムのパスが入力されていません。", Constants.YELLOW));
-                    }
-                    else
-                    {
-                        // 保存処理の完了を待つために、同じワーカーキューにタスクを追加します
-                        await _threadWorkerView.Begin(token =>
-                        {
-                            using var client = new HttpClient();
-                            var method = isNetwork ? new HttpMethod(methodString) : null;
-
-                            foreach (var file in filteredFiles)
-                            {
-                                if (token.IsCancellationRequested) break;
-
-                                try
-                                {
-                                    // 保存されたファイルのパスを推定
-                                    string outputDir = rawDir;
-                                    string ext = ".uasset";
-                                    if (isJson) { outputDir = propDir; ext = ".json"; }
-                                    else if (isTexture) { outputDir = texDir; ext = ".png"; }
-
-                                    var basePath = Path.Combine(outputDir, file.PathWithoutExtension);
-                                    var fullPath = basePath + ext;
-
-                                    // テクスチャの場合、他の拡張子もチェック
-                                    if (!File.Exists(fullPath) && isTexture)
-                                    {
-                                        if (File.Exists(basePath + ".tga")) fullPath = basePath + ".tga";
-                                        else if (File.Exists(basePath + ".jpg")) fullPath = basePath + ".jpg";
-                                    }
-
-                                    if (isNetwork)
-                                    {
-                                        using var request = new HttpRequestMessage(method, url);
-
-                                        // Headers
-                                        if (!string.IsNullOrWhiteSpace(headersText))
-                                        {
-                                            foreach (var line in headersText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries))
-                                            {
-                                                var parts = line.Split(new[] { ':' }, 2);
-                                                if (parts.Length == 2) request.Headers.TryAddWithoutValidation(parts[0].Trim(), parts[1].Trim());
-                                            }
-                                        }
-
-                                        // Body
-                                        if (method == HttpMethod.Post || method == HttpMethod.Put)
-                                        {
-                                            if (payloadTypeIndex == 0) // Text
-                                            {
-                                                if (!string.IsNullOrEmpty(bodyText))
-                                                {
-                                                    var processedBody = bodyText.Replace("{Name}", file.Name).Replace("{Path}", file.Path);
-                                                    request.Content = new StringContent(processedBody, System.Text.Encoding.UTF8, "application/json");
-                                                }
-                                            }
-                                            else if (File.Exists(fullPath))
-                                            {
-                                                var fileBytes = File.ReadAllBytes(fullPath);
-                                                if (payloadTypeIndex == 1) // Binary
-                                                {
-                                                    request.Content = new ByteArrayContent(fileBytes);
-                                                }
-                                                else if (payloadTypeIndex == 2) // Multipart
-                                                {
-                                                    var multipart = new MultipartFormDataContent();
-                                                    var fileContent = new ByteArrayContent(fileBytes);
-                                                    var key = string.IsNullOrWhiteSpace(bodyText) ? "file" : bodyText;
-                                                    multipart.Add(fileContent, key, Path.GetFileName(fullPath));
-                                                    request.Content = multipart;
-                                                }
-                                            }
-                                        }
-
-                                        var response = client.SendAsync(request, token).GetAwaiter().GetResult();
-                                        FLogger.Append(ELog.Information, () => FLogger.Text($"Network Request [{method}] {file.Name} - Status: {response.StatusCode}", Constants.WHITE));
-                                    }
-                                    else // Script Execution
-                                    {
-                                        var args = scriptArgs
-                                            .Replace("{FilePath}", fullPath)
-                                            .Replace("{FileName}", Path.GetFileName(fullPath))
-                                            .Replace("{FileDir}", Path.GetDirectoryName(fullPath))
-                                            .Replace("{NameWithoutExt}", Path.GetFileNameWithoutExtension(fullPath))
-                                            .Replace("{AssetName}", file.Name);
-
-                                        var startInfo = new ProcessStartInfo
-                                        {
-                                            FileName = scriptPath,
-                                            Arguments = args,
-                                            UseShellExecute = true,
-                                            CreateNoWindow = true
-                                        };
-                                        Process.Start(startInfo);
-                                        FLogger.Append(ELog.Information, () => FLogger.Text($"Executed: {scriptPath} {args}", Constants.WHITE));
-                                    }
-                                }
-                                catch (Exception ex) { FLogger.Append(ELog.Error, () => FLogger.Text($"Post Action Failed ({file.Name}): {ex.Message}", Constants.RED)); }
-                            }
-                        });
-                    }
-                }
+                foreach (var item in pathItems) item.IsExpanded = true;
+                targetItem.IsSelected = true;
+                AssetsFolderName.Focus();
             }
-            FLogger.Append(ELog.Information, () => FLogger.Text($"一括処理が完了しました。{filteredFiles.Count} 個のファイルを処理しました。", Constants.GREEN));
-        }
-        else
-        {
-             FLogger.Append(ELog.Warning, () => FLogger.Text("条件に一致するファイルが見つかりませんでした。", Constants.YELLOW));
+            else
+            {
+                FLogger.Append(ELog.Warning, () => FLogger.Text($"Directory not found: {path}", Constants.YELLOW));
+            }
         }
     }
 }

@@ -883,126 +883,122 @@
                             </Grid>
                         </DockPanel>
                     </TabItem>
-                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="自動化">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <TabItem Style="{StaticResource TabItemFillSpace}" Header="リスト">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Width="510">
                             <StackPanel Margin="10">
-                                <TextBlock Text="自動化 (Automation)" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
-
-                                <!-- Step 1 -->
-                                <Border Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" CornerRadius="4" Padding="10" Margin="0,0,0,10">
-                                    <StackPanel>
-                                        <TextBlock Text="1. 対象を選択 (Select Targets)" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                                <TextBlock Text="ファイル名 (正規表現可):" Opacity="0.7" Margin="0,0,0,2"/>
-                                                <TextBox x:Name="BatchSearchBox" adonisExtensions:WatermarkExtension.Watermark="例: .*_T$"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="1" MinWidth="150">
-                                                <TextBlock Text="アセットクラス:" Opacity="0.7" Margin="0,0,0,2"/>
-                                                <ComboBox x:Name="BatchClassComboBox" SelectedIndex="0">
-                                                    <ComboBoxItem Content="すべて (All)" />
-                                                    <ComboBoxItem Content="Texture2D" />
-                                                    <ComboBoxItem Content="StaticMesh" />
-                                                    <ComboBoxItem Content="SoundWave" />
-                                                    <ComboBoxItem Content="MaterialInstanceConstant" />
-                                                </ComboBox>
-                                            </StackPanel>
-                                        </Grid>
-                                        <CheckBox x:Name="BatchIgnoreCaseCheckBox" Content="大文字・小文字を区別しない" IsChecked="True" Margin="0,5,0,0"/>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Step 2 -->
-                                <Border Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" CornerRadius="4" Padding="10" Margin="0,0,0,10">
-                                    <StackPanel>
-                                        <TextBlock Text="2. メインアクション (Primary Action)" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                        <WrapPanel Orientation="Horizontal">
-                                            <RadioButton x:Name="BatchActionExport" GroupName="BatchPrimaryAction" Content="エクスポート (.uasset)" IsChecked="True" Margin="0,5,15,5"/>
-                                            <RadioButton x:Name="BatchActionJson" GroupName="BatchPrimaryAction" Content="プロパティ保存 (.json)" Margin="0,5,15,5"/>
-                                            <RadioButton x:Name="BatchActionTexture" GroupName="BatchPrimaryAction" Content="テクスチャ保存 (.png)" Margin="0,5,15,5"/>
-                                        </WrapPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Step 3 -->
-                                <Border Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" CornerRadius="4" Padding="10" Margin="0,0,0,10">
-                                    <StackPanel>
-                                        <TextBlock Text="3. ポストプロセス (Post Process)" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                        <WrapPanel Orientation="Horizontal">
-                                            <RadioButton x:Name="BatchPostActionNone" GroupName="BatchPostAction" Content="なし (None)" IsChecked="True" Margin="0,5,15,5"/>
-                                            <RadioButton x:Name="BatchPostActionNetwork" GroupName="BatchPostAction" Content="ネットワークリクエスト (Network Request)" Margin="0,5,15,5"/>
-                                            <RadioButton x:Name="BatchPostActionScript" GroupName="BatchPostAction" Content="外部プログラム実行 (Run External Program)" Margin="0,5,15,5"/>
-                                        </WrapPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Step 4 (Settings) -->
-                                <Border Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" CornerRadius="4" Padding="10" Margin="0,0,0,10">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsChecked, ElementName=BatchPostActionNetwork}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsChecked, ElementName=BatchPostActionScript}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
-                                    <StackPanel>
-                                        <TextBlock Text="4. 詳細設定 (Settings)" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                        
-                                        <!-- Network Settings -->
-                                        <StackPanel Visibility="{Binding IsChecked, ElementName=BatchPostActionNetwork, Converter={StaticResource BoolToVisibilityConverter}}">
-                                            <Grid Margin="0,0,0,5">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-                                                <ComboBox x:Name="NetworkMethodComboBox" SelectedIndex="1" Width="80" Margin="0,0,5,0">
-                                                    <ComboBoxItem Content="GET" />
-                                                    <ComboBoxItem Content="POST" />
-                                                    <ComboBoxItem Content="PUT" />
-                                                    <ComboBoxItem Content="DELETE" />
-                                                </ComboBox>
-                                                <TextBox Grid.Column="1" x:Name="NetworkUrlBox" adonisExtensions:WatermarkExtension.Watermark="URL (https://example.com/api)"/>
-                                            </Grid>
-
-                                            <TextBlock Text="Payload Type:" Opacity="0.7" Margin="0,5,0,2"/>
-                                            <ComboBox x:Name="NetworkPayloadTypeComboBox" SelectedIndex="0" Margin="0,0,0,5">
-                                                <ComboBoxItem Content="Text / JSON" />
-                                                <ComboBoxItem Content="File Content (Binary)" />
-                                                <ComboBoxItem Content="Multipart Form Data" />
-                                            </ComboBox>
-
-                                            <TextBlock Text="Headers (Key: Value):" Opacity="0.7" Margin="0,5,0,2"/>
-                                            <TextBox x:Name="NetworkHeadersBox" Height="60" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" 
-                                                     adonisExtensions:WatermarkExtension.Watermark="Content-Type: application/json&#x0a;Authorization: Bearer token"/>
-
-                                            <TextBlock Text="Body (Text/JSON) or Form Key (Multipart):" Opacity="0.7" Margin="0,5,0,2"/>
-                                            <TextBox x:Name="NetworkRequestBodyBox" Height="80" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" FontFamily="Consolas"/>
+                                <TextBlock Text="リスト (Lists)" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
+                                <WrapPanel Orientation="Horizontal">
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Characters" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="スキン" VerticalAlignment="Center"/>
                                         </StackPanel>
-
-                                        <!-- Script Settings -->
-                                        <StackPanel Visibility="{Binding IsChecked, ElementName=BatchPostActionScript, Converter={StaticResource BoolToVisibilityConverter}}">
-                                            <TextBlock Text="Program Path:" Opacity="0.7" Margin="0,0,0,2"/>
-                                            <TextBox x:Name="ScriptPathBox" Margin="0,0,0,5" adonisExtensions:WatermarkExtension.Watermark="C:\Path\To\Script.bat or python.exe"/>
-                                            
-                                            <TextBlock Text="Arguments:" Opacity="0.7" Margin="0,5,0,2"/>
-                                            <TextBox x:Name="ScriptArgsBox" Margin="0,0,0,5" adonisExtensions:WatermarkExtension.Watermark="&quot;{FilePath}&quot; --name &quot;{FileName}&quot;"/>
-                                            
-                                            <TextBlock Text="Variables: {FilePath}, {FileName}, {FileDir}, {NameWithoutExt}" FontSize="10" Opacity="0.6" Margin="0,0,0,5"/>
+                                    </Button>
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Dances" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AnimationIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="エモート" VerticalAlignment="Center"/>
                                         </StackPanel>
-                                    </StackPanel>
-                                </Border>
-
-                                <Button Content="実行 (Execute)" Height="40" FontSize="14" FontWeight="Bold" Click="OnBatchExecuteClick" IsEnabled="{Binding Status.IsReady}"/>
+                                    </Button>
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Backpacks" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="バックアクセサリ" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Pickaxes" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="ツルハシ" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/LoadingScreens" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="ロード画面" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Gliders" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="グライダー" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Sprays" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="スプレー" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Dances/Emoji" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="エモートアイコン" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="FortniteGame/Content/Athena/Items/Banners" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="バナー" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/ItemWraps" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="ラップ" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Tag="Search:WID_" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="武器" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </WrapPanel>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
