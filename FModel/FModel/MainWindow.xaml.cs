@@ -663,13 +663,19 @@ public partial class MainWindow
 
         var filterText = NewExplorerSearchBox.Text;
         System.Text.RegularExpressions.Regex regex = null;
+        NewExplorerSearchBox.ClearValue(Control.BackgroundProperty);
+
         if (filterText.StartsWith("regex:", StringComparison.OrdinalIgnoreCase))
         {
             try
             {
                 regex = new System.Text.RegularExpressions.Regex(filterText.Substring(6), System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                NewExplorerSearchBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(50, 100, 149, 237));
             }
-            catch { /* Invalid Regex */ }
+            catch
+            {
+                NewExplorerSearchBox.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(50, 255, 0, 0));
+            }
         }
 
         var filters = filterText.Trim().Split(' ');
