@@ -789,22 +789,50 @@ public partial class MainWindow
             if (path.StartsWith("Search:"))
             {
                 var query = path.Substring(7);
-                var files = _applicationView.CUE4Parse.Provider.Files.Values
-                    .Where(x => x.Name.StartsWith(query, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                var files = new List<GameFile>();
+                var stack = new Stack<IEnumerable<TreeItem>>();
+
+                if (_applicationView.CUE4Parse.AssetsFolder.Folders != null)
+                    stack.Push(_applicationView.CUE4Parse.AssetsFolder.Folders);
+
+                while (stack.Count > 0)
+                {
+                    var folders = stack.Pop();
+                    foreach (var folder in folders)
+                    {
+                        if (folder.AssetsList?.Assets != null)
+                        {
+                            foreach (var asset in folder.AssetsList.Assets)
+                            {
+                                if (asset is GameFile gf && gf.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
+                                    files.Add(gf);
+                            }
+                        }
+
+                        if (folder.Folders != null && folder.Folders.Count > 0)
+                            stack.Push(folder.Folders);
+                    }
+                }
+
                 if (files.Count > 0)
                 {
                     if (AssetsFolderName.SelectedItem is TreeItem selected)
                         selected.IsSelected = false;
                     _applicationView.CUE4Parse.AssetsFolder.Folders?.Clear();
                     _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(files);
-                    LeftTabControl.SelectedIndex = 2;
+                    NewExplorerMenuItem.IsChecked = true;
                     FLogger.Append(ELog.Information, () => FLogger.Text($"Found {files.Count} items matching '{query}'", Constants.WHITE));
                 }
                 else
                 {
                     FLogger.Append(ELog.Warning, () => FLogger.Text($"No assets found matching: {query}", Constants.YELLOW));
                 }
+                return;
+            }
+            else if (path.StartsWith("Filter:"))
+            {
+                AssetsSearchName.Text = path.Substring(7);
+                LeftTabControl.SelectedIndex = 2;
                 return;
             }
             var parts = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
@@ -835,5 +863,16 @@ public partial class MainWindow
                 FLogger.Append(ELog.Warning, () => FLogger.Text($"Directory not found: {path}", Constants.YELLOW));
             }
         }
+    }
+
+    private void OnClearSearchClick(object sender, RoutedEventArgs e)
+    {
+        if (_applicationView.CUE4Parse.Provider == null) return;
+
+        if (_applicationView.LoadingModes.LoadCommand.CanExecute(DirectoryFilesListBox.SelectedItems))
+            _applicationView.LoadingModes.LoadCommand.Execute(DirectoryFilesListBox.SelectedItems);
+
+        NewExplorerMenuItem.IsChecked = false;
+        LeftTabControl.SelectedIndex = 1;
     }
 }

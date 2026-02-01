@@ -998,6 +998,16 @@
                                             <TextBlock Text="武器" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
+                                    <Button Width="140" Height="40" Margin="5" Click="OnClearSearchClick" IsEnabled="{Binding Status.IsReady}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="検索解除" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
                                 </WrapPanel>
                             </StackPanel>
                         </ScrollViewer>
