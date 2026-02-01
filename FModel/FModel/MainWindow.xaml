@@ -968,7 +968,7 @@
                                             <TextBlock Text="エモートアイコン" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Tag="FortniteGame/Content/Athena/Items/Banners" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                    <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/BannerIcons" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
                                         <StackPanel Orientation="Horizontal">
                                             <Viewbox Width="16" Height="16" Margin="0,0,8,0">
                                                 <Canvas Width="24" Height="24">
