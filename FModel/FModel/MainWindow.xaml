@@ -1066,7 +1066,8 @@
                             </Grid>
                             <TextBox Grid.Column="0" x:Name="NewExplorerSearchBox" AcceptsTab="False" AcceptsReturn="False"
                                      Padding="25 0 0 0" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
-                                     adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}" />
+                                     adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}"
+                                     ToolTip="検索例:&#x0a;・通常検索: 'T_ Grid' (スペースでAND検索)&#x0a;・正規表現: 'regex:^WID_' (WID_で始まる)&#x0a;・正規表現: 'regex:Athena|Soldier' (Athena または Soldier)&#x0a;・正規表現: 'regex:_S$' (_S で終わる)" />
                             <Button Grid.Column="1" ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerDeleteSearchClick">
                                 <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                     <Canvas Width="24" Height="24">
