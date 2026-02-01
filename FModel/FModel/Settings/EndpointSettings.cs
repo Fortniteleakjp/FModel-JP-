@@ -16,8 +16,8 @@ public class EndpointSettings : ViewModel
             case "Fortnite [LIVE]":
                 return new EndpointSettings[]
                 {
-                    new("https://uedb.dev/svc/api/v1/fortnite/aes", "$.['mainKey','dynamicKeys']"),
-                    new("https://uedb.dev/svc/api/v1/fortnite/mappings", "$.mappings.ZStandard") // just get the first available, not just oodle! (Unfortunately not default except when resetting settings)
+                    new("https://api.fortniteapi.com/v1/aes", "$.['mainKey','dynamicKeys']"),
+                    new("https://api.fortniteapi.com/v1/mappings", "$.mappings.ZStandard") // just get the first available, not just oodle! (Unfortunately not default except when resetting settings)
                 };
             default:
                 return new EndpointSettings[] { new(), new() };

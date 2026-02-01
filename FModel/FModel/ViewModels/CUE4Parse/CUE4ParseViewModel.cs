@@ -654,7 +654,7 @@ public partial class CUE4ParseViewModel : ViewModel
         await _threadWorkerView.Begin(cancellationToken =>
         {
             // deprecated values
-            if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/aes") endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/aes";
+            if (endpoint.Url == "https://api.fortniteapi.com/v1/aes") endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/aes";
 
             var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url, endpoint.Path);
             if (aes is not { IsValid: true }) return;
