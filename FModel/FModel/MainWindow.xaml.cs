@@ -662,6 +662,16 @@ public partial class MainWindow
         if (NewExplorerSearchBox == null || NewExplorerClassFilter == null) return;
 
         var filterText = NewExplorerSearchBox.Text;
+        System.Text.RegularExpressions.Regex regex = null;
+        if (filterText.StartsWith("regex:", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                regex = new System.Text.RegularExpressions.Regex(filterText.Substring(6), System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            }
+            catch { /* Invalid Regex */ }
+        }
+
         var filters = filterText.Trim().Split(' ');
         var hasTextFilter = !string.IsNullOrWhiteSpace(filterText);
 
@@ -676,8 +686,19 @@ public partial class MainWindow
             // Text Filter
             if (hasTextFilter)
             {
-                if (!filters.All(x => file.Name.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                if (regex != null)
+                {
+                    if (!regex.IsMatch(file.Name))
                     return false;
+                }
+                else if (filterText.StartsWith("regex:", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+                else if (!filters.All(x => file.Name.Contains(x, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return false;
+                }
             }
 
             // Class Filter
@@ -716,7 +737,11 @@ public partial class MainWindow
             rootVm.FoldersView.Filter = o =>
             {
                 if (!hasTextFilter) return true;
-                return o is FModel.ViewModels.TreeItem item && filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
+                if (o is not FModel.ViewModels.TreeItem item) return false;
+
+                if (regex != null) return regex.IsMatch(item.Header);
+                if (filterText.StartsWith("regex:", StringComparison.OrdinalIgnoreCase)) return false;
+                return filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
             };
             rootVm.FoldersView.Refresh();
         }
@@ -725,7 +750,11 @@ public partial class MainWindow
             treeItem.FoldersView.Filter = o =>
             {
                 if (!hasTextFilter) return true;
-                return o is FModel.ViewModels.TreeItem item && filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
+                if (o is not FModel.ViewModels.TreeItem item) return false;
+
+                if (regex != null) return regex.IsMatch(item.Header);
+                if (filterText.StartsWith("regex:", StringComparison.OrdinalIgnoreCase)) return false;
+                return filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
             };
             treeItem.FoldersView.Refresh();
 
