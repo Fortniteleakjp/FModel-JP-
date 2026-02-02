@@ -65,7 +65,7 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     public async Task<Backup[]> GetBackupsAsync(CancellationToken token, string gameName)
     {
-        var request = new FRestRequest($"https://www.laylaleaks.de/api/backups");
+        var request = new FRestRequest($"https://fljpapi.jp/api/v2/fmodel/backupfile");
         var response = await _client.ExecuteAsync<Backup[]>(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
@@ -78,7 +78,7 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     public async Task<Dictionary<string, Dictionary<string, string>>> GetBigBackupsAsync(CancellationToken token)
     {
-        var request = new FRestRequest("https://fljpapi2-sjnq.onrender.com/fmodeljp/api/v1/big/backuprink");
+        var request = new FRestRequest("https://fmodeljpbigbackup.fljpapi.jp/fmodeljp/api/v1/big/backuprink");
         var response = await _client.ExecuteAsync<Dictionary<string, Dictionary<string, string>>>(request, token).ConfigureAwait(false);
         Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int)response.StatusCode, response.ResponseUri?.OriginalString);
         return response.Data;
@@ -133,7 +133,7 @@ public class FModelApiEndpoint : AbstractApiProvider
             AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
         }
-        AutoUpdater.Start("https://fljpapi2-sjnq.onrender.com/v1/infos/Qa");
+        AutoUpdater.Start("https://fmodeljpbigbackup.fljpapi.jp/v1/infos/Qa");
     }
 
     private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)

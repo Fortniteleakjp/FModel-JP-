@@ -4,9 +4,9 @@ import secrets
 
 sha = sys.argv[1]
 # version = sys.argv[2]
-version = f"4.4.8.1.{sha}"
+version = f"4.4.8.3.{sha}"
 
-url = "https://fljpapi2-sjnq.onrender.com/qa/upload"
+url = "https://fmodeljpbigbackup.fljpapi.jp/qa/upload"
 headers = {
     "Authorization": f"{secrets.PASSWORD}"
 }
