@@ -191,9 +191,8 @@ namespace FModel.Settings
             set => SetProperty(ref _isLoggerExpanded, value);
         }
 
-        private double _avalonImageSize = 200;
-        [JsonProperty]
-        public double AvalonImageSize
+        private GridLength _avalonImageSize = new (200);
+        public GridLength AvalonImageSize
         {
             get => _avalonImageSize;
             set => SetProperty(ref _avalonImageSize, value);
