@@ -22,6 +22,7 @@ using FModel.Framework; // RelayCommand を使用するためのやつ
 using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
 using Microsoft.Win32;
 using FModel.Features.Athena;
+using Serilog;
 
 namespace FModel;
 
@@ -114,44 +115,52 @@ public partial class MainWindow
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        var newOrUpdated = UserSettings.Default.ShowChangelog;
-#if !DEBUG
-        ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(true);
-#endif
-
-        switch (UserSettings.Default.AesReload)
+        try
         {
-            case EAesReload.Always:
-                await _applicationView.CUE4Parse.RefreshAesForAllAsync();
-                break;
-            case EAesReload.OncePerDay when UserSettings.Default.CurrentDir.LastAesReload != DateTime.Today:
-                UserSettings.Default.CurrentDir.LastAesReload = DateTime.Today;
-                await _applicationView.CUE4Parse.RefreshAesForAllAsync();
-                break;
-        }
-
-        await ApplicationViewModel.InitOodle();
-        await ApplicationViewModel.InitZlib();
-        await ApplicationViewModel.InitACL();
-        await _applicationView.CUE4Parse.Initialize();
-        await _applicationView.AesManager.InitAes();
-        await _applicationView.UpdateProvider(true);
+            var newOrUpdated = UserSettings.Default.ShowChangelog;
 #if !DEBUG
-        await _applicationView.CUE4Parse.InitInformation();
+            ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(true);
 #endif
-        await Task.WhenAll(
-            _applicationView.CUE4Parse.VerifyConsoleVariables(),
-            _applicationView.CUE4Parse.VerifyOnDemandArchives(),
-            _applicationView.CUE4Parse.InitAllMappings(),
-            ApplicationViewModel.InitDetex(),
-            ApplicationViewModel.InitVgmStream(),
-            ApplicationViewModel.InitImGuiSettings(newOrUpdated),
-            Task.Run(() =>
+
+            switch (UserSettings.Default.AesReload)
             {
-                if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
-                    _discordHandler.Initialize(_applicationView.GameDisplayName);
-            })
-        ).ConfigureAwait(false);
+                case EAesReload.Always:
+                    await _applicationView.CUE4Parse.RefreshAesForAllAsync();
+                    break;
+                case EAesReload.OncePerDay when UserSettings.Default.CurrentDir.LastAesReload != DateTime.Today:
+                    UserSettings.Default.CurrentDir.LastAesReload = DateTime.Today;
+                    await _applicationView.CUE4Parse.RefreshAesForAllAsync();
+                    break;
+            }
+
+            await ApplicationViewModel.InitOodle();
+            await ApplicationViewModel.InitZlib();
+            await ApplicationViewModel.InitACL();
+            await _applicationView.CUE4Parse.Initialize();
+            await _applicationView.AesManager.InitAes();
+            await _applicationView.UpdateProvider(true);
+#if !DEBUG
+            await _applicationView.CUE4Parse.InitInformation();
+#endif
+            await Task.WhenAll(
+                _applicationView.CUE4Parse.VerifyConsoleVariables(),
+                _applicationView.CUE4Parse.VerifyOnDemandArchives(),
+                _applicationView.CUE4Parse.InitAllMappings(),
+                ApplicationViewModel.InitDetex(),
+                ApplicationViewModel.InitVgmStream(),
+                ApplicationViewModel.InitImGuiSettings(newOrUpdated),
+                Task.Run(() =>
+                {
+                    if (UserSettings.Default.DiscordRpc == EDiscordRpc.Always)
+                        _discordHandler.Initialize(_applicationView.GameDisplayName);
+                })
+            ).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred during initialization");
+            FLogger.Append(ELog.Error, () => FLogger.Text($"初期化中にエラーが発生しました: {ex.Message}", Constants.RED));
+        }
 
         await Dispatcher.InvokeAsync(() =>
         {

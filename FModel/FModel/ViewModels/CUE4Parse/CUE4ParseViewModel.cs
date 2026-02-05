@@ -333,7 +333,7 @@ public partial class CUE4ParseViewModel : ViewModel
             {
                 ChunkHostUri = new Uri("https://download.epicgames.com/", UriKind.Absolute),
                 ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
-                Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken),
+                Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse?.AccessToken),
                 Timeout = TimeSpan.FromSeconds(30)
             };
             switch (Provider)
