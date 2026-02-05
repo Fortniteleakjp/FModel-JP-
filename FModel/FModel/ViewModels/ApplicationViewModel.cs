@@ -17,6 +17,7 @@ using CUE4Parse.UE4.VirtualFileSystem;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.IO.Objects;
 using CUE4Parse.UE4.VirtualFileSystem;
+using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
@@ -82,6 +83,45 @@ public class ApplicationViewModel : ViewModel
     private MenuCommand _menuCommand;
     public CopyCommand CopyCommand => _copyCommand ??= new CopyCommand(this);
     private CopyCommand _copyCommand;
+
+    public ICommand CopyAssetPathNameCommand => _copyAssetPathNameCommand ??= new SimpleRelayCommand(OnCopyAssetPathName);
+    private ICommand _copyAssetPathNameCommand;
+
+    private void OnCopyAssetPathName(object parameter)
+    {
+        if (parameter is not IList items || items.Count == 0) return;
+
+        var paths = new List<string>();
+        foreach (var item in items)
+        {
+            if (item is not GameFile file) continue;
+
+            var path = file.PathWithoutExtension;
+            var contentIndex = path.IndexOf("/Content/", StringComparison.OrdinalIgnoreCase);
+            if (contentIndex > -1)
+            {
+                var prefix = path.Substring(0, contentIndex);
+                var suffix = path.Substring(contentIndex + "/Content/".Length);
+                var root = prefix.SubstringAfterLast('/');
+
+                if (root.Equals("Engine", StringComparison.OrdinalIgnoreCase))
+                    path = $"/Engine/{suffix}";
+                else if (root.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) || root.Equals("ShooterGame", StringComparison.OrdinalIgnoreCase))
+                    path = $"/Game/{suffix}";
+                else
+                    path = $"/{root}/{suffix}";
+            }
+            else if (!path.StartsWith("/"))
+            {
+                path = $"/{path}";
+            }
+
+            paths.Add($"{path}.{file.NameWithoutExtension}");
+        }
+
+        if (paths.Count > 0)
+            Clipboard.SetText(string.Join(Environment.NewLine, paths));
+    }
 
     public ICommand SaveSoundCommand => _saveSoundCommand ??= new SimpleRelayCommand(OnSaveSound);
     private ICommand _saveSoundCommand;

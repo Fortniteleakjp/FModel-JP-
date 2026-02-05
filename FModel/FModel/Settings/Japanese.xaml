@@ -128,6 +128,7 @@
     <system:String x:Key="Ctx_CopyFolderPath">フォルダパス</system:String>
     <system:String x:Key="Ctx_CopyPathNoExt">ファイルパス (拡張子なし)</system:String>
     <system:String x:Key="Ctx_CopyFolderPathNoExt">フォルダパス (拡張子なし)</system:String>
+    <system:String x:Key="Ctx_CopyAssetPathName">AssetPathNameとしてコピー</system:String>
     <system:String x:Key="Ctx_SaveUasset">.uasset 形式で保存</system:String>
     <system:String x:Key="Ctx_SaveDecompiled">Save Folder's Packages Decompiled Blueprints (.cpp)</system:String>
     <system:String x:Key="Ctx_AddToFavorites">お気に入りに追加</system:String>

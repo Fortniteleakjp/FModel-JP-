@@ -838,6 +838,7 @@
                                                         </MultiBinding>
                                                     </MenuItem.CommandParameter>
                                                 </MenuItem>
+                                                <MenuItem Header="{DynamicResource Ctx_CopyAssetPathName}" Command="{Binding DataContext.CopyAssetPathNameCommand}" CommandParameter="{Binding SelectedItems}" />
                                             </MenuItem>
                                         </ContextMenu>
                                     </ListBox.ContextMenu>
