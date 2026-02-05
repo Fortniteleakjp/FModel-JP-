@@ -346,9 +346,11 @@
                               IsChecked="{Binding SettingsView.SelectedRestoreTabsOnStartup, Mode=TwoWay}" Margin="0 5 0 0"/>
 
                     <TextBlock Grid.Row="19" Grid.Column="0" Text="{DynamicResource Settings_PropertiesFilenameFormat}" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="{DynamicResource Settings_PropertiesFilenameFormat_Tooltip}" />
-                    <TextBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="5"
+                    <TextBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="3"
                              Text="{Binding PropertiesFilenameFormat, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Margin="0 5 0 0" />
+                    <Button Grid.Row="19" Grid.Column="6" Content="?" HorizontalAlignment="Right" Width="25"
+                            Margin="0 5 0 0" Click="OnShowFilenameFormatHelpClick" />
 
                     <Separator Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_Versioning}"></Separator>
 

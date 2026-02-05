@@ -1,5 +1,6 @@
 using System.IO;
 using System.Windows;
+using AdonisUI.Controls;
 using System.Windows.Controls;
 using CUE4Parse.UE4.Versions;
 using FModel.Services;
@@ -248,5 +249,21 @@ public partial class SettingsView
         _applicationView.SettingsView.Save(out _);
         UserSettings.Save();
         _applicationView.Restart();
+    }
+
+    private void OnShowFilenameFormatHelpClick(object sender, RoutedEventArgs e)
+    {
+        var message = "使用可能な引数:\n\n" +
+                      "{FileName} : 元のファイル名 (例: MyAsset)\n" +
+                      "{yyyy} : 年 (4桁) (例: 2023)\n" +
+                      "{yy} : 年 (下2桁) (例: 23)\n" +
+                      "{MM} : 月 (0埋め) (例: 09)\n" +
+                      "{dd} : 日 (0埋め) (例: 05)\n" +
+                      "{HH} : 時 (24時間表記) (例: 14)\n" +
+                      "{mm} : 分 (0埋め) (例: 30)\n" +
+                      "{ss} : 秒 (0埋め) (例: 59)\n" +
+                      "\n例: \"{FileName}_{yyyy}{MM}{dd}_{HH}{mm}{ss}\" は " +
+                      "MyAsset_20230905_143059.json のようになります。";
+        AdonisUI.Controls.MessageBox.Show(message, "ファイル名形式のヘルプ", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
     }
 }
