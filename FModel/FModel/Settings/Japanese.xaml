@@ -52,6 +52,8 @@
     <!-- Settings General -->
     <system:String x:Key="Settings_KeepDirectoryStructure">保存時にディレクトリ構造を維持</system:String>
     <system:String x:Key="Settings_RestoreTabs">起動時にタブを復元(※β版です)</system:String>
+    <system:String x:Key="Settings_PropertiesFilenameFormat">プロパティ保存時のファイル名形式</system:String>
+    <system:String x:Key="Settings_PropertiesFilenameFormat_Tooltip">プロパティ(.json)保存時のファイル名形式。使用可能な値: {FileName}, {yyyy}, {yy}, {MM}, {dd}, {HH}, {mm}, {ss}</system:String>
     <system:String x:Key="Settings_Versioning">バージョン管理の設定 *</system:String>
     <system:String x:Key="Settings_CustomVersions">カスタムVersion</system:String>
     <system:String x:Key="Settings_Options">オプション</system:String>
@@ -184,7 +186,6 @@
     <system:String x:Key="Settings_TexturePlatform_Tooltip">プラットフォームを指定し、そのプラットフォームに対応した画像を表示します</system:String>
     <system:String x:Key="Settings_SoundPlayback_Tooltip">圧縮されたサウンドファイルの読み込み方法</system:String>
     <system:String x:Key="Settings_KeepDirectoryStructure_Tooltip">ゲームのパス通りに保存する場合はチェックを入れてください</system:String>
-    <system:String x:Key="Settings_RestoreTabs_Tooltip">有効にすると、FModelは終了時に開いていたタブを記憶し、次回起動時に復元します</system:String>
     <system:String x:Key="Settings_AutoData_AES">AES</system:String>
     <system:String x:Key="Settings_AutoData_Mapping">Mapping</system:String>
     <system:String x:Key="Settings_SearchMemory_Tooltip">高度な検索が使用できる最大メモリ量をパーセンテージで指定します</system:String>

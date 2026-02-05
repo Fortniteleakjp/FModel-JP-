@@ -345,10 +345,15 @@
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               IsChecked="{Binding SettingsView.SelectedRestoreTabsOnStartup, Mode=TwoWay}" Margin="0 5 0 0"/>
 
-                    <Separator Grid.Row="19" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_Versioning}"></Separator>
+                    <TextBlock Grid.Row="19" Grid.Column="0" Text="{DynamicResource Settings_PropertiesFilenameFormat}" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="{DynamicResource Settings_PropertiesFilenameFormat_Tooltip}" />
+                    <TextBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="5"
+                             Text="{Binding PropertiesFilenameFormat, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="0 5 0 0" />
 
-                    <TextBlock Grid.Row="20" Grid.Column="0" Text="{DynamicResource Settings_Versioning}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
+                    <Separator Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_Versioning}"></Separator>
+
+                    <TextBlock Grid.Row="21" Grid.Column="0" Text="{DynamicResource Settings_Versioning}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="5" />
@@ -362,10 +367,10 @@
                         <Button Grid.Column="4" Content="{DynamicResource Settings_MapStructTypes}" Click="OpenMapStructTypes" />
                     </Grid>
 
-                    <TextBlock Grid.Row="21" Grid.Column="0" Text="{DynamicResource Settings_AesReload}" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="22" Grid.Column="0" Text="{DynamicResource Settings_AesReload}" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <ComboBox Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <ComboBox Grid.Row="22" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               ItemsSource="{Binding SettingsView.AesReloads}" SelectedItem="{Binding SettingsView.SelectedAesReload, Mode=TwoWay}"
                               Visibility="{Binding SettingsView.AesEndpoint.IsValid, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -376,8 +381,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <TextBlock Grid.Row="22" Grid.Column="0" Text="{DynamicResource Settings_AutoData}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Grid Grid.Row="22" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="23" Grid.Column="0" Text="{DynamicResource Settings_AutoData}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Grid Grid.Row="23" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
                           DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -389,39 +394,39 @@
                         <Button Grid.Column="2" Content="{DynamicResource Settings_AutoData_Mapping}" Click="OpenMappingEndpoint" />
                     </Grid>
 
-                    <TextBlock Grid.Row="23" Grid.Column="0" Text="{DynamicResource Settings_LocalMapping}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="23" Grid.Column="2" Margin="0 5 0 10"
+                    <TextBlock Grid.Row="24" Grid.Column="0" Text="{DynamicResource Settings_LocalMapping}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="24" Grid.Column="2" Margin="0 5 0 10"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SettingsView.MappingEndpoint.Overwrite, Mode=TwoWay}" />
 
-                    <TextBlock Grid.Row="24" Grid.Column="0" Text="{DynamicResource Settings_MappingFilePath}" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="25" Grid.Column="0" Text="{DynamicResource Settings_MappingFilePath}" VerticalAlignment="Center" Margin="0 0 0 5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                                Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <TextBox Grid.Row="24" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5" Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
+                    <TextBox Grid.Row="25" Grid.Column="2" Grid.ColumnSpan="3" Margin="0 0 0 5" Text="{Binding SettingsView.MappingEndpoint.FilePath, Mode=TwoWay}"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                              Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <Button Grid.Row="24" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
+                    <Button Grid.Row="25" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseMappings" Margin="0 0 0 5"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Visibility="{Binding SettingsView.MappingEndpoint.Overwrite, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                    <TextBlock Grid.Row="25" Grid.Column="0" Text="{DynamicResource Settings_ScriptBytecode}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="25" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="26" Grid.Column="0" Text="{DynamicResource Settings_ScriptBytecode}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="26" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadScriptData, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
-                    <TextBlock Grid.Row="26" Grid.Column="0" Text="{DynamicResource Settings_InlineShaderMaps}" VerticalAlignment="center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="26" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <TextBlock Grid.Row="27" Grid.Column="0" Text="{DynamicResource Settings_InlineShaderMaps}" VerticalAlignment="center" Margin="0 0 0 5" />
+                    <CheckBox Grid.Row="27" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding ReadShaderMaps, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"/>
 
-                    <TextBlock Grid.Row="27" Grid.Column="0" Text="{DynamicResource Settings_WwisePrefetch}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="27" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
+                    <TextBlock Grid.Row="28" Grid.Column="0" Text="{DynamicResource Settings_WwisePrefetch}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <Slider Grid.Row="28" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
                             Value="{Binding WwiseMaxBnkPrefetch, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"/>
 
                     <!-- 新しいUI要素 -->
-                    <TextBlock Grid.Row="28" Grid.Column="0" Text="{DynamicResource Settings_SearchMemory}" VerticalAlignment="Center" Margin="0 0 0 5"
+                    <TextBlock Grid.Row="29" Grid.Column="0" Text="{DynamicResource Settings_SearchMemory}" VerticalAlignment="Center" Margin="0 0 0 5"
                                ToolTip="{DynamicResource Settings_SearchMemory_Tooltip}" />
-                    <Slider Grid.Row="28" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="100" TickFrequency="5"
+                    <Slider Grid.Row="29" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="0" Maximum="100" TickFrequency="5"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
                             Value="{Binding ContentSearchMemoryLimitPercentage, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"/>
 

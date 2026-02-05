@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using FModel.Views.Resources.Controls;
+using FModel.Settings;
 
 namespace FModel.Features.Athena
 
@@ -18,11 +19,14 @@ namespace FModel.Features.Athena
 
                 string json = await Task.Run(() => AthenaGenerator.BuildProfileJson(url, withPaks));
 
+                var baseFileName = Path.GetFileNameWithoutExtension(fileName);
+                var format = UserSettings.Default.PropertiesFilenameFormat;
+
                 var dlg = new SaveFileDialog
                 {
                     Title = "保存先を選択してください",
                     Filter = "JSON Files|*.json",
-                    FileName = fileName,
+                    FileName = $"{Helper.GenerateFormattedFileName(format, baseFileName)}.json",
                     OverwritePrompt = true
                 };
 

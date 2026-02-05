@@ -496,7 +496,9 @@ public class TabItem : ViewModel
 
     public void SaveProperty(bool updateUi)
     {
-        var fileName = Path.ChangeExtension(Entry.Name, ".json");
+        var baseFileName = Path.GetFileNameWithoutExtension(Entry.Name);
+        var format = UserSettings.Default.PropertiesFilenameFormat;
+        var fileName = $"{Helper.GenerateFormattedFileName(format, baseFileName)}.json";
         var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Entry.Directory : "", fileName).Replace('\\', '/');
 
@@ -508,7 +510,9 @@ public class TabItem : ViewModel
 
     public void SaveDecompiled(bool updateUi)
     {
-        var fileName = Path.ChangeExtension(Entry.Name, ".cpp");
+        var baseFileName = Path.GetFileNameWithoutExtension(Entry.Name);
+        var format = UserSettings.Default.PropertiesFilenameFormat;
+        var fileName = $"{Helper.GenerateFormattedFileName(format, baseFileName)}.cpp";
         var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
             UserSettings.Default.KeepDirectoryStructure ? Entry.Directory : "", fileName).Replace('\\', '/');
 

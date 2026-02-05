@@ -653,6 +653,14 @@ namespace FModel.Settings
             set => SetProperty(ref _customWeaponDamageLocalizeKey, value);
         }
 
+        private string _propertiesFilenameFormat = "{FileName}-{yyyy}-{MM}-{dd}-{HH}{mm}{ss}";
+        [JsonProperty]
+        public string PropertiesFilenameFormat
+        {
+            get => _propertiesFilenameFormat;
+            set => SetProperty(ref _propertiesFilenameFormat, value);
+        }
+
         private ObservableCollection<string> _recentFiles = new();
         [JsonProperty]
         public ObservableCollection<string> RecentFiles

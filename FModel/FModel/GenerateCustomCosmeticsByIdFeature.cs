@@ -1,4 +1,5 @@
-﻿using FModel.Views.Resources.Controls;
+﻿﻿using FModel.Views.Resources.Controls;
+using FModel.Settings;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
@@ -27,11 +28,17 @@ namespace FModel.Features.Athena
                 FLogger.Append(ELog.Information, () => FLogger.Text("カスタムコスメティックのプロファイルを生成中...", Constants.WHITE));
                 string json = await Task.Run(() => AthenaGenerator.BuildProfileJsonByIds(ids.Split(',').Select(id => id.Trim()).ToArray()));
 
+                var idsList = ids.Split(',').Select(id => id.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                var baseFileName = idsList.Count == 1 ? idsList[0] : "athena_custom";
+
+                var format = UserSettings.Default.PropertiesFilenameFormat;
+                var fileName = $"{Helper.GenerateFormattedFileName(format, baseFileName)}.json";
+
                 var dlg = new SaveFileDialog
                 {
                     Title = "保存先を選択してください",
                     Filter = "JSON Files|*.json",
-                    FileName = "athena_custom.json",
+                    FileName = fileName,
                     OverwritePrompt = true
                 };
 

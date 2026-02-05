@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -30,6 +31,27 @@ public static class Helper
         resultSpan[1] = 'x';
 
         return new string(resultSpan);
+    }
+
+    public static string GenerateFormattedFileName(string format, string baseFileName)
+    {
+        if (string.IsNullOrWhiteSpace(format))
+        {
+            return baseFileName;
+        }
+
+        var now = DateTime.Now;
+        var result = format.Replace("{FileName}", baseFileName, StringComparison.OrdinalIgnoreCase)
+                         .Replace("{yyyy}", now.ToString("yyyy"), StringComparison.OrdinalIgnoreCase)
+                         .Replace("{yy}", now.ToString("yy"), StringComparison.OrdinalIgnoreCase)
+                         .Replace("{MM}", now.ToString("MM"), StringComparison.OrdinalIgnoreCase)
+                         .Replace("{dd}", now.ToString("dd"), StringComparison.OrdinalIgnoreCase)
+                         .Replace("{HH}", now.ToString("HH"), StringComparison.OrdinalIgnoreCase)
+                         .Replace("{mm}", now.ToString("mm"), StringComparison.OrdinalIgnoreCase)
+                         .Replace("{ss}", now.ToString("ss"), StringComparison.OrdinalIgnoreCase);
+
+        // ファイル名として無効な文字を '_' に置換
+        return string.Join("_", result.Split(Path.GetInvalidFileNameChars()));
     }
 
     public static void OpenWindow<T>(string windowName, Action action) where T : Window
