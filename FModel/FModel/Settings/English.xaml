@@ -127,6 +127,7 @@
     <system:String x:Key="Ctx_CopyPathNoExt">Path (No Ext)</system:String>
     <system:String x:Key="Ctx_CopyFolderPathNoExt">Folder Path (No Ext)</system:String>
     <system:String x:Key="Ctx_SaveUasset">Save as .uasset</system:String>
+    <system:String x:Key="Ctx_CopyAssetPathName">Copy as AssetPathName</system:String>
     <system:String x:Key="Ctx_SaveDecompiled">Save Decompiled Blueprints (.cpp)</system:String>
     <system:String x:Key="Ctx_AddToFavorites">Add to Favorites</system:String>
 
