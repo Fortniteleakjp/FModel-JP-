@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -120,12 +121,11 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         }
 
         var hasFilter = filter != null && filter.Count != 0;
-        var entries = new List<GameFile>();
+        var entries = new ConcurrentBag<GameFile>();
 
-        foreach (var asset in _applicationView.CUE4Parse.Provider.Files.Values)
+        Parallel.ForEach(_applicationView.CUE4Parse.Provider.Files.Values, new ParallelOptions { CancellationToken = cancellationToken }, asset =>
         {
-            cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
-            if (asset.IsUePackagePayload) continue;
+            if (asset.IsUePackagePayload) return;
 
             if (hasFilter)
             {
@@ -138,10 +138,10 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             {
                 entries.Add(asset);
             }
-        }
+        });
 
         _applicationView.Status.UpdateStatusLabel($"{entries.Count:### ### ###} Packages");
-        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(entries);
+        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(entries.ToList());
     }
 
     private void FilterNewOrModifiedFilesToDisplay(CancellationToken cancellationToken)
@@ -281,23 +281,22 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 
     private void FilterPacthedFilesToDisplay(CancellationToken cancellationToken)
     {
-        var loaded = new Dictionary<string, GameFile>(_applicationView.CUE4Parse.Provider.PathComparer);
+        var loaded = new ConcurrentDictionary<string, GameFile>(_applicationView.CUE4Parse.Provider.PathComparer);
 
-        foreach (var (key, asset) in _applicationView.CUE4Parse.Provider.Files)
+        Parallel.ForEach(_applicationView.CUE4Parse.Provider.Files, new ParallelOptions { CancellationToken = cancellationToken }, kvp =>
         {
-            cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
-            if (asset.IsUePackagePayload) continue;
+            var (key, asset) = kvp;
+            if (asset.IsUePackagePayload) return;
 
-            if (asset is VfsEntry entry && loaded.TryGetValue(key, out var file) &&
-                file is VfsEntry existingEntry && entry.Vfs.ReadOrder < existingEntry.Vfs.ReadOrder)
+            loaded.AddOrUpdate(key, asset, (k, existing) =>
             {
-                continue;
-            }
-
-            loaded[key] = asset;
-        }
+                if (asset is VfsEntry entry && existing is VfsEntry existingEntry && entry.Vfs.ReadOrder < existingEntry.Vfs.ReadOrder)
+                    return existing;
+                return asset;
+            });
+        });
 
         _applicationView.Status.UpdateStatusLabel($"{loaded.Count:### ### ###} Packages");
-        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(loaded.Values);
+        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(loaded.Values.ToList());
     }
 }

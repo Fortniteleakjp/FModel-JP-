@@ -32,12 +32,12 @@
 
         <!-- ツールバー -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,0">
-            <TextBlock Text="モード:" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+            <TextBlock Text="{DynamicResource RefViewer_Mode}" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
             <ComboBox SelectedIndex="{Binding SearchMode}" Width="160" VerticalAlignment="Center" Margin="0,0,10,0">
-                <ComboBoxItem Content="依存関係 (Dependencies)"/>
-                <ComboBoxItem Content="参照元 (Referencers)"/>
+                <ComboBoxItem Content="{DynamicResource RefViewer_Mode_Dependencies}"/>
+                <ComboBoxItem Content="{DynamicResource RefViewer_Mode_Referencers}"/>
             </ComboBox>
-            <TextBlock Text="フィルタ:" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+            <TextBlock Text="{DynamicResource RefViewer_Filter}" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
             <ComboBox SelectedValue="{Binding AssetTypeFilter}" SelectedValuePath="Content" Width="100" VerticalAlignment="Center" Margin="0,0,10,0">
                 <ComboBoxItem Content="All" IsSelected="True"/>
                 <ComboBoxItem Content="Texture"/>
@@ -48,14 +48,14 @@
                 <ComboBoxItem Content="Blueprint"/>
                 <ComboBoxItem Content="Config (.ini)"/>
             </ComboBox>
-            <TextBlock Text="検索深度:" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+            <TextBlock Text="{DynamicResource RefViewer_Depth}" VerticalAlignment="Center" Margin="0,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
             <TextBox Text="{Binding MaxDepth}" Width="50" VerticalAlignment="Center" Margin="0,0,10,0"/>
-            <Button Content="更新" Click="OnRefreshClick" VerticalAlignment="Center" IsDefault="True"/>
-            <TextBlock Text="検索:" VerticalAlignment="Center" Margin="20,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+            <Button Content="{DynamicResource RefViewer_Refresh}" Click="OnRefreshClick" VerticalAlignment="Center" IsDefault="True"/>
+            <TextBlock Text="{DynamicResource RefViewer_Search}" VerticalAlignment="Center" Margin="20,0,5,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
             <TextBox x:Name="SearchBox" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="150" VerticalAlignment="Center" Margin="0,0,5,0" KeyDown="OnSearchKeyDown"/>
-            <Button Content="検索" Click="OnSearchClick" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <Button Content="&lt;" Click="OnPrevSearchClick" VerticalAlignment="Center" ToolTip="前へ" Margin="0,0,2,0"/>
-            <Button Content="&gt;" Click="OnNextSearchClick" VerticalAlignment="Center" ToolTip="次へ"/>
+            <Button Content="{DynamicResource RefViewer_SearchBtn}" Click="OnSearchClick" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <Button Content="&lt;" Click="OnPrevSearchClick" VerticalAlignment="Center" ToolTip="{DynamicResource RefViewer_Prev_Tooltip}" Margin="0,0,2,0"/>
+            <Button Content="&gt;" Click="OnNextSearchClick" VerticalAlignment="Center" ToolTip="{DynamicResource RefViewer_Next_Tooltip}"/>
         </StackPanel>
 
         <!-- 読み込み中の表示 -->
@@ -143,8 +143,8 @@
                                 </Border.Style>
                                 <Border.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="アセットを開く" Click="OnOpenAssetClick"/>
-                                        <MenuItem Header="パスをコピー" Click="OnCopyPathClick"/>
+                                        <MenuItem Header="{DynamicResource RefViewer_Ctx_OpenAsset}" Click="OnOpenAssetClick"/>
+                                        <MenuItem Header="{DynamicResource RefViewer_Ctx_CopyPath}" Click="OnCopyPathClick"/>
                                     </ContextMenu>
                                 </Border.ContextMenu>
                                 <Grid Margin="10">

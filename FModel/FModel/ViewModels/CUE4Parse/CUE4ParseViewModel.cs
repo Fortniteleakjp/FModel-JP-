@@ -424,9 +424,10 @@ public partial class CUE4ParseViewModel : ViewModel
                 }
             }
 
-            Provider?.Initialize();
-            // DiffProviderが初期化されている場合、こちらも初期化する
-            DiffProvider?.Initialize();
+            var tasks = new List<Task>();
+            if (Provider != null) tasks.Add(Task.Run(() => Provider.Initialize()));
+            if (DiffProvider != null) tasks.Add(Task.Run(() => DiffProvider.Initialize()));
+            Task.WaitAll(tasks.ToArray());
             _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.GameDirectory));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
             if (Provider != null)

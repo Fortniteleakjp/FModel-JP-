@@ -141,6 +141,18 @@
 
     <!-- Reference Viewer -->
     <system:String x:Key="RefViewer_Title">Reference Viewer</system:String>
+    <system:String x:Key="RefViewer_Mode">Mode:</system:String>
+    <system:String x:Key="RefViewer_Mode_Dependencies">Dependencies</system:String>
+    <system:String x:Key="RefViewer_Mode_Referencers">Referencers</system:String>
+    <system:String x:Key="RefViewer_Filter">Filter:</system:String>
+    <system:String x:Key="RefViewer_Depth">Depth:</system:String>
+    <system:String x:Key="RefViewer_Refresh">Refresh</system:String>
+    <system:String x:Key="RefViewer_Search">Search:</system:String>
+    <system:String x:Key="RefViewer_SearchBtn">Find</system:String>
+    <system:String x:Key="RefViewer_Prev_Tooltip">Previous</system:String>
+    <system:String x:Key="RefViewer_Next_Tooltip">Next</system:String>
+    <system:String x:Key="RefViewer_Ctx_OpenAsset">Open Asset</system:String>
+    <system:String x:Key="RefViewer_Ctx_CopyPath">Copy Path</system:String>
 
     <!-- Update View -->
     <system:String x:Key="Update_Title">Releases</system:String>

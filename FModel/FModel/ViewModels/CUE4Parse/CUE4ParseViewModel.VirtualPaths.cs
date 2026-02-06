@@ -40,19 +40,30 @@ public partial class CUE4ParseViewModel
 
     public void LoadVfs(IEnumerable<KeyValuePair<FGuid, FAesKey>> aesKeys, IEnumerable<KeyValuePair<FGuid, FAesKey>> diffAesKeys)
     {
-        Provider.SubmitKeys(aesKeys);
-        Provider.PostMount();
+        var tasks = new List<Task>
+        {
+            Task.Run(() =>
+            {
+                Provider.SubmitKeys(aesKeys);
+                Provider.PostMount();
+            })
+        };
 
         if (DiffProvider != null)
         {
-            DiffProvider.SubmitKeys(diffAesKeys);
-            DiffProvider.PostMount();
-
-            if (DiffProvider.MountedVfs.Count == 0 && DiffProvider.UnloadedVfs.Count > 0)
+            tasks.Add(Task.Run(() =>
             {
-                FLogger.Append(ELog.Error, () =>
-                    FLogger.Text("Compared game could not mount any VFS archives. Possibly due to missing AES keys.", Constants.WHITE, true));
-            }
+                DiffProvider.SubmitKeys(diffAesKeys);
+                DiffProvider.PostMount();
+            }));
+        }
+
+        Task.WaitAll(tasks.ToArray());
+
+        if (DiffProvider != null && DiffProvider.MountedVfs.Count == 0 && DiffProvider.UnloadedVfs.Count > 0)
+        {
+            FLogger.Append(ELog.Error, () =>
+                FLogger.Text("Compared game could not mount any VFS archives. Possibly due to missing AES keys.", Constants.WHITE, true));
         }
 
         var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;

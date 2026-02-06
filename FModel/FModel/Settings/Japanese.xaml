@@ -143,6 +143,18 @@
 
     <!-- Reference Viewer -->
     <system:String x:Key="RefViewer_Title">参照ビューア</system:String>
+    <system:String x:Key="RefViewer_Mode">モード:</system:String>
+    <system:String x:Key="RefViewer_Mode_Dependencies">依存関係 (Dependencies)</system:String>
+    <system:String x:Key="RefViewer_Mode_Referencers">参照元 (Referencers)</system:String>
+    <system:String x:Key="RefViewer_Filter">フィルタ:</system:String>
+    <system:String x:Key="RefViewer_Depth">検索深度:</system:String>
+    <system:String x:Key="RefViewer_Refresh">更新</system:String>
+    <system:String x:Key="RefViewer_Search">検索:</system:String>
+    <system:String x:Key="RefViewer_SearchBtn">検索</system:String>
+    <system:String x:Key="RefViewer_Prev_Tooltip">前へ</system:String>
+    <system:String x:Key="RefViewer_Next_Tooltip">次へ</system:String>
+    <system:String x:Key="RefViewer_Ctx_OpenAsset">アセットを開く</system:String>
+    <system:String x:Key="RefViewer_Ctx_CopyPath">パスをコピー</system:String>
 
     <!-- Update View -->
     <system:String x:Key="Update_Title">リリース</system:String>
