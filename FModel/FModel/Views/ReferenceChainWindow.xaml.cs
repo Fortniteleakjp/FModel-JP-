@@ -748,10 +748,25 @@ namespace FModel.Views
                 var texture = package.GetExports().FirstOrDefault(e => e is UTexture2D) as UTexture2D;
                 if (texture != null)
                 {
-                    var cTexture = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+                    var cTexture = texture.Decode(256, UserSettings.Default.CurrentDir.TexturePlatform);
                     if (cTexture != null)
                     {
                         using var skBitmap = cTexture.ToSkBitmap();
+                        if (skBitmap.ColorType == SkiaSharp.SKColorType.Bgra8888)
+                        {
+                            var bitmapSource = BitmapSource.Create(skBitmap.Width, skBitmap.Height, 96, 96, PixelFormats.Bgra32, null, skBitmap.Bytes, skBitmap.RowBytes);
+                            bitmapSource.Freeze();
+                            return bitmapSource;
+                        }
+
+                        using var bgraBitmap = new SkiaSharp.SKBitmap(skBitmap.Width, skBitmap.Height, SkiaSharp.SKColorType.Bgra8888, skBitmap.AlphaType);
+                        if (skBitmap.CopyTo(bgraBitmap))
+                        {
+                            var bitmapSource = BitmapSource.Create(bgraBitmap.Width, bgraBitmap.Height, 96, 96, PixelFormats.Bgra32, null, bgraBitmap.Bytes, bgraBitmap.RowBytes);
+                            bitmapSource.Freeze();
+                            return bitmapSource;
+                        }
+
                         using var data = skBitmap.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
                         using var stream = new MemoryStream(data.ToArray());
                         var bitmap = new BitmapImage();
