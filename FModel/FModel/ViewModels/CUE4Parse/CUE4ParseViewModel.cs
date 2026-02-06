@@ -1378,9 +1378,13 @@ public partial class CUE4ParseViewModel : ViewModel
                     return false;
 
                 creator.ParseForInfo();
-                TabControl.SelectedTab.AddImage(pointer.Object.Value.Name, false, creator.Draw(), saveTextures, updateUi);
+                var bitmaps = creator.Draw();
+                foreach (var bitmap in bitmaps)
+                {
+                    if (bitmap != null)
+                        TabControl.SelectedTab.AddImage(pointer.Object.Value.Name, false, bitmap, saveTextures, updateUi);
+                }
                 return true;
-
             }
         }
     }

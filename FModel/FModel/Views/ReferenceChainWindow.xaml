@@ -153,11 +153,24 @@
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
                                     <StackPanel Orientation="Horizontal">
-                                        <Viewbox Width="16" Height="16" Margin="0,0,5,0">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{Binding IconData}" />
-                                            </Canvas>
-                                        </Viewbox>
+                                        <Grid Margin="0,0,5,0">
+                                            <Viewbox Width="16" Height="16">
+                                                <Viewbox.Style>
+                                                    <Style TargetType="Viewbox">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasPreview}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Viewbox.Style>
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{Binding IconData}" />
+                                                </Canvas>
+                                            </Viewbox>
+                                            <Image Source="{Binding PreviewImage}" Width="40" Height="40" Stretch="Uniform" Visibility="{Binding HasPreview, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        </Grid>
                                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
                                     </StackPanel>
                                     <TextBlock Grid.Row="1" Text="{Binding Path}" FontSize="10" Opacity="0.6" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Margin="0,5,0,0" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>

@@ -12,12 +12,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse_Conversion.Textures;
 using FModel.Services;
 using FModel.Settings;
 using FModel.Extensions;
@@ -626,6 +629,10 @@ namespace FModel.Views
                 var className = GetPackageClassName(ipackage);
                 parentNode.Background = GetBrushForClass(className);
                 parentNode.IconData = GetIconForClass(className);
+                if (className.Contains("Texture") || className.Contains("RenderTarget"))
+                {
+                    parentNode.PreviewImage = GetTexturePreview(ipackage);
+                }
 
                 var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 // パッケージからインポート（依存先）を取得
@@ -702,6 +709,10 @@ namespace FModel.Views
                     var className = GetPackageClassName(ipackage);
                     parentNode.Background = GetBrushForClass(className);
                     parentNode.IconData = GetIconForClass(className);
+                    if (className.Contains("Texture") || className.Contains("RenderTarget"))
+                    {
+                        parentNode.PreviewImage = GetTexturePreview(ipackage);
+                    }
                 }
 
                 // このファイルをインポートしているファイル（参照元）を探す
@@ -728,6 +739,33 @@ namespace FModel.Views
                 }
             }
             catch { }
+        }
+
+        private ImageSource GetTexturePreview(IPackage package)
+        {
+            try
+            {
+                var texture = package.GetExports().FirstOrDefault(e => e is UTexture2D) as UTexture2D;
+                if (texture != null)
+                {
+                    var cTexture = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+                    if (cTexture != null)
+                    {
+                        using var skBitmap = cTexture.ToSkBitmap();
+                        using var data = skBitmap.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
+                        using var stream = new MemoryStream(data.ToArray());
+                        var bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.StreamSource = stream;
+                        bitmap.EndInit();
+                        bitmap.Freeze();
+                        return bitmap;
+                    }
+                }
+            }
+            catch { }
+            return null;
         }
 
         private IEnumerable<GameFile> FindReferencers(string targetPackagePath, CUE4Parse.FileProvider.IFileProvider provider)
@@ -887,6 +925,10 @@ namespace FModel.Views
         private Geometry _iconData;
         public Geometry IconData { get => _iconData; set { _iconData = value; OnPropertyChanged(); } }
 
+        private ImageSource _previewImage;
+        public ImageSource PreviewImage { get => _previewImage; set { _previewImage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasPreview)); } }
+
+        public bool HasPreview => _previewImage != null;
         private bool _isHighlighted;
         public bool IsHighlighted { get => _isHighlighted; set { _isHighlighted = value; OnPropertyChanged(); } }
 

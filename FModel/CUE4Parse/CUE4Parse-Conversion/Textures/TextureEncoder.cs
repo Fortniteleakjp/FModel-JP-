@@ -12,6 +12,8 @@ namespace CUE4Parse_Conversion.Textures;
 
 public static class TextureEncoder
 {
+    public static byte[] Encode(this CTexture bitmap, ETextureFormat format, bool saveHdrAsHdr) => Encode(bitmap, format, saveHdrAsHdr, out _);
+
     public static byte[] Encode(this CTexture bitmap, ETextureFormat format, bool saveHdrAsHdr, out string ext)
     {
         if (saveHdrAsHdr && PixelFormatUtils.IsHDR(bitmap.PixelFormat))
