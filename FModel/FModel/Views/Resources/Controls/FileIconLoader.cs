@@ -83,6 +83,18 @@ namespace FModel.Views.Resources.Controls
                                     break;
                                 }
                             }
+
+                            if (string.IsNullOrEmpty(assetPath))
+                            {
+                                foreach (var data in dataList)
+                                {
+                                    if (data.NonConstStruct != null && data.NonConstStruct.TryGetValue(out FSoftObjectPath icon, "Icon"))
+                                    {
+                                        assetPath = icon.AssetPathName.Text;
+                                        break;
+                                    }
+                                }
+                            }
                         }
 
                         if (string.IsNullOrEmpty(assetPath) && obj.TryGetValue(out FStructFallback[] contextualPresentations, "ContextualPresentations"))
@@ -99,11 +111,11 @@ namespace FModel.Views.Resources.Controls
 
                         if (string.IsNullOrEmpty(assetPath))
                         {
-                            if (obj.TryGetValue(out FSoftObjectPath softPath, "LargeIcon"))
+                            if (obj.TryGetValue(out FSoftObjectPath softPath, "LargeIcon", "Icon"))
                             {
                                 assetPath = softPath.AssetPathName.Text;
                             }
-                            else if (obj.TryGetValue(out FStructFallback structFallback, "LargeIcon"))
+                            else if (obj.TryGetValue(out FStructFallback structFallback, "LargeIcon", "Icon"))
                             {
                                 if (structFallback.TryGetValue(out FSoftObjectPath innerPath, "AssetPathName") || 
                                     structFallback.TryGetValue(out innerPath, "ResourceObject"))
