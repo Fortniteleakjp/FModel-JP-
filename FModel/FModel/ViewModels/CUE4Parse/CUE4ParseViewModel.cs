@@ -25,6 +25,7 @@ using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.CriWare;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
@@ -34,6 +35,8 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Assets.Exports.Wwise;
 using CUE4Parse.UE4.BinaryConfig;
+using CUE4Parse.UE4.CriWare;
+using CUE4Parse.UE4.CriWare.Readers;
 using CUE4Parse.UE4.FMod;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
@@ -194,6 +197,8 @@ public partial class CUE4ParseViewModel : ViewModel
     public WwiseProvider WwiseProvider => _wwiseProviderLazy.Value;
     private Lazy<FModProvider> _fmodProviderLazy;
     public FModProvider FmodProvider => _fmodProviderLazy?.Value;
+    private Lazy<CriWareProvider> _criWareProviderLazy;
+    public CriWareProvider CriWareProvider => _criWareProviderLazy?.Value;
     public ConcurrentBag<string> UnknownExtensions = [];
     public System.Windows.Input.ICommand ComparePakCommand { get; }
     public System.Windows.Input.ICommand CreateLoliBackupCommand { get; }
@@ -430,6 +435,7 @@ public partial class CUE4ParseViewModel : ViewModel
             Task.WaitAll(tasks.ToArray());
             _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.GameDirectory));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
+            _criWareProviderLazy = new Lazy<CriWareProvider>(() => new CriWareProvider(Provider, UserSettings.Default.GameDirectory));
             if (Provider != null)
             {
                 Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");
@@ -937,6 +943,7 @@ public partial class CUE4ParseViewModel : ViewModel
             case "dnearchive": // Banishers: Ghosts of New Eden
             case "gitignore":
             case "LICENSE":
+            case "playstats": // Dispatch
             case "template":
             case "stUMeta": // LIS: Double Exposure
             case "vmodule":
@@ -1061,6 +1068,38 @@ public partial class CUE4ParseViewModel : ViewModel
                 foreach (var media in medias)
                 {
                     SaveAndPlaySound(media.OutputPath, media.Extension, media.Data, saveAudio);
+                }
+
+                break;
+            }
+            case "awb":
+            {
+                var archive = entry.CreateReader();
+                var awbReader = new AwbReader(archive);
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(awbReader, Formatting.Indented), saveProperties, updateUi);
+
+                var directory = Path.GetDirectoryName(archive.Name) ?? "/Criware/";
+                var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                }
+
+                break;
+            }
+            case "acb":
+            {
+                var archive = entry.CreateReader();
+                var acbReader = new AcbReader(archive);
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(acbReader, Formatting.Indented), saveProperties, updateUi);
+
+                var directory = Path.GetDirectoryName(archive.Name) ?? "/Criware/";
+                var extractedSounds = CriWareProvider.ExtractCriWareSounds(acbReader, archive.Name);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
                 }
 
                 break;
@@ -1297,6 +1336,25 @@ public partial class CUE4ParseViewModel : ViewModel
                 foreach (var sound in extractedSounds)
                 {
                     SaveAndPlaySound(Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio);
+                }
+                return false;
+            }
+            case USoundAtomCueSheet or UAtomCueSheet or USoundAtomCue or UAtomWaveBank when (isNone || saveAudio) && pointer.Object.Value is UObject atomObject:
+            {
+                var extractedSounds = atomObject switch
+                {
+                    USoundAtomCueSheet cueSheet => CriWareProvider.ExtractCriWareSounds(cueSheet),
+                    UAtomCueSheet cueSheet => CriWareProvider.ExtractCriWareSounds(cueSheet),
+                    USoundAtomCue cue => CriWareProvider.ExtractCriWareSounds(cue),
+                    UAtomWaveBank awb => CriWareProvider.ExtractCriWareSounds(awb),
+                    _ => []
+                };
+
+                var directory = Path.GetDirectoryName(atomObject.Owner?.Name) ?? "/Criware/";
+                directory = Path.GetDirectoryName(atomObject.Owner.Provider.FixPath(directory));
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio);
                 }
                 return false;
             }

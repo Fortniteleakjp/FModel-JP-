@@ -9,6 +9,9 @@ using FModel.ViewModels;
 using FModel.Views.Resources.Controls;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
+using System;
+using System.Globalization;
+using System.Linq;
 
 namespace FModel.Views;
 
@@ -265,5 +268,53 @@ public partial class SettingsView
                       "\n例: \"{FileName}_{yyyy}{MM}{dd}_{HH}{mm}{ss}\" は " +
                       "MyAsset_20230905_143059.json のようになります。";
         AdonisUI.Controls.MessageBox.Show(message, "ファイル名形式のヘルプ", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
+    }
+
+    private void CriwareKeyBox_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is not TextBox textBox)
+            return;
+
+        textBox.Text = _applicationView.SettingsView.CriwareDecryptionKey.ToString();
+    }
+
+    private void CriwareKeyBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (sender is not TextBox textBox)
+            return;
+
+        string input = textBox.Text?.Trim() ?? string.Empty;
+
+        if (string.IsNullOrEmpty(input))
+            return;
+
+        if (TryParseKey(input, out ulong parsed))
+            _applicationView.SettingsView.CriwareDecryptionKey = parsed;
+    }
+
+    private static bool TryParseKey(string text, out ulong value)
+    {
+        value = 0;
+        if (string.IsNullOrWhiteSpace(text))
+            return false;
+
+        bool isHex = false;
+        if (text.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+        {
+            isHex = true;
+            text = text[2..];
+        }
+        else if (text.Any(char.IsLetter))
+        {
+            isHex = true;
+        }
+
+        int numberBase = text.All(Uri.IsHexDigit) ? 16 : 10;
+        return ulong.TryParse(
+            text,
+            isHex ? NumberStyles.HexNumber : NumberStyles.Integer,
+            CultureInfo.InvariantCulture,
+            out value
+        );
     }
 }

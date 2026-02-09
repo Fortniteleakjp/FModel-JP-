@@ -246,6 +246,13 @@ public partial class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedTextureExportFormat, value);
     }
 
+    private ulong _criwareDecryptionKey;
+    public ulong CriwareDecryptionKey
+    {
+        get => _criwareDecryptionKey;
+        set => SetProperty(ref _criwareDecryptionKey, value);
+    }
+
     private bool _selectedRestoreTabsOnStartup;
     public bool SelectedRestoreTabsOnStartup
     {
@@ -330,6 +337,7 @@ public partial class SettingsViewModel : ViewModel
         _customVersionsSnapshot = UserSettings.Default.CurrentDir.Versioning.CustomVersions;
         _optionsSnapshot = UserSettings.Default.CurrentDir.Versioning.Options;
         _mapStructTypesSnapshot = UserSettings.Default.CurrentDir.Versioning.MapStructTypes;
+        _criwareDecryptionKey = UserSettings.Default.CurrentDir.CriwareDecryptionKey;
 
         _diffGameSnapshot = UserSettings.Default.DiffGameDirectory;
         if (UserSettings.Default.DiffDir != null) _diffUeGameSnapshot = UserSettings.Default.DiffDir.UeVersion;
@@ -382,6 +390,7 @@ public partial class SettingsViewModel : ViewModel
         SelectedNaniteMeshExportFormat = _naniteMeshExportFormatSnapshot;
         SelectedMaterialExportFormat = _materialExportFormatSnapshot;
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
+        CriwareDecryptionKey = _criwareDecryptionKey;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedRestoreTabsOnStartup = UserSettings.Default.RestoreTabsOnStartup;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
@@ -462,6 +471,7 @@ public partial class SettingsViewModel : ViewModel
         UserSettings.Default.CurrentDir.Versioning.CustomVersions = SelectedCustomVersions;
         UserSettings.Default.CurrentDir.Versioning.Options = SelectedOptions;
         UserSettings.Default.CurrentDir.Versioning.MapStructTypes = SelectedMapStructTypes;
+        UserSettings.Default.CurrentDir.CriwareDecryptionKey = CriwareDecryptionKey;
 
         UserSettings.Default.FModelLanguage = SelectedFModelLanguage;
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;

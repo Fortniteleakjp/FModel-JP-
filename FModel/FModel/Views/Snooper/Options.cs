@@ -241,6 +241,18 @@ public class Options
         ModelIsWaitingAnimation = value;
     }
 
+    /// <summary>
+    /// Skip emmisive for specific games, cause of excessive use in their materials
+    /// </summary>
+    public bool SkipEmmisive()
+    {
+        return _game switch
+        {
+            "LIESOFP" => true,
+            _ => false,
+        };
+    }
+
     public void ResetModelsLightsAnimations()
     {
         foreach (var model in Models.Values)

@@ -126,6 +126,16 @@ public class Material : IDisposable
                 else if (Parameters.TryGetLinearColor(out var emissiveMultColor, "Emissive Multiplier", "EmissiveMultiplier"))
                     EmissiveMult = emissiveMultColor.R;
 
+                if (!options.SkipEmmisive())
+                {
+                    if (Parameters.TryGetScalar(out var emissiveMultScalar2, "emissive mult", "Emissive_Mult", "EmissiveIntensity", "EmissionIntensity"))
+                        EmissiveMult = emissiveMultScalar2;
+                    else if (Parameters.TryGetLinearColor(out var emissiveMultColor2, "Emissive Multiplier", "EmissiveMultiplier"))
+                        EmissiveMult = emissiveMultColor2.R;
+                }
+                else
+                    EmissiveMult = 0f;
+
                 if (Parameters.TryGetLinearColor(out var EmissiveUVs,
                         "EmissiveUVs_RG_UpperLeftCorner_BA_LowerRightCorner",
                         "Emissive Texture UVs RG_TopLeft BA_BottomRight",
