@@ -1120,7 +1120,7 @@
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Width="160" Height="190" Margin="5" CornerRadius="4"
+                                            <Border Width="200" Height="230" Margin="5" CornerRadius="4"
                                                     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                                                     BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
                                                     BorderThickness="1">
@@ -1202,7 +1202,7 @@
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Width="120" Height="140" Margin="5" CornerRadius="4"
+                                            <Border Width="160" Height="180" Margin="5" CornerRadius="4"
                                                     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                                                     BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
                                                     BorderThickness="1">
