@@ -4,7 +4,7 @@
     <RootNamespace>CUE4Parse_Conversion</RootNamespace>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <IsPublishable>false</IsPublishable>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/FabianFG/CUE4Parse</PackageProjectUrl>
