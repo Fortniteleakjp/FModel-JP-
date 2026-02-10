@@ -59,8 +59,10 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
         MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
         Helper.CloseWindow<AdonisWindow>("検索ウィンドウ"); // close search window if opened
 
+        // Start loading localized resources in background
+        _ = _applicationView.CUE4Parse.LoadLocalizedResources();
+
         await Task.WhenAll(
-            _applicationView.CUE4Parse.LoadLocalizedResources(), // load locres if not already loaded,
             _applicationView.CUE4Parse.LoadAllVirtualPaths(), // load virtual paths if not already loaded
             _threadWorkerView.Begin(cancellationToken =>
             {
@@ -108,40 +110,21 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 
     private void FilterDirectoryFilesToDisplay(CancellationToken cancellationToken, IEnumerable<FileItem> directoryFiles)
     {
-        HashSet<string> filter;
-        if (directoryFiles == null) filter = null;
-        else
-        {
-            filter = [];
-            foreach (var directoryFile in directoryFiles)
-            {
-                if (!directoryFile.IsEnabled) continue;
-                filter.Add(directoryFile.Name);
-            }
-        }
+        var filter = directoryFiles != null
+            ? new HashSet<string>(directoryFiles.Where(x => x.IsEnabled).Select(x => x.Name))
+            : null;
 
-        var hasFilter = filter != null && filter.Count != 0;
-        var entries = new ConcurrentBag<GameFile>();
+        var hasFilter = filter != null && filter.Count > 0;
 
-        Parallel.ForEach(_applicationView.CUE4Parse.Provider.Files.Values, new ParallelOptions { CancellationToken = cancellationToken }, asset =>
-        {
-            if (asset.IsUePackagePayload) return;
-
-            if (hasFilter)
-            {
-                if (asset is VfsEntry entry && filter.Contains(entry.Vfs.Name))
-                {
-                    entries.Add(asset);
-                }
-            }
-            else
-            {
-                entries.Add(asset);
-            }
-        });
+        var entries = _applicationView.CUE4Parse.Provider.Files.Values
+            .AsParallel()
+            .WithCancellation(cancellationToken)
+            .Where(asset => !asset.IsUePackagePayload)
+            .Where(asset => !hasFilter || (asset is VfsEntry entry && filter.Contains(entry.Vfs.Name)))
+            .ToList();
 
         _applicationView.Status.UpdateStatusLabel($"{entries.Count:### ### ###} Packages");
-        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(entries.ToList());
+        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(entries);
     }
 
     private void FilterNewOrModifiedFilesToDisplay(CancellationToken cancellationToken)
