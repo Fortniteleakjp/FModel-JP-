@@ -12,6 +12,7 @@ using AdonisUI.Controls;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.UE4.Exceptions;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -142,10 +143,25 @@ public partial class MainWindow
 #if !DEBUG
             await _applicationView.CUE4Parse.InitInformation();
 #endif
+
+            Func<Task> initMappingsSafe = async () =>
+            {
+                try
+                {
+                    await _applicationView.CUE4Parse.InitAllMappings();
+                }
+                catch
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                        AdonisUI.Controls.MessageBox.Show("マッピングファイルが読み込めませんでした、最新のマッピングファイルをローカルで読み込んでください", "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error));
+                    throw;
+                }
+            };
+
             await Task.WhenAll(
                 _applicationView.CUE4Parse.VerifyConsoleVariables(),
                 _applicationView.CUE4Parse.VerifyOnDemandArchives(),
-                _applicationView.CUE4Parse.InitAllMappings(),
+                initMappingsSafe(),
                 ApplicationViewModel.InitDetex(),
                 ApplicationViewModel.InitVgmStream(),
                 ApplicationViewModel.InitImGuiSettings(newOrUpdated),
@@ -159,20 +175,32 @@ public partial class MainWindow
         catch (Exception ex)
         {
             Log.Error(ex, "An error occurred during initialization");
+            if (ex.GetBaseException() is ParserException && ex.GetBaseException().Message.Contains("mapping file is missing"))
+            {
+                AdonisUI.Controls.MessageBox.Show("マッピングファイルが読み込めませんでした、最新のマッピングファイルをローカルで読み込んでください", "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+            }
             FLogger.Append(ELog.Error, () => FLogger.Text($"初期化中にエラーが発生しました: {ex.Message}", Constants.RED));
         }
 
         await Dispatcher.InvokeAsync(() =>
         {
-            if (UserSettings.Default.RestoreTabsOnStartup && UserSettings.Default.CurrentDir.LastOpenedTabs?.Any() == true)
+            try
             {
-                var paths = UserSettings.Default.CurrentDir.LastOpenedTabs;
-                _applicationView.CUE4Parse.TabControl.RemoveAllTabs(); // "新しいタブ"を削除
-                foreach (var path in paths)
+                if (UserSettings.Default.RestoreTabsOnStartup && UserSettings.Default.CurrentDir.LastOpenedTabs?.Any() == true)
                 {
-                    if (_applicationView.CUE4Parse.Provider.TryGetGameFile(path, out var gameFile))
-                        _applicationView.CUE4Parse.TabControl.AddTab(gameFile);
+                    var paths = UserSettings.Default.CurrentDir.LastOpenedTabs;
+                    _applicationView.CUE4Parse.TabControl.RemoveAllTabs(); // "新しいタブ"を削除
+                    foreach (var path in paths)
+                    {
+                        if (_applicationView.CUE4Parse.Provider.TryGetGameFile(path, out var gameFile))
+                            _applicationView.CUE4Parse.TabControl.AddTab(gameFile);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                CheckForMappingError(ex);
+                throw;
             }
         });
 
@@ -181,6 +209,15 @@ public partial class MainWindow
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
         //         _applicationView.CUE4Parse.Provider["Marvel/Content/Marvel/Wwise/Assets/Events/Music/music_new/event/Entry.uasset"]));
 #endif
+    }
+
+    private void CheckForMappingError(Exception ex)
+    {
+        if (ex.GetBaseException() is ParserException && ex.GetBaseException().Message.Contains("mapping file is missing"))
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+                AdonisUI.Controls.MessageBox.Show("マッピングファイルが読み込めませんでした、最新のマッピングファイルをローカルで読み込んでください", "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error));
+        }
     }
 
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)
@@ -245,7 +282,14 @@ public partial class MainWindow
 
     private async void OnMappingsReload(object sender, ExecutedRoutedEventArgs e)
     {
-        await _applicationView.CUE4Parse.InitAllMappings(true);
+        try
+        {
+            await _applicationView.CUE4Parse.InitAllMappings(true);
+        }
+        catch
+        {
+            AdonisUI.Controls.MessageBox.Show("マッピングファイルが読み込めませんでした、最新のマッピングファイルをローカルで読み込んでください", "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+        }
     }
 
     private void OnOpenAvalonFinder()
@@ -275,7 +319,18 @@ public partial class MainWindow
             return;
         }
 
-        await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            try
+            {
+                _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems);
+            }
+            catch (Exception ex)
+            {
+                CheckForMappingError(ex);
+                throw;
+            }
+        });
         foreach (var item in selectedItems)
         {
             AddFileToRecent(item.Path);
@@ -459,7 +514,18 @@ public partial class MainWindow
         {
             case Key.Enter:
                 var selectedItems = listBox.SelectedItems.Cast<GameFile>().ToList();
-                await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
+                await _threadWorkerView.Begin(cancellationToken =>
+                {
+                    try
+                    {
+                        _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems);
+                    }
+                    catch (Exception ex)
+                    {
+                        CheckForMappingError(ex);
+                        throw;
+                    }
+                });
                 foreach (var item in selectedItems)
                 {
                     AddFileToRecent(item.Path);
@@ -476,7 +542,18 @@ public partial class MainWindow
         if (_applicationView.CUE4Parse.Provider.TryGetGameFile(filePath, out var gameFile))
         {
             var selectedItems = new List<GameFile> { gameFile };
-            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems); });
+            await _threadWorkerView.Begin(cancellationToken =>
+            {
+                try
+                {
+                    _applicationView.CUE4Parse.ExtractSelected(cancellationToken, selectedItems);
+                }
+                catch (Exception ex)
+                {
+                    CheckForMappingError(ex);
+                    throw;
+                }
+            });
             FLogger.Append(ELog.Information, () => FLogger.Text($"Opening recent file: {filePath}", Constants.WHITE, true));
         }
         else

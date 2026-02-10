@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
 using CUE4Parse;
+using CUE4Parse.UE4.Exceptions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
@@ -184,6 +185,13 @@ public partial class App
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         Log.Error("{Exception}", e.Exception);
+
+        if (e.Exception.GetBaseException() is ParserException && e.Exception.GetBaseException().Message.Contains("mapping file is missing"))
+        {
+            MessageBox.Show("マッピングファイルが読み込めませんでした、最新のマッピングファイルをローカルで読み込んでください", "エラー", AdonisUI.Controls.MessageBoxButton.OK, MessageBoxImage.Error);
+            e.Handled = true;
+            return;
+        }
 
         var messageBox = new MessageBoxModel
         {
