@@ -17,7 +17,7 @@ public class EndpointSettings : ViewModel
                 return new EndpointSettings[]
                 {
                     new("https://api.fortniteapi.com/v1/aes", "$.['mainKey','dynamicKeys']"),
-                    new("https://api.fortniteapi.com/v1/mappings", "$.mappings.ZStandard") // just get the first available, not just oodle! (Unfortunately not default except when resetting settings)
+                    new("https://api.fortniteapi.com/v1/mappings", "$.[0].['url','fileName']") // just get the first available, not just oodle! (Unfortunately not default except when resetting settings)
                 };
             default:
                 return new EndpointSettings[] { new(), new() };
