@@ -17,6 +17,7 @@ public partial class AesManager
 
     private void OnClick(object sender, RoutedEventArgs e)
     {
+        _applicationView.AesManager.HasChange = true;
         Close();
     }
 
@@ -27,8 +28,21 @@ public partial class AesManager
         _applicationView.AesManager.HasChange = true; // yes even if nothing actually changed
     }
 
+    private bool _canClose;
     private async void OnClosing(object sender, CancelEventArgs e)
     {
-        await _applicationView.UpdateProvider(false);
+        if (!_canClose)
+        {
+            e.Cancel = true;
+            try
+            {
+                await _applicationView.UpdateProvider(true);
+            }
+            finally
+            {
+                _canClose = true;
+                Close();
+            }
+        }
     }
 }
