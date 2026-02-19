@@ -1,0 +1,42 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.BruteForceProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        mc:Ignorable="d"
+        Title="AES ブルートフォース進捗"
+        Height="200" Width="500"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="ToolWindow"
+        ShowInTaskbar="False">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ファイル名 -->
+        <TextBlock Text="対象ファイル:" Grid.Row="0" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBlock x:Name="TargetFileTextBlock" Text="" Grid.Row="0" Margin="100,0,0,5"/>
+
+        <!-- 試行回数 -->
+        <TextBlock Text="試行回数:" Grid.Row="1" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBlock x:Name="AttemptCountTextBlock" Text="0" Grid.Row="1" Margin="100,0,0,5" Foreground="Cyan"/>
+
+        <!-- 現在のキー -->
+        <TextBlock Text="現在のキー:" Grid.Row="2" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBox x:Name="CurrentKeyTextBox" Grid.Row="3" Text="" IsReadOnly="True" Margin="0,0,0,10" 
+                 Background="#1E1E1E" Foreground="#00FF00" FontFamily="Courier New" FontSize="11" 
+                 Padding="5" TextWrapping="Wrap" MaxHeight="80"/>
+
+        <!-- ボタン -->
+        <StackPanel Grid.Row="5" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,10,0,0">
+            <Button x:Name="CancelButton" Content="キャンセル" Padding="15,5" Margin="0,0,0,0" Click="CancelButton_Click"/>
+        </StackPanel>
+    </Grid>
+</adonisControls:AdonisWindow>

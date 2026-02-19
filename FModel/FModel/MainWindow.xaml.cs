@@ -689,6 +689,12 @@ public partial class MainWindow
             await GenerateCustomCosmeticsByIdFeature.ExecuteAsync();
     }
 
+    private async void OnBruteForceAesClick(object sender, RoutedEventArgs e)
+    {
+        if (ShowBetaFeatureWarning())
+            await BruteForceAesFeature.ExecuteAsync();
+    }
+
     private void OnAthenaPakCosmeticsClick(object sender, RoutedEventArgs e)
     {
         if (ShowBetaFeatureWarning())
