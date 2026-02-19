@@ -1,0 +1,49 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.PropertyEditDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        mc:Ignorable="d"
+        Title="Edit Asset Property" Height="300" Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Property Name:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="PropertyNameTextBox"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Property Type:" VerticalAlignment="Center" Margin="0,10,10,0"/>
+        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="PropertyTypeComboBox" Margin="0,10,0,0" SelectionChanged="PropertyTypeComboBox_SelectionChanged">
+            <ComboBoxItem Content="TextPropertyData"/>
+            <ComboBoxItem Content="IntPropertyData"/>
+            <ComboBoxItem Content="FloatPropertyData"/>
+            <ComboBoxItem Content="BytePropertyData"/>
+            <ComboBoxItem Content="NamePropertyData"/>
+            <ComboBoxItem Content="BoolPropertyData"/>
+        </ComboBox>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Value:" VerticalAlignment="Center" Margin="0,10,10,0"/>
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="PropertyValueTextBox" Margin="0,10,0,0"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Enum Type (Optional):" VerticalAlignment="Center" Margin="0,10,10,0" x:Name="EnumTypeLabel" Visibility="Collapsed"/>
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="EnumTypeTextBox" Margin="0,10,0,0" Visibility="Collapsed" ToolTip="e.g., EFortRarity"/>
+
+        <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="OK" Width="75" Margin="0,0,10,0" IsDefault="True" Click="OkButton_Click"/>
+            <Button Content="Cancel" Width="75" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</adonisControls:AdonisWindow>

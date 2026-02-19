@@ -153,7 +153,7 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
     <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
-    <PackageReference Include="DiffPlex" Version="1.8.0" />
+    <PackageReference Include="DiffPlex" Version="1.9.0" />
     <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
     <PackageReference Include="EpicManifestParser" Version="2.4.1" />
     <PackageReference Include="EpicManifestParser.ZlibngDotNetDecompressor" Version="1.0.1" />
@@ -162,12 +162,16 @@
     <PackageReference Include="NVorbis" Version="0.10.5" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="OpenTK" Version="4.9.4" />
-    <PackageReference Include="RestSharp" Version="113.0.0" />
-    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="RestSharp" Version="113.1.0" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.9" />
-    <PackageReference Include="Svg.Skia" Version="3.2.1" />
+    <PackageReference Include="SkiaSharp.HarfBuzz" Version="3.119.2" />
+    <PackageReference Include="Svg.Skia" Version="3.4.1" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.2" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageReference Include="Twizzle.ImGui-Bundle.NET" Version="1.91.5.2" />
     <PackageReference Include="VirtualizingWrapPanel" Version="2.3.2" />
   </ItemGroup>
@@ -175,6 +179,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
     <ProjectReference Include="..\CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
+    <ProjectReference Include="..\UAssetGUI-master\UAssetAPI\UAssetAPI\UAssetAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

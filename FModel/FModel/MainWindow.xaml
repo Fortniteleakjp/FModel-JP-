@@ -39,6 +39,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Views/Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <PathGeometry x:Key="EditIcon" Figures="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
@@ -254,6 +255,18 @@
                         <Viewbox Width="16" Height="16">
                             <Canvas Width="24" Height="24">
                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <Separator />
+
+                <MenuItem Header="Test Edit Asset" Click="OnTestEditAssetClick">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource EditIcon}" />
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
@@ -698,6 +711,15 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </MenuItem.Style>
+                                            </MenuItem>
+                                            <MenuItem Header="Test Edit Asset" Click="OnTestEditAssetClick">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource EditIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
                                             </MenuItem>
                                             <Separator />
                                             <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">

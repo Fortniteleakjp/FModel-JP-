@@ -1,9 +1,7 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\FModel",
-    "\\FModel\\FModel"
+    ""
   ],
-  "SelectedNode": "\\FModel\\FModel\\App.xaml.cs",
+  "SelectedNode": "\\FModel.sln",
   "PreviewInSolutionExplorer": false
 }
