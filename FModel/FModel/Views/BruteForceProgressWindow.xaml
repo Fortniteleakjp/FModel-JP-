@@ -6,12 +6,15 @@
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         mc:Ignorable="d"
         Title="AES ブルートフォース進捗"
-        Height="200" Width="500"
+        Height="250" Width="500"
         WindowStartupLocation="CenterOwner"
         WindowStyle="ToolWindow"
         ShowInTaskbar="False">
     <Grid Margin="15">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -28,14 +31,22 @@
         <TextBlock Text="試行回数:" Grid.Row="1" FontWeight="Bold" Margin="0,0,0,5"/>
         <TextBlock x:Name="AttemptCountTextBlock" Text="0" Grid.Row="1" Margin="100,0,0,5" Foreground="Cyan"/>
 
+        <!-- 経過時間 -->
+        <TextBlock Text="経過時間:" Grid.Row="2" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBlock x:Name="ElapsedTimeTextBlock" Text="00:00:00" Grid.Row="2" Margin="100,0,0,5"/>
+
+        <!-- 速度 -->
+        <TextBlock Text="速度 (H/s):" Grid.Row="3" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBlock x:Name="RateTextBlock" Text="0" Grid.Row="3" Margin="100,0,0,5"/>
+
         <!-- 現在のキー -->
-        <TextBlock Text="現在のキー:" Grid.Row="2" FontWeight="Bold" Margin="0,0,0,5"/>
-        <TextBox x:Name="CurrentKeyTextBox" Grid.Row="3" Text="" IsReadOnly="True" Margin="0,0,0,10" 
+        <TextBlock Text="現在のキー:" Grid.Row="4" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBox x:Name="CurrentKeyTextBox" Grid.Row="5" Text="" IsReadOnly="True" Margin="0,0,0,10" 
                  Background="#1E1E1E" Foreground="#00FF00" FontFamily="Courier New" FontSize="11" 
                  Padding="5" TextWrapping="Wrap" MaxHeight="80"/>
 
         <!-- ボタン -->
-        <StackPanel Grid.Row="5" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,10,0,0">
+        <StackPanel Grid.Row="7" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,10,0,0">
             <Button x:Name="CancelButton" Content="キャンセル" Padding="15,5" Margin="0,0,0,0" Click="CancelButton_Click"/>
         </StackPanel>
     </Grid>

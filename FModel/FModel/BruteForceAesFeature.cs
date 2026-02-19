@@ -4,6 +4,7 @@ using FModel.Views.Resources.Controls;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -24,13 +25,12 @@ namespace FModel.Features.Athena
         /// </summary>
         private static IEnumerable<string> GenerateRandomAesKeys()
         {
-            var random = new Random();
             var keyBytes = new byte[32]; // 256 bits = 32 bytes
             
             while (true)
             {
-                random.NextBytes(keyBytes);
-                yield return "0x" + string.Concat(keyBytes.Select(b => b.ToString("X2")));
+                Random.Shared.NextBytes(keyBytes);
+                yield return "0x" + Convert.ToHexString(keyBytes);
             }
         }
 
@@ -74,6 +74,13 @@ namespace FModel.Features.Athena
                 return;
             }
 
+            // if (targetPak.Name.Contains("1070"))
+            // {
+            //     var debugKeys = GenerateRandomAesKeys().Take(199999).ToList();
+            //     debugKeys.Add("0x130DE6365CD2AE7C87F4EC5F129983A8F8EBD3C4D9DA3E3F1B34381E506BD1DB");
+            //     keys = debugKeys;
+            // }
+
             FLogger.Append(ELog.Information, () => FLogger.Text($"対象ファイル: {targetPak.Name}. ランダムに生成したAESキーの総当たりを開始します...", Constants.WHITE));
 
             var foundKeys = new Dictionary<FGuid, string>();
@@ -98,6 +105,12 @@ namespace FModel.Features.Athena
                 }
 
                 long currentOp = 0;
+                var stopwatch = Stopwatch.StartNew();
+                var parallelOptions = new ParallelOptions
+                {
+                    CancellationToken = combinedToken,
+                    MaxDegreeOfParallelism = Environment.ProcessorCount
+                };
 
                 foreach (var vfs in paksToScan)
                 {
@@ -105,37 +118,53 @@ namespace FModel.Features.Athena
 
                     FLogger.Append(ELog.Information, () => FLogger.Text($"{vfs.Name} のキーを検索中...", Constants.WHITE));
 
-                    foreach (var key in keys)
+                    try
                     {
-                        if (combinedToken.IsCancellationRequested) break;
-                        
-                        currentOp++;
-                        
-                        // 進捗ウィンドウを更新
-                        progressWindow.Dispatcher.Invoke(() =>
+                        Parallel.ForEach(keys, parallelOptions, (key, state) =>
                         {
-                            progressWindow.UpdateAttemptCount(currentOp);
-                            progressWindow.UpdateCurrentKey(key);
-                        });
-                        
-                        if (string.IsNullOrWhiteSpace(key)) continue;
+                            var count = Interlocked.Increment(ref currentOp);
 
-                        try
-                        {
-                            var aesKey = new FAesKey(key);
-                            // キーが正しいかどうかを検証
-                            if (vfs.TestAesKey(aesKey))
+                            // UI更新頻度を調整 (例: 100回に1回)
+                            if (count % 100 == 0)
                             {
-                                vfs.AesKey = aesKey;
+                                var elapsed = stopwatch.Elapsed;
+                                var rate = count / elapsed.TotalSeconds;
 
-                                FLogger.Append(ELog.Information, () => FLogger.Text($"キーが見つかりました！ Pak: {vfs.Name}, Key: {key}", Constants.GREEN));
-                                foundKeys[vfs.EncryptionKeyGuid] = key;
-                                provider.SubmitKey(vfs.EncryptionKeyGuid, aesKey);
-                                break;
+                                progressWindow.Dispatcher.InvokeAsync(() =>
+                                {
+                                    progressWindow.UpdateAttemptCount(count);
+                                    progressWindow.UpdateCurrentKey(key);
+                                    progressWindow.UpdateElapsedTime(elapsed);
+                                    progressWindow.UpdateRate(rate);
+                                });
                             }
-                        }
-                        catch (Exception) { /* Invalid key format, ignore. */ }
+
+                            if (string.IsNullOrWhiteSpace(key)) return;
+
+                            try
+                            {
+                                var aesKey = new FAesKey(key);
+                                // キーが正しいかどうかを検証
+                                if (vfs.TestAesKey(aesKey))
+                                {
+                                    // 見つかった場合、ロックして登録し、ループを停止
+                                    lock (foundKeys)
+                                    {
+                                        if (!foundKeys.ContainsKey(vfs.EncryptionKeyGuid))
+                                        {
+                                            vfs.AesKey = aesKey;
+                                            FLogger.Append(ELog.Information, () => FLogger.Text($"キーが見つかりました！ Pak: {vfs.Name}, Key: {key}", Constants.GREEN));
+                                            foundKeys[vfs.EncryptionKeyGuid] = key;
+                                            provider.SubmitKey(vfs.EncryptionKeyGuid, aesKey);
+                                        }
+                                    }
+                                    state.Stop();
+                                }
+                            }
+                            catch (Exception) { /* Invalid key format, ignore. */ }
+                        });
                     }
+                    catch (OperationCanceledException) { /* キャンセルされた場合 */ }
                 }
 
                 FLogger.Append(ELog.Information, () => FLogger.Text(foundKeys.Count > 0 ? "総当たりが完了しました。" : "キャンセルされました。ランダムに生成されたこれらのキーでは有効なAESキーが見つかりませんでした。", foundKeys.Count > 0 ? Constants.WHITE : Constants.YELLOW));

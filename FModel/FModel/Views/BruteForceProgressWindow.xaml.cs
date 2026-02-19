@@ -29,6 +29,16 @@ namespace FModel.Views
             CurrentKeyTextBox.Text = key;
         }
 
+        public void UpdateElapsedTime(System.TimeSpan elapsed)
+        {
+            ElapsedTimeTextBlock.Text = elapsed.ToString(@"hh\:mm\:ss");
+        }
+
+        public void UpdateRate(double rate)
+        {
+            RateTextBlock.Text = rate.ToString("N0");
+        }
+
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             CancellationTokenSource.Cancel();
