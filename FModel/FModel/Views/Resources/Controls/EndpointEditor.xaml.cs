@@ -50,7 +50,9 @@ public partial class EndpointEditor
 
     private void OnClick(object sender, RoutedEventArgs e)
     {
-        DialogResult = _isTested && DataContext is EndpointSettings { IsValid: true };
+        if (DataContext is EndpointSettings endpoint)
+            endpoint.IsValid = true;
+        DialogResult = true;
         Close();
     }
 
@@ -94,4 +96,3 @@ public partial class EndpointEditor
         Process.Start(new ProcessStartInfo { FileName = "https://jsonpath.herokuapp.com/", UseShellExecute = true });
     }
 }
-
