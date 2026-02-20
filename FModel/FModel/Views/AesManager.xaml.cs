@@ -2,6 +2,7 @@
 using System.Windows;
 using FModel.Services;
 using FModel.ViewModels;
+using FModel.Settings;
 
 namespace FModel.Views;
 
@@ -36,7 +37,11 @@ public partial class AesManager
             e.Cancel = true;
             try
             {
-                await _applicationView.UpdateProvider(true);
+                if (_applicationView.AesManager.HasChange)
+                {
+                    UserSettings.Save();
+                    await _applicationView.UpdateProvider(true);
+                }
             }
             finally
             {

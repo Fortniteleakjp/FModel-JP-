@@ -1,4 +1,7 @@
 using FModel.Services;
+using System.Collections.Concurrent;
+using AdonisUI.Controls;
+using System.Collections;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using Microsoft.Win32;
@@ -14,6 +17,7 @@ using Newtonsoft.Json;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.VirtualFileSystem;
 using System.Windows;
+using FModel;
 
 namespace FModel.Features.Athena
 {
@@ -23,21 +27,59 @@ namespace FModel.Features.Athena
         /// ランダムに AES-256 キーを生成します (0x で始まる 16 進数形式、256 ビット = 64 文字)
         /// 無限シーケンスを返します。キャンセルされるまで続きます。
         /// </summary>
-        private static IEnumerable<string> GenerateRandomAesKeys()
+        private static IEnumerable<string> GenerateRandomAesKeys(HashSet<string> excludedKeys = null)
         {
             var keyBytes = new byte[32]; // 256 bits = 32 bytes
             
             while (true)
             {
                 Random.Shared.NextBytes(keyBytes);
-                yield return "0x" + Convert.ToHexString(keyBytes);
+                var key = "0x" + Convert.ToHexString(keyBytes);
+                if (excludedKeys == null || !excludedKeys.Contains(key))
+                {
+                    yield return key;
+                }
+            }
+        }
+
+        private static IEnumerable<string> ReadAndFilterKeysFromFile(string filePath, FGuid targetGuid)
+        {
+            foreach (var line in File.ReadLines(filePath))
+            {
+                var key = line.Trim();
+                if (string.IsNullOrWhiteSpace(key)) continue;
+
+                if (key.Contains(':')) // Keychain format: GUID:Base64Key
+                {
+                    var parts = key.Split(':', 2);
+                    if (parts.Length == 2)
+                    {
+                        var guidString = parts[0].Trim();
+                        var base64Key = parts[1].Trim();
+
+                        if (targetGuid.ToString(EGuidFormats.Digits).Equals(guidString, StringComparison.OrdinalIgnoreCase))
+                        {
+                            byte[] keyBytes = null;
+                            try
+                            {
+                                keyBytes = Convert.FromBase64String(base64Key);
+                            }
+                            catch { /* Invalid Base64, ignore */ }
+
+                            if (keyBytes != null)
+                                yield return "0x" + Convert.ToHexString(keyBytes).ToUpperInvariant();
+                        }
+                    }
+                }
+                else if (key.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) // Hex format
+                {
+                    yield return key;
+                }
             }
         }
 
         public static async Task ExecuteAsync()
         {
-            var keys = GenerateRandomAesKeys(); // 無限シーケンス
-
             var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
             if (provider == null)
             {
@@ -81,10 +123,62 @@ namespace FModel.Features.Athena
             //     keys = debugKeys;
             // }
 
-            FLogger.Append(ELog.Information, () => FLogger.Text($"対象ファイル: {targetPak.Name}. ランダムに生成したAESキーの総当たりを開始します...", Constants.WHITE));
-
             var foundKeys = new Dictionary<FGuid, string>();
-            
+            var triedKeysFilePath = "TriedAesKeys.txt";
+            var excludedKeys = new HashSet<string>();
+
+            var box = new MessageBoxModel
+            {
+                Text = "総当たりの方法を選択してください:",
+                Caption = "総当たりモード",
+                Icon = AdonisUI.Controls.MessageBoxImage.Question,
+                Buttons = new[]
+                {
+                    MessageBoxButtons.Custom("ランダムなキーを生成", 1),
+                    MessageBoxButtons.Custom("キーファイルを使用", 2),
+                    MessageBoxButtons.Cancel("キャンセル")
+                }
+            };
+            AdonisUI.Controls.MessageBox.Show(box);
+
+            IEnumerable<string> keys;
+            long totalKeys = -1;
+
+            switch (box.Result)
+            {
+                case AdonisUI.Controls.MessageBoxResult.Custom when (int)box.ButtonPressed.Id == 1: // Random
+                    FLogger.Append(ELog.Information, () => FLogger.Text($"対象ファイル: {targetPak.Name}. ランダムに生成したAESキーの総当たりを開始します...", Constants.WHITE));
+                    keys = GenerateRandomAesKeys(excludedKeys);
+                    break;
+                case AdonisUI.Controls.MessageBoxResult.Custom when (int)box.ButtonPressed.Id == 2: // File
+                    var keyFileDialog = new OpenFileDialog
+                    {
+                        Title = "キーファイルを選択",
+                        Filter = "Text Files|*.txt|All Files|*.*"
+                    };
+                    if (keyFileDialog.ShowDialog() != true) return;
+
+                    FLogger.Append(ELog.Information, () => FLogger.Text($"対象ファイル: {targetPak.Name}. ファイル '{Path.GetFileName(keyFileDialog.FileName)}' のキーを使用して総当たりを開始します...", Constants.WHITE));
+                    var keyList = ReadAndFilterKeysFromFile(keyFileDialog.FileName, targetPak.EncryptionKeyGuid).ToList();
+                    keys = keyList;
+                    totalKeys = keyList.Count;
+                    break;
+                default: // Cancel or closed
+                    return;
+            }
+
+            if (File.Exists(triedKeysFilePath) && totalKeys == -1) // Only use excluded keys for random generation
+            {
+                try
+                {
+                    foreach (var line in File.ReadLines(triedKeysFilePath))
+                    {
+                        excludedKeys.Add(line);
+                    }
+                }
+                catch { /* ignore */ }
+            }
+
             // 進捗ウィンドウを作成・表示
             var progressWindow = new BruteForceProgressWindow();
             progressWindow.SetTargetFile(targetPak.Name);
@@ -124,6 +218,12 @@ namespace FModel.Features.Athena
                         {
                             var count = Interlocked.Increment(ref currentOp);
 
+                            if (count < 0)
+                            {
+                                state.Stop();
+                                return;
+                            }
+
                             // UI更新頻度を調整 (例: 100回に1回)
                             if (count % 100 == 0)
                             {
@@ -132,7 +232,7 @@ namespace FModel.Features.Athena
 
                                 progressWindow.Dispatcher.InvokeAsync(() =>
                                 {
-                                    progressWindow.UpdateAttemptCount(count);
+                                    progressWindow.UpdateAttemptCount(count, totalKeys);
                                     progressWindow.UpdateCurrentKey(key);
                                     progressWindow.UpdateElapsedTime(elapsed);
                                     progressWindow.UpdateRate(rate);
@@ -152,10 +252,37 @@ namespace FModel.Features.Athena
                                     {
                                         if (!foundKeys.ContainsKey(vfs.EncryptionKeyGuid))
                                         {
-                                            vfs.AesKey = aesKey;
                                             FLogger.Append(ELog.Information, () => FLogger.Text($"キーが見つかりました！ Pak: {vfs.Name}, Key: {key}", Constants.GREEN));
                                             foundKeys[vfs.EncryptionKeyGuid] = key;
                                             provider.SubmitKey(vfs.EncryptionKeyGuid, aesKey);
+
+                                            // UIスレッドで、同じGUIDを持つすべてのPakにキーを適用し、UIを更新する
+                                            Application.Current.Dispatcher.Invoke(() =>
+                                            {
+                                                foreach (var pak in encryptedPaks.Where(p => p.EncryptionKeyGuid == vfs.EncryptionKeyGuid))
+                                                {
+                                                    pak.AesKey = aesKey;
+                                                }
+
+                                                // GameDirectory.DirectoryFiles内のPakにもキーを適用 (Archives Info用)
+                                                var cue4Parse = ApplicationService.ApplicationView.CUE4Parse;
+                                                if (cue4Parse?.GameDirectory?.DirectoryFiles is IEnumerable directoryFiles)
+                                                {
+                                                    foreach (var item in directoryFiles)
+                                                    {
+                                                        if (item is IAesVfsReader pak && pak.EncryptionKeyGuid == vfs.EncryptionKeyGuid)
+                                                        {
+                                                            pak.AesKey = aesKey;
+                                                        }
+                                                    }
+                                                }
+
+                                                // MainWindowのDirectoryFilesListBoxを強制的に更新します
+                                                if (Application.Current.MainWindow is MainWindow mainWindow)
+                                                {
+                                                    mainWindow.DirectoryFilesListBox.Items.Refresh();
+                                                }
+                                            });
                                         }
                                     }
                                     state.Stop();

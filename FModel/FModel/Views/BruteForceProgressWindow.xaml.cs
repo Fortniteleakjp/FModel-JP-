@@ -19,9 +19,16 @@ namespace FModel.Views
             TargetFileTextBlock.Text = fileName;
         }
 
-        public void UpdateAttemptCount(long count)
+        public void UpdateAttemptCount(long count, long total = -1)
         {
-            AttemptCountTextBlock.Text = count.ToString("N0");
+            if (total > 0)
+            {
+                AttemptCountTextBlock.Text = $"{count:N0} / {total:N0}";
+            }
+            else
+            {
+                AttemptCountTextBlock.Text = count.ToString("N0");
+            }
         }
 
         public void UpdateCurrentKey(string key)
