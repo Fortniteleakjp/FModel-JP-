@@ -39,29 +39,44 @@ public partial class App
 #endif
 
         var settingsLoaded = false;
-        try
+        var pathToLoad = UserSettings.FilePath; // 新ファイルパスをデフォルトに
+
+        // 新ファイルがなく、旧ファイルがある場合は、旧ファイルから読み込む
+        if (!File.Exists(pathToLoad) && File.Exists(UserSettings.OldFilePath))
         {
-            UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
-                File.ReadAllText(UserSettings.FilePath), JsonNetSerializer.SerializerSettings);
-            if (UserSettings.Default == null) throw new Exception("Settings loaded as null");
-            settingsLoaded = true;
+            pathToLoad = UserSettings.OldFilePath;
+            Log.Information("Migrating settings from {OldPath} to {NewPath}", UserSettings.OldFilePath, UserSettings.FilePath);
         }
-        catch (Exception ex)
+
+        if (File.Exists(pathToLoad))
         {
-            Log.Error(ex, "Failed to load settings with strict serializer. Attempting fallback.");
             try
             {
-                UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(File.ReadAllText(UserSettings.FilePath));
+                UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
+                    File.ReadAllText(pathToLoad), JsonNetSerializer.SerializerSettings);
                 if (UserSettings.Default == null) throw new Exception("Settings loaded as null");
                 settingsLoaded = true;
-                UserSettings.Save();
             }
-            catch
+            catch (Exception ex)
             {
-                if (File.Exists(UserSettings.FilePath))
-                    File.Copy(UserSettings.FilePath, UserSettings.FilePath + ".bak", true);
-                UserSettings.Default = new UserSettings();
+                Log.Error(ex, "Failed to load settings with strict serializer. Attempting fallback.");
+                try
+                {
+                    UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(File.ReadAllText(pathToLoad));
+                    if (UserSettings.Default == null) throw new Exception("Settings loaded as null");
+                    settingsLoaded = true;
+                }
+                catch
+                {
+                    if (File.Exists(pathToLoad))
+                        File.Copy(pathToLoad, pathToLoad + ".bak", true);
+                    UserSettings.Default = new UserSettings();
+                }
             }
+        }
+        else
+        {
+            UserSettings.Default = new UserSettings();
         }
 
         SetLanguageDictionary();

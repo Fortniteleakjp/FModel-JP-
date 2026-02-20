@@ -1,8 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
+using FModel.Framework;
 using FModel.Services;
 using FModel.ViewModels;
 using FModel.Settings;
+using FModel;
+using FModel.Views;
+using FModel.Views.Resources.Controls;
 
 namespace FModel.Views;
 
@@ -24,9 +29,22 @@ public partial class AesManager
 
     private async void OnRefreshAes(object sender, RoutedEventArgs e)
     {
-        await _applicationView.CUE4Parse.RefreshAesForAllAsync();
-        await _applicationView.AesManager.InitAes();
-        _applicationView.AesManager.HasChange = true; // yes even if nothing actually changed
+        var button = sender as Button;
+        if (button != null) button.IsEnabled = false;
+        try
+        {
+            await _applicationView.CUE4Parse.RefreshAesForAllAsync();
+            await _applicationView.AesManager.InitAes();
+            _applicationView.AesManager.HasChange = true; // yes even if nothing actually changed
+        }
+        catch (System.Exception ex)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"AES Refresh Error: {ex.Message}", Constants.RED));
+        }
+        finally
+        {
+            if (button != null) button.IsEnabled = true;
+        }
     }
 
     private bool _canClose;
