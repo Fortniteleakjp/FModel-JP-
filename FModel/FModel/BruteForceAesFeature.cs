@@ -18,6 +18,8 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.VirtualFileSystem;
 using System.Windows;
 using FModel;
+using Serilog;
+using CUE4Parse.UE4.Pak;
 
 namespace FModel.Features.Athena
 {
@@ -206,6 +208,8 @@ namespace FModel.Features.Athena
                     MaxDegreeOfParallelism = Environment.ProcessorCount
                 };
 
+                Log.Information("Starting brute-force for {PakName}...", targetPak.Name);
+
                 foreach (var vfs in paksToScan)
                 {
                     if (combinedToken.IsCancellationRequested) break;
@@ -239,6 +243,11 @@ namespace FModel.Features.Athena
                                 });
                             }
 
+                            if (count % 100000 == 0)
+                            {
+                                Log.Information("Brute-force progress: {Count:N0} keys tested. Elapsed: {Elapsed}", count, stopwatch.Elapsed);
+                            }
+
                             if (string.IsNullOrWhiteSpace(key)) return;
 
                             try
@@ -247,14 +256,37 @@ namespace FModel.Features.Athena
                                 // キーが正しいかどうかを検証
                                 if (vfs.TestAesKey(aesKey))
                                 {
-                                    // 見つかった場合、ロックして登録し、ループを停止
-                                    lock (foundKeys)
+                                    Log.Information("Potential key found for {VfsName}: {Key}. Verifying...", vfs.Name, key);
+                                    var isVerified = false;
+                                    try
                                     {
-                                        if (!foundKeys.ContainsKey(vfs.EncryptionKeyGuid))
+                                        if (vfs is PakFileReader pakReader)
                                         {
-                                            FLogger.Append(ELog.Information, () => FLogger.Text($"キーが見つかりました！ Pak: {vfs.Name}, Key: {key}", Constants.GREEN));
-                                            foundKeys[vfs.EncryptionKeyGuid] = key;
-                                            provider.SubmitKey(vfs.EncryptionKeyGuid, aesKey);
+                                            using var tempReader = new PakFileReader(pakReader.Path, ApplicationService.ApplicationView.CUE4Parse.Provider.Versions);
+                                            tempReader.AesKey = aesKey;
+                                            if (tempReader.Files.Count > 0) isVerified = true;
+                                            else Log.Warning("Key {Key} passed TestAesKey but resulted in 0 files.", key);
+                                        }
+                                        else
+                                        {
+                                            isVerified = true;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Warning(ex, "Key verification failed for {Key}", key);
+                                    }
+
+                                    if (isVerified)
+                                    {
+                                        // 見つかった場合、ロックして登録し、ループを停止
+                                        lock (foundKeys)
+                                        {
+                                            if (!foundKeys.ContainsKey(vfs.EncryptionKeyGuid))
+                                            {
+                                                FLogger.Append(ELog.Information, () => FLogger.Text($"キーが見つかりました！ Pak: {vfs.Name}, Key: {key}", Constants.GREEN));
+                                                foundKeys[vfs.EncryptionKeyGuid] = key;
+                                                provider.SubmitKey(vfs.EncryptionKeyGuid, aesKey);
 
                                             // UIスレッドで、同じGUIDを持つすべてのPakにキーを適用し、UIを更新する
                                             Application.Current.Dispatcher.Invoke(() =>
@@ -283,9 +315,10 @@ namespace FModel.Features.Athena
                                                     mainWindow.DirectoryFilesListBox.Items.Refresh();
                                                 }
                                             });
+                                            }
                                         }
+                                        state.Stop();
                                     }
-                                    state.Stop();
                                 }
                             }
                             catch (Exception) { /* Invalid key format, ignore. */ }
