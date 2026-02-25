@@ -52,6 +52,9 @@ public partial class MainWindow
     // NEW エクスプローラー ON/OFF切り替え（タブ制御）
     private const string ExplorerTabHeader = "NEW エクスプローラー";
     private FModel.ViewModels.TabItem _explorerTabVm;
+    private readonly List<string> _newExplorerLocationHistory = new();
+    private int _newExplorerLocationHistoryIndex = -1;
+    private bool _isNavigatingNewExplorerHistory;
     private void OnNewExplorerChecked(object sender, RoutedEventArgs e)
     {
         // 現在選択中のファイルまたはフォルダのパスを取得
@@ -113,6 +116,7 @@ public partial class MainWindow
         // 閲覧履歴メニューの初期化と更新
         UpdateRecentFilesMenu();
         UserSettings.Default.RecentFiles.CollectionChanged += RecentFiles_CollectionChanged;
+        UpdateNewExplorerNavigationButtons();
     }
 
     private void RecentFiles_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -498,6 +502,11 @@ public partial class MainWindow
     {
         var target = e.NewValue ?? _applicationView?.CUE4Parse?.AssetsFolder;
         ApplyNewExplorerFilter(target);
+
+        if (e.NewValue is TreeItem selectedFolder)
+            TrackNewExplorerLocation(selectedFolder);
+
+        UpdateNewExplorerNavigationButtons();
     }
 
     private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
@@ -884,6 +893,98 @@ public partial class MainWindow
         NewExplorerSearchBox.Text = string.Empty;
     }
 
+    private void OnNewExplorerGoParentFolderClick(object sender, RoutedEventArgs e)
+    {
+        var currentFolder = NewExplorerGrid.DataContext as TreeItem ?? AssetsFolderName.SelectedItem as TreeItem;
+        if (currentFolder == null)
+        {
+            UpdateNewExplorerNavigationButtons();
+            return;
+        }
+
+        var lastSlash = currentFolder.PathAtThisPoint.LastIndexOf('/');
+        if (lastSlash <= 0)
+        {
+            currentFolder.IsSelected = false;
+            UpdateNewExplorerNavigationButtons();
+            return;
+        }
+
+        var parentPath = currentFolder.PathAtThisPoint[..lastSlash];
+        if (!TrySelectFolderByPath(parentPath))
+        {
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Parent directory not found: {parentPath}", Constants.YELLOW));
+        }
+    }
+
+    private void OnNewExplorerGoPreviousFileClick(object sender, RoutedEventArgs e)
+    {
+        if (_newExplorerLocationHistoryIndex <= 0)
+        {
+            UpdateNewExplorerNavigationButtons();
+            return;
+        }
+
+        var oldIndex = _newExplorerLocationHistoryIndex;
+        _newExplorerLocationHistoryIndex--;
+        var previousLocationPath = _newExplorerLocationHistory[_newExplorerLocationHistoryIndex];
+
+        bool moved;
+        try
+        {
+            _isNavigatingNewExplorerHistory = true;
+            moved = TrySelectFolderByPath(previousLocationPath);
+        }
+        finally
+        {
+            _isNavigatingNewExplorerHistory = false;
+        }
+
+        if (!moved)
+        {
+            _newExplorerLocationHistoryIndex = oldIndex;
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Failed to move to previous location: {previousLocationPath}", Constants.YELLOW));
+            UpdateNewExplorerNavigationButtons();
+            return;
+        }
+
+        UpdateNewExplorerNavigationButtons();
+    }
+
+    private void OnNewExplorerGoNextFileClick(object sender, RoutedEventArgs e)
+    {
+        if (_newExplorerLocationHistoryIndex >= _newExplorerLocationHistory.Count - 1)
+        {
+            UpdateNewExplorerNavigationButtons();
+            return;
+        }
+
+        var oldIndex = _newExplorerLocationHistoryIndex;
+        _newExplorerLocationHistoryIndex++;
+        var nextLocationPath = _newExplorerLocationHistory[_newExplorerLocationHistoryIndex];
+
+        bool moved;
+        try
+        {
+            _isNavigatingNewExplorerHistory = true;
+            moved = TrySelectFolderByPath(nextLocationPath);
+        }
+        finally
+        {
+            _isNavigatingNewExplorerHistory = false;
+        }
+
+        if (!moved)
+        {
+            _newExplorerLocationHistoryIndex = oldIndex;
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Failed to move to next location: {nextLocationPath}", Constants.YELLOW));
+            UpdateNewExplorerNavigationButtons();
+            return;
+        }
+
+        UpdateNewExplorerNavigationButtons();
+    }
+
     private void OnNewExplorerListMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         // リストボックスで選択されたアイテムを取得（動的な型解決を使用）
@@ -911,20 +1012,98 @@ public partial class MainWindow
         if (item == null)
             return;
 
-        // ViewModelを取得してコマンドを実行
-        if (DataContext is ApplicationViewModel vm)
-        {
-            // コマンドパラメータを作成 ("Assets_Extract_New_Tab", 選択されたアイテム)
-            var parameters = new object[] { "Assets_Extract_New_Tab", NewExplorerFilesListBox.SelectedItems };
+        if (item.DataContext is not GameFile selectedFile)
+            return;
 
-            if (vm.RightClickMenuCommand.CanExecute(parameters))
-            {
-                vm.RightClickMenuCommand.Execute(parameters);
-            }
+        OpenNewExplorerFile(selectedFile, closeExplorer: true);
+    }
+
+    private void OpenNewExplorerFile(GameFile file, bool closeExplorer)
+    {
+        if (DataContext is not ApplicationViewModel vm)
+            return;
+
+        if (!NewExplorerFilesListBox.SelectedItems.Contains(file))
+            NewExplorerFilesListBox.SelectedItem = file;
+
+        var parameters = new object[] { "Assets_Extract_New_Tab", NewExplorerFilesListBox.SelectedItems };
+        if (vm.RightClickMenuCommand.CanExecute(parameters))
+        {
+            vm.RightClickMenuCommand.Execute(parameters);
         }
 
-        // NEW エクスプローラー UI を閉じる (メニューのチェックを外す)
-        NewExplorerMenuItem.IsChecked = false;
+        if (closeExplorer)
+            NewExplorerMenuItem.IsChecked = false;
+    }
+
+    private void TrackNewExplorerLocation(TreeItem selectedFolder)
+    {
+        if (selectedFolder == null || string.IsNullOrEmpty(selectedFolder.PathAtThisPoint) || _isNavigatingNewExplorerHistory)
+            return;
+
+        var locationPath = selectedFolder.PathAtThisPoint;
+        if (_newExplorerLocationHistoryIndex >= 0 &&
+            _newExplorerLocationHistoryIndex < _newExplorerLocationHistory.Count &&
+            string.Equals(_newExplorerLocationHistory[_newExplorerLocationHistoryIndex], locationPath, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        if (_newExplorerLocationHistoryIndex < _newExplorerLocationHistory.Count - 1)
+        {
+            _newExplorerLocationHistory.RemoveRange(_newExplorerLocationHistoryIndex + 1, _newExplorerLocationHistory.Count - (_newExplorerLocationHistoryIndex + 1));
+        }
+
+        _newExplorerLocationHistory.Add(locationPath);
+        _newExplorerLocationHistoryIndex = _newExplorerLocationHistory.Count - 1;
+        UpdateNewExplorerNavigationButtons();
+    }
+
+    private void UpdateNewExplorerNavigationButtons()
+    {
+        if (NewExplorerBackButton != null)
+            NewExplorerBackButton.IsEnabled = _newExplorerLocationHistoryIndex > 0;
+
+        if (NewExplorerForwardButton != null)
+            NewExplorerForwardButton.IsEnabled = _newExplorerLocationHistoryIndex >= 0 && _newExplorerLocationHistoryIndex < _newExplorerLocationHistory.Count - 1;
+
+        var currentFolder = NewExplorerGrid?.DataContext as TreeItem ?? AssetsFolderName?.SelectedItem as TreeItem;
+        if (NewExplorerUpButton != null)
+            NewExplorerUpButton.IsEnabled = currentFolder != null;
+    }
+
+    private bool TrySelectFolderByPath(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+            return false;
+
+        var parts = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0)
+            return false;
+
+        var currentFolders = _applicationView.CUE4Parse.AssetsFolder.Folders;
+        TreeItem targetItem = null;
+        var pathItems = new List<TreeItem>();
+
+        foreach (var part in parts)
+        {
+            if (currentFolders == null)
+                return false;
+
+            targetItem = currentFolders.FirstOrDefault(x => x.Header.Equals(part, StringComparison.OrdinalIgnoreCase));
+            if (targetItem == null)
+                return false;
+
+            pathItems.Add(targetItem);
+            currentFolders = targetItem.Folders;
+        }
+
+        foreach (var item in pathItems)
+            item.IsExpanded = true;
+
+        targetItem.IsSelected = true;
+        AssetsFolderName.Focus();
+        return true;
     }
 
     private void OnAssetListClick(object sender, RoutedEventArgs e)
