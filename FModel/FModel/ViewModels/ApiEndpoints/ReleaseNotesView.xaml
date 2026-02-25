@@ -17,16 +17,17 @@
 
             <Section>
                 <Paragraph FontWeight="Bold" FontSize="18">
-                    <Run x:Name="VersionRun">v4.4.4.4</Run>
+                    <Run x:Name="VersionRun">v4.4.8.8</Run>
                     <Run> 主な変更点</Run>
                 </Paragraph>
                 <BlockUIContainer>
-                    <Image Source="https://i.imgur.com/AIkqaaM.png" Stretch="Uniform" MaxHeight="400" Margin="0,10"/>
+                    <Image Source="https://i.imgur.com/AduJmx5.png" Stretch="Uniform" MaxHeight="400" Margin="0,10"/>
                 </BlockUIContainer>
                 <List>
                     <ListItem>
                         <Paragraph>
-                            <Run>検索ウインドウで各アセットタイプ毎に表示する機能を追加</Run>
+                            <Run>アドレスバー実装</Run>
+                            <Run>「戻る、進む、上へ」ボタンの実装</Run>
                         </Paragraph>
                     </ListItem>
                 </List>
