@@ -1091,6 +1091,8 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Button x:Name="NewExplorerUpButton" Grid.Column="0" ToolTip="一つ上のフォルダへ" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoParentFolderClick">
@@ -1102,25 +1104,31 @@
                             <Button x:Name="NewExplorerForwardButton" Grid.Column="2" ToolTip="一つ先の場所へ" Padding="5" Margin="5 0 0 0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoNextFileClick">
                                 <TextBlock Text="→" FontSize="14" FontWeight="SemiBold" />
                             </Button>
-                            <Grid Grid.Column="3" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
+                            <TextBox Grid.Column="3" x:Name="NewExplorerPathBox" Margin="5 0 0 0" MinWidth="280"
+                                     VerticalContentAlignment="Center" ToolTip="フォルダパスを入力して Enter または 移動 でジャンプ"
+                                     KeyDown="OnNewExplorerPathBoxKeyDown" />
+                            <Button Grid.Column="4" Content="移動" Padding="10 3" Margin="5 0 0 0"
+                                    Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}"
+                                    Click="OnNewExplorerGoPathClick" />
+                            <Grid Grid.Column="5" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
                                 <Viewbox Width="16" Height="16">
                                     <Canvas Width="24" Height="24">
                                         <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
                                     </Canvas>
                                 </Viewbox>
                             </Grid>
-                            <TextBox Grid.Column="3" x:Name="NewExplorerSearchBox" AcceptsTab="False" AcceptsReturn="False"
+                            <TextBox Grid.Column="5" x:Name="NewExplorerSearchBox" AcceptsTab="False" AcceptsReturn="False"
                                      Padding="25 0 0 0" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
                                      adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}"
                                      ToolTip="検索例:&#x0a;・通常検索: 'T_ Grid' (スペースでAND検索)&#x0a;・正規表現: 'regex:^WID_' (WID_で始まる)&#x0a;・正規表現: 'regex:Athena|Soldier' (Athena または Soldier)&#x0a;・正規表現: 'regex:_S$' (_S で終わる)" />
-                            <Button Grid.Column="4" ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerDeleteSearchClick">
+                            <Button Grid.Column="6" ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerDeleteSearchClick">
                                 <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                     <Canvas Width="24" Height="24">
                                         <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
                                     </Canvas>
                                 </Viewbox>
                             </Button>
-                            <ComboBox Grid.Column="5" x:Name="NewExplorerClassFilter" Margin="5 0 0 0" MinWidth="120"
+                            <ComboBox Grid.Column="7" x:Name="NewExplorerClassFilter" Margin="5 0 0 0" MinWidth="120"
                                       SelectionChanged="OnNewExplorerClassFilterChanged" SelectedIndex="0">
                                 <ComboBoxItem Content="All Classes" />
                                 <ComboBoxItem Content="Texture2D" />

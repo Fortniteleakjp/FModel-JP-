@@ -504,7 +504,14 @@ public partial class MainWindow
         ApplyNewExplorerFilter(target);
 
         if (e.NewValue is TreeItem selectedFolder)
+        {
             TrackNewExplorerLocation(selectedFolder);
+            UpdateNewExplorerPathBox(selectedFolder);
+        }
+        else
+        {
+            UpdateNewExplorerPathBox();
+        }
 
         UpdateNewExplorerNavigationButtons();
     }
@@ -985,6 +992,20 @@ public partial class MainWindow
         UpdateNewExplorerNavigationButtons();
     }
 
+    private void OnNewExplorerPathBoxKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter)
+            return;
+
+        NavigateToPathFromAddressBar();
+        e.Handled = true;
+    }
+
+    private void OnNewExplorerGoPathClick(object sender, RoutedEventArgs e)
+    {
+        NavigateToPathFromAddressBar();
+    }
+
     private void OnNewExplorerListMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         // リストボックスで選択されたアイテムを取得（動的な型解決を使用）
@@ -1057,6 +1078,39 @@ public partial class MainWindow
         _newExplorerLocationHistory.Add(locationPath);
         _newExplorerLocationHistoryIndex = _newExplorerLocationHistory.Count - 1;
         UpdateNewExplorerNavigationButtons();
+        UpdateNewExplorerPathBox(selectedFolder);
+    }
+
+    private void NavigateToPathFromAddressBar()
+    {
+        if (NewExplorerPathBox == null)
+            return;
+
+        var rawPath = NewExplorerPathBox.Text?.Trim();
+        if (string.IsNullOrEmpty(rawPath))
+            return;
+
+        var normalizedPath = rawPath.Replace('\\', '/').Trim('/');
+        if (string.IsNullOrEmpty(normalizedPath))
+            return;
+
+        if (!TrySelectFolderByPath(normalizedPath))
+        {
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Directory not found: {normalizedPath}", Constants.YELLOW));
+            UpdateNewExplorerPathBox();
+        }
+    }
+
+    private void UpdateNewExplorerPathBox(TreeItem selectedFolder = null)
+    {
+        if (NewExplorerPathBox == null)
+            return;
+
+        var currentFolder = selectedFolder ?? NewExplorerGrid?.DataContext as TreeItem ?? AssetsFolderName?.SelectedItem as TreeItem;
+        var path = currentFolder?.PathAtThisPoint ?? string.Empty;
+
+        if (!string.Equals(NewExplorerPathBox.Text, path, StringComparison.Ordinal))
+            NewExplorerPathBox.Text = path;
     }
 
     private void UpdateNewExplorerNavigationButtons()
@@ -1070,6 +1124,8 @@ public partial class MainWindow
         var currentFolder = NewExplorerGrid?.DataContext as TreeItem ?? AssetsFolderName?.SelectedItem as TreeItem;
         if (NewExplorerUpButton != null)
             NewExplorerUpButton.IsEnabled = currentFolder != null;
+
+        UpdateNewExplorerPathBox(currentFolder);
     }
 
     private bool TrySelectFolderByPath(string path)
