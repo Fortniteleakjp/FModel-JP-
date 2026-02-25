@@ -1086,19 +1086,114 @@ public partial class MainWindow
         if (NewExplorerPathBox == null)
             return;
 
-        var rawPath = NewExplorerPathBox.Text?.Trim();
-        if (string.IsNullOrEmpty(rawPath))
+        var rawInput = NewExplorerPathBox.Text?.Trim();
+        if (string.IsNullOrEmpty(rawInput))
             return;
 
-        var normalizedPath = rawPath.Replace('\\', '/').Trim('/');
-        if (string.IsNullOrEmpty(normalizedPath))
+        var normalizedInput = rawInput.Replace('\\', '/').Trim();
+        if (string.IsNullOrEmpty(normalizedInput))
             return;
 
-        if (!TrySelectFolderByPath(normalizedPath))
+        if (TrySelectFolderByPath(normalizedInput.Trim('/')))
+            return;
+
+        if (TryResolveAssetPathnameToFile(normalizedInput, out var gameFile))
         {
-            FLogger.Append(ELog.Warning, () => FLogger.Text($"Directory not found: {normalizedPath}", Constants.YELLOW));
-            UpdateNewExplorerPathBox();
+            if (TrySelectFolderByPath(GetFolderPathFromFile(gameFile.Path)))
+            {
+                NewExplorerFilesListBox.SelectedItem = gameFile;
+                return;
+            }
         }
+
+        SearchAllLoadedFilesFromAddressBar(normalizedInput);
+    }
+
+    private bool TryResolveAssetPathnameToFile(string input, out GameFile file)
+    {
+        file = null;
+        if (string.IsNullOrWhiteSpace(input) || _applicationView.CUE4Parse.Provider == null)
+            return false;
+
+        var candidate = input.Trim();
+
+        var quoteStart = candidate.IndexOf('\'');
+        var quoteEnd = candidate.LastIndexOf('\'');
+        if (quoteStart >= 0 && quoteEnd > quoteStart)
+            candidate = candidate.Substring(quoteStart + 1, quoteEnd - quoteStart - 1);
+
+        candidate = candidate.Trim();
+        if (!candidate.StartsWith("/", StringComparison.Ordinal))
+            return false;
+
+        var packagePath = candidate;
+        var objectDotIndex = packagePath.LastIndexOf('.');
+        var lastSlashIndex = packagePath.LastIndexOf('/');
+        if (objectDotIndex > lastSlashIndex)
+            packagePath = packagePath.Substring(0, objectDotIndex);
+
+        var fixedPath = _applicationView.CUE4Parse.Provider.FixPath(packagePath);
+        if (_applicationView.CUE4Parse.Provider.TryGetGameFile(fixedPath, out var fixedFile))
+        {
+            file = fixedFile;
+            return true;
+        }
+
+        if (!fixedPath.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) &&
+            _applicationView.CUE4Parse.Provider.TryGetGameFile($"{fixedPath}.uasset", out var fixedAssetFile))
+        {
+            file = fixedAssetFile;
+            return true;
+        }
+
+        return false;
+    }
+
+    private string GetFolderPathFromFile(string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+            return string.Empty;
+
+        var normalizedPath = filePath.Replace('\\', '/');
+        var lastSlash = normalizedPath.LastIndexOf('/');
+        if (lastSlash <= 0)
+            return string.Empty;
+
+        return normalizedPath.Substring(0, lastSlash);
+    }
+
+    private void SearchAllLoadedFilesFromAddressBar(string query)
+    {
+        var provider = _applicationView.CUE4Parse.Provider;
+        if (provider?.Files == null || provider.Files.Count == 0)
+            return;
+
+        var trimmedQuery = query.Trim();
+        if (string.IsNullOrEmpty(trimmedQuery))
+            return;
+
+        var files = provider.Files.Values
+            .Where(f => f != null &&
+                        (f.Name.Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ||
+                         f.Path.Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase) ||
+                         f.PathWithoutExtension.Contains(trimmedQuery, StringComparison.OrdinalIgnoreCase)))
+            .DistinctBy(f => f.Path)
+            .ToList();
+
+        if (files.Count == 0)
+        {
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"No assets found matching: {trimmedQuery}", Constants.YELLOW));
+            return;
+        }
+
+        if (AssetsFolderName.SelectedItem is TreeItem selected)
+            selected.IsSelected = false;
+
+        _applicationView.CUE4Parse.AssetsFolder.Folders?.Clear();
+        _applicationView.CUE4Parse.AssetsFolder.BulkPopulate(files);
+        NewExplorerMenuItem.IsChecked = true;
+
+        FLogger.Append(ELog.Information, () => FLogger.Text($"Found {files.Count} items matching '{trimmedQuery}'", Constants.WHITE));
     }
 
     private void UpdateNewExplorerPathBox(TreeItem selectedFolder = null)
