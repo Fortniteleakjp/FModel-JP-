@@ -64,7 +64,7 @@ public partial class AesManager
             finally
             {
                 _canClose = true;
-                Close();
+                Dispatcher.BeginInvoke(new Action(Close));
             }
         }
     }
