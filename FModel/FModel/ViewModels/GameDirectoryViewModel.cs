@@ -116,6 +116,9 @@ public class GameDirectoryViewModel : ViewModel
     {
         if (!_hiddenArchives.IsMatch(reader.Name)) return;
 
+        if (DirectoryFiles.Any(x => x.Name.Equals(reader.Name, System.StringComparison.OrdinalIgnoreCase)))
+            return;
+
         var fileItem = new FileItem(reader);
         Application.Current.Dispatcher.Invoke(() => DirectoryFiles.Add(fileItem));
     }

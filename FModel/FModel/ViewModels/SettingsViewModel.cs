@@ -869,8 +869,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
             // 認証付きでマニフェストをダウンロード
 
             var fullManifestUrl = baseUrl.TrimEnd('/') + "/" + manifestUrl.TrimStart('/');
-            FLogger.Append(ELog.Information, () => FLogger.Text($"マニフェストURL: {fullManifestUrl}", Constants.WHITE, true));
-            FLogger.Append(ELog.Information, () => FLogger.Text($"チャンクベースURL: {chunkBaseUrl}", Constants.WHITE, true));
+            FLogger.Append(ELog.Information, () => FLogger.Text("マニフェストURLとチャンク設定を確定しました。", Constants.WHITE, true));
 
             try
             {
@@ -930,6 +929,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
                     Log.Information("マニフェスト解析完了: {FileCount} ファイル ({ElapsedMs:F1}ms)", 
                         manifest.Files.Count(), elapsedTime.TotalMilliseconds);
                     FLogger.Append(ELog.Information, () => FLogger.Text($"マニフェスト解析完了: {manifest.Files.Count()} ファイル ({elapsedTime.TotalMilliseconds:F1}ms)", Constants.GREEN, true));
+                    LogManifestStructure(manifest);
                 }
                 catch (Exception ex)
                 {
@@ -957,6 +957,16 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 // ファイルを出力ディレクトリに抽出
                 FLogger.Append(ELog.Information, () => FLogger.Text($"ファイルを抽出中: {outputDir}", Constants.WHITE, true));
                 await ExtractFilesFromManifest(manifest, outputDir, mapCode, chunkBaseUrl, userAgent);
+
+                if (!ValidateExtractedPluginFiles(outputDir, out var validationError))
+                {
+                    var skipMessage = $"抽出ファイルの検証に失敗したためPAC処理を中止しました: {validationError}";
+                    Log.Warning(skipMessage);
+                    FLogger.Append(ELog.Warning, () => FLogger.Text(skipMessage, Constants.YELLOW, true));
+                    return;
+                }
+
+                await ExecuteMapAesPacPostProcess(outputDir);
                 FLogger.Append(ELog.Information, () => FLogger.Text($"マニフェスト処理完了: {outputDir}", Constants.GREEN, true));
             }
             catch (Exception ex)
@@ -970,6 +980,22 @@ public partial class SettingsViewModel // partial 修飾子を追加
         catch (Exception ex)
         {
             FLogger.Append(ELog.Error, () => FLogger.Text($"PAKファイルの作成に失敗しました: {ex.Message}\n{ex.StackTrace}", Constants.RED, true));
+        }
+    }
+
+    private async Task ExecuteMapAesPacPostProcess(string extractedFolder)
+    {
+        try
+        {
+            FLogger.Append(ELog.Information, () => FLogger.Text("MapAES抽出後のpak化処理を開始します...", Constants.WHITE, true));
+            await Task.Run(() => ExecutePacCore(extractedFolder, CancellationToken.None, null, true));
+            await RefreshArchivesAfterPacAsync();
+            FLogger.Append(ELog.Information, () => FLogger.Text("MapAES抽出後のpak化処理が完了しました。", Constants.GREEN, true));
+        }
+        catch (Exception ex)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"MapAES抽出後のpak化処理に失敗しました: {ex.Message}", Constants.RED, true));
+            Log.Error(ex, "MapAES抽出後のpak化処理に失敗しました");
         }
     }
 
@@ -1045,7 +1071,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
         try
         {
             Log.Information("カスタムチャンクダウンロードでファイルを抽出中...");
-            FLogger.Append(ELog.Information, () => FLogger.Text($"カスタムチャンクダウンロード開始. BaseUrl: {chunkBaseUrl}", Constants.WHITE, true));
+            FLogger.Append(ELog.Information, () => FLogger.Text("カスタムチャンクダウンロードを開始します。", Constants.WHITE, true));
             
             // 認証付きHttpClientを作成
             using var httpClient = new HttpClient();
@@ -1177,168 +1203,415 @@ public partial class SettingsViewModel // partial 修飾子を追加
     {
         try
         {
-            using var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
             var fileName = fileManifest.FileName;
-            
+
+            if (await TryDownloadUsingManifestStream(httpClient, manifest, fileManifest, outputPath, fileSize))
+            {
+                Log.Information("manifestストリームで再構築完了: {FileName} (総サイズ: {TotalSize} bytes)", fileName, fileSize);
+                return;
+            }
+
+            Log.Warning("manifestストリーム抽出に失敗したため、カスタム再構築ロジックを使用します: {FileName}", fileName);
+
+            var chunkCache = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+            var chunkPartList = chunkParts?.ToList() ?? new List<object>();
+
             Log.Information("チャンクベースダウンロード開始: {FileName}, {Size} bytes", fileName, fileSize);
-            
+
             var downloadedSize = 0L;
-            var chunkIndex = 0;
-            var totalChunks = chunkParts?.Count() ?? 0;
-            
+            var writePosition = 0L;
+            var totalChunks = chunkPartList.Count;
+            var sawExplicitDestinationOffset = false;
+
             Log.Information("ファイル {FileName} のチャンク処理開始: {ChunkCount} チャンク", fileName, totalChunks);
-            
-            if (chunkParts == null || !chunkParts.Any())
+
+            if (totalChunks == 0)
             {
                 Log.Warning("チャンク情報がありません: {FileName}", fileName);
                 return;
             }
-            
-            foreach (var chunkPart in chunkParts)
+
+            using (var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             {
-                try
+                for (var chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++)
                 {
-                    chunkIndex++;
-                    Log.Information("チャンク {Index} 処理中...", chunkIndex);
-                    
-                    // チャンクGUIDを取得
-                    var chunkGuid = GetChunkGuid(chunkPart);
-                    if (chunkGuid == null)
+                    try
                     {
-                        Log.Warning("チャンクGUIDが取得できません: チャンク {Index}", chunkIndex);
+                    var displayChunkIndex = chunkIndex + 1;
+                    var chunkPart = chunkPartList[chunkIndex];
+                    Log.Information("チャンク {Index} 処理中...", displayChunkIndex);
+
+                    var chunkGuidRaw = GetChunkGuid(chunkPart);
+                    if (chunkGuidRaw == null)
+                    {
+                        Log.Warning("チャンクGUIDが取得できません: チャンク {Index}", displayChunkIndex);
                         continue;
                     }
-                    // マニフェストからチャンク情報を検索
-                    var chunkInfo = FindChunkInfo(manifest, chunkGuid);
+
+                    var chunkGuidText = chunkGuidRaw.ToString() ?? string.Empty;
+                    var chunkGuidKey = NormalizeGuidLike(chunkGuidText);
+                    var rawOffset = GetRawOffset(chunkPart);
+                    var partOffsetInChunk = GetChunkSourceOffset(chunkPart);
+                    var partSize = GetChunkSize(chunkPart);
+
+                    if (partSize <= 0)
+                    {
+                        Log.Warning("チャンクサイズが無効です: {FileName}, Chunk {Index}, Size={Size}", fileName, chunkIndex, partSize);
+                        continue;
+                    }
+
+                    var chunkInfo = FindChunkInfo(manifest, chunkGuidRaw);
                     if (chunkInfo == null)
                     {
-                        Log.Warning("チャンク情報が見つかりません: {ChunkGuid}", chunkGuid);
+                        Log.Warning("チャンク情報が見つかりません: {ChunkGuid}", chunkGuidText);
                         continue;
                     }
-                    
-                    // チャンクURLを構築
-                    var chunkUrl = BuildChunkUrl(chunkBaseUrl, chunkInfo, chunkGuid);
-                    Log.Information("File: {FileName} - Chunk {ChunkIndex}/{TotalChunks} - Downloading URL: {ChunkUrl}", fileName, chunkIndex, totalChunks, chunkUrl);
-                    FLogger.Append(ELog.Information, () => FLogger.Text($"[DEBUG] File: {fileName}, Chunk: {chunkIndex}/{totalChunks}, URL: {chunkUrl}", Constants.YELLOW, true));
-                    
-                    // チャンクをダウンロード
-                    if (string.IsNullOrEmpty(chunkUrl))
+
+                    if (!chunkCache.TryGetValue(chunkGuidKey, out var decompressedData))
                     {
-                        Log.Error("チャンクURLが空です: チャンク {Index}", chunkIndex);
+                        var chunkUrl = BuildChunkUrl(chunkBaseUrl, chunkInfo, chunkGuidText);
+                        Log.Information("File: {FileName} - Chunk {ChunkIndex}/{TotalChunks} をダウンロードします", fileName, chunkIndex, totalChunks);
+
+                        if (string.IsNullOrEmpty(chunkUrl))
+                        {
+                            Log.Error("チャンクURLが空です: チャンク {Index}", chunkIndex);
+                            continue;
+                        }
+
+                        var chunkData = await httpClient.GetByteArrayAsync(chunkUrl);
+                        Log.Information("チャンクダウンロード成功: {Size} bytes", chunkData.Length);
+
+                        decompressedData = null;
+                        var uncompressedSize = GetChunkUncompressedSize(chunkInfo);
+                        if (uncompressedSize <= 0)
+                        {
+                            Log.Warning("チャンク非圧縮サイズが取得できませんでした (0)。圧縮データのまま使用します: {ChunkGuid}", chunkGuidText);
+                        }
+                        if (uncompressedSize > 0)
+                        {
+                            if (chunkData.Length == uncompressedSize)
+                            {
+                                Log.Information("チャンクは非圧縮のようです。そのまま使用します。");
+                                decompressedData = chunkData;
+                            }
+                            else
+                            {
+                                decompressedData = await DecompressChunkData(chunkData, (int)uncompressedSize, chunkGuidText);
+                            }
+                        }
+                        else
+                        {
+                            decompressedData = chunkData;
+                        }
+
+                        chunkCache[chunkGuidKey] = decompressedData;
+                    }
+
+                    var hasExplicitDestinationOffset = TryGetChunkDestinationOffset(chunkPart, out var destinationOffset);
+                    if (hasExplicitDestinationOffset)
+                    {
+                        sawExplicitDestinationOffset = true;
+                    }
+                    if (!hasExplicitDestinationOffset)
+                    {
+                        destinationOffset = writePosition;
+                    }
+
+                    if (destinationOffset < 0)
+                    {
+                        destinationOffset = writePosition;
+                    }
+
+                    if (fileSize > 0)
+                    {
+                        if (destinationOffset >= fileSize)
+                        {
+                            Log.Warning("宛先オフセットがファイルサイズ範囲外のため、順次配置にフォールバック: File={FileName}, Chunk={ChunkIndex}, Destination={Destination}, FileSize={FileSize}",
+                                fileName, displayChunkIndex, destinationOffset, fileSize);
+                            destinationOffset = writePosition;
+                        }
+                        else if (destinationOffset < writePosition)
+                        {
+                            Log.Warning("宛先オフセットが逆行したため、順次配置にフォールバック: File={FileName}, Chunk={ChunkIndex}, Destination={Destination}, WritePosition={WritePosition}",
+                                fileName, displayChunkIndex, destinationOffset, writePosition);
+                            destinationOffset = writePosition;
+                        }
+                    }
+
+                    if (partOffsetInChunk <= 0 && rawOffset > 0)
+                    {
+                        if (rawOffset < decompressedData.LongLength && rawOffset + partSize <= decompressedData.LongLength)
+                        {
+                            partOffsetInChunk = rawOffset;
+                        }
+                    }
+
+                    if (partOffsetInChunk >= decompressedData.LongLength)
+                    {
+                        Log.Warning("チャンク内オフセットが範囲外: File={FileName}, Chunk={ChunkIndex}, Offset={Offset}, ChunkDataSize={ChunkSize}",
+                            fileName, chunkIndex, partOffsetInChunk, decompressedData.LongLength);
                         continue;
                     }
-                    
-                    var chunkData = await httpClient.GetByteArrayAsync(chunkUrl as string);
-                    Log.Information("チャンクダウンロード成功: {Size} bytes", chunkData.Length);
-                    
-                    // Oodle解凍をメインで使用
-                    byte[] decompressedData = null;
-                    var uncompressedSize = GetChunkUncompressedSize(chunkInfo);
-                    if (uncompressedSize > 0)
+
+                    var available = decompressedData.LongLength - partOffsetInChunk;
+                    var bytesRequested = partSize;
+
+                    long nextDestinationOffset = -1;
+                    if (hasExplicitDestinationOffset)
                     {
-                        try
+                        for (var nextIndex = chunkIndex + 1; nextIndex < totalChunks; nextIndex++)
                         {
-                            // Oodleを最優先で使用
-                            OodleHelper.Decompress(chunkData, 0, chunkData.Length, decompressedData = new byte[uncompressedSize], 0, (int)uncompressedSize);
-                        }
-                        catch (Exception oodleEx)
-                        {
-                            Log.Warning(oodleEx, "Oodle解凍失敗、Zlibで再試行");
-                            // Oodle失敗時のみZlibで再試行
-                            try
+                            if (TryGetChunkDestinationOffset(chunkPartList[nextIndex], out var candidate) && candidate > destinationOffset)
                             {
-                                decompressedData = new byte[uncompressedSize];
-                                ZlibHelper.Decompress(chunkData, 0, chunkData.Length, decompressedData, 0, (int)uncompressedSize);
-                            }
-                            catch (Exception zlibEx)
-                            {
-                                Log.Warning(zlibEx, "ZlibHelperでの解凍にも失敗しました");
-                                // 最後のフォールバック: ZLibStream/DeflateStream
-                                try
-                                {
-                                    using var compressedStream = new MemoryStream(chunkData);
-                                    using var zlibStream = new ZLibStream(compressedStream, CompressionMode.Decompress);
-                                    using var decompressedStream = new MemoryStream();
-                                    await zlibStream.CopyToAsync(decompressedStream);
-                                    decompressedData = decompressedStream.ToArray();
-                                }
-                                catch
-                                {
-                                    using var compressedStream = new MemoryStream(chunkData);
-                                    if (chunkData.Length > 2 && (chunkData[0] & 0x0F) == 8)
-                                    {
-                                        compressedStream.Position = 2;
-                                    }
-                                    using var deflateStream = new DeflateStream(compressedStream, CompressionMode.Decompress);
-                                    using var decompressedStream = new MemoryStream();
-                                    await deflateStream.CopyToAsync(decompressedStream);
-                                    decompressedData = decompressedStream.ToArray();
-                                }
+                                nextDestinationOffset = candidate;
+                                break;
                             }
                         }
                     }
-                    else
+
+                    var layoutExpectedSize = 0L;
+                    if (nextDestinationOffset > destinationOffset)
                     {
-                        decompressedData = chunkData;
+                        layoutExpectedSize = nextDestinationOffset - destinationOffset;
                     }
-                    Log.Information("チャンク解凍成功: {Compressed} -> {Uncompressed} bytes", chunkData.Length, decompressedData.Length);
-                    
-                    // ファイルに書き込みのパラメータを取得
-                    var offset = GetChunkOffset(chunkPart);
-                    var size = GetChunkSize(chunkPart);
-                    
-                    Log.Information("ファイル書き込みパラメータ: Offset={Offset}, Size={Size}, DecompressedSize={DecompressedSize}", 
-                        offset, size, decompressedData.Length);
-                    
-                    // ファイルサイズを確保
-                    outputStream.SetLength(Math.Max(outputStream.Length, offset + size));
-                    outputStream.Seek(offset, SeekOrigin.Begin);
-                    
-                    // チャンクサイズが適切か確認
-                    var dataToWrite = Math.Min(size, decompressedData.Length);
-                    
-                    if (dataToWrite > 0)
+                    else if (hasExplicitDestinationOffset && fileSize > 0 && destinationOffset < fileSize)
                     {
-                        outputStream.Write(decompressedData, 0, (int)dataToWrite);
-                        downloadedSize += dataToWrite;
-                        
-                        Log.Information("チャンク書き込み成功: {DataWritten} bytes 書き込み, 累計: {Downloaded} bytes", 
-                            dataToWrite, downloadedSize);
+                        layoutExpectedSize = fileSize - destinationOffset;
                     }
-                    else
+
+                    // Only use layout-based size calculation as a fallback if the size from the manifest is invalid.
+                    // Overriding a valid size can lead to data corruption if chunk parts are not perfectly ordered.
+                    if (bytesRequested <= 0 && layoutExpectedSize > 0)
                     {
-                        Log.Warning("書き込みデータがありません: Size={Size}, DecompressedSize={DecompressedSize}", 
-                            size, decompressedData.Length);
+                        bytesRequested = layoutExpectedSize;
                     }
                     
-                    Log.Information("チャンク書き込み成功: {Index}/{Total}, {Progress:F1}%", 
-                        chunkIndex, totalChunks, downloadedSize * 100.0 / fileSize);
+                    if (bytesRequested <= 0)
+                    {
+                        bytesRequested = available;
+                    }
+
+                    if (fileSize > 0)
+                    {
+                        var remainingInFile = fileSize - destinationOffset;
+                        if (remainingInFile <= 0)
+                        {
+                            continue;
+                        }
+
+                        bytesRequested = Math.Min(bytesRequested, remainingInFile);
+                    }
+
+                    var bytesToWrite = Math.Min(bytesRequested, available);
+                    if (bytesToWrite <= 0)
+                    {
+                        Log.Warning("書き込み可能データがありません: File={FileName}, Chunk={ChunkIndex}, Requested={Requested}, Available={Available}",
+                            fileName, displayChunkIndex, bytesRequested, available);
+                        continue;
+                    }
+
+                    outputStream.Seek(destinationOffset, SeekOrigin.Begin);
+                    outputStream.Write(decompressedData, (int)partOffsetInChunk, (int)bytesToWrite);
+
+                    downloadedSize += bytesToWrite;
+                    writePosition = Math.Max(writePosition, destinationOffset + bytesToWrite);
+
+                        Log.Information("チャンク書き込み成功: {Index}/{Total}, {Progress:F1}%",
+                            displayChunkIndex, totalChunks, fileSize > 0 ? downloadedSize * 100.0 / fileSize : 0.0);
+                    }
+                    catch (HttpRequestException httpEx)
+                    {
+                        Log.Error(httpEx, "チャンクダウンロードエラー: チャンク {Index}", chunkIndex);
+                        throw;
+                    }
+                    catch (Exception chunkEx)
+                    {
+                        Log.Warning(chunkEx, "チャンク処理エラー: チャンク {Index}", chunkIndex);
+                    }
                 }
-                catch (HttpRequestException httpEx)
+
+                outputStream.Flush();
+            }
+
+            var actualFileSize = File.Exists(outputPath) ? new FileInfo(outputPath).Length : 0;
+
+            if (fileSize > 0 && !sawExplicitDestinationOffset && actualFileSize < fileSize)
+            {
+                await using (var padStream = new FileStream(outputPath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite))
                 {
-                    Log.Error(httpEx, "チャンクダウンロードエラー: チャンク {Index}", chunkIndex);
-                    throw; // 403エラーの場合は停止
+                    padStream.SetLength(fileSize);
+                    await padStream.FlushAsync();
                 }
-                catch (Exception chunkEx)
+
+                Log.Warning("DestOffsetなしmanifestのため末尾をゼロ埋め拡張しました: {FileName} Expected={Expected} Before={Before} Downloaded={Downloaded}",
+                    fileName, fileSize, actualFileSize, downloadedSize);
+                actualFileSize = new FileInfo(outputPath).Length;
+            }
+
+            if (fileSize > 0 && (actualFileSize != fileSize || downloadedSize != fileSize))
+            {
+                if (!sawExplicitDestinationOffset && actualFileSize == fileSize && downloadedSize < fileSize)
                 {
-                    Log.Warning(chunkEx, "チャンク処理エラー: チャンク {Index}", chunkIndex);
-                    // 他のチャンクに続行
+                    Log.Warning("DestOffsetなしmanifestでゼロ埋め拡張後にサイズ整合と判定します: {FileName} Expected={Expected} Actual={Actual} Downloaded={Downloaded}",
+                        fileName, fileSize, actualFileSize, downloadedSize);
+                }
+                else
+                {
+                throw new InvalidOperationException($"ファイル再構築が不完全です: {fileName} expected={fileSize} actual={actualFileSize} downloaded={downloadedSize}");
                 }
             }
-            
-            // ストリームをフラッシュしてデータを確実に書き込み
-            outputStream.Flush();
-            
+
+            if (fileSize > 0 && downloadedSize <= 0)
+            {
+                throw new InvalidOperationException($"ファイル再構築に失敗しました。1バイトも書き込まれていません: {fileName}");
+            }
+
             Log.Information("ファイル再構築完了: {FileName} (総サイズ: {TotalSize} bytes, 書き込み: {Downloaded} bytes)", fileName, fileSize, downloadedSize);
         }
         catch (Exception ex)
         {
+            try
+            {
+                if (File.Exists(outputPath))
+                {
+                    File.Delete(outputPath);
+                }
+            }
+            catch
+            {
+            }
+
             Log.Error(ex, "カスタムファイルチャンクダウンロードエラー: {FileName}", fileManifest.FileName);
             throw;
         }
     }
+
+    private async Task<byte[]> DecompressChunkData(byte[] chunkData, int uncompressedSize, string chunkGuidText)
+    {
+        try
+        {
+            var output = new byte[uncompressedSize];
+            OodleHelper.Decompress(chunkData, 0, chunkData.Length, output, 0, uncompressedSize);
+            return output;
+        }
+        catch (Exception oodleEx)
+        {
+            Log.Warning(oodleEx, "Oodle解凍失敗。ZlibHelperで再試行します: {ChunkGuid}", chunkGuidText);
+        }
+
+        try
+        {
+            var output = new byte[uncompressedSize];
+            ZlibHelper.Decompress(chunkData, 0, chunkData.Length, output, 0, uncompressedSize);
+            return output;
+        }
+        catch (Exception zlibEx)
+        {
+            Log.Warning(zlibEx, "ZlibHelper解凍失敗。ZLibStreamで再試行します: {ChunkGuid}", chunkGuidText);
+        }
+
+        try
+        {
+            using var compressedStream = new MemoryStream(chunkData);
+            using var zlibStream = new ZLibStream(compressedStream, CompressionMode.Decompress);
+            using var decompressedStream = new MemoryStream();
+            await zlibStream.CopyToAsync(decompressedStream);
+            var output = decompressedStream.ToArray();
+            if (output.Length != uncompressedSize)
+            {
+                Log.Warning("ZLibStream解凍サイズが想定と異なります: Expected={Expected}, Actual={Actual}, Chunk={ChunkGuid}",
+                    uncompressedSize, output.Length, chunkGuidText);
+            }
+            return output;
+        }
+        catch (Exception zlibStreamEx)
+        {
+            Log.Warning(zlibStreamEx, "ZLibStream解凍失敗。DeflateStreamで再試行します: {ChunkGuid}", chunkGuidText);
+        }
+
+        using (var compressedStream = new MemoryStream(chunkData))
+        {
+            if (chunkData.Length > 2 && (chunkData[0] & 0x0F) == 8)
+            {
+                compressedStream.Position = 2;
+            }
+
+            using var deflateStream = new DeflateStream(compressedStream, CompressionMode.Decompress);
+            using var decompressedStream = new MemoryStream();
+            await deflateStream.CopyToAsync(decompressedStream);
+            var output = decompressedStream.ToArray();
+            if (output.Length != uncompressedSize)
+            {
+                Log.Warning("DeflateStream解凍サイズが想定と異なります: Expected={Expected}, Actual={Actual}, Chunk={ChunkGuid}",
+                    uncompressedSize, output.Length, chunkGuidText);
+            }
+            return output;
+        }
+    }
+
+    private async Task<bool> TryDownloadUsingManifestStream(HttpClient authenticatedClient, FBuildPatchAppManifest manifest, dynamic fileManifest, string outputPath, long expectedSize)
+    {
+        const int maxAttempts = 3;
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                ReplaceAllEpicManifestParserHttpClients(authenticatedClient, manifest);
+                ReplaceHttpClientsInObject(fileManifest, authenticatedClient);
+
+                using var fileStream = fileManifest.GetStream();
+                await using var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                await fileStream.CopyToAsync(outputStream);
+                await outputStream.FlushAsync();
+
+                var actualSize = File.Exists(outputPath) ? new FileInfo(outputPath).Length : 0;
+                if (expectedSize > 0 && actualSize != expectedSize)
+                {
+                    throw new InvalidOperationException($"manifestストリーム抽出サイズ不一致 expected={expectedSize} actual={actualSize}");
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "manifestストリーム抽出に失敗 (Attempt {Attempt}/{MaxAttempts}): {FileName}", attempt, maxAttempts, fileManifest.FileName);
+                try
+                {
+                    if (File.Exists(outputPath))
+                    {
+                        File.Delete(outputPath);
+                    }
+                }
+                catch
+                {
+                }
+
+                if (attempt < maxAttempts)
+                {
+                    await Task.Delay(250 * attempt);
+                    continue;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsCriticalContainerFile(string fileName)
+    {
+        var ext = Path.GetExtension(fileName);
+        return ext.Equals(".pak", StringComparison.OrdinalIgnoreCase) ||
+               ext.Equals(".utoc", StringComparison.OrdinalIgnoreCase) ||
+               ext.Equals(".ucas", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task RebuildFileUsingManifestStream(dynamic fileManifest, string outputPath, long expectedSize)
+    {
+        await Task.CompletedTask;
+    }
     
-    private string GetChunkGuid(object chunkPart)
+    private object GetChunkGuid(object chunkPart)
     {
         try
         {
@@ -1359,7 +1632,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
                     if (value != null)
                     {
                         Log.Debug("チャンクGUIDプロパティが見つかりました: {PropName} = {Value}", propName, value);
-                        return value.ToString();
+                        return value;
                     }
                 }
             }
@@ -1382,16 +1655,8 @@ public partial class SettingsViewModel // partial 修飾子を追加
     {
         try
         {
-            var prop = chunkInfo.GetType().GetProperty("UncompressedSize");
-            if (prop != null)
-            {
-                return Convert.ToInt64(prop.GetValue(chunkInfo));
-            }
-            var field = chunkInfo.GetType().GetField("UncompressedSize", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            if (field != null)
-            {
-                return Convert.ToInt64(field.GetValue(chunkInfo));
-            }
+            if (TryGetNumericMember(chunkInfo, "UncompressedSize", out var size)) return size;
+            if (TryGetNumericMember(chunkInfo, "FileSize", out size)) return size;
             return 0;
         }
         catch
@@ -1400,11 +1665,23 @@ public partial class SettingsViewModel // partial 修飾子を追加
         }
     }
     
-    private object FindChunkInfo(FBuildPatchAppManifest manifest, string chunkGuid)
+    private object FindChunkInfo(FBuildPatchAppManifest manifest, object chunkGuid)
     {
         try
         {
-            return manifest.ChunkList?.FirstOrDefault(c => c.Guid.ToString() == chunkGuid);
+            if (chunkGuid == null)
+            {
+                return null;
+            }
+
+            var targetNormalized = NormalizeGuidLike(chunkGuid.ToString() ?? string.Empty);
+
+            return manifest.ChunkList?.FirstOrDefault(c =>
+                Equals(c.Guid, chunkGuid) ||
+                string.Equals(
+                    NormalizeGuidLike(c.Guid.ToString()),
+                    targetNormalized,
+                    StringComparison.OrdinalIgnoreCase));
         }
         catch
         {
@@ -1450,36 +1727,169 @@ public partial class SettingsViewModel // partial 修飾子を追加
         }
 
         // Fallback: BaseUrl + Guid
-        var fullUrl = $"{baseWithSlash}{chunkGuid}.chunk";
+        var normalizedGuid = NormalizeGuidLike(chunkGuid);
+        var fullUrl = $"{baseWithSlash}{normalizedGuid}.chunk";
         Log.Information("チャンクURL構築 (Fallback): {Url}", fullUrl);
         return fullUrl;
     }
-    
-    private long GetChunkOffset(dynamic chunkPart)
+
+    private static string NormalizeGuidLike(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var chars = value.Where(Uri.IsHexDigit).Select(char.ToUpperInvariant).ToArray();
+        return new string(chars);
+    }
+
+    private void LogManifestStructure(FBuildPatchAppManifest manifest)
     {
         try
         {
-            // 複数のプロパティ名を試す
-            if (chunkPart.Offset != null)
-                return Convert.ToInt64(chunkPart.Offset);
-            if (chunkPart.FileOffset != null)
-                return Convert.ToInt64(chunkPart.FileOffset);
-            
-            var chunkPartDict = chunkPart as IDictionary<string, object>;
-            if (chunkPartDict != null)
+            if (manifest?.Files == null)
             {
-                if (chunkPartDict.ContainsKey("Offset"))
-                    return Convert.ToInt64(chunkPartDict["Offset"]);
-                if (chunkPartDict.ContainsKey("FileOffset"))
-                    return Convert.ToInt64(chunkPartDict["FileOffset"]);
+                Log.Warning("manifest構造ログ出力をスキップしました。manifestがnullです。");
+                return;
             }
+
+            var manifestFiles = manifest.Files.ToList();
+            var pathEntries = manifestFiles
+                .Select(x => x.FileName?.Replace('\\', '/') ?? string.Empty)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+                .Take(5000)
+                .ToList();
+
+            Log.Information("manifest構造 (Files={FileCount}, PathEntries={EntryCount})", manifestFiles.Count, pathEntries.Count);
+
+            foreach (var relativePath in pathEntries)
+            {
+                var segments = relativePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                if (segments.Length <= 1)
+                {
+                    Log.Information("[MANIFEST_FILE] {Path}", relativePath);
+                    continue;
+                }
+
+                var current = string.Empty;
+                for (var i = 0; i < segments.Length - 1; i++)
+                {
+                    current = string.IsNullOrEmpty(current) ? segments[i] : $"{current}/{segments[i]}";
+                    Log.Information("[MANIFEST_DIR ] {Path}", current);
+                }
+
+                Log.Information("[MANIFEST_FILE] {Path}", relativePath);
+            }
+
+            foreach (var fileManifest in manifestFiles)
+            {
+                var fileName = fileManifest.FileName?.Replace('\\', '/') ?? "(unknown)";
+                var fileSize = GetManifestFileSize(fileManifest);
+                var chunkParts = GetChunkParts(fileManifest)?.ToList() ?? new List<object>();
+                Log.Information("[MANIFEST_ENTRY] File={FileName} Size={FileSize} Chunks={ChunkCount}", fileName, fileSize, chunkParts.Count);
+
+                for (var i = 0; i < chunkParts.Count; i++)
+                {
+                    var chunk = chunkParts[i];
+                    var guid = GetChunkGuid(chunk)?.ToString() ?? "(null)";
+                    var destinationOffset = ResolveChunkDestinationOffset(chunk, -1);
+                    var sourceOffset = GetChunkSourceOffset(chunk);
+                    var size = GetChunkSize(chunk);
+                    Log.Information("[MANIFEST_CHUNK] File={FileName} Index={Index} Guid={Guid} DestOffset={DestOffset} SrcOffset={SrcOffset} Size={Size}",
+                        fileName, i + 1, guid, destinationOffset, sourceOffset, size);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "manifest構造のログ出力中にエラーが発生しました");
+        }
+    }
+
+    private long GetManifestFileSize(dynamic fileManifest)
+    {
+        try
+        {
+            long size;
+            if (TryGetNumericMember(fileManifest, "FileSize", out size)) return size;
+            if (TryGetNumericMember(fileManifest, "Size", out size)) return size;
+            if (TryGetNumericMember(fileManifest, "Length", out size)) return size;
+            return 0;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+    
+    private long GetChunkSourceOffset(dynamic chunkPart)
+    {
+        try
+        {
+            long offset;
+            if (TryGetNumericMember(chunkPart, "ChunkOffset", out offset)) return offset;
+            if (TryGetNumericMember(chunkPart, "OffsetInChunk", out offset)) return offset;
+            if (TryGetNumericMember(chunkPart, "SourceOffset", out offset)) return offset;
+            if (TryGetNumericMember(chunkPart, "DataOffset", out offset)) return offset;
+            if (TryGetNumericMember(chunkPart, "StartOffset", out offset)) return offset;
             
-            Log.Debug("ChunkOffsetが見つかりません、0を使用");
+            Log.Debug("ChunkSourceOffsetが見つかりません、0を使用");
             return 0;
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "ChunkOffset取得エラー");
+            Log.Warning(ex, "ChunkSourceOffset取得エラー");
+            return 0;
+        }
+    }
+
+    private long ResolveChunkDestinationOffset(object chunkPart, long sequentialFallback)
+    {
+        try
+        {
+            long offset;
+            if (TryGetNumericMember(chunkPart, "FileOffset", out offset)) return offset;
+        if (TryGetNumericMember(chunkPart, "OffsetInFile", out offset)) return offset;
+            if (TryGetNumericMember(chunkPart, "TargetOffset", out offset)) return offset;
+            if (TryGetNumericMember(chunkPart, "FileDataOffset", out offset)) return offset;
+            return sequentialFallback;
+        }
+        catch
+        {
+            return sequentialFallback;
+        }
+    }
+
+    private bool TryGetChunkDestinationOffset(object chunkPart, out long offset)
+    {
+        offset = 0;
+        try
+        {
+            if (TryGetNumericMember(chunkPart, "FileOffset", out offset)) return true;
+            if (TryGetNumericMember(chunkPart, "OffsetInFile", out offset)) return true;
+            if (TryGetNumericMember(chunkPart, "TargetOffset", out offset)) return true;
+            if (TryGetNumericMember(chunkPart, "FileDataOffset", out offset)) return true;
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private long GetRawOffset(object chunkPart)
+    {
+        try
+        {
+            long offset;
+            if (TryGetNumericMember(chunkPart, "Offset", out offset)) return offset;
+            return 0;
+        }
+        catch
+        {
             return 0;
         }
     }
@@ -1488,20 +1898,14 @@ public partial class SettingsViewModel // partial 修飾子を追加
     {
         try
         {
-            // 複数のプロパティ名を試す
-            if (chunkPart.Size != null)
-                return Convert.ToInt64(chunkPart.Size);
-            if (chunkPart.ChunkSize != null)
-                return Convert.ToInt64(chunkPart.ChunkSize);
-            
-            var chunkPartDict = chunkPart as IDictionary<string, object>;
-            if (chunkPartDict != null)
-            {
-                if (chunkPartDict.ContainsKey("Size"))
-                    return Convert.ToInt64(chunkPartDict["Size"]);
-                if (chunkPartDict.ContainsKey("ChunkSize"))
-                    return Convert.ToInt64(chunkPartDict["ChunkSize"]);
-            }
+            long size;
+            if (TryGetNumericMember(chunkPart, "PartSize", out size) && size > 0) return size;
+            if (TryGetNumericMember(chunkPart, "ChunkPartSize", out size) && size > 0) return size;
+            if (TryGetNumericMember(chunkPart, "FilePartSize", out size) && size > 0) return size;
+            if (TryGetNumericMember(chunkPart, "DataSize", out size) && size > 0) return size;
+            if (TryGetNumericMember(chunkPart, "Size", out size) && size > 0) return size;
+            if (TryGetNumericMember(chunkPart, "Length", out size) && size > 0) return size;
+            if (TryGetNumericMember(chunkPart, "ChunkSize", out size) && size > 0) return size;
             
             Log.Debug("ChunkSizeが見つかりません、0を使用");
             return 0;
@@ -1511,6 +1915,66 @@ public partial class SettingsViewModel // partial 修飾子を追加
             Log.Warning(ex, "ChunkSize取得エラー");
             return 0;
         }
+    }
+
+    private bool TryGetNumericMember(object source, string memberName, out long value)
+    {
+        value = 0;
+        if (source == null)
+        {
+            return false;
+        }
+
+        if (source is IDictionary<string, object> dict && dict.TryGetValue(memberName, out var dictValue) && dictValue != null)
+        {
+            try
+            {
+                value = Convert.ToInt64(dictValue);
+                return true;
+            }
+            catch
+            {
+            }
+        }
+
+        var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        var type = source.GetType();
+
+        var prop = type.GetProperty(memberName, flags);
+        if (prop != null && prop.CanRead)
+        {
+            var raw = prop.GetValue(source);
+            if (raw != null)
+            {
+                try
+                {
+                    value = Convert.ToInt64(raw);
+                    return true;
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        var field = type.GetField(memberName, flags);
+        if (field != null)
+        {
+            var raw = field.GetValue(source);
+            if (raw != null)
+            {
+                try
+                {
+                    value = Convert.ToInt64(raw);
+                    return true;
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        return false;
     }
     
     private long GetChunkDataOffset(dynamic chunkPart)
@@ -2032,76 +2496,12 @@ public partial class SettingsViewModel // partial 修飾子を追加
             await Task.Run(() =>
             {
                 var islandFolder = SelectedIslandProject.FullPath;
-                var gamePath = UserSettings.Default.GameDirectory;
-
-                // Find the root of the FortniteGame directory to prevent path duplication
-                int fortniteGameIndex = gamePath.IndexOf("FortniteGame", StringComparison.OrdinalIgnoreCase);
-                if (fortniteGameIndex == -1)
-                {
-                    throw new DirectoryNotFoundException("ゲームフォルダ内に'FortniteGame'ディレクトリが見つかりません。設定を確認してください。");
-                }
-                string fortniteRootPath = gamePath.Substring(0, fortniteGameIndex);
-
-                var contentPaksPath = Path.Combine(fortniteRootPath, "FortniteGame", "Content", "Paks");
-                var uefnIslandsExe = Path.Combine(fortniteRootPath, "FortniteGame", "Binaries", "Win64", "UEFN-Islands.exe");
-                string[] pluginExtensions = { ".pak", ".sig", ".utoc", ".ucas" };
-
-                // 1. Rename files
-                progressVM.Update(10, "プラグインファイルを改名しています...");
-                cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                foreach (var ext in pluginExtensions)
-                {
-                    var sourceFile = Path.Combine(islandFolder, "plugin" + ext);
-                    var destFile = Path.Combine(islandFolder, "pakchunk99Island-WindowsClient" + ext);
-                    if (File.Exists(sourceFile))
-                    {
-                        if (File.Exists(destFile)) File.Delete(destFile);
-                        File.Move(sourceFile, destFile);
-                    }
-                }
-
-                // 2. Extract island name from .utoc
-                progressVM.Update(30, ".utocから島名を抽出しています...");
-                cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                var utocPath = Path.Combine(islandFolder, "pakchunk99Island-WindowsClient.utoc");
-                if (!File.Exists(utocPath))
-                {
-                    throw new FileNotFoundException("改名された.utocファイルが見つかりません。InstalledBundlesフォルダが正しいか確認してください。", utocPath);
-                }
-                var extractedPluginName = ExtractIslandNameFromUtoc(utocPath, progressVM);
-
-                // 3. Copy files to Paks folder
-                progressVM.Update(50, "Paksフォルダにファイルをコピーしています...");
-                cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                foreach (var ext in pluginExtensions)
-                {
-                    var sourceFile = Path.Combine(islandFolder, "pakchunk99Island-WindowsClient" + ext);
-                    var destFile = Path.Combine(contentPaksPath, "pakchunk99Island-WindowsClient" + ext);
-                    if (File.Exists(sourceFile))
-                    {
-                        if (File.Exists(destFile)) File.Delete(destFile);
-                        File.Copy(sourceFile, destFile, true);
-                    }
-                }
-
-                // 4. Start UEFN-Islands.exe
-                if (File.Exists(uefnIslandsExe) && !string.IsNullOrEmpty(extractedPluginName))
-                {
-                    progressVM.Update(80, "UEFN-Islandsを起動しています...");
-                    cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                    var pieArg = IsPieMode ? ",ValkyriePIE" : "";
-                    var arguments = $"-disableplugins=\"ValkyrieFortnite,AtomVK\" -enableplugins=\"{extractedPluginName}{pieArg}\""; // extractedPluginName is used here
-                    Process.Start(uefnIslandsExe, arguments);
-                }
-                else
-                {
-                    progressVM.Update(80, "UEFN-Islands.exeが見つかりません。起動をスキップします。");
-                    Thread.Sleep(2000); // ユーザーがメッセージを読めるように少し待機
-                }
-                
+                ExecutePacCore(islandFolder, cancellationTokenSource.Token, progressVM, true);
                 progressVM.Update(100, "完了しました！");
                 Thread.Sleep(1000); // Show "Completed" for a moment
             }, cancellationTokenSource.Token);
+
+            await RefreshArchivesAfterPacAsync();
         }
         catch (OperationCanceledException)
         {
@@ -2115,6 +2515,167 @@ public partial class SettingsViewModel // partial 修飾子を追加
         finally
         {
             progressWindow.Close();
+        }
+    }
+
+    private void ExecutePacCore(string islandFolder, CancellationToken cancellationToken, PacProgressWindowViewModel progressVM, bool launchUefn)
+    {
+        var gamePath = UserSettings.Default.GameDirectory;
+
+        int fortniteGameIndex = gamePath.IndexOf("FortniteGame", StringComparison.OrdinalIgnoreCase);
+        if (fortniteGameIndex == -1)
+        {
+            throw new DirectoryNotFoundException("ゲームフォルダ内に'FortniteGame'ディレクトリが見つかりません。設定を確認してください。");
+        }
+
+        string fortniteRootPath = gamePath.Substring(0, fortniteGameIndex);
+        var contentPaksPath = Path.Combine(fortniteRootPath, "FortniteGame", "Content", "Paks");
+        var uefnIslandsExe = Path.Combine(fortniteRootPath, "FortniteGame", "Binaries", "Win64", "UEFN-Islands.exe");
+        string[] pluginExtensions = { ".pak", ".sig", ".utoc", ".ucas" };
+
+        foreach (var ext in pluginExtensions)
+        {
+            var legacyFile = Path.Combine(contentPaksPath, "pakchunk99Island-WindowsClient" + ext);
+            if (File.Exists(legacyFile))
+            {
+                File.Delete(legacyFile);
+            }
+        }
+
+        progressVM?.Update(10, "プラグインファイルを確認しています...");
+        cancellationToken.ThrowIfCancellationRequested();
+        var hasAnyPluginFile = pluginExtensions.Any(ext => File.Exists(Path.Combine(islandFolder, "plugin" + ext)));
+        if (!hasAnyPluginFile)
+        {
+            throw new FileNotFoundException("plugin.* ファイルが見つかりません。InstalledBundlesフォルダが正しいか確認してください。", islandFolder);
+        }
+
+        progressVM?.Update(30, ".utocから島名を抽出しています...");
+        cancellationToken.ThrowIfCancellationRequested();
+        var utocPath = Path.Combine(islandFolder, "plugin.utoc");
+        if (!File.Exists(utocPath))
+        {
+            throw new FileNotFoundException("plugin.utoc ファイルが見つかりません。InstalledBundlesフォルダが正しいか確認してください。", utocPath);
+        }
+
+        var extractedPluginName = ExtractIslandNameFromUtoc(utocPath, progressVM);
+
+        progressVM?.Update(50, "Paksフォルダにファイルをコピーしています...");
+        cancellationToken.ThrowIfCancellationRequested();
+        foreach (var ext in pluginExtensions)
+        {
+            var sourceFile = Path.Combine(islandFolder, "plugin" + ext);
+            var destFile = Path.Combine(contentPaksPath, "plugin" + ext);
+            if (File.Exists(sourceFile))
+            {
+                if (File.Exists(destFile)) File.Delete(destFile);
+                File.Copy(sourceFile, destFile, true);
+            }
+        }
+
+        if (!launchUefn)
+        {
+            return;
+        }
+
+        if (File.Exists(uefnIslandsExe) && !string.IsNullOrEmpty(extractedPluginName))
+        {
+            progressVM?.Update(80, "UEFN-Islandsを起動しています...");
+            cancellationToken.ThrowIfCancellationRequested();
+            var pieArg = IsPieMode ? ",ValkyriePIE" : "";
+            var arguments = $"-disableplugins=\"ValkyrieFortnite,AtomVK\" -enableplugins=\"{extractedPluginName}{pieArg}\"";
+            Process.Start(uefnIslandsExe, arguments);
+        }
+        else
+        {
+            progressVM?.Update(80, "UEFN-Islands.exeが見つかりません。起動をスキップします。");
+            if (progressVM != null)
+            {
+                Thread.Sleep(2000);
+            }
+        }
+    }
+
+    private bool ValidateExtractedPluginFiles(string folderPath, out string error)
+    {
+        error = string.Empty;
+
+        var pakPath = Path.Combine(folderPath, "plugin.pak");
+        var utocPath = Path.Combine(folderPath, "plugin.utoc");
+        var ucasPath = Path.Combine(folderPath, "plugin.ucas");
+
+        if (!File.Exists(pakPath))
+        {
+            error = "plugin.pak が存在しません";
+            return false;
+        }
+
+        if (!File.Exists(utocPath))
+        {
+            error = "plugin.utoc が存在しません";
+            return false;
+        }
+
+        if (!File.Exists(ucasPath))
+        {
+            error = "plugin.ucas が存在しません";
+            return false;
+        }
+
+        if (new FileInfo(pakPath).Length <= 0 || new FileInfo(utocPath).Length <= 0 || new FileInfo(ucasPath).Length <= 0)
+        {
+            error = "pluginコンテナファイルのサイズが0です";
+            return false;
+        }
+
+        if (!HasValidUtocMagic(utocPath))
+        {
+            error = "plugin.utoc のヘッダーが不正です";
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool HasValidUtocMagic(string utocPath)
+    {
+        try
+        {
+            var expectedMagic = new byte[] { 0x2D, 0x3D, 0x3D, 0x2D, 0x2D, 0x3D, 0x3D, 0x2D, 0x2D, 0x3D, 0x3D, 0x2D, 0x2D, 0x3D, 0x3D, 0x2D };
+            var buffer = new byte[16];
+            using var fs = new FileStream(utocPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            if (fs.Read(buffer, 0, buffer.Length) != buffer.Length)
+            {
+                return false;
+            }
+
+            return buffer.SequenceEqual(expectedMagic);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private async Task RefreshArchivesAfterPacAsync()
+    {
+        try
+        {
+            FLogger.Append(ELog.Information, () => FLogger.Text("アーカイブ一覧を再読み込みしています...", Constants.WHITE, true));
+
+            var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
+            if (provider != null)
+            {
+                await Task.Run(() => provider.Initialize());
+            }
+
+            await ApplicationService.ApplicationView.UpdateProvider(true);
+            FLogger.Append(ELog.Information, () => FLogger.Text("アーカイブ一覧を更新しました。", Constants.GREEN, true));
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "アーカイブ一覧の再読み込みに失敗しました");
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"アーカイブ一覧の再読み込みに失敗しました: {ex.Message}", Constants.YELLOW, true));
         }
     }
 
@@ -2161,8 +2722,11 @@ public partial class SettingsViewModel // partial 修飾子を追加
         int index = fileBytes.AsSpan().IndexOf(pattern);
         if (index == -1)
         {
-            progressVM.Update(40, "警告: .utocからプラグイン名を抽出できませんでした。");
-            Thread.Sleep(2000); // ユーザーがメッセージを読めるように少し待機
+            progressVM?.Update(40, "警告: .utocからプラグイン名を抽出できませんでした。");
+            if (progressVM != null)
+            {
+                Thread.Sleep(2000); // ユーザーがメッセージを読めるように少し待機
+            }
             return null;
         }
 
