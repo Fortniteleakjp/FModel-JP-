@@ -4,7 +4,7 @@ import secrets
 
 sha = sys.argv[1]
 # version = sys.argv[2]
-version = f"4.4.8.9.{sha}"
+version = f"4.4.9.0.{sha}"
 
 url = "https://fmodeljpbigbackup.fljpapi.jp/qa/upload"
 headers = {
