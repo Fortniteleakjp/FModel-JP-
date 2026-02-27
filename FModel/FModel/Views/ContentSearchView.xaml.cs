@@ -193,7 +193,7 @@ namespace FModel.Views
         
                     try
                     {
-                        string contentString;
+                        string contentString = string.Empty;
                         if (file.Path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) || file.Path.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
                         {
                             // GetExports()は重いので、より軽量なGetDisplayData()を使用
@@ -205,7 +205,6 @@ namespace FModel.Views
                                 var className = GetPackageClassName(result.Package);
                                 if (!IsTypeMatch(className, assetTypeFilter)) return;
                             }
-
                             contentString = JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.None);
                         }
                         else

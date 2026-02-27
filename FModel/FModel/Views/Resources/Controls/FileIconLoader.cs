@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,10 @@ namespace FModel.Views.Resources.Controls
     public static class FileIconLoader
     {
         private static readonly SemaphoreSlim _semaphore = new(10);
+        private const int ThumbnailCacheCapacity = 256;
+        private static readonly object _cacheLock = new();
+        private static readonly Dictionary<string, LinkedListNode<ThumbnailCacheEntry>> _thumbnailCache = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly LinkedList<ThumbnailCacheEntry> _thumbnailOrder = new();
 
         public static readonly DependencyProperty GameFileProperty =
             DependencyProperty.RegisterAttached("GameFile", typeof(GameFile), typeof(FileIconLoader), new PropertyMetadata(null, OnGameFileChanged));
@@ -38,6 +43,13 @@ namespace FModel.Views.Resources.Controls
             {
                 image.Source = null;
                 image.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            if (TryGetCachedThumbnail(file.Path, out var cachedBitmap))
+            {
+                image.Source = cachedBitmap;
+                image.Visibility = Visibility.Visible;
                 return;
             }
 
@@ -145,6 +157,7 @@ namespace FModel.Views.Resources.Controls
 
                     if (bitmap != null && GetGameFile(image) == file)
                     {
+                        CacheThumbnail(file.Path, bitmap);
                         image.Source = bitmap;
                         image.Visibility = Visibility.Visible;
                     }
@@ -183,6 +196,61 @@ namespace FModel.Views.Resources.Controls
             {
                 return null;
             }
+        }
+
+        private static bool TryGetCachedThumbnail(string key, out BitmapSource bitmap)
+        {
+            bitmap = null;
+            if (string.IsNullOrWhiteSpace(key))
+                return false;
+
+            lock (_cacheLock)
+            {
+                if (!_thumbnailCache.TryGetValue(key, out var node))
+                    return false;
+
+                _thumbnailOrder.Remove(node);
+                _thumbnailOrder.AddFirst(node);
+                bitmap = node.Value.Bitmap;
+                return true;
+            }
+        }
+
+        private static void CacheThumbnail(string key, BitmapSource bitmap)
+        {
+            if (string.IsNullOrWhiteSpace(key) || bitmap == null)
+                return;
+
+            lock (_cacheLock)
+            {
+                if (_thumbnailCache.TryGetValue(key, out var existingNode))
+                {
+                    _thumbnailOrder.Remove(existingNode);
+                }
+
+                var node = new LinkedListNode<ThumbnailCacheEntry>(new ThumbnailCacheEntry(key, bitmap));
+                _thumbnailCache[key] = node;
+                _thumbnailOrder.AddFirst(node);
+
+                while (_thumbnailCache.Count > ThumbnailCacheCapacity && _thumbnailOrder.Last != null)
+                {
+                    var lastNode = _thumbnailOrder.Last;
+                    _thumbnailOrder.RemoveLast();
+                    _thumbnailCache.Remove(lastNode.Value.Key);
+                }
+            }
+        }
+
+        private sealed class ThumbnailCacheEntry
+        {
+            public ThumbnailCacheEntry(string key, BitmapSource bitmap)
+            {
+                Key = key;
+                Bitmap = bitmap;
+            }
+
+            public string Key { get; }
+            public BitmapSource Bitmap { get; }
         }
     }
 }
