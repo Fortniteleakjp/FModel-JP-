@@ -158,6 +158,13 @@ Fortnite等のクリエイティブマップコードを入力するだけで、
 
 ---
 
+
+## リプレイ解析機能は、以下のツールを使用して実装しています。
+https://github.com/Shiqan/FortniteReplayDecompressor
+
+---
+
+
 ## ⚠ 注意事項
 
 - 本プロジェクトは **非公式版** です
