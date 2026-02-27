@@ -7,7 +7,7 @@ namespace FModel.Services
 {
     public static class UFontExtractor
     {
-        public static string ExtractTTF(byte[] data, string outputPath)
+        public static string ExtractTTF(byte[] data, string outputPath, bool silent = false)
         {
             int start = FindTTFHeader(data);
             if (start == -1)
@@ -34,19 +34,22 @@ namespace FModel.Services
             Array.Copy(data, start, ttfData, 0, maxOffset);
             File.WriteAllBytes(outputPath, ttfData);
 
-            OpenFolderAndSelectFile(outputPath);
-            MessageBox.Show($"抽出成功: {Path.GetFileName(outputPath)}", "UFont Converter", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (!silent)
+            {
+                OpenFolderAndSelectFile(outputPath);
+                MessageBox.Show($"抽出成功: {Path.GetFileName(outputPath)}", "UFont Converter", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
 
             return $"抽出成功: {Path.GetFileName(outputPath)}";
         }
 
-        public static string ExtractTTF(string inputPath, string outputPath)
+        public static string ExtractTTF(string inputPath, string outputPath, bool silent = false)
         {
             if (!File.Exists(inputPath))
                 return $"ファイルが見つかりません: {inputPath}";
 
             byte[] data = File.ReadAllBytes(inputPath);
-            return ExtractTTF(data, outputPath);
+            return ExtractTTF(data, outputPath, silent);
         }
 
         private static int FindTTFHeader(byte[] data)

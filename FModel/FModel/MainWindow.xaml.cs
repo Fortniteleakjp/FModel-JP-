@@ -30,6 +30,7 @@ using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使
 using Microsoft.Win32;
 using FModel.Features.Athena;
 using Serilog;
+using Ookii.Dialogs.Wpf;
 using UAssetAPI.PropertyTypes.Structs;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
@@ -360,27 +361,73 @@ public partial class MainWindow
     {
         if (AssetsListName.SelectedItems.Count == 0) return;
 
-        foreach (var item in AssetsListName.SelectedItems)
-        {
-            if (item is GameFile gameFile && gameFile.Extension.Equals("ufont", StringComparison.OrdinalIgnoreCase))
-            {
-                var saveFileDialog = new SaveFileDialog
-                {
-                    Filter = "TrueType Font (*.ttf)|*.ttf",
-                    FileName = Path.ChangeExtension(gameFile.Name, "ttf")
-                };
+        var selectedFiles = AssetsListName.SelectedItems.OfType<GameFile>()
+            .Where(x => x.Extension.Equals("ufont", StringComparison.OrdinalIgnoreCase))
+            .ToList();
 
-                if (saveFileDialog.ShowDialog() == true)
+        if (selectedFiles.Count == 0) return;
+
+        if (selectedFiles.Count == 1)
+        {
+            var gameFile = selectedFiles[0];
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "TrueType Font (*.ttf)|*.ttf",
+                FileName = Path.ChangeExtension(gameFile.Name, "ttf")
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var data = gameFile.Read();
+                    var result = UFontExtractor.ExtractTTF(data, saveFileDialog.FileName);
+                    if (!result.StartsWith("抽出成功"))
+                    {
+                        MessageBox.Show($"エラー: {result}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"エラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        else
+        {
+            var folderDialog = new VistaFolderBrowserDialog
+            {
+                Description = "フォントの保存先フォルダを選択してください",
+                UseDescriptionForTitle = true
+            };
+
+            if (folderDialog.ShowDialog() == true)
+            {
+                var outputFolder = folderDialog.SelectedPath;
+                int successCount = 0;
+                int failCount = 0;
+
+                foreach (var gameFile in selectedFiles)
                 {
                     try
                     {
                         var data = gameFile.Read();
-                        UFontExtractor.ExtractTTF(data, saveFileDialog.FileName);
+                        var outputPath = Path.Combine(outputFolder, Path.ChangeExtension(gameFile.Name, "ttf"));
+                        var result = UFontExtractor.ExtractTTF(data, outputPath, true);
+                        if (result.StartsWith("抽出成功")) successCount++;
+                        else failCount++;
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"エラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                        FLogger.Append(ELog.Error, () => FLogger.Text($"Failed to convert {gameFile.Name}: {ex.Message}", Constants.RED));
+                        failCount++;
                     }
+                }
+
+                MessageBox.Show($"{successCount} 個のファイルを変換しました。" + (failCount > 0 ? $"\n{failCount} 個のファイルの変換に失敗しました。" : ""), "一括変換完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (successCount > 0)
+                {
+                    Process.Start("explorer.exe", outputFolder);
                 }
             }
         }
