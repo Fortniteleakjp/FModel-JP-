@@ -356,6 +356,36 @@ public partial class MainWindow
         }
     }
 
+    private void OnSaveFontClick(object sender, RoutedEventArgs e)
+    {
+        if (AssetsListName.SelectedItems.Count == 0) return;
+
+        foreach (var item in AssetsListName.SelectedItems)
+        {
+            if (item is GameFile gameFile && gameFile.Extension.Equals("ufont", StringComparison.OrdinalIgnoreCase))
+            {
+                var saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "TrueType Font (*.ttf)|*.ttf",
+                    FileName = Path.ChangeExtension(gameFile.Name, "ttf")
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    try
+                    {
+                        var data = gameFile.Read();
+                        UFontExtractor.ExtractTTF(data, saveFileDialog.FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"エラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+    }
+
     private async void OnPlayVideoClick(object sender, RoutedEventArgs e)
     {
         if (AssetsListName.SelectedItem is GameFile file)

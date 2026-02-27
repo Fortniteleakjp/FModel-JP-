@@ -158,6 +158,36 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
+                                            <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
+                                                <MenuItem.Header>
+                                                    <TextBlock>
+                                                        <Run Text="ttf" /><Run Text="{DynamicResource Ctx_SaveAsFormat_Suffix}" />
+                                                    </TextBlock>
+                                                </MenuItem.Header>
+                                                <MenuItem.CommandParameter>
+                                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                        <Binding Source="Assets_Save_Font" />
+                                                        <Binding Path="SelectedItems" />
+                                                    </MultiBinding>
+                                                </MenuItem.CommandParameter>
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                                <MenuItem.Style>
+                                                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedItem.Extension}" Value="ufont">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </MenuItem.Style>
+                                            </MenuItem>
                 <MenuItem Header="{DynamicResource Menu_View_AudioPlayer}" Command="{Binding MenuCommand}" CommandParameter="Views_AudioPlayer">
                     <MenuItem.Icon>
                         <Viewbox Width="16" Height="16">
@@ -821,6 +851,30 @@
                                                         </Canvas>
                                                     </Viewbox>
                                                 </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Click="OnSaveFontClick">
+                                                <MenuItem.Header>
+                                                    <TextBlock>
+                                                        <Run Text="ttf" /><Run Text="{DynamicResource Ctx_SaveAsFormat_Suffix}" />
+                                                    </TextBlock>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                                <MenuItem.Style>
+                                                    <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedItem.Extension}" Value="ufont">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </MenuItem.Style>
                                             </MenuItem>
                                             <MenuItem Header="{DynamicResource Ctx_SaveSound}" Command="{Binding DataContext.SaveSoundCommand}" CommandParameter="{Binding SelectedItems}">
                                                 <MenuItem.Icon>
