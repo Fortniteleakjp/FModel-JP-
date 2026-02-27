@@ -107,6 +107,15 @@
     <system:String x:Key="Label_FolderContentInfo_Contains"> contains </system:String>
     <system:String x:Key="Label_FolderContentInfo_FoldersAnd"> folders and </system:String>
     <system:String x:Key="Label_FolderContentInfo_Files"> files</system:String>
+    <system:String x:Key="NewExplorer_Tooltip_GoUp">Go to parent folder</system:String>
+    <system:String x:Key="NewExplorer_Tooltip_GoBack">Go to previous location</system:String>
+    <system:String x:Key="NewExplorer_Tooltip_GoForward">Go to next location</system:String>
+    <system:String x:Key="NewExplorer_Path_Tooltip">Enter a folder path, then press Enter or Go</system:String>
+    <system:String x:Key="NewExplorer_Button_Go">Go</system:String>
+    <system:String x:Key="NewExplorer_Search_Tooltip">Search examples:&#x0a;- Basic: 'T_ Grid' (space = AND search)&#x0a;- Regex: 'regex:^WID_' (starts with WID_)&#x0a;- Regex: 'regex:Athena|Soldier' (matches Athena or Soldier)&#x0a;- Regex: 'regex:_S$' (ends with _S)</system:String>
+    <system:String x:Key="NewExplorer_ClassFilter_All">All Classes</system:String>
+    <system:String x:Key="NewExplorer_Label_ItemsSuffix"> Items</system:String>
+    <system:String x:Key="NewExplorer_Label_FoldersSuffix"> Folders</system:String>
     
     <!-- Context Menu -->
     <system:String x:Key="Ctx_OpenNewTab">Open in New Tab</system:String>

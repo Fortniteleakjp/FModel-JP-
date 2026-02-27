@@ -800,9 +800,10 @@ public partial class MainWindow
         var filters = filterText.Trim().Split(' ');
         var hasTextFilter = !string.IsNullOrWhiteSpace(filterText);
 
+        var selectedIndex = NewExplorerClassFilter.SelectedIndex;
         var selectedItem = NewExplorerClassFilter.SelectedItem as ComboBoxItem;
-        var selectedClass = selectedItem?.Content?.ToString();
-        var hasClassFilter = !string.IsNullOrEmpty(selectedClass) && selectedClass != "All Classes";
+        var hasClassFilter = selectedIndex > 0;
+        var selectedClass = hasClassFilter ? selectedItem?.Content?.ToString() : null;
 
         bool FilterAsset(object o)
         {
