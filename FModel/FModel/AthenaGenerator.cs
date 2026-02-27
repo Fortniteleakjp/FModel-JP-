@@ -24,8 +24,25 @@ namespace FModel
                 throw new Exception($"APIから不正なステータスコードが返されました: {json["status"]?.Value<int>()}");
             }
 
-            var cosmetics = json["data"] as JArray;
-            if (cosmetics == null)
+            var dataToken = json["data"];
+            JArray cosmetics = null;
+
+            if (dataToken is JArray dataArray)
+            {
+                cosmetics = dataArray;
+            }
+            else if (dataToken is JObject dataObject)
+            {
+                // Handle cases like /v2/cosmetics/new where data is an object containing item categories
+                if (dataObject["items"] is JObject itemsObject)
+                {
+                    cosmetics = new JArray(itemsObject.Properties()
+                        .Select(p => p.Value)
+                        .OfType<JArray>()
+                        .SelectMany(a => a));
+                }
+            }
+            if (cosmetics == null || cosmetics.Count == 0)
             {
                 throw new Exception("APIレスポンスにコスメティックデータが含まれていません。");
             }
