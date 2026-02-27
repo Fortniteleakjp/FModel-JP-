@@ -180,6 +180,10 @@
     <ProjectReference Include="..\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
     <ProjectReference Include="..\CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
     <ProjectReference Include="..\UAssetGUI-master\UAssetAPI\UAssetAPI\UAssetAPI.csproj" />
+    <ProjectReference Include="..\..\replay-analysis\FortniteReplayReader\FortniteReplayReader.csproj" />
+    <ProjectReference Include="..\..\replay-analysis\OozSharp\OozSharp.csproj" />
+    <ProjectReference Include="..\..\replay-analysis\Unreal.Core\Unreal.Core.csproj" />
+    <ProjectReference Include="..\..\replay-analysis\Unreal.Encryption\Unreal.Encryption.csproj" />
   </ItemGroup>
 
   <ItemGroup>

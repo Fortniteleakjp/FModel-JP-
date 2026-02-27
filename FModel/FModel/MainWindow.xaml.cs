@@ -234,7 +234,11 @@ public partial class MainWindow
                 AdonisUI.Controls.MessageBox.Show("マッピングファイルが読み込めませんでした、最新のマッピングファイルをローカルで読み込んでください", "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error));
         }
     }
-
+    private void OnReplayAnalysisClick(object sender, RoutedEventArgs e)
+    {
+        // ReplayAnalysisWindow を表示する
+        new Views.ReplayAnalysisWindow().Show();
+    }
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)
     {
         RootGrid.ColumnDefinitions[0].Width = GridLength.Auto;
@@ -815,7 +819,7 @@ public partial class MainWindow
                 if (regex != null)
                 {
                     if (!regex.IsMatch(file.Name))
-                    return false;
+                        return false;
                 }
                 else if (filterText.StartsWith("regex:", StringComparison.OrdinalIgnoreCase))
                 {
@@ -1489,15 +1493,20 @@ public partial class MainWindow
             switch (targetType)
             {
                 case "TextPropertyData":
-                    if (property is TextPropertyData textProp) { textProp.Value = new UAssetAPI.UnrealTypes.FString(stringValue); } break;
+                    if (property is TextPropertyData textProp) { textProp.Value = new UAssetAPI.UnrealTypes.FString(stringValue); }
+                    break;
                 case "IntPropertyData":
-                    if (property is IntPropertyData intProp && int.TryParse(stringValue, out var intVal)) { intProp.Value = intVal; } break;
+                    if (property is IntPropertyData intProp && int.TryParse(stringValue, out var intVal)) { intProp.Value = intVal; }
+                    break;
                 case "FloatPropertyData":
-                    if (property is FloatPropertyData floatProp && float.TryParse(stringValue, out var floatVal)) { floatProp.Value = floatVal; } break;
+                    if (property is FloatPropertyData floatProp && float.TryParse(stringValue, out var floatVal)) { floatProp.Value = floatVal; }
+                    break;
                 case "NamePropertyData":
-                    if (property is NamePropertyData nameProp) { nameProp.Value = FName.FromString(asset, stringValue); } break;
+                    if (property is NamePropertyData nameProp) { nameProp.Value = FName.FromString(asset, stringValue); }
+                    break;
                 case "BoolPropertyData":
-                    if (property is BoolPropertyData boolProp && bool.TryParse(stringValue, out var boolVal)) { boolProp.Value = boolVal; } break;
+                    if (property is BoolPropertyData boolProp && bool.TryParse(stringValue, out var boolVal)) { boolProp.Value = boolVal; }
+                    break;
                 case "BytePropertyData":
                     if (property is BytePropertyData byteProp)
                     {

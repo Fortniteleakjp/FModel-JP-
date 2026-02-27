@@ -1,0 +1,12 @@
+D:\FModel-JP\replay-analysis\OozSharp\bin\Debug\net9.0\OozSharp.deps.json
+D:\FModel-JP\replay-analysis\OozSharp\bin\Debug\net9.0\OozSharp.dll
+D:\FModel-JP\replay-analysis\OozSharp\bin\Debug\net9.0\OozSharp.pdb
+D:\FModel-JP\replay-analysis\OozSharp\obj\Debug\net9.0\OozSharp.GeneratedMSBuildEditorConfig.editorconfig
+D:\FModel-JP\replay-analysis\OozSharp\obj\Debug\net9.0\OozSharp.AssemblyInfoInputs.cache
+D:\FModel-JP\replay-analysis\OozSharp\obj\Debug\net9.0\OozSharp.AssemblyInfo.cs
+D:\FModel-JP\replay-analysis\OozSharp\obj\Debug\net9.0\OozSharp.csproj.CoreCompileInputs.cache
+D:\FModel-JP\replay-analysis\OozSharp\obj\Debug\net9.0\OozSharp.sourcelink.json
+D:\FModel-JP\replay-analysis\OozSharp\obj\Debug\net9.0\OozSharp.dll
+D:\FModel-JP\replay-analysis\OozSharp\obj\Debug\net9.0\refint\OozSharp.dll
+D:\FModel-JP\replay-analysis\OozSharp\obj\Debug\net9.0\OozSharp.pdb
+D:\FModel-JP\replay-analysis\OozSharp\obj\Debug\net9.0\ref\OozSharp.dll
