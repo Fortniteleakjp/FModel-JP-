@@ -162,6 +162,8 @@ Fortnite等のクリエイティブマップコードを入力するだけで、
 ## リプレイ解析機能は、以下のツールを使用して実装しています。
 https://github.com/Shiqan/FortniteReplayDecompressor
 
+## .ufontから.ttfへの変換機能は、ランドマークのツールを使用して実装しています。
+
 ---
 
 
