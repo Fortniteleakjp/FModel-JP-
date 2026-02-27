@@ -16,6 +16,7 @@ using CUE4Parse_Conversion.Textures;
 using FModel.Services;
 using FModel.Settings;
 using CUE4Parse.Utils;
+using Serilog;
 using SkiaSharp;
 
 namespace FModel.Views.Resources.Controls
@@ -147,9 +148,9 @@ namespace FModel.Views.Resources.Controls
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Suppress errors
+                        Log.Debug(ex, "Failed to build preview thumbnail for {FilePath}", file.Path);
                     }
 
                     return null;
@@ -167,9 +168,9 @@ namespace FModel.Views.Resources.Controls
                     _semaphore.Release();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // UI thread safety
+                Log.Debug(ex, "Failed to update preview image for {FilePath}", file.Path);
             }
         }
 
@@ -192,8 +193,9 @@ namespace FModel.Views.Resources.Controls
 
                 return bitmapImage;
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Debug(ex, "Failed to decode texture preview for {Texture}", texture?.Name);
                 return null;
             }
         }

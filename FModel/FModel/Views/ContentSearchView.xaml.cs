@@ -15,6 +15,7 @@ using System.Windows.Threading; // Dispatcher を解決するために追加
 using FModel.Extensions;
 using CUE4Parse.UE4.Assets;
 using AdonisUI.Controls; // AdonisWindow を解決するために追加
+using Serilog;
 
 namespace FModel.Views
 {
@@ -219,7 +220,10 @@ namespace FModel.Views
                         }
                     }
                     catch (OperationCanceledException) { throw; } // キャンセルは再スロー
-                    catch { /* Ignore files that can't be read or deserialized */ }
+                    catch (Exception ex)
+                    {
+                        Log.Debug(ex, "Failed to inspect file {FilePath} during content search", file.Path);
+                    }
         
                     var currentProcessed = Interlocked.Increment(ref processedFiles);
                     progress.Report((currentProcessed, totalFiles, file.Name));
