@@ -7,7 +7,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
-using CUE4Parse;
 using CUE4Parse.UE4.Exceptions;
 using FModel.Framework;
 using FModel.Services;

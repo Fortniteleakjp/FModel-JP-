@@ -1,9 +1,7 @@
 using FModel.Services;
-using System.Collections.Concurrent;
 using AdonisUI.Controls;
 using System.Collections;
 using FModel.Views;
-using FModel.Views.Resources.Controls;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -18,6 +16,7 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.VirtualFileSystem;
 using System.Windows;
 using FModel;
+using FModel.Views.Resources.Controls;
 using Serilog;
 using CUE4Parse.UE4.Pak;
 

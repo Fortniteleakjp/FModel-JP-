@@ -1,14 +1,12 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using FModel.Framework;
 using FModel.Services;
 using FModel.ViewModels;
 using FModel.Settings;
-using FModel;
-using FModel.Views;
 using FModel.Views.Resources.Controls;
+using FModel;
 
 namespace FModel.Views;
 

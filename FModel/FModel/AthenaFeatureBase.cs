@@ -3,8 +3,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using FModel.Views.Resources.Controls;
 using FModel.Settings;
+using FModel.Views.Resources.Controls;
 
 namespace FModel.Features.Athena
 

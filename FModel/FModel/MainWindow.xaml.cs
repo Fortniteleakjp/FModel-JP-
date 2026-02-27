@@ -18,7 +18,6 @@ using CUE4Parse.UE4.Assets;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
-using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.UE4.Exceptions;
 using FModel.Services;
 using FModel.Settings;
@@ -30,15 +29,9 @@ using FModel.Framework; // RelayCommand を使用するためのやつ
 using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
 using Microsoft.Win32;
 using FModel.Features.Athena;
-using CUE4Parse.UE4.Objects.Core.i18N;
 using Serilog;
-using CUE4Parse.UE4.Versions;
-using CUE4Parse.UE4.Assets.Exports;
 using UAssetAPI.PropertyTypes.Structs;
 using MessageBox = AdonisUI.Controls.MessageBox;
-using CUE4Parse.UE4.Assets.Objects;
-using CUE4Parse.UE4.Assets.Readers;
-using CUE4Parse.UE4.Assets.Utils;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 using Newtonsoft.Json;
