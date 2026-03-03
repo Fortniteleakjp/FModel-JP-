@@ -319,6 +319,18 @@ public partial class SettingsViewModel : ViewModel
     // Pac化
     public ICommand BrowseInstalledBundlesCommand { get; private set; }
     public ICommand ExecutePacCommand { get; private set; }
+        private bool _isPacRunning;
+        public bool IsPacRunning
+        {
+            get => _isPacRunning;
+            set
+            {
+                if (SetProperty(ref _isPacRunning, value))
+                {
+                    ((RelayCommand)ExecutePacCommand).RaiseCanExecuteChanged();
+                }
+            }
+        }
 
 
 
@@ -425,6 +437,7 @@ public partial class SettingsViewModel : ViewModel
         GetAesKeyCommand = new RelayCommand(GetAesKey, CanGetAesKey);
         BrowseInstalledBundlesCommand = new RelayCommand(BrowseInstalledBundles);
         ExecutePacCommand = new RelayCommand(ExecutePac, CanExecutePac);
+            _isPacRunning = false; // Initialize the new property
         CopyAesKeyCommand = new RelayCommand(CopyAesKey, CanCopyAesKey);
         SaveAesKeyCommand = new RelayCommand(SaveAesKey, CanSaveAesKey);
 
@@ -838,8 +851,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
             var outputDir = Path.Combine(UserSettings.Default.OutputDirectory, "MapAES", mapCode);
             Directory.CreateDirectory(outputDir);
             
-            // Use baseUrl from response as chunkBaseUrl
-            var chunkBaseUrl = baseUrl.TrimEnd('/') + "/alt";
+            var chunkBaseUrl = BuildInitialChunkBaseUrl(baseUrl);
             
             // チャンクダウンロード用HttpClient（Authorizationヘッダーなし）
             using var httpClient = new HttpClient();
@@ -871,6 +883,8 @@ public partial class SettingsViewModel // partial 修飾子を追加
             var fullManifestUrl = baseUrl.TrimEnd('/') + "/" + manifestUrl.TrimStart('/');
             FLogger.Append(ELog.Information, () => FLogger.Text("マニフェストURLとチャンク設定を確定しました。", Constants.WHITE, true));
 
+            byte[] manifestBytes = null;
+
             try
             {
                 FLogger.Append(ELog.Information, () => FLogger.Text("マニフェストをダウンロード中...", Constants.WHITE, true));
@@ -883,7 +897,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
                     var startTs = Stopwatch.GetTimestamp();
                     
                     // 上で作成した認証付きHttpClientでマニフェストをダウンロード
-                    var manifestBytes = await httpClient.GetByteArrayAsync(fullManifestUrl);
+                    manifestBytes = await httpClient.GetByteArrayAsync(fullManifestUrl);
                     Log.Information("マニフェストダウンロード完了。サイズ: {Size} bytes", manifestBytes.Length);
                     
                     // FBuildPatchAppManifestを直接デシリアライズ
@@ -922,9 +936,11 @@ public partial class SettingsViewModel // partial 修飾子を追加
                             CacheChunksAsIs = false
                         };
                         
-                        manifest = FBuildPatchAppManifest.Deserialize(await File.ReadAllBytesAsync(tempManifestPath), fallbackOptions);
+                        manifestBytes ??= await File.ReadAllBytesAsync(tempManifestPath);
+                        manifest = FBuildPatchAppManifest.Deserialize(manifestBytes, fallbackOptions);
                         Log.Information("ファイルからのマニフェスト読み込み成功");
                     }
+                    chunkBaseUrl = ResolveChunkBaseUrl(manifest, manifestBytes, chunkBaseUrl);
                     var elapsedTime = Stopwatch.GetElapsedTime(startTs);
                     Log.Information("マニフェスト解析完了: {FileCount} ファイル ({ElapsedMs:F1}ms)", 
                         manifest.Files.Count(), elapsedTime.TotalMilliseconds);
@@ -941,7 +957,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
                     {
                         fallbackHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken);
                     }
-                    var manifestBytes = await fallbackHttpClient.GetByteArrayAsync(fullManifestUrl);
+                    manifestBytes = await fallbackHttpClient.GetByteArrayAsync(fullManifestUrl);
                     Log.Information("マニフェストダウンロード完了: {Size} bytes", manifestBytes.Length);
                     FLogger.Append(ELog.Information, () => FLogger.Text($"マニフェストダウンロード完了: {manifestBytes.Length} bytes", Constants.WHITE, true));
                     // マニフェストを一時ファイルとして保存
@@ -1477,8 +1493,9 @@ public partial class SettingsViewModel // partial 修飾子を追加
                     File.Delete(outputPath);
                 }
             }
-            catch
+            catch (Exception cleanupEx)
             {
+                Log.Warning(cleanupEx, "チャンク再構築失敗後のクリーンアップに失敗しました: {OutputPath}", outputPath);
             }
 
             Log.Error(ex, "カスタムファイルチャンクダウンロードエラー: {FileName}", fileManifest.FileName);
@@ -1731,6 +1748,285 @@ public partial class SettingsViewModel // partial 修飾子を追加
         var fullUrl = $"{baseWithSlash}{normalizedGuid}.chunk";
         Log.Information("チャンクURL構築 (Fallback): {Url}", fullUrl);
         return fullUrl;
+    }
+
+    private static string BuildInitialChunkBaseUrl(string baseUrl)
+    {
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            return string.Empty;
+        }
+
+        var normalized = baseUrl.Trim().TrimEnd('/') + "/alt/";
+        return normalized;
+    }
+
+    private string ResolveChunkBaseUrl(FBuildPatchAppManifest manifest, byte[] manifestBytes, string fallback)
+    {
+        var candidate = TryResolveChunkBaseUrlFromManifestBytes(manifestBytes) ??
+                        TryResolveChunkBaseUrlViaReflection(manifest);
+        var normalizedCandidate = NormalizeChunkBaseUrl(candidate, fallback);
+        if (!string.IsNullOrEmpty(normalizedCandidate))
+        {
+            Log.Information("マニフェスト由来のチャンクベースURLを使用します: {ChunkBaseUrl}", normalizedCandidate);
+            return normalizedCandidate;
+        }
+
+        var normalizedFallback = NormalizeChunkBaseUrl(fallback);
+        Log.Information("チャンクベースURLにフォールバックします: {ChunkBaseUrl}", normalizedFallback);
+        return normalizedFallback;
+    }
+
+    private string TryResolveChunkBaseUrlFromManifestBytes(byte[] manifestBytes)
+    {
+        if (manifestBytes == null || manifestBytes.Length == 0)
+        {
+            return null;
+        }
+
+        var encodings = new[] { Encoding.UTF8, Encoding.Unicode, Encoding.BigEndianUnicode, Encoding.ASCII };
+        foreach (var encoding in encodings)
+        {
+            try
+            {
+                var text = encoding.GetString(manifestBytes);
+                var url = TryExtractChunkBaseFromText(text);
+                if (!string.IsNullOrWhiteSpace(url))
+                {
+                    return url;
+                }
+            }
+            catch
+            {
+                // ignore decoding issues
+            }
+        }
+
+        return null;
+    }
+
+    private string TryExtractChunkBaseFromText(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return null;
+        }
+
+        var match = Regex.Match(text, @"https://[^\s""']+?/ChunksV\d+/", RegexOptions.IgnoreCase);
+        if (match.Success)
+        {
+            var value = match.Value;
+            var index = value.IndexOf("/ChunksV", StringComparison.OrdinalIgnoreCase);
+            if (index > 0)
+            {
+                return value.Substring(0, index);
+            }
+
+            return value;
+        }
+
+        return null;
+    }
+
+    private string TryResolveChunkBaseUrlViaReflection(FBuildPatchAppManifest manifest)
+    {
+        if (manifest == null)
+        {
+            return null;
+        }
+
+        var direct = TryGetStringMember(manifest, "ChunkBaseUrl", "ChunkBaseUri", "ChunkBasePath", "ChunkBase");
+        if (IsProbablyChunkBase(direct))
+        {
+            return direct;
+        }
+
+        var dataGroupCandidate = TryResolveChunkBaseFromDataGroups(manifest);
+        if (!string.IsNullOrWhiteSpace(dataGroupCandidate))
+        {
+            return dataGroupCandidate;
+        }
+
+        var dictionaryCandidate = TryResolveChunkBaseFromDictionaries(manifest);
+        if (!string.IsNullOrWhiteSpace(dictionaryCandidate))
+        {
+            return dictionaryCandidate;
+        }
+
+        return null;
+    }
+
+    private string TryResolveChunkBaseFromDataGroups(FBuildPatchAppManifest manifest)
+    {
+        var type = manifest.GetType();
+        foreach (var member in new[] { "DataGroupList", "DataGroups", "ChunkGroups" })
+        {
+            var groupsObj = GetMemberValue(type, manifest, member);
+            if (groupsObj is System.Collections.IEnumerable enumerable)
+            {
+                foreach (var group in enumerable)
+                {
+                    if (group == null)
+                    {
+                        continue;
+                    }
+
+                    var url = TryGetStringMember(group, "Url", "Uri", "BaseUrl", "ChunkBaseUrl", "ChunkBaseUri");
+                    if (IsProbablyChunkBase(url))
+                    {
+                        return url;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private string TryResolveChunkBaseFromDictionaries(FBuildPatchAppManifest manifest)
+    {
+        var type = manifest.GetType();
+        foreach (var member in new[] { "Meta", "ManifestMeta", "CustomFields", "Header" })
+        {
+            var dictObj = GetMemberValue(type, manifest, member);
+            if (dictObj is System.Collections.IDictionary dict)
+            {
+                foreach (System.Collections.DictionaryEntry entry in dict)
+                {
+                    if (entry.Value is string str && IsProbablyChunkBase(str))
+                    {
+                        return str;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private object GetMemberValue(Type type, object instance, string memberName)
+    {
+        if (type == null || instance == null || string.IsNullOrWhiteSpace(memberName))
+        {
+            return null;
+        }
+
+        const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.IgnoreCase;
+        try
+        {
+            var property = type.GetProperty(memberName, flags);
+            if (property != null)
+            {
+                return property.GetValue(instance);
+            }
+
+            var field = type.GetField(memberName, flags);
+            if (field != null)
+            {
+                return field.GetValue(instance);
+            }
+        }
+        catch
+        {
+            // ignore reflection issues
+        }
+
+        return null;
+    }
+
+    private string TryGetStringMember(object source, params string[] memberNames)
+    {
+        if (source == null || memberNames == null)
+        {
+            return null;
+        }
+
+        var type = source.GetType();
+        foreach (var name in memberNames)
+        {
+            var value = GetMemberValue(type, source, name);
+            if (value == null)
+            {
+                continue;
+            }
+
+            var strValue = value switch
+            {
+                string s => s,
+                Uri uri => uri.ToString(),
+                _ => value.ToString()
+            };
+
+            if (!string.IsNullOrWhiteSpace(strValue))
+            {
+                return strValue;
+            }
+        }
+
+        return null;
+    }
+
+    private bool IsProbablyChunkBase(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        return value.Contains("ChunksV", StringComparison.OrdinalIgnoreCase) ||
+               value.Contains(".chunk", StringComparison.OrdinalIgnoreCase) ||
+               value.Contains("cooked-content", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeChunkBaseUrl(string url, string fallbackForAlt = null)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return null;
+        }
+
+        var normalized = url.Trim().Replace("\\", "/");
+        var schemeSeparator = normalized.IndexOf("://", StringComparison.Ordinal);
+        if (schemeSeparator > 0)
+        {
+            var scheme = normalized.Substring(0, schemeSeparator + 3);
+            var rest = normalized.Substring(schemeSeparator + 3);
+            while (rest.Contains("//"))
+            {
+                rest = rest.Replace("//", "/");
+            }
+
+            normalized = scheme + rest;
+        }
+
+        var chunkIndex = normalized.IndexOf("/ChunksV", StringComparison.OrdinalIgnoreCase);
+        if (chunkIndex > 0)
+        {
+            normalized = normalized.Substring(0, chunkIndex);
+        }
+
+        if (normalized.EndsWith(".chunk", StringComparison.OrdinalIgnoreCase))
+        {
+            var lastSlash = normalized.LastIndexOf('/');
+            if (lastSlash > 0)
+            {
+                normalized = normalized.Substring(0, lastSlash);
+            }
+        }
+
+        normalized = normalized.TrimEnd('/') + "/";
+
+        if (!normalized.Contains("/alt/", StringComparison.OrdinalIgnoreCase))
+        {
+            var fallbackHasAlt = !string.IsNullOrWhiteSpace(fallbackForAlt) &&
+                                  fallbackForAlt.Contains("/alt/", StringComparison.OrdinalIgnoreCase);
+            if (fallbackHasAlt)
+            {
+                normalized = normalized.TrimEnd('/') + "/alt/";
+            }
+        }
+
+        return normalized;
     }
 
     private static string NormalizeGuidLike(string value)
