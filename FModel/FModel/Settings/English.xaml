@@ -352,4 +352,31 @@
     <system:String x:Key="PakComparer_Dialog_Title">Select .loli file to compare</system:String>
     <system:String x:Key="PakComparer_Error_Title">Error</system:String>
     <system:String x:Key="PakComparer_Error_Message">An error occurred during comparison: {0}</system:String>
+
+    <!-- Replay Analysis -->
+    <system:String x:Key="ReplayAnalysis_Title">Replay Analysis</system:String>
+    <system:String x:Key="ReplayAnalysis_Watermark_SelectReplay">Select a replay file (.replay)...</system:String>
+    <system:String x:Key="ReplayAnalysis_Tooltip_SelectFile">Select file</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_AnalysisMode">Analysis Mode</system:String>
+    <system:String x:Key="ReplayAnalysis_Mode_EventsOnly">EventsOnly</system:String>
+    <system:String x:Key="ReplayAnalysis_Mode_Minimal">Minimal</system:String>
+    <system:String x:Key="ReplayAnalysis_Mode_Normal">Normal</system:String>
+    <system:String x:Key="ReplayAnalysis_Mode_Full">Full</system:String>
+    <system:String x:Key="ReplayAnalysis_Button_Start">Start Analysis</system:String>
+    <system:String x:Key="ReplayAnalysis_Button_SaveJson">Save JSON</system:String>
+    <system:String x:Key="ReplayAnalysis_Watermark_SearchPlayer">Search by player name...</system:String>
+    <system:String x:Key="ReplayAnalysis_Tab_EliminationList">Elimination List</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Time">Time</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Eliminator">Eliminator</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Eliminated">Eliminated</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Weapon">Weapon</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Knocked">Knocked</system:String>
+    <system:String x:Key="ReplayAnalysis_Tab_Stats">Statistics</system:String>
+    <system:String x:Key="ReplayAnalysis_Label_MostKills">Player with Most Kills</system:String>
+    <system:String x:Key="ReplayAnalysis_Label_WeaponRanking">Weapon Usage Ranking</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_KillCount">Kill Count</system:String>
+    <system:String x:Key="ReplayAnalysis_Tab_HeaderInfo">Header Info</system:String>
+    <system:String x:Key="ReplayAnalysis_Label_Branch">Branch</system:String>
+    <system:String x:Key="ReplayAnalysis_Label_LevelNamesAndTimes">Level Names and Times</system:String>
+    <system:String x:Key="ReplayAnalysis_Footer_Attribution">Replay analysis uses FortniteReplayDecompressor.</system:String>
 </ResourceDictionary>

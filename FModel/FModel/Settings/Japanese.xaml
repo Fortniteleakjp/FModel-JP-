@@ -353,4 +353,31 @@
     <system:String x:Key="PakComparer_Dialog_Title">比較する .loli ファイルを選択してください</system:String>
     <system:String x:Key="PakComparer_Error_Title">エラー</system:String>
     <system:String x:Key="PakComparer_Error_Message">比較中にエラーが発生しました: {0}</system:String>
+
+    <!-- Replay Analysis -->
+    <system:String x:Key="ReplayAnalysis_Title">リプレイ解析</system:String>
+    <system:String x:Key="ReplayAnalysis_Watermark_SelectReplay">リプレイファイル (.replay) を選択してください...</system:String>
+    <system:String x:Key="ReplayAnalysis_Tooltip_SelectFile">ファイルを選択</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_AnalysisMode">解析モード</system:String>
+    <system:String x:Key="ReplayAnalysis_Mode_EventsOnly">EventsOnly</system:String>
+    <system:String x:Key="ReplayAnalysis_Mode_Minimal">Minimal</system:String>
+    <system:String x:Key="ReplayAnalysis_Mode_Normal">Normal</system:String>
+    <system:String x:Key="ReplayAnalysis_Mode_Full">Full</system:String>
+    <system:String x:Key="ReplayAnalysis_Button_Start">解析開始</system:String>
+    <system:String x:Key="ReplayAnalysis_Button_SaveJson">JSONを保存</system:String>
+    <system:String x:Key="ReplayAnalysis_Watermark_SearchPlayer">プレイヤー名で検索...</system:String>
+    <system:String x:Key="ReplayAnalysis_Tab_EliminationList">撃破リスト</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Time">時間</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Eliminator">キルしたプレイヤー</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Eliminated">キルされたプレイヤー</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Weapon">武器</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_Knocked">ダウン</system:String>
+    <system:String x:Key="ReplayAnalysis_Tab_Stats">統計情報</system:String>
+    <system:String x:Key="ReplayAnalysis_Label_MostKills">最多キルプレイヤー</system:String>
+    <system:String x:Key="ReplayAnalysis_Label_WeaponRanking">武器使用ランキング</system:String>
+    <system:String x:Key="ReplayAnalysis_Header_KillCount">キル数</system:String>
+    <system:String x:Key="ReplayAnalysis_Tab_HeaderInfo">ヘッダー情報</system:String>
+    <system:String x:Key="ReplayAnalysis_Label_Branch">Branch</system:String>
+    <system:String x:Key="ReplayAnalysis_Label_LevelNamesAndTimes">Level Names and Times</system:String>
+    <system:String x:Key="ReplayAnalysis_Footer_Attribution">リプレイ解析にはFortniteReplayDecompressorを使用しています。</system:String>
 </ResourceDictionary>

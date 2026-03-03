@@ -229,6 +229,16 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="{DynamicResource Menu_Versioning}" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
+
+                <MenuItem Header="{DynamicResource ReplayAnalysis_Title}" Click="OnReplayAnalysisClick" IsEnabled="{Binding Status.IsReady}">
+                    <MenuItem.Icon>
+                        <Viewbox Width="16" Height="16">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                            </Canvas>
+                        </Viewbox>
+                    </MenuItem.Icon>
+                </MenuItem>
             <MenuItem Header="テスト" IsEnabled="{Binding Status.IsReady}">
                 <MenuItem Header="All Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
                     <MenuItem.Icon>
@@ -299,18 +309,6 @@
                         </Viewbox>
                     </MenuItem.Icon>
                 </MenuItem>
-
-                <MenuItem Header="Replay Analysis" Click="OnReplayAnalysisClick">
-                    <MenuItem.Icon>
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M8,5.14V19.14L19,12.14L8,5.14Z" />
-                            </Canvas>
-                        </Viewbox>
-                    </MenuItem.Icon>
-                </MenuItem>
-
-                <Separator />
 
                 <MenuItem Header="Test Edit Asset" Click="OnTestEditAssetClick">
                     <MenuItem.Icon>
