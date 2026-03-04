@@ -1332,6 +1332,42 @@ public partial class MainWindow
         return true;
     }
 
+    // NEW エクスプローラー用：右クリックメニューから選択されたファイルを取得
+    private IList<GameFile> GetSelectedFilesFromNewExplorerContextMenu()
+    {
+        if (NewExplorerFilesListBox?.SelectedItems != null)
+        {
+            return NewExplorerFilesListBox.SelectedItems.Cast<GameFile>().ToList();
+        }
+        return null;
+    }
+
+    // NEW エクスプローラー用：新しいタブで開く
+    private void OnNewExplorerOpenNewTabClick(object sender, RoutedEventArgs e)
+    {
+        var selectedFiles = GetSelectedFilesFromNewExplorerContextMenu();
+        if (selectedFiles == null || selectedFiles.Count == 0)
+            return;
+
+        if (_applicationView.RightClickMenuCommand.CanExecute(new object[] { "Assets_Extract_New_Tab", selectedFiles }))
+        {
+            _applicationView.RightClickMenuCommand.Execute(new object[] { "Assets_Extract_New_Tab", selectedFiles });
+        }
+    }
+
+    // NEW エクスプローラー用：メタデータを表示
+    private void OnNewExplorerShowMetadataClick(object sender, RoutedEventArgs e)
+    {
+        var selectedFiles = GetSelectedFilesFromNewExplorerContextMenu();
+        if (selectedFiles == null || selectedFiles.Count == 0)
+            return;
+
+        if (_applicationView.RightClickMenuCommand.CanExecute(new object[] { "Assets_Show_Metadata", selectedFiles }))
+        {
+            _applicationView.RightClickMenuCommand.Execute(new object[] { "Assets_Show_Metadata", selectedFiles });
+        }
+    }
+
     private void OnAssetListClick(object sender, RoutedEventArgs e)
     {
         if (sender is Button { Tag: string path })
