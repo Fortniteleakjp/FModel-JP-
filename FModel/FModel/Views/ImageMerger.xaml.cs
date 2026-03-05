@@ -23,7 +23,7 @@ namespace FModel.Views;
 
 public partial class ImageMerger
 {
-    private const string FILENAME = "Preview.png";
+    private string FILENAME => $"{DateTime.Now:yyyyMMdd}.png";
     private byte[] _imageBuffer;
     private Point _startPoint;
     private ListBoxItem _draggedItem;
