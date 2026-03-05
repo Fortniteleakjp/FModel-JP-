@@ -73,7 +73,13 @@
                 <Slider x:Name="SizeSlider" Minimum="1" Maximum="20" Value="1" 
                         TickFrequency="1" IsSnapToTickEnabled="True" 
                         AutoToolTipPlacement="TopLeft" 
-                        Thumb.DragCompleted="DrawPreview" Margin="0,0,0,20"/>
+                        Thumb.DragCompleted="DrawPreview" Margin="0,0,0,10"/>
+
+                <TextBlock Text="画像間隔" Foreground="White" Margin="0,0,0,5"/>
+                <Slider x:Name="SpacingSlider" Minimum="0" Maximum="100" Value="10" 
+                        TickFrequency="5" IsSnapToTickEnabled="True" 
+                        AutoToolTipPlacement="TopLeft" 
+                        ValueChanged="SpacingSlider_ValueChanged" Margin="0,0,0,20"/>
 
                 <TextBlock Text="アクション" Foreground="#AAAAAA" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
                 <UniformGrid Columns="2" Rows="2">

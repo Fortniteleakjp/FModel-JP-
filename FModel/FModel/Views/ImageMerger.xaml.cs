@@ -55,6 +55,12 @@ public partial class ImageMerger
             await DrawPreview().ConfigureAwait(false);
     }
 
+    private async void SpacingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (ImagePreview.Source != null)
+            await DrawPreview().ConfigureAwait(false);
+    }
+
     private async void Click_DrawPreview(object sender, MouseButtonEventArgs e)
     {
         if (ImagePreview.Source != null)
@@ -69,11 +75,12 @@ public partial class ImageMerger
         DeleteButton.IsEnabled = false;
         ClearButton.IsEnabled = false;
         SizeSlider.IsEnabled = false;
+        SpacingSlider.IsEnabled = false;
         OpenImageButton.IsEnabled = false;
         SaveImageButton.IsEnabled = false;
         CopyImageButton.IsEnabled = false;
 
-        var margin = UserSettings.Default.ImageMergerMargin;
+        var margin = Convert.ToInt32(SpacingSlider.Value);
         int num = 1, curW = 0, curH = 0, maxWidth = 0, maxHeight = 0, lineMaxHeight = 0, imagesPerRow = Convert.ToInt32(SizeSlider.Value);
         var positions = new Dictionary<int, SKPoint>();
         var images = new SKBitmap[ImagesListBox.Items.Count];
@@ -155,6 +162,7 @@ public partial class ImageMerger
             DeleteButton.IsEnabled = true;
             ClearButton.IsEnabled = true;
             SizeSlider.IsEnabled = true;
+            SpacingSlider.IsEnabled = true;
             OpenImageButton.IsEnabled = true;
             SaveImageButton.IsEnabled = true;
             CopyImageButton.IsEnabled = true;
