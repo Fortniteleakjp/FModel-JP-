@@ -17,7 +17,7 @@
 
             <Section>
                 <Paragraph FontWeight="Bold" FontSize="18">
-                    <Run x:Name="VersionRun">v4.4.8.8</Run>
+                    <Run x:Name="VersionRun">v4.4.9.2</Run>
                     <Run> 主な変更点</Run>
                 </Paragraph>
                 <BlockUIContainer>
@@ -25,10 +25,22 @@
                 </BlockUIContainer>
                 <List>
                     <ListItem>
-                        <Paragraph>
-                            <Run>アドレスバー実装</Run>
-                            <Run>「戻る、進む、上へ」ボタンの実装</Run>
-                        </Paragraph>
+                        <Paragraph><Run>AnimGraphViewerを実装(FModel本家のプルリク(656 /LoogLongを使用))</Run></Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph><Run>NEW エクスプローラーでコンテンツメニューを追加</Run></Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph><Run>イメージ マネージャーに画像同士の幅の編集を追加</Run></Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph><Run>スケルタルメッシュ読み込み時のクラッシュを修正（ArgumentNullException: collection）</Run></Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph><Run>Skeleton / Sockets / MorphTargets の null ガードを追加し、読み込み失敗時の安定性を向上</Run></Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph><Run>プロパティ表示の Input Pins / Output Pins などを言語リソース化</Run></Paragraph>
                     </ListItem>
                 </List>
             </Section>
