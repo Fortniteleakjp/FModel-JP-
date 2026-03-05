@@ -10,7 +10,7 @@
         Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
-            <Setter Property="Title" Value="Animation Blueprint Graph Viewer"/>
+            <Setter Property="Title" Value="{DynamicResource AnimGraph_Title}"/>
         </Style>
     </adonisControls:AdonisWindow.Style>
     <Grid>
@@ -28,11 +28,11 @@
                 <TextBlock x:Name="PackageNameText" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0 0 16 0"/>
                 <TextBlock x:Name="NodeCountText" VerticalAlignment="Center" Margin="0 0 16 0"/>
                 <TextBlock x:Name="ConnectionCountText" VerticalAlignment="Center" Margin="0 0 16 0"/>
-                <Button Content="Fit to View" MinWidth="78" Margin="4 0" Click="OnFitToView"/>
-                <Button Content="Reset Zoom" MinWidth="78" Margin="4 0" Click="OnResetZoom"/>
+                <Button Content="{DynamicResource AnimGraph_Button_FitToView}" MinWidth="78" Margin="4 0" Click="OnFitToView"/>
+                <Button Content="{DynamicResource AnimGraph_Button_ResetZoom}" MinWidth="78" Margin="4 0" Click="OnResetZoom"/>
             </StackPanel>
         </Border>
-iiz
+
         <!-- Main content: Graph + Properties panel -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -76,7 +76,7 @@ iiz
                     <!-- Properties header -->
                     <Border Grid.Row="0" Padding="8 6"
                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}">
-                        <TextBlock x:Name="PropertiesTitleText" Text="Properties" FontWeight="SemiBold" FontSize="13"/>
+                        <TextBlock x:Name="PropertiesTitleText" Text="{DynamicResource AnimGraph_Properties}" FontWeight="SemiBold" FontSize="13"/>
                     </Border>
 
                     <!-- Properties list -->
@@ -92,7 +92,7 @@ iiz
                 Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                 adonisExtensions:LayerExtension.IncreaseLayer="True">
             <StackPanel Orientation="Horizontal">
-                <TextBlock x:Name="ZoomText" Text="Zoom: 100%" VerticalAlignment="Center" Margin="0 0 16 0"/>
+                <TextBlock x:Name="ZoomText" Text="{DynamicResource AnimGraph_ZoomDefault}" VerticalAlignment="Center" Margin="0 0 16 0"/>
                 <TextBlock x:Name="SelectedNodeText" VerticalAlignment="Center"/>
             </StackPanel>
         </Border>

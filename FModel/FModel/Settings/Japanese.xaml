@@ -150,6 +150,13 @@
     <system:String x:Key="About_Donators">寄付者</system:String>
     <system:String x:Key="About_References">参照</system:String>
 
+    <!-- AnimGraph Viewer -->
+    <system:String x:Key="AnimGraph_Title">アニメーションブループリント グラフビューアー</system:String>
+    <system:String x:Key="AnimGraph_Button_FitToView">全体表示</system:String>
+    <system:String x:Key="AnimGraph_Button_ResetZoom">ズームをリセット</system:String>
+    <system:String x:Key="AnimGraph_Properties">プロパティ</system:String>
+    <system:String x:Key="AnimGraph_ZoomDefault">ズーム: 100%</system:String>
+
     <!-- Reference Viewer -->
     <system:String x:Key="RefViewer_Title">参照ビューア</system:String>
     <system:String x:Key="RefViewer_Mode">モード:</system:String>
