@@ -1,9 +1,11 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
 using FModel.Services;
+using Serilog;
 
 namespace FModel.ViewModels.Commands;
 
@@ -17,10 +19,13 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
 
     public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
     {
-        if (parameter is not object[] parameters || parameters[0] is not string trigger)
+        if (parameter is not object[] parameters || parameters.Length < 2 || parameters[0] is not string trigger)
             return;
 
-        var entries = ((IList) parameters[1]).Cast<GameFile>().ToArray();
+        if (parameters[1] is not IEnumerable rawEntries)
+            return;
+
+        var entries = rawEntries.Cast<object?>().OfType<GameFile>().ToArray();
         if (!entries.Any()) return;
 
         var updateUi = entries.Length > 1 ? EBulkType.Auto : EBulkType.None;
@@ -41,6 +46,13 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     {
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
+
+                        if (!entry.IsUePackage)
+                        {
+                            Log.Warning("Skipped metadata for non-UE package: {Path}", entry.Path);
+                            continue;
+                        }
+
                         contextViewModel.CUE4Parse.ShowMetadata(entry);
                     }
                     break;

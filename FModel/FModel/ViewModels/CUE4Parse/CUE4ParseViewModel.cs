@@ -42,6 +42,7 @@ using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Objects.Core.Serialization;
 using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.Engine.Animation;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.Editor;
 using CUE4Parse.UE4.Oodle.Objects;
@@ -60,6 +61,7 @@ using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Snooper;
@@ -1383,6 +1385,22 @@ public partial class CUE4ParseViewModel : ViewModel
                 SaveAndPlaySound(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data, saveAudio);
                 return false;
             }
+            case UAnimBlueprintGeneratedClass when isNone && pointer.Object.Value is UAnimBlueprintGeneratedClass animBpClass:
+            {
+                var graphVm = AnimGraphViewModel.ExtractFromClass(animBpClass);
+                if (graphVm.Nodes.Count > 0)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Helper.OpenWindow<AnimGraphViewer>("Animation Blueprint Graph Viewer", () =>
+                        {
+                            new AnimGraphViewer(graphVm).Show();
+                        });
+                    });
+                }
+
+                return true;
+            }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
             {
@@ -1449,7 +1467,31 @@ public partial class CUE4ParseViewModel : ViewModel
 
     public void ShowMetadata(GameFile entry)
     {
-        var package = Provider.LoadPackage(entry);
+        if (entry is null)
+        {
+            Log.Warning("ShowMetadata called with null entry");
+            return;
+        }
+
+        if (!entry.IsUePackage)
+        {
+            FLogger.Append(ELog.Warning, () =>
+            {
+                FLogger.Text("Cannot show metadata for non-UE package: ", Constants.WHITE);
+                FLogger.Text(entry.Path, Constants.GRAY, true);
+            });
+            return;
+        }
+
+        if (!Provider.TryLoadPackage(entry, out var package) || package is null)
+        {
+            FLogger.Append(ELog.Error, () =>
+            {
+                FLogger.Text("Failed to load package metadata: ", Constants.WHITE);
+                FLogger.Text(entry.Path, Constants.GRAY, true);
+            });
+            return;
+        }
 
         if (TabControl.CanAddTabs) TabControl.AddTab(entry);
         else TabControl.SelectedTab.SoftReset(entry);
