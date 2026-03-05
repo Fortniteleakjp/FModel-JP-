@@ -11,6 +11,7 @@ using FModel.Views.Snooper.Animations;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
+using Serilog;
 
 namespace FModel.Views.Snooper.Models;
 
@@ -29,16 +30,21 @@ public class SkeletalModel : UModel
         : base(export, skeletalMesh.LODs[LodLevel], export.Materials, skeletalMesh.LODs[LodLevel].Verts, skeletalMesh.LODs.Count, transform)
     {
         Box = skeletalMesh.BoundingBox * Constants.SCALE_DOWN_RATIO;
-        Skeleton = new Skeleton(export.ReferenceSkeleton);
+        Skeleton = export.ReferenceSkeleton != null ? new Skeleton(export.ReferenceSkeleton) : new Skeleton();
 
         var sockets = new List<FPackageIndex>();
-        sockets.AddRange(export.Sockets);
+        if (export.Sockets != null)
+            sockets.AddRange(export.Sockets);
+
         if (export.Skeleton.TryLoad(out USkeleton skeleton))
         {
             Skeleton.Name = skeleton.Name;
             Skeleton.Guid = skeleton.Guid;
             // Skeleton.Merge(skeleton.ReferenceSkeleton);
-            sockets.AddRange(skeleton.Sockets);
+            if (skeleton.Sockets != null)
+                sockets.AddRange(skeleton.Sockets);
+            else
+                Log.Warning("USkeleton.Sockets is null for {SkeletonName}", skeleton.Name);
         }
 
         for (int i = 0; i < sockets.Count; i++)
@@ -76,7 +82,7 @@ public class SkeletalModel : UModel
         }
 
         Morphs = [];
-        if (export.MorphTargets.Length == 0) return;
+        if (export.MorphTargets == null || export.MorphTargets.Length == 0) return;
 
         export.PopulateMorphTargetVerticesData();
 
@@ -118,11 +124,11 @@ public class SkeletalModel : UModel
 
         Box = box * Constants.SCALE_DOWN_RATIO;
         Morphs = [];
-        Skeleton = new Skeleton(export.ReferenceSkeleton);
+        Skeleton = export.ReferenceSkeleton != null ? new Skeleton(export.ReferenceSkeleton) : new Skeleton();
         Skeleton.Name = export.Name;
         Skeleton.Guid = export.Guid;
 
-        for (int i = 0; i < export.Sockets.Length; i++)
+        for (int i = 0; i < (export.Sockets?.Length ?? 0); i++)
         {
             if (export.Sockets[i].Load<USkeletalMeshSocket>() is not { } socket) continue;
             Sockets.Add(new Socket(socket));
