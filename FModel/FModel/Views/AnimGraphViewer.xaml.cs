@@ -63,8 +63,8 @@ public partial class AnimGraphViewer
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         PackageNameText.Text = _viewModel.PackageName;
-        NodeCountText.Text = $"Nodes: {_viewModel.Nodes.Count}";
-        ConnectionCountText.Text = $"Connections: {_viewModel.Connections.Count}";
+        NodeCountText.Text = string.Format(Localize("AnimGraph_Label_Nodes", "Nodes: {0}"), _viewModel.Nodes.Count);
+        ConnectionCountText.Text = string.Format(Localize("AnimGraph_Label_Connections", "Connections: {0}"), _viewModel.Connections.Count);
 
         BuildLayerTabs();
     }
@@ -210,7 +210,7 @@ public partial class AnimGraphViewer
             Dispatcher.BeginInvoke(() => FitToView(state));
         }
 
-        ZoomText.Text = $"Zoom: {state.ScaleTransform.ScaleX * 100:F0}%";
+        SetZoomText(state.ScaleTransform.ScaleX);
     }
 
     private void DrawLayerGraph(LayerCanvasState state)
@@ -474,7 +474,7 @@ public partial class AnimGraphViewer
 
         var label = new TextBlock
         {
-            Text = "Entry",
+            Text = Localize("AnimGraph_Label_Entry", "Entry"),
             Foreground = Brushes.White,
             FontSize = 10,
             FontWeight = FontWeights.SemiBold,
@@ -572,7 +572,7 @@ public partial class AnimGraphViewer
         state.PinPositions[(node, "Out", true)] = new Point(
             pos.X + StateNodeWidth, pos.Y + StateNodeHeight / 2);
 
-        border.ToolTip = $"State: {node.Name}";
+        border.ToolTip = string.Format(Localize("AnimGraph_Tooltip_State", "State: {0}"), node.Name);
 
         border.MouseLeftButtonDown += (s, e) =>
         {
@@ -666,7 +666,7 @@ public partial class AnimGraphViewer
         border.BorderBrush = new SolidColorBrush(Color.FromRgb(230, 160, 0));
         border.BorderThickness = new Thickness(2);
 
-        SelectedNodeText.Text = $"Selected: {node.ExportType} - {node.Name}";
+        SelectedNodeText.Text = string.Format(Localize("AnimGraph_Label_SelectedNode", "Selected: {0} - {1}"), node.ExportType, node.Name);
         PopulatePropertiesPanel(node);
     }
 
@@ -831,14 +831,14 @@ public partial class AnimGraphViewer
     private void PopulatePropertiesPanel(AnimGraphNode node)
     {
         PropertiesPanel.Children.Clear();
-        PropertiesTitleText.Text = $"Properties - {GetNodeDisplayName(node)}";
+        PropertiesTitleText.Text = string.Format(Localize("AnimGraph_Title_PropertiesNode", "Properties - {0}"), GetNodeDisplayName(node));
 
         // Node header section
-        AddPropertySection("Node Info");
-        AddPropertyRow("Name", node.Name);
-        AddPropertyRow("Type", node.ExportType);
+        AddPropertySection(Localize("AnimGraph_Section_NodeInfo", "Node Info"));
+        AddPropertyRow(Localize("AnimGraph_Field_Name", "Name"), node.Name);
+        AddPropertyRow(Localize("AnimGraph_Field_Type", "Type"), node.ExportType);
         if (!string.IsNullOrEmpty(node.NodeComment))
-            AddPropertyRow("Comment", node.NodeComment);
+            AddPropertyRow(Localize("AnimGraph_Field_Comment", "Comment"), node.NodeComment);
 
         // Pins section
         var inputPins = node.Pins.Where(p => !p.IsOutput).ToList();
@@ -846,7 +846,7 @@ public partial class AnimGraphViewer
 
         if (inputPins.Count > 0)
         {
-            AddPropertySection("Input Pins");
+            AddPropertySection((FindResource("AnimGraph_Section_InputPins") as string) ?? "Input Pins");
             foreach (var pin in inputPins)
             {
                 var defaultVal = string.IsNullOrEmpty(pin.DefaultValue) ? "" : $" = {pin.DefaultValue}";
@@ -856,7 +856,7 @@ public partial class AnimGraphViewer
 
         if (outputPins.Count > 0)
         {
-            AddPropertySection("Output Pins");
+            AddPropertySection((FindResource("AnimGraph_Section_OutputPins") as string) ?? "Output Pins");
             foreach (var pin in outputPins)
             {
                 AddPropertyRow(pin.PinName, pin.PinType);
@@ -866,7 +866,7 @@ public partial class AnimGraphViewer
         // Additional properties
         if (node.AdditionalProperties.Count > 0)
         {
-            AddPropertySection("Details");
+            AddPropertySection(Localize("AnimGraph_Section_Details", "Details"));
             foreach (var (key, value) in node.AdditionalProperties)
             {
                 AddPropertyRow(key, value);
@@ -1285,7 +1285,7 @@ public partial class AnimGraphViewer
 
         var sourceName = conn.SourceNode.Name;
         var targetName = conn.TargetNode.Name;
-        SelectedNodeText.Text = $"Selected: Transition {sourceName} -> {targetName}";
+        SelectedNodeText.Text = string.Format(Localize("AnimGraph_Label_SelectedTransition", "Selected: Transition {0} -> {1}"), sourceName, targetName);
         PopulateTransitionProperties(conn);
     }
 
@@ -1317,15 +1317,15 @@ public partial class AnimGraphViewer
     private void PopulateTransitionProperties(AnimGraphConnection conn)
     {
         PropertiesPanel.Children.Clear();
-        PropertiesTitleText.Text = $"Properties - Transition";
+        PropertiesTitleText.Text = Localize("AnimGraph_Title_PropertiesTransition", "Properties - Transition");
 
-        AddPropertySection("Transition Info");
-        AddPropertyRow("From", conn.SourceNode.Name);
-        AddPropertyRow("To", conn.TargetNode.Name);
+        AddPropertySection(Localize("AnimGraph_Section_TransitionInfo", "Transition Info"));
+        AddPropertyRow(Localize("AnimGraph_Field_From", "From"), conn.SourceNode.Name);
+        AddPropertyRow(Localize("AnimGraph_Field_To", "To"), conn.TargetNode.Name);
 
         if (conn.TransitionProperties.Count > 0)
         {
-            AddPropertySection("Details");
+            AddPropertySection(Localize("AnimGraph_Section_Details", "Details"));
             foreach (var (key, value) in conn.TransitionProperties)
             {
                 AddPropertyRow(key, value);
@@ -1410,7 +1410,7 @@ public partial class AnimGraphViewer
         _currentLayerState.TranslateTransform.X = mousePos.X - canvasX * newScale;
         _currentLayerState.TranslateTransform.Y = mousePos.Y - canvasY * newScale;
 
-        ZoomText.Text = $"Zoom: {newScale * 100:F0}%";
+        SetZoomText(newScale);
     }
 
     private void OnCanvasMouseDown(object sender, MouseButtonEventArgs e)
@@ -1492,7 +1492,7 @@ public partial class AnimGraphViewer
         state.TranslateTransform.X = -minX * scale + (viewWidth - graphWidth * scale) / 2;
         state.TranslateTransform.Y = -minY * scale + (viewHeight - graphHeight * scale) / 2;
 
-        ZoomText.Text = $"Zoom: {scale * 100:F0}%";
+        SetZoomText(scale);
     }
 
     private void OnResetZoom(object sender, RoutedEventArgs e)
@@ -1502,7 +1502,17 @@ public partial class AnimGraphViewer
         _currentLayerState.ScaleTransform.ScaleY = 1;
         _currentLayerState.TranslateTransform.X = 0;
         _currentLayerState.TranslateTransform.Y = 0;
-        ZoomText.Text = "Zoom: 100%";
+        SetZoomText(1);
+    }
+
+    private string Localize(string key, string fallback)
+    {
+        return FindResource(key) as string ?? fallback;
+    }
+
+    private void SetZoomText(double scale)
+    {
+        ZoomText.Text = string.Format(Localize("AnimGraph_ZoomFormat", "Zoom: {0:F0}%"), scale * 100);
     }
 
     /// <summary>

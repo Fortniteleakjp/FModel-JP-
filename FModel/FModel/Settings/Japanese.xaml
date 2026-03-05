@@ -156,6 +156,25 @@
     <system:String x:Key="AnimGraph_Button_ResetZoom">ズームをリセット</system:String>
     <system:String x:Key="AnimGraph_Properties">プロパティ</system:String>
     <system:String x:Key="AnimGraph_ZoomDefault">ズーム: 100%</system:String>
+    <system:String x:Key="AnimGraph_ZoomFormat">ズーム: {0:F0}%</system:String>
+    <system:String x:Key="AnimGraph_Label_Nodes">ノード: {0}</system:String>
+    <system:String x:Key="AnimGraph_Label_Connections">接続: {0}</system:String>
+    <system:String x:Key="AnimGraph_Label_Entry">開始</system:String>
+    <system:String x:Key="AnimGraph_Tooltip_State">ステート: {0}</system:String>
+    <system:String x:Key="AnimGraph_Label_SelectedNode">選択中: {0} - {1}</system:String>
+    <system:String x:Key="AnimGraph_Label_SelectedTransition">選択中: 遷移 {0} -> {1}</system:String>
+    <system:String x:Key="AnimGraph_Title_PropertiesNode">プロパティ - {0}</system:String>
+    <system:String x:Key="AnimGraph_Title_PropertiesTransition">プロパティ - 遷移</system:String>
+    <system:String x:Key="AnimGraph_Section_NodeInfo">ノード情報</system:String>
+    <system:String x:Key="AnimGraph_Section_InputPins">入力ピン</system:String>
+    <system:String x:Key="AnimGraph_Section_OutputPins">出力ピン</system:String>
+    <system:String x:Key="AnimGraph_Section_TransitionInfo">遷移情報</system:String>
+    <system:String x:Key="AnimGraph_Section_Details">詳細</system:String>
+    <system:String x:Key="AnimGraph_Field_Name">名前</system:String>
+    <system:String x:Key="AnimGraph_Field_Type">タイプ</system:String>
+    <system:String x:Key="AnimGraph_Field_Comment">コメント</system:String>
+    <system:String x:Key="AnimGraph_Field_From">遷移元</system:String>
+    <system:String x:Key="AnimGraph_Field_To">遷移先</system:String>
 
     <!-- Reference Viewer -->
     <system:String x:Key="RefViewer_Title">参照ビューア</system:String>

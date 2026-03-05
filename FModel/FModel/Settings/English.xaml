@@ -154,6 +154,25 @@
     <system:String x:Key="AnimGraph_Button_ResetZoom">Reset Zoom</system:String>
     <system:String x:Key="AnimGraph_Properties">Properties</system:String>
     <system:String x:Key="AnimGraph_ZoomDefault">Zoom: 100%</system:String>
+    <system:String x:Key="AnimGraph_ZoomFormat">Zoom: {0:F0}%</system:String>
+    <system:String x:Key="AnimGraph_Label_Nodes">Nodes: {0}</system:String>
+    <system:String x:Key="AnimGraph_Label_Connections">Connections: {0}</system:String>
+    <system:String x:Key="AnimGraph_Label_Entry">Entry</system:String>
+    <system:String x:Key="AnimGraph_Tooltip_State">State: {0}</system:String>
+    <system:String x:Key="AnimGraph_Label_SelectedNode">Selected: {0} - {1}</system:String>
+    <system:String x:Key="AnimGraph_Label_SelectedTransition">Selected: Transition {0} -> {1}</system:String>
+    <system:String x:Key="AnimGraph_Title_PropertiesNode">Properties - {0}</system:String>
+    <system:String x:Key="AnimGraph_Title_PropertiesTransition">Properties - Transition</system:String>
+    <system:String x:Key="AnimGraph_Section_NodeInfo">Node Info</system:String>
+    <system:String x:Key="AnimGraph_Section_InputPins">Input Pins</system:String>
+    <system:String x:Key="AnimGraph_Section_OutputPins">Output Pins</system:String>
+    <system:String x:Key="AnimGraph_Section_TransitionInfo">Transition Info</system:String>
+    <system:String x:Key="AnimGraph_Section_Details">Details</system:String>
+    <system:String x:Key="AnimGraph_Field_Name">Name</system:String>
+    <system:String x:Key="AnimGraph_Field_Type">Type</system:String>
+    <system:String x:Key="AnimGraph_Field_Comment">Comment</system:String>
+    <system:String x:Key="AnimGraph_Field_From">From</system:String>
+    <system:String x:Key="AnimGraph_Field_To">To</system:String>
 
     <!-- Reference Viewer -->
     <system:String x:Key="RefViewer_Title">Reference Viewer</system:String>
