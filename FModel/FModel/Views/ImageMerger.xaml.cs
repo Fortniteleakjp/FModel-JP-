@@ -36,6 +36,7 @@ public partial class ImageMerger
     public ImageMerger()
     {
         InitializeComponent();
+        SpacingSlider.Value = 0;
         this.KeyDown += ImageMerger_KeyDown;
         this.Closing += ImageMerger_Closing;
     }
