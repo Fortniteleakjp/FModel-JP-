@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.UE4.Objects.Engine.Animation;
 using CUE4Parse.UE4.Objects.UObject;
 
 namespace FModel.ViewModels;
@@ -90,6 +92,78 @@ public class AnimGraphViewModel
     /// (derived from StateRootNodeIndex) for unique identification.
     /// </summary>
     public Dictionary<string, AnimGraphLayer> StateSubGraphs { get; } = new();
+
+    /// <summary>
+    /// Extracts a graph model from any UObject.
+    /// For non-animation assets this creates a single node with representative metadata,
+    /// allowing AnimGraphViewer to function as a generic asset graph/details viewer.
+    /// </summary>
+    public static AnimGraphViewModel ExtractFromObject(UObject asset)
+    {
+        if (asset is UAnimBlueprintGeneratedClass animBlueprintClass)
+            return ExtractFromClass(animBlueprintClass);
+
+        var packageName = asset.Owner?.Name ?? asset.Name;
+        var vm = new AnimGraphViewModel { PackageName = packageName };
+
+        var layer = new AnimGraphLayer { Name = "Asset" };
+        var node = new AnimGraphNode
+        {
+            Name = asset.Name,
+            ExportType = asset.ExportType,
+            NodePosX = 60,
+            NodePosY = 60
+        };
+
+        node.AdditionalProperties["AssetName"] = asset.Name;
+        node.AdditionalProperties["ExportType"] = asset.ExportType;
+        if (!string.IsNullOrEmpty(asset.Owner?.Name))
+            node.AdditionalProperties["Package"] = asset.Owner.Name;
+
+        // Reflect readable primitive-like properties for quick inspection.
+        const int maxReflectedProperties = 32;
+        var reflectedCount = 0;
+        foreach (var prop in asset.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+        {
+            if (reflectedCount >= maxReflectedProperties)
+                break;
+
+            if (!prop.CanRead || prop.GetIndexParameters().Length != 0)
+                continue;
+
+            if (prop.Name is "Owner" or "Extras" or "Mappings" or "Provider")
+                continue;
+
+            if (!IsInspectableType(prop.PropertyType))
+                continue;
+
+            try
+            {
+                var value = prop.GetValue(asset);
+                if (value is null)
+                    continue;
+
+                var valueString = value.ToString() ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(valueString))
+                    continue;
+
+                if (valueString.Length > MaxPropertyValueDisplayLength)
+                    valueString = valueString[..MaxPropertyValueDisplayLength] + "...";
+
+                node.AdditionalProperties[prop.Name] = valueString;
+                reflectedCount++;
+            }
+            catch
+            {
+                // Ignore non-readable or throwing properties.
+            }
+        }
+
+        layer.Nodes.Add(node);
+        vm.Nodes.Add(node);
+        vm.Layers.Add(layer);
+        return vm;
+    }
 
     /// <summary>
     /// Extracts animation graph node information from a UAnimBlueprintGeneratedClass.
@@ -1261,5 +1335,17 @@ public class AnimGraphViewModel
             TargetNode = sourceNode,
             TargetPinName = pinName
         });
+    }
+
+    private static bool IsInspectableType(Type type)
+    {
+        var t = Nullable.GetUnderlyingType(type) ?? type;
+        if (t.IsEnum || t.IsPrimitive)
+            return true;
+
+        return t == typeof(string) ||
+               t == typeof(decimal) ||
+               t == typeof(DateTime) ||
+               t == typeof(Guid);
     }
 }

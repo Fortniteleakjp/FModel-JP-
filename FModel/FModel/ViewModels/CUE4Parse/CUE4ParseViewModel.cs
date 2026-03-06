@@ -1502,6 +1502,58 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
     }
 
+    public void ShowAnimGraph(GameFile entry)
+    {
+        if (entry is null)
+        {
+            Log.Warning("ShowAnimGraph called with null entry");
+            return;
+        }
+
+        if (!entry.IsUePackage)
+        {
+            FLogger.Append(ELog.Warning, () =>
+            {
+                FLogger.Text("Cannot open graph viewer for non-UE package: ", Constants.WHITE);
+                FLogger.Text(entry.Path, Constants.GRAY, true);
+            });
+            return;
+        }
+
+        if (!Provider.TryLoadPackage(entry, out var package) || package is null)
+        {
+            FLogger.Append(ELog.Error, () =>
+            {
+                FLogger.Text("Failed to load package for graph viewer: ", Constants.WHITE);
+                FLogger.Text(entry.Path, Constants.GRAY, true);
+            });
+            return;
+        }
+
+        var export = package.GetExports().FirstOrDefault();
+        if (export is null)
+        {
+            FLogger.Append(ELog.Warning, () =>
+            {
+                FLogger.Text("No exports found for graph viewer: ", Constants.WHITE);
+                FLogger.Text(entry.Path, Constants.GRAY, true);
+            });
+            return;
+        }
+
+        var graphVm = AnimGraphViewModel.ExtractFromObject(export);
+        if (graphVm.Nodes.Count == 0)
+            return;
+
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            Helper.OpenWindow<AnimGraphViewer>("Asset Graph Viewer", () =>
+            {
+                new AnimGraphViewer(graphVm).Show();
+            });
+        });
+    }
+
     public string Decompile(GameFile entry, bool addTab = true)
     {
         if (addTab) {

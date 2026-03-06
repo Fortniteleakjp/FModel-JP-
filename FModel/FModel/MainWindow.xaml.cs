@@ -1368,6 +1368,27 @@ public partial class MainWindow
         }
     }
 
+    private void OnAssetsOpenGraphViewerClick(object sender, RoutedEventArgs e)
+    {
+        if (AssetsListName?.SelectedItems == null || AssetsListName.SelectedItems.Count == 0)
+            return;
+
+        var selectedFile = AssetsListName.SelectedItems.OfType<GameFile>().FirstOrDefault();
+        if (selectedFile is null)
+            return;
+
+        _applicationView.CUE4Parse.ShowAnimGraph(selectedFile);
+    }
+
+    private void OnNewExplorerOpenGraphViewerClick(object sender, RoutedEventArgs e)
+    {
+        var selectedFiles = GetSelectedFilesFromNewExplorerContextMenu();
+        if (selectedFiles == null || selectedFiles.Count == 0)
+            return;
+
+        _applicationView.CUE4Parse.ShowAnimGraph(selectedFiles[0]);
+    }
+
     private void OnAssetListClick(object sender, RoutedEventArgs e)
     {
         if (sender is Button { Tag: string path })
