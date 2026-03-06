@@ -42,6 +42,22 @@ namespace FModel.Features.Athena
             }
         }
 
+        private static IEnumerable<string> GenerateRandomAesKeysGpu(HashSet<string> excludedKeys = null)
+        {
+            using var generator = new GpuRandomAesKeyGenerator();
+            if (!generator.IsHardwareAccelerated)
+            {
+                FLogger.Append(ELog.Warning, () => FLogger.Text("GPUアクセラレータが見つからないため、ILGPUのCPUアクセラレータで処理します。", Constants.YELLOW));
+            }
+            else
+            {
+                FLogger.Append(ELog.Information, () => FLogger.Text($"GPU鍵生成バッチサイズ: {GpuRandomAesKeyGenerator.DefaultBatchSize:N0} keys/dispatch", Constants.WHITE));
+            }
+
+            foreach (var key in generator.GenerateKeys(excludedKeys, GpuRandomAesKeyGenerator.DefaultBatchSize))
+                yield return key;
+        }
+
         private static IEnumerable<string> ReadAndFilterKeysFromFile(string filePath, FGuid targetGuid)
         {
             foreach (var line in File.ReadLines(filePath))
@@ -78,7 +94,9 @@ namespace FModel.Features.Athena
             }
         }
 
-        public static async Task ExecuteAsync()
+        public static Task ExecuteAsync() => ExecuteAsync(false);
+
+        public static async Task ExecuteAsync(bool useGpuRandomBackend)
         {
             var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
             if (provider == null)
@@ -147,8 +165,16 @@ namespace FModel.Features.Athena
             switch (box.Result)
             {
                 case AdonisUI.Controls.MessageBoxResult.Custom when (int)box.ButtonPressed.Id == 1: // Random
-                    FLogger.Append(ELog.Information, () => FLogger.Text($"対象ファイル: {targetPak.Name}. ランダムに生成したAESキーの総当たりを開始します...", Constants.WHITE));
-                    keys = GenerateRandomAesKeys(excludedKeys);
+                    if (useGpuRandomBackend)
+                    {
+                        FLogger.Append(ELog.Information, () => FLogger.Text($"対象ファイル: {targetPak.Name}. GPUバックエンドでランダムAESキー総当たりを開始します...", Constants.WHITE));
+                        keys = GenerateRandomAesKeysGpu(excludedKeys);
+                    }
+                    else
+                    {
+                        FLogger.Append(ELog.Information, () => FLogger.Text($"対象ファイル: {targetPak.Name}. ランダムに生成したAESキーの総当たりを開始します...", Constants.WHITE));
+                        keys = GenerateRandomAesKeys(excludedKeys);
+                    }
                     break;
                 case AdonisUI.Controls.MessageBoxResult.Custom when (int)box.ButtonPressed.Id == 2: // File
                     var keyFileDialog = new OpenFileDialog

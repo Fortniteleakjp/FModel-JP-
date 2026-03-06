@@ -171,6 +171,13 @@ public partial class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedAesReload, value);
     }
 
+    private EBruteForceAesMode _selectedBruteForceAesMode;
+    public EBruteForceAesMode SelectedBruteForceAesMode
+    {
+        get => _selectedBruteForceAesMode;
+        set => SetProperty(ref _selectedBruteForceAesMode, value);
+    }
+
     private EDiscordRpc _selectedDiscordRpc;
     public EDiscordRpc SelectedDiscordRpc
     {
@@ -268,6 +275,7 @@ public partial class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<EGame> DiffUeGames { get; private set; }
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
     public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
+    public ReadOnlyObservableCollection<EBruteForceAesMode> BruteForceAesModes { get; private set; }
     public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
     public ReadOnlyObservableCollection<ECompressedAudio> CompressedAudios { get; private set; }
     public ReadOnlyObservableCollection<EIconStyle> CosmeticStyles { get; private set; }
@@ -404,6 +412,7 @@ public partial class SettingsViewModel : ViewModel
         SelectedTextureExportFormat = _textureExportFormatSnapshot;
         CriwareDecryptionKey = _criwareDecryptionKey;
         SelectedAesReload = UserSettings.Default.AesReload;
+        SelectedBruteForceAesMode = UserSettings.Default.BruteForceAesMode;
         SelectedRestoreTabsOnStartup = UserSettings.Default.RestoreTabsOnStartup;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
@@ -412,6 +421,7 @@ public partial class SettingsViewModel : ViewModel
         DiffUeGames = new ReadOnlyObservableCollection<EGame>(ueGames); // Can't reuse UeGames because FilterableComboBox would share the same ItemsSource
         AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
         AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
+        BruteForceAesModes = new ReadOnlyObservableCollection<EBruteForceAesMode>(new ObservableCollection<EBruteForceAesMode>(EnumerateBruteForceAesModes()));
         DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
         CompressedAudios = new ReadOnlyObservableCollection<ECompressedAudio>(new ObservableCollection<ECompressedAudio>(EnumerateCompressedAudios()));
         CosmeticStyles = new ReadOnlyObservableCollection<EIconStyle>(new ObservableCollection<EIconStyle>(EnumerateCosmeticStyles()));
@@ -498,6 +508,7 @@ public partial class SettingsViewModel : ViewModel
         UserSettings.Default.MaterialExportFormat = SelectedMaterialExportFormat;
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
         UserSettings.Default.AesReload = SelectedAesReload;
+        UserSettings.Default.BruteForceAesMode = SelectedBruteForceAesMode;
         UserSettings.Default.RestoreTabsOnStartup = SelectedRestoreTabsOnStartup;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
 
@@ -514,6 +525,7 @@ public partial class SettingsViewModel : ViewModel
             .OrderBy(value => ((int)value & 0xFF) == 0);
     private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
     private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
+    private IEnumerable<EBruteForceAesMode> EnumerateBruteForceAesModes() => Enum.GetValues<EBruteForceAesMode>();
     private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
     private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues<ECompressedAudio>();
     private IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues<EIconStyle>();

@@ -44,6 +44,14 @@ public enum EAesReload
     OncePerDay
 }
 
+public enum EBruteForceAesMode
+{
+    [Description("従来 (CPU)")]
+    Cpu,
+    [Description("GPUを使用 (実験的)")]
+    Gpu
+}
+
 public enum EDiscordRpc
 {
     [Description("常に表示")]

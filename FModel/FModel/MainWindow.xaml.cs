@@ -782,7 +782,12 @@ public partial class MainWindow
     private async void OnBruteForceAesClick(object sender, RoutedEventArgs e)
     {
         if (ShowBetaFeatureWarning())
-            await BruteForceAesFeature.ExecuteAsync();
+        {
+            if (UserSettings.Default.BruteForceAesMode == EBruteForceAesMode.Gpu)
+                await BruteForceAesGpuFeature.ExecuteAsync();
+            else
+                await BruteForceAesFeature.ExecuteAsync();
+        }
     }
 
     private void OnAthenaPakCosmeticsClick(object sender, RoutedEventArgs e)

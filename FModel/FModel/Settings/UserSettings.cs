@@ -265,6 +265,14 @@ namespace FModel.Settings
             set => SetProperty(ref _aesReload, value);
         }
 
+        private EBruteForceAesMode _bruteForceAesMode = EBruteForceAesMode.Cpu;
+        [JsonProperty]
+        public EBruteForceAesMode BruteForceAesMode
+        {
+            get => _bruteForceAesMode;
+            set => SetProperty(ref _bruteForceAesMode, value);
+        }
+
         private EDiscordRpc _discordRpc = EDiscordRpc.Always;
         [JsonProperty]
         public EDiscordRpc DiscordRpc

@@ -57,6 +57,7 @@
     <system:String x:Key="Settings_Options">Options</system:String>
     <system:String x:Key="Settings_MapStructTypes">MapStruct Types</system:String>
     <system:String x:Key="Settings_AesReload">Reload AES on Startup</system:String>
+    <system:String x:Key="Settings_BruteForceAesMode">Brute Force AES Mode</system:String>
     <system:String x:Key="Settings_AutoData">Auto Data Retrieval</system:String>
     <system:String x:Key="Settings_LocalMapping">Local Mapping File</system:String>
     <system:String x:Key="Settings_MappingFilePath">Mapping File Path</system:String>

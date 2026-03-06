@@ -59,6 +59,7 @@
     <system:String x:Key="Settings_Options">オプション</system:String>
     <system:String x:Key="Settings_MapStructTypes">MapStruct型</system:String>
     <system:String x:Key="Settings_AesReload">起動時のAESの再読み込み</system:String>
+    <system:String x:Key="Settings_BruteForceAesMode">Brute Force AES モード</system:String>
     <system:String x:Key="Settings_AutoData">データを自動取得</system:String>
     <system:String x:Key="Settings_LocalMapping">マッピングファイルをローカルで指定</system:String>
     <system:String x:Key="Settings_MappingFilePath">Mapping File Path</system:String>
