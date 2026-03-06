@@ -17,30 +17,27 @@
 
             <Section>
                 <Paragraph FontWeight="Bold" FontSize="18">
-                    <Run x:Name="VersionRun">v4.4.9.2</Run>
+                    <Run x:Name="VersionRun">v4.4.9.3</Run>
                     <Run> 主な変更点</Run>
                 </Paragraph>
                 <BlockUIContainer>
-                    <Image Source="https://i.imgur.com/AduJmx5.png" Stretch="Uniform" MaxHeight="400" Margin="0,10"/>
+                    <Image Source="https://i.imgur.com/rEkyvUg.png" Stretch="Uniform" MaxHeight="400" Margin="0,10"/>
                 </BlockUIContainer>
                 <List>
                     <ListItem>
-                        <Paragraph><Run>AnimGraphViewerを実装(FModel本家のプルリク(656 /LoogLongを使用))</Run></Paragraph>
+                        <Paragraph><Run>NEW エクスプローラーでクラス名の色カードを追加</Run></Paragraph>
                     </ListItem>
                     <ListItem>
-                        <Paragraph><Run>NEW エクスプローラーでコンテンツメニューを追加</Run></Paragraph>
+                        <Paragraph><Run>Animation blueprint(FModel本家のプルリク(656 /LoogLong))で他のアセットも対応(β版)</Run></Paragraph>
                     </ListItem>
                     <ListItem>
-                        <Paragraph><Run>イメージ マネージャーに画像同士の幅の編集を追加</Run></Paragraph>
+                        <Paragraph><Run>Brute Force AES の検証ロジックを改善し、AesManager と同系統の実復号判定（Provider SubmitKey / mount）で正否を判定するように変更</Run></Paragraph>
                     </ListItem>
                     <ListItem>
-                        <Paragraph><Run>スケルタルメッシュ読み込み時のクラッシュを修正（ArgumentNullException: collection）</Run></Paragraph>
+                        <Paragraph><Run>設定に Brute Force AES モードを追加（従来 CPU / GPU 使用）</Run></Paragraph>
                     </ListItem>
                     <ListItem>
-                        <Paragraph><Run>Skeleton / Sockets / MorphTargets の null ガードを追加し、読み込み失敗時の安定性を向上</Run></Paragraph>
-                    </ListItem>
-                    <ListItem>
-                        <Paragraph><Run>プロパティ表示の Input Pins / Output Pins などを言語リソース化</Run></Paragraph>
+                        <Paragraph><Run>一部メッシュを正常に開けるように修正</Run></Paragraph>
                     </ListItem>
                 </List>
             </Section>
