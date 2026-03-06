@@ -1559,9 +1559,9 @@
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Width="160" Height="190" Margin="6" CornerRadius="8"
-                                                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
-                                                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                                                <Border Width="160" Height="190" Margin="6" CornerRadius="8"
+                                                    Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBackground}"
+                                                    BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBorder}"
                                                     BorderThickness="1">
                                                 <Border.Style>
                                                     <Style TargetType="Border">
@@ -1598,7 +1598,7 @@
                                                         </Canvas>
                                                     </Viewbox>
 
-                                                    <Border Grid.Row="1" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                                        <Border Grid.Row="1" Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardSectionBackground}"
                                                             CornerRadius="0,0,8,8" Padding="10,8">
                                                         <StackPanel>
                                                             <TextBlock controls:HighlightText.Text="{Binding Name}"
@@ -1606,11 +1606,25 @@
                                                                        controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
                                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                                                        ToolTip="{Binding Name}" HorizontalAlignment="Center" Margin="0,0,0,4" FontSize="12"/>
-                                                            <TextBlock controls:GameFileClassLoader.GameFile="{Binding}"
-                                                                       Text="{Binding RelativeSource={RelativeSource Self}, Path=(controls:GameFileClassLoader.ClassName)}"
-                                                                       FontSize="10" Opacity="0.8" TextAlignment="Center" HorizontalAlignment="Center"
-                                                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"
-                                                                       Margin="0,0,0,4"/>
+                                                            <Border Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Background}"
+                                                                    BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Border}"
+                                                                    BorderThickness="1"
+                                                                    CornerRadius="10"
+                                                                    HorizontalAlignment="Center"
+                                                                    Margin="0,0,0,4"
+                                                                    Padding="7,2">
+                                                                <TextBlock x:Name="AssetClassBadgeText"
+                                                                           controls:GameFileClassLoader.GameFile="{Binding}"
+                                                                           Text="{Binding RelativeSource={RelativeSource Self}, Path=(controls:GameFileClassLoader.ClassName)}"
+                                                                           FontSize="10"
+                                                                           FontWeight="SemiBold"
+                                                                           Opacity="0.95"
+                                                                           TextAlignment="Center"
+                                                                           HorizontalAlignment="Center"
+                                                                           Foreground="{Binding Text, RelativeSource={RelativeSource Self}, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Foreground}"
+                                                                           TextTrimming="CharacterEllipsis"
+                                                                           ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
+                                                            </Border>
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="*" />

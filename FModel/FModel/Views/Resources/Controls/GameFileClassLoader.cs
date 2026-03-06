@@ -13,7 +13,7 @@ namespace FModel.Views.Resources.Controls;
 
 public static class GameFileClassLoader
 {
-    private const string UnknownClassName = "Unknown";
+    private const string UnknownClassName = "不明";
     private static readonly SemaphoreSlim _semaphore = new(8);
     private static readonly object _cacheLock = new();
     private static readonly Dictionary<string, string> _classCache = new(StringComparer.OrdinalIgnoreCase);
