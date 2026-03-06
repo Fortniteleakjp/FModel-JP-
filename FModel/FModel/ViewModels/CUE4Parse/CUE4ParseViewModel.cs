@@ -1387,19 +1387,7 @@ public partial class CUE4ParseViewModel : ViewModel
             }
             case UAnimBlueprintGeneratedClass when isNone && pointer.Object.Value is UAnimBlueprintGeneratedClass animBpClass:
             {
-                var graphVm = AnimGraphViewModel.ExtractFromClass(animBpClass);
-                if (graphVm.Nodes.Count > 0)
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        Helper.OpenWindow<AnimGraphViewer>("Animation Blueprint Graph Viewer", () =>
-                        {
-                            new AnimGraphViewer(graphVm).Show();
-                        });
-                    });
-                }
-
-                return true;
+                return TryOpenGraphViewer(animBpClass);
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
@@ -1422,6 +1410,14 @@ public partial class CUE4ParseViewModel : ViewModel
                 if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
                     SnooperViewer.Run();
                 return true;
+            }
+            case UBlueprint when isNone && pointer.Object.Value is UBlueprint blueprint:
+            {
+                return TryOpenGraphViewer(blueprint);
+            }
+            case UBlueprintGeneratedClass when isNone && pointer.Object.Value is UBlueprintGeneratedClass blueprintClass:
+            {
+                return TryOpenGraphViewer(blueprintClass);
             }
             case UMaterialInstance when isNone && ModelIsOverwritingMaterial && pointer.Object.Value is UMaterialInstance m:
             {
@@ -1542,16 +1538,53 @@ public partial class CUE4ParseViewModel : ViewModel
         }
 
         var graphVm = AnimGraphViewModel.ExtractFromObject(export);
+        _ = TryOpenGraphViewer(export, graphVm);
+    }
+
+    private static bool TryOpenGraphViewer(UObject asset, AnimGraphViewModel? existingViewModel = null)
+    {
+        var graphVm = existingViewModel ?? AnimGraphViewModel.ExtractFromObject(asset);
         if (graphVm.Nodes.Count == 0)
-            return;
+            graphVm = CreateFallbackAssetGraphViewModel(asset);
+
+        if (graphVm.Nodes.Count == 0)
+            return false;
 
         Application.Current.Dispatcher.Invoke(() =>
         {
-            Helper.OpenWindow<AnimGraphViewer>("Asset Graph Viewer", () =>
+            var windowTitle = Application.Current.TryFindResource("AnimGraph_Title") as string ?? "Asset Graph Viewer";
+            Helper.OpenWindow<AnimGraphViewer>(windowTitle, () =>
             {
                 new AnimGraphViewer(graphVm).Show();
             });
         });
+
+        return true;
+    }
+
+    private static AnimGraphViewModel CreateFallbackAssetGraphViewModel(UObject asset)
+    {
+        var packageName = asset.Owner?.Name ?? asset.Name;
+        var vm = new AnimGraphViewModel { PackageName = packageName };
+
+        var layer = new AnimGraphLayer { Name = "Asset" };
+        var node = new AnimGraphNode
+        {
+            Name = asset.Name,
+            ExportType = asset.ExportType,
+            NodePosX = 60,
+            NodePosY = 60
+        };
+
+        node.AdditionalProperties["AssetName"] = asset.Name;
+        node.AdditionalProperties["ExportType"] = asset.ExportType;
+        if (!string.IsNullOrEmpty(asset.Owner?.Name))
+            node.AdditionalProperties["Package"] = asset.Owner.Name;
+
+        layer.Nodes.Add(node);
+        vm.Nodes.Add(node);
+        vm.Layers.Add(layer);
+        return vm;
     }
 
     public string Decompile(GameFile entry, bool addTab = true)

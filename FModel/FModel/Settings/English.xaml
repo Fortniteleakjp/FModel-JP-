@@ -149,7 +149,7 @@
     <system:String x:Key="About_References">References</system:String>
 
     <!-- AnimGraph Viewer -->
-    <system:String x:Key="AnimGraph_Title">Animation Blueprint Graph Viewer</system:String>
+    <system:String x:Key="AnimGraph_Title">Asset Graph Viewer</system:String>
     <system:String x:Key="AnimGraph_Button_FitToView">Fit to View</system:String>
     <system:String x:Key="AnimGraph_Button_ResetZoom">Reset Zoom</system:String>
     <system:String x:Key="AnimGraph_Properties">Properties</system:String>
