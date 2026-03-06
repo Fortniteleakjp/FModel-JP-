@@ -18,7 +18,6 @@ using System.Windows;
 using FModel;
 using FModel.Views.Resources.Controls;
 using Serilog;
-using CUE4Parse.UE4.Pak;
 
 namespace FModel.Features.Athena
 {
@@ -259,17 +258,11 @@ namespace FModel.Features.Athena
                                     var isVerified = false;
                                     try
                                     {
-                                        if (vfs is PakFileReader pakReader)
-                                        {
-                                            using var tempReader = new PakFileReader(pakReader.Path, ApplicationService.ApplicationView.CUE4Parse.Provider.Versions);
-                                            tempReader.AesKey = aesKey;
-                                            if (tempReader.Files.Count > 0) isVerified = true;
-                                            else Log.Warning("Key {Key} passed TestAesKey but resulted in 0 files.", key);
-                                        }
-                                        else
-                                        {
-                                            isVerified = true;
-                                        }
+                                        // AesManager と同じ Provider 経由のマウント処理で、実際に復号可能かを検証する
+                                        var mountedCount = provider.SubmitKey(vfs.EncryptionKeyGuid, aesKey);
+                                        isVerified = mountedCount > 0 || provider.Keys.ContainsKey(vfs.EncryptionKeyGuid);
+                                        if (!isVerified)
+                                            Log.Warning("Key {Key} passed TestAesKey but failed actual provider decryption/mount.", key);
                                     }
                                     catch (Exception ex)
                                     {
@@ -285,7 +278,6 @@ namespace FModel.Features.Athena
                                             {
                                                 FLogger.Append(ELog.Information, () => FLogger.Text($"キーが見つかりました！ Pak: {vfs.Name}, Key: {key}", Constants.GREEN));
                                                 foundKeys[vfs.EncryptionKeyGuid] = key;
-                                                provider.SubmitKey(vfs.EncryptionKeyGuid, aesKey);
 
                                             // UIスレッドで、同じGUIDを持つすべてのPakにキーを適用し、UIを更新する
                                             Application.Current.Dispatcher.Invoke(() =>
