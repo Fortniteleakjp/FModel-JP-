@@ -33,16 +33,16 @@ public class SkeletalModel : UModel
         Skeleton = export.ReferenceSkeleton != null ? new Skeleton(export.ReferenceSkeleton) : new Skeleton();
 
         var sockets = new List<FPackageIndex>();
-        if (export.Sockets != null)
-            sockets.AddRange(export.Sockets);
+        if (export.Sockets is { } exportSockets)
+            sockets.AddRange(exportSockets);
 
         if (export.Skeleton.TryLoad(out USkeleton skeleton))
         {
             Skeleton.Name = skeleton.Name;
             Skeleton.Guid = skeleton.Guid;
             // Skeleton.Merge(skeleton.ReferenceSkeleton);
-            if (skeleton.Sockets != null)
-                sockets.AddRange(skeleton.Sockets);
+            if (skeleton.Sockets is { } skeletonSockets)
+                sockets.AddRange(skeletonSockets);
             else
                 Log.Warning("USkeleton.Sockets is null for {SkeletonName}", skeleton.Name);
         }
@@ -140,7 +140,6 @@ public class SkeletalModel : UModel
     public override void Setup(Options options)
     {
         base.Setup(options);
-
         Skeleton.Setup();
         if (!HasMorphTargets) return;
 

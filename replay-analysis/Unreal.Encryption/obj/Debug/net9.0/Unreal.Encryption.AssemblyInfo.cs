@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2020 Shiqan")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Unreal Engine replay encryption layer")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f397bcff552c938ebc8b1041b74df68978026899")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+345a950ccea28f39cfba4db416b705f4b1b05d20")]
 [assembly: System.Reflection.AssemblyProductAttribute("Unreal.Encryption")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Unreal.Encryption")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
