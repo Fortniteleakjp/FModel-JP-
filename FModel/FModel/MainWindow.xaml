@@ -1606,6 +1606,11 @@
                                                                        controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
                                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                                                        ToolTip="{Binding Name}" HorizontalAlignment="Center" Margin="0,0,0,4" FontSize="12"/>
+                                                            <TextBlock controls:GameFileClassLoader.GameFile="{Binding}"
+                                                                       Text="{Binding RelativeSource={RelativeSource Self}, Path=(controls:GameFileClassLoader.ClassName)}"
+                                                                       FontSize="10" Opacity="0.8" TextAlignment="Center" HorizontalAlignment="Center"
+                                                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}"
+                                                                       Margin="0,0,0,4"/>
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="*" />
