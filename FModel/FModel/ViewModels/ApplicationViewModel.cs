@@ -33,6 +33,9 @@ namespace FModel.ViewModels;
 
 public class ApplicationViewModel : ViewModel
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate bool IsFeatureAvailableDelegate(IntPtr feature);
+
     private EBuildKind _build;
     public EBuildKind Build
     {
@@ -463,6 +466,64 @@ public class ApplicationViewModel : ViewModel
     public static async Task InitACL()
     {
         var aclPath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", "CUE4Parse-Natives.dll");
+        var packagedAclCandidates = new[]
+        {
+            Path.Combine(AppContext.BaseDirectory, "CUE4Parse-Natives.dll"),
+            Path.Combine(Environment.CurrentDirectory, "CUE4Parse-Natives.dll")
+        };
+        const string preferredAclUrl = "https://github.com/Fortniteleakjp/oo2core_9_Linux/raw/refs/heads/main/CUE4Parse-Natives.dll";
+        string[] requiredAclExports = ["nAllocate", "nCompressedTracks_IsValid", "nReadACLData", "nReadCurveACLData"];
+
+        string? TryGetExistingPackagedDll()
+        {
+            foreach (var candidate in packagedAclCandidates.Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    if (File.Exists(candidate) && new FileInfo(candidate).Length > 0)
+                        return candidate;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+
+            return null;
+        }
+
+        IEnumerable<string> EnumerateSearchRoots()
+        {
+            var roots = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            void AddRoot(string? path)
+            {
+                if (string.IsNullOrWhiteSpace(path)) return;
+                try
+                {
+                    if (Directory.Exists(path)) roots.Add(Path.GetFullPath(path));
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+
+            AddRoot(Environment.CurrentDirectory);
+            AddRoot(AppContext.BaseDirectory);
+
+            foreach (var start in roots.ToArray())
+            {
+                var dir = new DirectoryInfo(start);
+                for (var i = 0; i < 8 && dir is not null; i++)
+                {
+                    AddRoot(dir.FullName);
+                    dir = dir.Parent;
+                }
+            }
+
+            return roots;
+        }
 
         bool IsValidDll(string path)
         {
@@ -471,7 +532,29 @@ public class ApplicationViewModel : ViewModel
             try
             {
                 handle = NativeLibrary.Load(path);
-                return NativeLibrary.TryGetExport(handle, "nAllocate", out _);
+                foreach (var export in requiredAclExports)
+                {
+                    if (!NativeLibrary.TryGetExport(handle, export, out _))
+                        return false;
+                }
+
+                // Some older native builds may not implement this probe.
+                // When present, run it for diagnostics, but do not hard-fail if it reports false.
+                if (NativeLibrary.TryGetExport(handle, "IsFeatureAvailable", out var isFeatureAvailableExport))
+                {
+                    var isFeatureAvailable = Marshal.GetDelegateForFunctionPointer<IsFeatureAvailableDelegate>(isFeatureAvailableExport);
+                    var aclFeatureName = Marshal.StringToHGlobalAnsi("ACL");
+                    try
+                    {
+                        _ = isFeatureAvailable(aclFeatureName);
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(aclFeatureName);
+                    }
+                }
+
+                return true;
             }
             catch
             {
@@ -483,15 +566,138 @@ public class ApplicationViewModel : ViewModel
             }
         }
 
-        if (!IsValidDll(aclPath))
+        bool TryLoadDll(string path, out string? error)
         {
-            try { if (File.Exists(aclPath)) File.Delete(aclPath); } catch { /* ignored */ }
-            await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/FabianGula/CUE4Parse/releases/download/natives/CUE4Parse-Natives.dll", aclPath);
-            
-            if (!IsValidDll(aclPath))
+            error = null;
+            if (!File.Exists(path))
             {
-                try { if (File.Exists(aclPath)) File.Delete(aclPath); } catch { /* ignored */ }
-                await ApplicationService.ApiEndpointView.DownloadFileAsync("https://github.com/Fortniteleakjp/oo2core_9_Linux/raw/refs/heads/main/CUE4Parse-Natives.dll", aclPath);
+                error = "file does not exist";
+                return false;
+            }
+
+            try
+            {
+                NativeLibrary.Load(path);
+                return true;
+            }
+            catch (Exception e)
+            {
+                error = e.Message;
+                return false;
+            }
+        }
+
+        bool TryUseBundledDll()
+        {
+            var candidates = new List<string>
+            {
+                Path.Combine(AppContext.BaseDirectory, "CUE4Parse-Natives.dll"),
+                Path.Combine(Environment.CurrentDirectory, "CUE4Parse-Natives.dll")
+            };
+
+            foreach (var root in EnumerateSearchRoots())
+            {
+                candidates.Add(Path.Combine(root, "CUE4Parse", "CUE4Parse-Natives", "bin", "Release", "CUE4Parse-Natives.dll"));
+                candidates.Add(Path.Combine(root, "CUE4Parse", "CUE4Parse-Natives", "builddir", "Release", "CUE4Parse-Natives.dll"));
+                candidates.Add(Path.Combine(root, "CUE4Parse", "CUE4Parse-Natives", "bin", "Debug", "CUE4Parse-Natives.dll"));
+                candidates.Add(Path.Combine(root, "CUE4Parse", "CUE4Parse-Natives", "builddir", "Debug", "CUE4Parse-Natives.dll"));
+            }
+
+            foreach (var candidate in candidates.Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                if (!IsValidDll(candidate))
+                    continue;
+
+                try
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(aclPath)!);
+                    File.Copy(candidate, aclPath, true);
+                    if (IsValidDll(aclPath))
+                    {
+                        FLogger.Append(ELog.Information, () => FLogger.Text($"Using local CUE4Parse-Natives.dll: {candidate}", Constants.WHITE, true));
+                        return true;
+                    }
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+
+            return false;
+        }
+
+        var existingPackagedAcl = TryGetExistingPackagedDll();
+        if (existingPackagedAcl is not null)
+        {
+            aclPath = existingPackagedAcl;
+            FLogger.Append(ELog.Information, () => FLogger.Text($"Using packaged CUE4Parse-Natives.dll: {existingPackagedAcl}", Constants.WHITE, true));
+            if (TryLoadDll(aclPath, out var packagedLoadError))
+            {
+                return;
+            }
+
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Packaged CUE4Parse-Natives.dll failed to load directly: {packagedLoadError}", Constants.YELLOW, true));
+        }
+
+        // If a local .data DLL is loadable, prefer it over download paths.
+        if (TryLoadDll(aclPath, out _))
+        {
+            FLogger.Append(ELog.Information, () => FLogger.Text($"Using local CUE4Parse-Natives.dll: {aclPath}", Constants.WHITE, true));
+            return;
+        }
+
+        async Task<bool> TryDownloadAndValidate(string url)
+        {
+            var dir = Path.GetDirectoryName(aclPath)!;
+            var tempPath = Path.Combine(dir, $"CUE4Parse-Natives.{Guid.NewGuid():N}.tmp");
+
+            try
+            {
+                Directory.CreateDirectory(dir);
+                await ApplicationService.ApiEndpointView.DownloadFileAsync(url, tempPath);
+                if (!File.Exists(tempPath) || new FileInfo(tempPath).Length == 0)
+                    return false;
+
+                if (!IsValidDll(tempPath))
+                {
+                    var size = new FileInfo(tempPath).Length;
+                    FLogger.Append(ELog.Warning, () => FLogger.Text($"Downloaded CUE4Parse-Natives.dll is invalid and will be ignored. Url={url}, Size={size} bytes", Constants.YELLOW, true));
+                    return false;
+                }
+
+                File.Copy(tempPath, aclPath, true);
+                return IsValidDll(aclPath);
+            }
+            finally
+            {
+                try
+                {
+                    if (File.Exists(tempPath)) File.Delete(tempPath);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+
+        var packagedDllWasPresent = existingPackagedAcl is not null;
+
+        if (!IsValidDll(aclPath) && !TryUseBundledDll())
+        {
+            if (packagedDllWasPresent)
+            {
+                var len = File.Exists(aclPath) ? new FileInfo(aclPath).Length : -1;
+                FLogger.Append(ELog.Error, () => FLogger.Text($"Packaged CUE4Parse-Natives.dll was present but could not be initialized. Path={aclPath}, Size={len} bytes", Constants.RED, true));
+                return;
+            }
+
+            if (!await TryDownloadAndValidate(preferredAclUrl))
+            {
+                var len = File.Exists(aclPath) ? new FileInfo(aclPath).Length : -1;
+                FLogger.Append(ELog.Error, () => FLogger.Text($"CUE4Parse-Natives.dll could not be initialized from local/bundled/local-build/download sources. Path={aclPath}, Size={len} bytes", Constants.RED, true));
+                return;
             }
         }
 

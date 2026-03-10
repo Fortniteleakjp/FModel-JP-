@@ -28,12 +28,47 @@ jobs:
       - name: .NET Publish
         run: dotnet publish "./FModel/FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net10.0-windows -o "./FModel/FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
 
+      - name: Build CUE4Parse-Natives
+        shell: pwsh
+        run: |
+          cmake -S "./FModel/CUE4Parse/CUE4Parse-Natives" -B "./FModel/CUE4Parse/CUE4Parse-Natives/build-gha"
+          cmake --build "./FModel/CUE4Parse/CUE4Parse-Natives/build-gha" --config Release
+
+      - name: Bundle CUE4Parse-Natives.dll
+        shell: pwsh
+        run: |
+          $publishDir = "./FModel/FModel/bin/Publish"
+          $candidates = @(
+            "./FModel/CUE4Parse/CUE4Parse-Natives/build-gha/Release/CUE4Parse-Natives.dll",
+            "./FModel/CUE4Parse/CUE4Parse-Natives/build-gha/CUE4Parse-Natives.dll",
+            "./FModel/CUE4Parse/CUE4Parse-Natives/bin/Release/CUE4Parse-Natives.dll"
+          )
+
+          $dll = $null
+          foreach ($candidate in $candidates) {
+            if (Test-Path $candidate) {
+              $item = Get-Item $candidate
+              if ($item.Length -gt 0) {
+                $dll = $item.FullName
+                break
+              }
+            }
+          }
+
+          if (-not $dll) {
+            throw "CUE4Parse-Natives.dll was not produced by CI build."
+          }
+
+          New-Item -ItemType Directory -Path $publishDir -Force | Out-Null
+          Copy-Item $dll (Join-Path $publishDir "CUE4Parse-Natives.dll") -Force
+          Write-Host "Bundled native DLL from: $dll"
+
       - name: Create ZIP File
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: zip
           filename: ${{ github.sha }}.zip
-          path: ./FModel/FModel/bin/Publish/FModel.exe
+          path: ./FModel/FModel/bin/Publish/
 
       - name: Add Release
         uses: ncipollo/release-action@v1.14.0
