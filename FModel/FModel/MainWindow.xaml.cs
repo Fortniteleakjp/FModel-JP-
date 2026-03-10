@@ -246,6 +246,23 @@ public partial class MainWindow
         new Views.DynamicBackgroundApiWindow().Show();
     }
 
+    private async void OnCloudStorageHotfixClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            // UIスレッド上でクラウドストレージホットフィックスを実行
+            await Application.Current.Dispatcher.InvokeAsync(async () =>
+            {
+                await FModel.Features.CloudStorage.CloudStorageHotfix.ExecuteAsync();
+            });
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to execute cloud storage hotfix");
+            MessageBox.Show(this, $"ホットフィックスの実行に失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)
     {
         RootGrid.ColumnDefinitions[0].Width = GridLength.Auto;

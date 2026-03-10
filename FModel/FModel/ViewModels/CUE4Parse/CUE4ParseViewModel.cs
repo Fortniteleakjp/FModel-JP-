@@ -1213,6 +1213,23 @@ public partial class CUE4ParseViewModel : ViewModel
                 break;
             }
         }
+
+        // 通常のファイルオープン時のみ、クラウドストレージのホットフィックス有無を自動確認する
+        if (bulk == EBulkType.None && updateUi &&
+            TabControl.SelectedTab?.Document is not null)
+        {
+            _ = Application.Current.Dispatcher.InvokeAsync(async () =>
+            {
+                try
+                {
+                    await FModel.Features.CloudStorage.CloudStorageHotfix.ExecuteAsync();
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "Auto cloud hotfix check failed for {Path}", entry.Path);
+                }
+            });
+        }
     }
 
     public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName, string parentExportType)

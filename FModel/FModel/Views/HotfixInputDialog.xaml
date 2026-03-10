@@ -1,0 +1,41 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.HotfixInputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        Title="ホットフィックス入力"
+        Height="400" Width="600"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        ResizeMode="CanResizeWithGrip">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="ホットフィックスを入力してください" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"/>
+        
+        <TextBox Grid.Row="1" x:Name="HotfixTextBox" 
+                 AcceptsReturn="True" 
+                 AcceptsTab="True"
+                 TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto"
+                 FontFamily="Consolas"
+                 adonisExtensions:WatermarkExtension.Watermark="+DataTable=/Game/Athena/Items/Weapons/AthenaRangedWeapons;RowUpdate;SMG_GoliathBurst_Scoped_Athena_UR_Ore_T03;DmgPB;18.000000"/>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
+            <TextBlock Text="フォーマット例:" FontWeight="SemiBold" Margin="0,0,10,0"/>
+            <TextBlock Text="RowUpdate: +DataTable=/Path/To/Table;RowUpdate;RowName;PropertyName;Value" Foreground="Gray" FontSize="11"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <TextBlock Text="TableUpdate: +DataTable=/Path/To/Table;TableUpdate;&quot;JSON_DATA&quot;" Foreground="Gray" FontSize="11" Margin="0,0,15,0"/>
+            <Button Content="キャンセル" Width="80" Click="OnCancelClick" Margin="0,0,10,0" IsCancel="True"/>
+            <Button Content="適用" Width="80" Click="OnApplyClick" IsDefault="True" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+        </StackPanel>
+    </Grid>
+</adonisControls:AdonisWindow>
