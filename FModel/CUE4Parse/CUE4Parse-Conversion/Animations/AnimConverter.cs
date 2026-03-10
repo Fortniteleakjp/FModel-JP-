@@ -171,51 +171,69 @@ namespace CUE4Parse_Conversion.Animations
                 }
                 case FACLCompressedAnimData aclData:
                 {
-                    var tracks = aclData.GetCompressedTracks();
-                    var tracksHeader = tracks.GetTracksHeader();
-                    var numSamples = (int) tracksHeader.NumSamples;
-
-                    // smh Valo has this set to 1, but it should be 0, right?
-                    if (animSequence.IsValidAdditive()) tracks.SetDefaultScale(0);
-
-                    // Let the native code do its job
-                    var atomKeys = new FTransform[animSeq.Tracks.Capacity * numSamples];
-                    unsafe
+                    try
                     {
-                        fixed (FTransform* refPosePtr = animSeq.RetargetBasePose ?? skeleton.ReferenceSkeleton.FinalRefBonePose)
-                        fixed (FTrackToSkeletonMap* trackToSkeletonMapPtr = animSequence.GetTrackMap())
-                        fixed (FTransform* atomKeysPtr = atomKeys)
+                        var tracks = aclData.GetCompressedTracks();
+                        var tracksHeader = tracks.GetTracksHeader();
+                        var numSamples = (int) tracksHeader.NumSamples;
+
+                        // smh Valo has this set to 1, but it should be 0, right?
+                        if (animSequence.IsValidAdditive()) tracks.SetDefaultScale(0);
+
+                        // Let the native code do its job
+                        var atomKeys = new FTransform[animSeq.Tracks.Capacity * numSamples];
+                        unsafe
                         {
-                            nReadACLData(tracks.Handle, refPosePtr, trackToSkeletonMapPtr, atomKeysPtr);
+                            fixed (FTransform* refPosePtr = animSeq.RetargetBasePose ?? skeleton.ReferenceSkeleton.FinalRefBonePose)
+                            fixed (FTrackToSkeletonMap* trackToSkeletonMapPtr = animSequence.GetTrackMap())
+                            fixed (FTransform* atomKeysPtr = atomKeys)
+                            {
+                                nReadACLData(tracks.Handle, refPosePtr, trackToSkeletonMapPtr, atomKeysPtr);
+                            }
+                        }
+
+                        // Prepare buffers of all samples of each transform property for the native code to populate
+                        var posKeys = new FVector[atomKeys.Length];
+                        var rotKeys = new FQuat[atomKeys.Length];
+                        var scaleKeys = new FVector[atomKeys.Length];
+                        for (var i = 0; i < atomKeys.Length; i++)
+                        {
+                            posKeys[i] = atomKeys[i].Translation;
+                            rotKeys[i] = atomKeys[i].Rotation;
+                            scaleKeys[i] = atomKeys[i].Scale3D;
+                        }
+
+                        // Now create CAnimTracks with the data from those big buffers
+                        for (var boneIndex = 0; boneIndex < numBones; boneIndex++)
+                        {
+                            var track = new CAnimTrack();
+                            animSeq.Tracks.Add(track);
+                            var trackIndex = animSequence.FindTrackForBoneIndex(boneIndex);
+                            if (trackIndex >= 0)
+                            {
+                                var offset = trackIndex * numSamples;
+                                track.KeyPos = new FVector[numSamples];
+                                track.KeyQuat = new FQuat[numSamples];
+                                track.KeyScale = new FVector[numSamples];
+                                Array.Copy(posKeys, offset, track.KeyPos, 0, numSamples);
+                                Array.Copy(rotKeys, offset, track.KeyQuat, 0, numSamples);
+                                Array.Copy(scaleKeys, offset, track.KeyScale, 0, numSamples);
+                            }
                         }
                     }
-
-                    // Prepare buffers of all samples of each transform property for the native code to populate
-                    var posKeys = new FVector[atomKeys.Length];
-                    var rotKeys = new FQuat[atomKeys.Length];
-                    var scaleKeys = new FVector[atomKeys.Length];
-                    for (var i = 0; i < atomKeys.Length; i++)
+                    catch (Exception e) when (e is ACLException or EntryPointNotFoundException or DllNotFoundException)
                     {
-                        posKeys[i] = atomKeys[i].Translation;
-                        rotKeys[i] = atomKeys[i].Rotation;
-                        scaleKeys[i] = atomKeys[i].Scale3D;
-                    }
-
-                    // Now create CAnimTracks with the data from those big buffers
-                    for (var boneIndex = 0; boneIndex < numBones; boneIndex++)
-                    {
-                        var track = new CAnimTrack();
-                        animSeq.Tracks.Add(track);
-                        var trackIndex = animSequence.FindTrackForBoneIndex(boneIndex);
-                        if (trackIndex >= 0)
+                        var refPose = animSeq.RetargetBasePose ?? skeleton.ReferenceSkeleton.FinalRefBonePose;
+                        for (var boneIndex = 0; boneIndex < numBones; boneIndex++)
                         {
-                            var offset = trackIndex * numSamples;
-                            track.KeyPos = new FVector[numSamples];
-                            track.KeyQuat = new FQuat[numSamples];
-                            track.KeyScale = new FVector[numSamples];
-                            Array.Copy(posKeys, offset, track.KeyPos, 0, numSamples);
-                            Array.Copy(rotKeys, offset, track.KeyQuat, 0, numSamples);
-                            Array.Copy(scaleKeys, offset, track.KeyScale, 0, numSamples);
+                            var track = new CAnimTrack();
+                            animSeq.Tracks.Add(track);
+                            if (boneIndex < refPose.Length)
+                            {
+                                track.KeyPos = [refPose[boneIndex].Translation];
+                                track.KeyQuat = [refPose[boneIndex].Rotation];
+                                track.KeyScale = [refPose[boneIndex].Scale3D];
+                            }
                         }
                     }
 

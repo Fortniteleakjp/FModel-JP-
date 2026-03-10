@@ -18,14 +18,30 @@ public class AnimCurveCompressionCodec_ACL : UAnimCurveCompressionCodec
             return [];
         }
 
-        var compressedTracks = new CompressedTracks(animSeq.CompressedCurveByteStream);
+        CompressedTracks compressedTracks;
+        try
+        {
+            compressedTracks = new CompressedTracks(animSeq.CompressedCurveByteStream);
+        }
+        catch (Exception e) when (e is ACLException or EntryPointNotFoundException or DllNotFoundException)
+        {
+            return [];
+        }
+
         var header = compressedTracks.GetTracksHeader();
         var numSamples = header.NumSamples;
 
         var floatKeys = new float[numCurves * numSamples];
         fixed (float* floatKeysPtr = floatKeys)
         {
-            nReadCurveACLData(compressedTracks.Handle, floatKeysPtr);
+            try
+            {
+                nReadCurveACLData(compressedTracks.Handle, floatKeysPtr);
+            }
+            catch (Exception e) when (e is EntryPointNotFoundException or DllNotFoundException)
+            {
+                return [];
+            }
         }
         
         var floatCurves = new FFloatCurve[numCurves];
