@@ -1,0 +1,172 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.DynamicBackgroundApiWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+        mc:Ignorable="d"
+        Title="API - Dynamic Backgrounds"
+        Height="760" Width="1220"
+        WindowStartupLocation="CenterScreen"
+        Loaded="OnLoaded"
+        Closing="OnClosing">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#112A3D" Offset="0"/>
+                <GradientStop Color="#101927" Offset="0.55"/>
+                <GradientStop Color="#1A0F1E" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid Margin="14">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Padding="14" CornerRadius="10" BorderThickness="1" Margin="0,0,0,12"
+                    Background="#4D0E1520" BorderBrush="#4D6EB5E8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Fortnite Lobby Background API" FontSize="20" FontWeight="Bold" Foreground="#E7F4FF"/>
+                        <TextBlock Text="dynamicbackgrounds を40秒ごとに自動更新し、画像・stage・_typeを確認できます。" Margin="0,4,0,0" Opacity="0.9" Foreground="#BFD7EA"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="1" Margin="8,0,0,0" Padding="14,6" Content="今すぐ更新" Click="OnRefreshNowClick"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+                    <Button Grid.Column="2" Margin="8,0,0,0" Padding="14,6" Content="画像を保存" Click="OnSaveImageClick"/>
+                    <Button Grid.Column="3" Margin="8,0,0,0" Padding="14,6" Content="画像をコピー" Click="OnCopyImageClick"/>
+                </Grid>
+            </Border>
+
+            <TabControl Grid.Row="1">
+                <TabItem Header="ロビー背景">
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2.3*"/>
+                            <ColumnDefinition Width="0.04*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" CornerRadius="10" BorderThickness="1" BorderBrush="#3A7BA8" Background="#3316202A" Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" CornerRadius="8" ClipToBounds="True" Background="#0D0F16">
+                                    <Image x:Name="LobbyImage" Stretch="UniformToFill"/>
+                                </Border>
+
+                                <Grid Grid.Row="1" Margin="0,10,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="stage" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                        <TextBlock x:Name="StageValueTextBlock" FontSize="15" Foreground="#E7F4FF"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="_type" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                        <TextBlock x:Name="TypeValueTextBlock" FontSize="15" Foreground="#E7F4FF"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Column="2" CornerRadius="10" BorderThickness="1" BorderBrush="#3A7BA8" Background="#3316202A" Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0">
+                                    <TextBlock Text="選択中" FontWeight="Bold" Foreground="#E7F4FF" FontSize="16"/>
+                                    <TextBlock x:Name="KeyValueTextBlock" Margin="0,6,0,0" Foreground="#BFD7EA"/>
+                                    <TextBox x:Name="UrlTextBox" Margin="0,8,0,0" IsReadOnly="True" TextWrapping="Wrap" Height="74"
+                                             Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"/>
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="1" Margin="0,12,0,8" Text="背景一覧" FontWeight="SemiBold" Foreground="#96C4E8"/>
+
+                                <ListBox Grid.Row="2" x:Name="BackgroundsListBox" SelectionChanged="OnBackgroundSelectionChanged"
+                                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="8" Margin="2" CornerRadius="6">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Key, StringFormat=key: {0}}" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Stage, StringFormat=stage: {0}}" Opacity="0.9"/>
+                                                    <TextBlock Text="{Binding Type, StringFormat=_type: {0}}" Opacity="0.9"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="レスポンス(JSON)">
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.6*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <avalonedit:TextEditor Grid.Column="0" x:Name="ResponseJsonEditor"
+                                               Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                               FontFamily="Consolas"
+                                               FontSize="9pt"
+                                               IsReadOnly="True"
+                                               ShowLineNumbers="True"
+                                               Foreground="#DAE5F2" />
+
+                        <Border Grid.Column="2" CornerRadius="10" BorderThickness="1" BorderBrush="#3A7BA8" Background="#3316202A" Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Text="Texture2D Preview" FontSize="16" FontWeight="Bold" Foreground="#E7F4FF" Margin="0,0,0,8"/>
+
+                                <Border Grid.Row="1" CornerRadius="6" ClipToBounds="True" BorderThickness="1" BorderBrush="#5D8AB0">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="/FModel;component/Resources/checker.png" TileMode="Tile" Viewport="0,0,16,16" ViewportUnits="Absolute" Opacity="0.35"/>
+                                    </Border.Background>
+                                    <Image x:Name="ResponsePreviewImage" Stretch="Uniform"/>
+                                </Border>
+
+                                <TextBlock Grid.Row="2" x:Name="ResponsePreviewHintText" Margin="0,8,0,0" Foreground="#BFD7EA" TextWrapping="Wrap"
+                                           Text="レスポンスで選択中の背景画像を表示します。"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+
+            <Border Grid.Row="2" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="#4D6EB5E8" Background="#40101724" Margin="0,10,0,0">
+                <TextBlock x:Name="StatusTextBlock" Text="読み込み待機中..." Foreground="#BFD7EA"/>
+            </Border>
+        </Grid>
+    </Grid>
+</adonisControls:AdonisWindow>

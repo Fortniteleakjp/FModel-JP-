@@ -228,7 +228,7 @@ public class ApplicationViewModel : ViewModel
         public event EventHandler CanExecuteChanged { add { } remove { } }
     }
 
-    public string InitialWindowTitle => $"FModel ({Constants.APP_SHORT_COMMIT_ID})";
+    public string InitialWindowTitle => $"FModelJP5.0 ({Constants.APP_SHORT_COMMIT_ID})";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 

@@ -240,6 +240,12 @@ public partial class MainWindow
         // ReplayAnalysisWindow を表示する
         new Views.ReplayAnalysisWindow().Show();
     }
+
+    private void OnDynamicBackgroundApiClick(object sender, RoutedEventArgs e)
+    {
+        new Views.DynamicBackgroundApiWindow().Show();
+    }
+
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)
     {
         RootGrid.ColumnDefinitions[0].Width = GridLength.Auto;
