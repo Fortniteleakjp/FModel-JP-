@@ -88,6 +88,53 @@
                 </MultiBinding>
             </Setter.Value>
         </Setter>
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="#7A1E3A5F" />
+        <Setter Property="BorderBrush" Value="#6F5EA3EC" />
+        <Setter Property="BorderThickness" Value="0.7" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Border x:Name="TabItemRoot"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="14,14,0,0"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter x:Name="ContentSite"
+                                          ContentSource="Header"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="TabItemRoot" Property="Opacity" Value="0.96" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="TabItemRoot" Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                            <Setter TargetName="TabItemRoot" Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                            <Setter TargetName="TabItemRoot" Property="BorderThickness" Value="1" />
+                            <Setter Property="Panel.ZIndex" Value="10" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="TabItemRoot" Property="Opacity" Value="0.55" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                <Setter Property="Foreground" Value="#FF1F2937" />
+                <Setter Property="Background" Value="#FFDCEBFF" />
+                <Setter Property="BorderBrush" Value="#4D5B8FCB" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="HighlightedCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
