@@ -4,6 +4,7 @@ using Serilog;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
@@ -24,6 +25,9 @@ namespace FModel;
 /// </summary>
 public partial class App
 {
+    private const string DarkSchemeUri = "pack://application:,,,/AdonisUI;component/ColorSchemes/Dark.xaml";
+    private const string LightSchemeUri = "pack://application:,,,/AdonisUI;component/ColorSchemes/Light.xaml";
+
     [DllImport("kernel32.dll")]
     private static extern bool AttachConsole(int dwProcessId);
 
@@ -77,6 +81,8 @@ public partial class App
         {
             UserSettings.Default = new UserSettings();
         }
+
+        ApplyTheme(UserSettings.Default.UseDarkTheme);
 
         SetLanguageDictionary();
 
@@ -163,6 +169,22 @@ public partial class App
         Log.Information("FModel Language: {Language}", UserSettings.Default.FModelLanguage);
 
         base.OnStartup(e);
+    }
+
+    public void ApplyTheme(bool useDarkTheme)
+    {
+        var merged = Resources.MergedDictionaries;
+        var currentScheme = merged.FirstOrDefault(x =>
+            x.Source != null &&
+            x.Source.OriginalString.Contains("AdonisUI;component/ColorSchemes/", StringComparison.OrdinalIgnoreCase));
+
+        if (currentScheme != null)
+            merged.Remove(currentScheme);
+
+        merged.Insert(0, new ResourceDictionary
+        {
+            Source = new Uri(useDarkTheme ? DarkSchemeUri : LightSchemeUri, UriKind.Absolute)
+        });
     }
 
     private void SetLanguageDictionary()

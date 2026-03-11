@@ -15,22 +15,63 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <DockPanel>
+    <DockPanel LastChildFill="True" Margin="0">
         <controls:AvalonSearchbar TargetEditor="{Binding ElementName=MyAvalonEditor}"
                                   Visibility="{Binding HasSearchOpen, Converter={StaticResource BoolToVisibilityConverter}}"
                                   DockPanel.Dock="Bottom"/>
 
-        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,4"
-                   Visibility="{Binding Highlighter.Name, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=JSON}">
-            <Button Content="クリア" DockPanel.Dock="Right" Margin="4,0,0,0" Click="OnClearJsonFilterClick"/>
-            <TextBox Text="{Binding JsonFilterText, UpdateSourceTrigger=PropertyChanged}"
-                     KeyDown="OnJsonFilterKeyDown"
-                     controls:HintTextBox.Hint="非表示にする文字列を入力..."/>
-        </DockPanel>
+        <Border DockPanel.Dock="Top"
+            Margin="0,0,0,4"
+            Padding="8,4"
+                CornerRadius="12"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}"
+                BorderThickness="1"
+                Visibility="{Binding Highlighter.Name, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=JSON}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-        <avalonEdit:TextEditor x:Name="MyAvalonEditor" SyntaxHighlighting="{Binding Highlighter}" Document="{Binding Document}"
-                               FontFamily="Consolas" FontSize="{Binding FontSize}" IsReadOnly="True" ShowLineNumbers="True" Foreground="#DAE5F2"
-                               Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" PreviewMouseWheel="OnPreviewMouseWheel"
-                               TextChanged="OnTextChanged" MouseHover="OnMouseHover" MouseHoverStopped="OnMouseHoverStopped" PreviewMouseUp="OnMouseRelease" />
+                <TextBox Grid.Column="0"
+                         Margin="0,0,8,0"
+                         Padding="8,4"
+                         Text="{Binding JsonFilterText, UpdateSourceTrigger=PropertyChanged}"
+                         KeyDown="OnJsonFilterKeyDown"
+                         controls:HintTextBox.Hint="非表示にする文字列を入力..."/>
+
+                <Button Grid.Column="1"
+                        Content="クリア"
+                    MinWidth="72"
+                    Padding="8,4"
+                        Click="OnClearJsonFilterClick"/>
+            </Grid>
+        </Border>
+
+        <Border CornerRadius="14"
+                Padding="0"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}"
+                BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.2"/>
+            </Border.Effect>
+
+            <avalonEdit:TextEditor x:Name="MyAvalonEditor"
+                                   SyntaxHighlighting="{Binding Highlighter}"
+                                   Document="{Binding Document}"
+                                   FontFamily="Consolas"
+                                   FontSize="{Binding FontSize}"
+                                   IsReadOnly="True"
+                                   ShowLineNumbers="True"
+                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                   Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                   PreviewMouseWheel="OnPreviewMouseWheel"
+                                   TextChanged="OnTextChanged"
+                                   MouseHover="OnMouseHover"
+                                   MouseHoverStopped="OnMouseHoverStopped"
+                                   PreviewMouseUp="OnMouseRelease"/>
+        </Border>
     </DockPanel>
 </UserControl>

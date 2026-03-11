@@ -79,6 +79,14 @@ namespace FModel.Settings
             }
         }
 
+        private bool _useDarkTheme = true;
+        [JsonProperty]
+        public bool UseDarkTheme
+        {
+            get => _useDarkTheme;
+            set => SetProperty(ref _useDarkTheme, value);
+        }
+
         [JsonIgnore]
         public ExporterOptions ExportOptions => new()
         {
@@ -194,7 +202,7 @@ namespace FModel.Settings
             set => SetProperty(ref _isLoggerExpanded, value);
         }
 
-        private GridLength _avalonImageSize = new (200);
+        private GridLength _avalonImageSize = new (170);
         public GridLength AvalonImageSize
         {
             get => _avalonImageSize;

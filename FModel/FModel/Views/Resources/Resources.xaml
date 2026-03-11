@@ -165,6 +165,9 @@
 
     <Style x:Key="DirectoryFilesListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="ItemsSource" Value="{Binding CUE4Parse.GameDirectory.DirectoryFilesView, IsAsync=True}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
@@ -173,26 +176,42 @@
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
-                    <Setter Property="Padding" Value="5 3" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0,2" />
+                    <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="8" />
+                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </Setter.Value>
         </Setter>
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="25" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                    <Border Padding="10,7" Background="Transparent" CornerRadius="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="25" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                        <Image x:Name="ListImage" Source="/FModel;component/Resources/archive.png"
-                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
-                    </Grid>
+                            <Image x:Name="ListImage" Source="/FModel;component/Resources/archive.png"
+                                Width="18" Height="18" HorizontalAlignment="Center" Margin="0 0 5 0" />
+                            <TextBlock Grid.Column="1" HorizontalAlignment="Left" FontSize="13" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="3" HorizontalAlignment="Right" FontSize="13" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
+                        </Grid>
+                    </Border>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsEnabled}" Value="True">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/archive_enabled.png" />
@@ -205,6 +224,10 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
+            <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BorderBrush}}" />
+            </DataTrigger>
             <DataTrigger Binding="{Binding CUE4Parse.GameDirectory.DirectoryFilesView.Count}" Value="0">
                 <Setter Property="Template">
                     <Setter.Value>                        <ControlTemplate>
@@ -234,6 +257,9 @@
     <Style x:Key="AudioFilesListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="ItemsSource" Value="{Binding AudioPlayer.AudioFilesView, IsAsync=True}" />
         <Setter Property="SelectedItem" Value="{Binding AudioPlayer.SelectedAudioFile}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
@@ -278,6 +304,10 @@
 
     <Style x:Key="AssetsFolderTreeView" TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
         <Setter Property="ItemsSource" Value="{Binding CUE4Parse.AssetsFolder.FoldersView, IsAsync=True}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
         <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="NeverExpand"/>
@@ -428,7 +458,12 @@
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                     <Setter Property="controls:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True"/>
-                    <Setter Property="Padding" Value="5 3" />
+                    <Setter Property="Padding" Value="7 4" />
+                    <Setter Property="Margin" Value="2" />
+                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="8" />
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TreeViewItem">
@@ -577,6 +612,10 @@
     <Style x:Key="AssetsListBox" TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
         <Setter Property="ItemsSource" Value="{Binding SelectedItem.AssetsList.AssetsView, ElementName=AssetsFolderName, IsAsync=True}" />
         <Setter Property="SelectionMode" Value="Extended" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarExpansionMode" Value="NeverExpand"/>
         <Setter Property="adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement" Value="Docked"/>
         <Setter Property="adonisExtensions:ScrollViewerExtension.HorizontalScrollBarExpansionMode" Value="NeverExpand"/>
@@ -584,6 +623,7 @@
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate>
+                    <Border Padding="10,7" Background="Transparent" CornerRadius="8">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -591,9 +631,10 @@
                         </Grid.ColumnDefinitions>
 
                         <Image x:Name="ListImage" Source="/FModel;component/Resources/unknown_asset.png"
-                               Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3 0" />
-                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Name}" />
+                               Width="18" Height="18" HorizontalAlignment="Center" Margin="0 0 5 0" />
+                        <TextBlock Grid.Column="1" HorizontalAlignment="Left" FontSize="13" Text="{Binding Name}" />
                     </Grid>
+                    </Border>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding Extension}" Value="uasset">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset.png" />
@@ -615,7 +656,21 @@
             <Setter.Value>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Padding" Value="5 3" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0,2" />
+                    <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="8" />
+                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </Setter.Value>
         </Setter>
@@ -642,21 +697,47 @@
                 <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
             </Grid.ColumnDefinitions>
 
-            <controls:AvalonEditor x:Name="DynamicArea"
-                                   Grid.Column="0"
-                                   DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
+            <Border Grid.ColumnSpan="3"
+                    Margin="0"
+                    CornerRadius="12"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                    BorderThickness="1">
+                <controls:AvalonEditor x:Name="DynamicArea"
+                               DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
+            </Border>
+
             <GridSplitter Grid.Column="1"
-                          Width="4"
-                          VerticalAlignment="Stretch"
+                          Width="12"
+                          Margin="6,24,0,0"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center"
+                          Height="{Binding ActualHeight, ElementName=OverlayImageCard}"
                           ResizeDirection="Columns"
+                          ResizeBehavior="PreviousAndNext"
                           KeyboardIncrement="0"
-                          Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
-                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
-            <Border Grid.Column="2"
-                    BorderBrush="#3b3d4a"
+                          Cursor="SizeWE"
+                          FocusVisualStyle="{x:Null}"
+                          OverridesDefaultStyle="True"
+                          Panel.ZIndex="11"
+                          Background="Transparent"
+                          Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="GridSplitter">
+                        <Border Background="Transparent"/>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+
+            <Border x:Name="OverlayImageCard" Grid.Column="2"
+                    Margin="0,24,16,0"
+                    CornerRadius="12"
+                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
                     BorderThickness="1"
-                    HorizontalAlignment="Center"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                    HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
+                    Panel.ZIndex="10"
                     Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Image VerticalAlignment="Center"
                        HorizontalAlignment="Center"
@@ -724,25 +805,24 @@
                     </Image.ContextMenu>
                 </Image>
             </Border>
-            <TextBlock Grid.Column="2"
+
+                <TextBlock Grid.Column="2"
                        VerticalAlignment="Bottom"
                        HorizontalAlignment="Center"
+                       Margin="0,0,16,10"
+                       Panel.ZIndex="11"
                        Visibility="{Binding SelectedItem.HasMultipleImages, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
                        Text="{Binding SelectedItem.Page, ElementName=TabControlName}" />
         </Grid>
-        <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding SelectedItem.HasImage, ElementName=TabControlName}"
-                         Value="False">
-                <Setter TargetName="DynamicArea"
-                        Property="Grid.ColumnSpan"
-                        Value="3" />
-            </DataTrigger>
-        </DataTemplate.Triggers>
     </DataTemplate>
 
     <Style x:Key="GameFilesTabControl" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
         <Setter Property="ItemsSource" Value="{Binding CUE4Parse.TabControl.TabsItems, IsAsync=True}" />
         <Setter Property="SelectedItem" Value="{Binding CUE4Parse.TabControl.SelectedTab}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="14" />
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -1014,6 +1094,12 @@
                 </Style>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BorderBrush}}" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="{x:Type MenuItem}" TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -1473,8 +1559,9 @@
         <Setter Property="Height" Value="175" />
         <Setter Property="IsReadOnly" Value="True" />
         <Setter Property="IsDocumentEnabled" Value="True" />
-        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
         <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -1483,12 +1570,19 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             SnapsToDevicePixels="True"
-                            Background="{TemplateBinding Background}">
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="12">
                         <ScrollViewer Name="PART_ContentHost"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BorderBrush}}" />
+            </DataTrigger>
+        </Style.Triggers>
 
         <Style.Resources>
             <Style TargetType="{x:Type Paragraph}">

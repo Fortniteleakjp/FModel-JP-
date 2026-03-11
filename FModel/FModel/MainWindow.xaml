@@ -39,17 +39,399 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Views/Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <LinearGradientBrush x:Key="FModelJP5WindowBackgroundDark" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#111827" Offset="0" />
+                <GradientStop Color="#1F2937" Offset="0.5" />
+                <GradientStop Color="#0B1220" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="FModelJP5WindowBackgroundLight" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F4F7FB" Offset="0" />
+                <GradientStop Color="#EAF0F8" Offset="0.5" />
+                <GradientStop Color="#DEE7F2" Offset="1" />
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="FModelJP5MenuBackgroundDark" Color="#2A0F172A" />
+            <SolidColorBrush x:Key="FModelJP5MenuBackgroundLight" Color="#CCFFFFFF" />
+            <SolidColorBrush x:Key="FModelJP5MenuBorderDark" Color="#40FFFFFF" />
+            <SolidColorBrush x:Key="FModelJP5MenuBorderLight" Color="#220F172A" />
+            <SolidColorBrush x:Key="FModelJP5CardBackgroundDark" Color="#2B111827" />
+            <SolidColorBrush x:Key="FModelJP5CardBackgroundLight" Color="#EFFFFFFF" />
+            <SolidColorBrush x:Key="FModelJP5CardBorderDark" Color="#33000000" />
+            <SolidColorBrush x:Key="FModelJP5CardBorderLight" Color="#22111C2E" />
+            <SolidColorBrush x:Key="FModelJP5InputBackgroundDark" Color="#CC0F172A" />
+            <SolidColorBrush x:Key="FModelJP5InputBackgroundLight" Color="#FFFDFEFF" />
+            <SolidColorBrush x:Key="FModelJP5InputBorderDark" Color="#4D93C5FD" />
+            <SolidColorBrush x:Key="FModelJP5InputBorderLight" Color="#334980B8" />
+            <SolidColorBrush x:Key="FModelJP5ActionButtonBackgroundDark" Color="#99213357" />
+            <SolidColorBrush x:Key="FModelJP5ActionButtonBackgroundLight" Color="#FFEAF2FF" />
+            <SolidColorBrush x:Key="FModelJP5ActionButtonBorderDark" Color="#664A90E2" />
+            <SolidColorBrush x:Key="FModelJP5ActionButtonBorderLight" Color="#335C8DC4" />
+            <SolidColorBrush x:Key="FModelJP5ToggleBackgroundDark" Color="#7A1E3A5F" />
+            <SolidColorBrush x:Key="FModelJP5ToggleBackgroundLight" Color="#FFDCEBFF" />
+            <SolidColorBrush x:Key="FModelJP5ToggleBorderDark" Color="#6F5EA3EC" />
+            <SolidColorBrush x:Key="FModelJP5ToggleBorderLight" Color="#4D5B8FCB" />
+
+            <Style x:Key="FModelJP5RoundedButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="10,6" />
+            </Style>
+            <Style x:Key="FModelJP5RoundedToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                <Setter Property="Padding" Value="10,6" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5ToggleBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5ToggleBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border x:Name="ToggleRoot"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="10">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ToggleRoot" Property="Opacity" Value="0.96" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="ToggleRoot" Property="Opacity" Value="0.86" />
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="ToggleRoot" Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                    <Setter TargetName="ToggleRoot" Property="Background" Value="#AA1E3A5F" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5ToggleBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5ToggleBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5RoundedTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+            </Style>
+            <Style x:Key="FModelJP5RoundedComboBox" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+            </Style>
+            <Style x:Key="FModelJP5TopMenuShell" TargetType="Border">
+                <Setter Property="Background" Value="#AA0B1220" />
+                <Setter Property="BorderBrush" Value="#44FFFFFF" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect BlurRadius="18" ShadowDepth="0" Opacity="0.35" Color="#0B1020" />
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#DDF8FAFD" />
+                        <Setter Property="BorderBrush" Value="#26111C2E" />
+                        <Setter Property="Effect">
+                            <Setter.Value>
+                                <DropShadowEffect BlurRadius="14" ShadowDepth="0" Opacity="0.14" Color="#6A7C93" />
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5SearchTextBox" TargetType="TextBox" BasedOn="{StaticResource FModelJP5RoundedTextBox}">
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="12,7" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border CornerRadius="12"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                <ScrollViewer x:Name="PART_ContentHost" Margin="0" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5SearchActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="8,6" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5ActionButtonBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5ActionButtonBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="ButtonBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="10">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.85" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5ActionButtonBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5ActionButtonBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="12,8" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5ActionButtonBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="PrimaryButtonBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="12">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="PrimaryButtonBorder" Property="Opacity" Value="0.95" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="PrimaryButtonBorder" Property="Opacity" Value="0.85" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="FModelJP5ClassFilterCombo" TargetType="ComboBox" BasedOn="{StaticResource FModelJP5RoundedComboBox}">
+                <Setter Property="Padding" Value="8,4" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5RoundedComboItem" TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBoxItem">
+                            <Border x:Name="ComboItemBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8"
+                                    Padding="8,4">
+                                <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsHighlighted" Value="True">
+                                    <Setter TargetName="ComboItemBorder" Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                                    <Setter TargetName="ComboItemBorder" Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                    <Setter TargetName="ComboItemBorder" Property="BorderThickness" Value="1" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="ComboItemBorder" Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                                    <Setter TargetName="ComboItemBorder" Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                    <Setter TargetName="ComboItemBorder" Property="BorderThickness" Value="1" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5InputHostBorder" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="Button" BasedOn="{StaticResource FModelJP5RoundedButton}" />
+            <Style TargetType="ToggleButton" BasedOn="{StaticResource FModelJP5RoundedToggleButton}" />
+            <Style TargetType="TextBox" BasedOn="{StaticResource FModelJP5RoundedTextBox}" />
+            <Style TargetType="ComboBox" BasedOn="{StaticResource FModelJP5RoundedComboBox}">
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="ItemContainerStyle" Value="{StaticResource FModelJP5RoundedComboItem}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBox">
+                            <Grid>
+                                <Border x:Name="ComboRoot"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="12">
+                                    <Grid>
+                                        <ContentPresenter Margin="10,4,30,4"
+                                                          VerticalAlignment="Center"
+                                                          HorizontalAlignment="Left"
+                                                          Content="{TemplateBinding SelectionBoxItem}"
+                                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                          ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" />
+                                        <Path HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,10,0"
+                                              Fill="{TemplateBinding Foreground}"
+                                              Data="M7.41,8.58 12,13.17 16.59,8.58 18,10 12,16 6,10 Z" />
+                                    </Grid>
+                                </Border>
+
+                                <ToggleButton x:Name="DropDownToggle"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Focusable="False"
+                                              IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                              ClickMode="Press" />
+
+                                <Popup x:Name="Popup"
+                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       Placement="Bottom"
+                                       AllowsTransparency="True"
+                                       Focusable="False"
+                                       PopupAnimation="Fade">
+                                    <Border Margin="0,4,0,0"
+                                            MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="12">
+                                        <ScrollViewer MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="ComboRoot" Property="Opacity" Value="0.6" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="ComboBoxItem" BasedOn="{StaticResource FModelJP5RoundedComboItem}" />
+            <Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+            </Style>
+            <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="StatusBar" BasedOn="{StaticResource {x:Type StatusBar}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Margin" Value="8,0,8,8" />
+            </Style>
             <PathGeometry x:Key="EditIcon" Figures="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="{StaticResource FModelJP5WindowBackgroundDark}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5WindowBackgroundLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="{adonisUi:Space 1}" />
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0">
+        <Border Grid.Row="0" Margin="10,10,10,2" Padding="10,6" CornerRadius="16" Style="{StaticResource FModelJP5TopMenuShell}">
+        <DockPanel LastChildFill="True">
+        <Border DockPanel.Dock="Left" Margin="0,0,12,0" Padding="10,4" CornerRadius="12"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}">
+            <TextBlock Text="JP5" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+        </Border>
+        <Menu BorderThickness="0" Padding="2,0">
+            <Menu.Style>
+                <Style TargetType="Menu" BasedOn="{StaticResource {x:Type Menu}}">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Menu.Style>
             <MenuItem Header="{DynamicResource Menu_Directory}">
                 <MenuItem Header="{DynamicResource Menu_Directory_Selector}" Command="{Binding MenuCommand}" CommandParameter="Directory_Selector">
                     <MenuItem.Icon>
@@ -205,6 +587,23 @@
                             </Canvas>
                         </Viewbox>
                     </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="テーマ">
+                    <MenuItem Header="ダーク" IsCheckable="True" Click="OnThemeDarkClick"
+                              IsChecked="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}, Mode=OneWay}" />
+                    <MenuItem Header="ライト" IsCheckable="True" Click="OnThemeLightClick">
+                        <MenuItem.Style>
+                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                <Setter Property="IsChecked" Value="False" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                                        <Setter Property="IsChecked" Value="True" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                    </MenuItem>
                 </MenuItem>
 
             </MenuItem>
@@ -420,16 +819,73 @@
             </MenuItem>
             <MenuItem Header="{DynamicResource Menu_NewExplorer}" IsCheckable="True" x:Name="NewExplorerMenuItem" />
         </Menu>
+        </DockPanel>
+        </Border>
 
-        <Grid x:Name="RootGrid" Grid.Row="2">
+        <Border Grid.Row="1" Margin="12,8,12,4" Padding="14,10"
+                BorderThickness="1"
+                CornerRadius="16"
+                SnapsToDevicePixels="True">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="{StaticResource FModelJP5CardBackgroundDark}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource FModelJP5CardBorderDark}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                            <Setter Property="Background" Value="{StaticResource FModelJP5CardBackgroundLight}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource FModelJP5CardBorderLight}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="FModelJP 5.0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Opacity="0.85"
+                               Text="{Binding GameDisplayName, StringFormat=接続中: {0}}" />
+                    <Separator Margin="12,0" Width="1" Height="18" />
+                    <TextBlock VerticalAlignment="Center" Opacity="0.85"
+                               Text="{Binding Status.Label, StringFormat=状態: {0}}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <ToggleButton Style="{StaticResource FModelJP5RoundedToggleButton}" Margin="0,0,6,0"
+                                  IsChecked="{Binding IsChecked, ElementName=NewExplorerMenuItem, Mode=TwoWay}">
+                        <TextBlock Text="NEW Explorer" />
+                    </ToggleButton>
+                    <Button Style="{StaticResource FModelJP5SearchActionButton}" Margin="0,0,6,0" Click="OnSearchViewClick" ToolTip="検索を開く">
+                        <TextBlock Text="検索" />
+                    </Button>
+                    <Button Style="{StaticResource FModelJP5SearchActionButton}" Margin="0,0,6,0" Click="OnThemeDarkClick">
+                        <TextBlock Text="Dark" />
+                    </Button>
+                    <Button Style="{StaticResource FModelJP5SearchActionButton}" Click="OnThemeLightClick">
+                        <TextBlock Text="Light" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid x:Name="RootGrid" Grid.Row="3" Margin="12,6,12,8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" MinWidth="400" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <GroupBox Grid.Column="0" adonisExtensions:LayerExtension.Layer="2"
-                      Padding="{adonisUi:Space 0}" Background="Transparent">
+                <Border Grid.Column="0" CornerRadius="16" Padding="8" Margin="0,0,8,0"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                    BorderThickness="1">
+                <GroupBox adonisExtensions:LayerExtension.Layer="2"
+                      Padding="{adonisUi:Space 0}" Background="Transparent"
+                      BorderThickness="0"
+                      adonisExtensions:CornerRadiusExtension.CornerRadius="14">
                 <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange">
                     <TabItem Style="{StaticResource TabItemFillSpace}" Header="{DynamicResource Tab_Archives}">
                         <DockPanel>
@@ -446,16 +902,20 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Label_LoadingMode}" VerticalAlignment="Center" />
-                                <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
-                                          SelectedItem="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
+                                <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource FModelJP5InputHostBorder}">
+                                    <ComboBox Style="{StaticResource FModelJP5ClassFilterCombo}" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
+                                              SelectedItem="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Border>
 
                                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="{DynamicResource Button_Load}"
+                                        Style="{StaticResource FModelJP5PrimaryButton}"
+                                        MinHeight="38"
                                         Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding Status.IsReady}"
                                         CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
                             </Grid>
@@ -468,7 +928,7 @@
                                 </Grid.RowDefinitions>
 
                                 <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_ArchivesList}" />
-                                <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Style="{StaticResource DirectoryFilesListBox}" MouseDoubleClick="OnMouseDoubleClick" />
+                                <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Margin="0,6,0,0" Style="{StaticResource DirectoryFilesListBox}" MouseDoubleClick="OnMouseDoubleClick" />
                                 <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_SelectedArchiveInfo}" />
                                 <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
                                     <Grid HorizontalAlignment="Stretch">
@@ -675,11 +1135,11 @@
                                         </Canvas>
                                     </Viewbox>
                                 </Grid>
-                                <TextBox Grid.Column="0" Grid.ColumnSpan="2" x:Name="AssetsSearchName" AcceptsTab="False" AcceptsReturn="False"
+                                <TextBox Grid.Column="0" Grid.ColumnSpan="2" x:Name="AssetsSearchName" Style="{StaticResource FModelJP5SearchTextBox}" AcceptsTab="False" AcceptsReturn="False"
                                          Padding="25 0 0 0" HorizontalAlignment="Stretch" TextChanged="OnFilterTextChanged"
                                          adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}" />
                                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <Button ToolTip="Clear Search Filter" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
+                                    <Button ToolTip="Clear Search Filter" Padding="5" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnDeleteSearchClick">
                                         <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
                                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
@@ -1150,13 +1610,20 @@
                     </TabItem>
                 </TabControl>
             </GroupBox>
+            </Border>
 
             <GridSplitter Grid.Column="1" ResizeDirection="Columns" Width="4" VerticalAlignment="Stretch"
                           ResizeBehavior="PreviousAndNext" MouseDoubleClick="OnGridSplitterDoubleClick"
                           Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}" />
 
-            <GroupBox Grid.Column="2" adonisExtensions:LayerExtension.Layer="2"
-                      Padding="{adonisUi:Space 0}" Background="Transparent">
+                <Border Grid.Column="2" CornerRadius="16" Padding="8"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                    BorderThickness="1">
+                <GroupBox adonisExtensions:LayerExtension.Layer="2"
+                      Padding="{adonisUi:Space 0}" Background="Transparent"
+                      BorderThickness="0"
+                      adonisExtensions:CornerRadiusExtension.CornerRadius="14">
                 <Grid Margin="0 0 3 0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -1168,7 +1635,8 @@
                     </Grid.RowDefinitions>
                     <TabControl Grid.Row="1"
                                 x:Name="TabControlName"
-                                Style="{StaticResource GameFilesTabControl}" />
+                                adonisExtensions:CornerRadiusExtension.CornerRadius="14"
+                                Style="{StaticResource GameFilesTabControl}" SelectionChanged="TabControlName_SelectionChanged_2" />
 
                     <!-- NEW エクスプローラー UI -->
                     <Grid Grid.Row="1" x:Name="NewExplorerGrid" Visibility="{Binding IsChecked, ElementName=NewExplorerMenuItem, Converter={StaticResource BoolToVisibilityConverter}}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
@@ -1187,7 +1655,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <Border Grid.Row="0" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" BorderThickness="0,0,0,1" Padding="8">
+                        <Border Grid.Row="0" Padding="10" Style="{StaticResource FModelJP5InputHostBorder}">
                             <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -1212,12 +1680,14 @@
                                     </Button>
                                 </StackPanel>
 
-                                <TextBox Grid.Column="1" x:Name="NewExplorerPathBox" VerticalContentAlignment="Center" ToolTip="{DynamicResource NewExplorer_Path_Tooltip}" KeyDown="OnNewExplorerPathBoxKeyDown" Padding="6,4" />
+                                <Border Grid.Column="1" Style="{StaticResource FModelJP5InputHostBorder}">
+                                    <TextBox x:Name="NewExplorerPathBox" Style="{StaticResource FModelJP5SearchTextBox}" VerticalContentAlignment="Center" ToolTip="{DynamicResource NewExplorer_Path_Tooltip}" KeyDown="OnNewExplorerPathBoxKeyDown" Padding="6,4" BorderThickness="0" />
+                                </Border>
                                 
-                                <Button Grid.Column="2" Content="{DynamicResource NewExplorer_Button_Go}" Padding="12,4" Margin="4,0,0,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoPathClick" />
+                                <Button Grid.Column="2" Content="{DynamicResource NewExplorer_Button_Go}" Padding="12,4" Margin="4,0,0,0" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnNewExplorerGoPathClick" />
 
                                 <Grid Grid.Column="4">
-                                    <TextBox x:Name="NewExplorerSearchBox" AcceptsTab="False" AcceptsReturn="False"
+                                    <TextBox x:Name="NewExplorerSearchBox" Style="{StaticResource FModelJP5SearchTextBox}" AcceptsTab="False" AcceptsReturn="False"
                                              Padding="28,4,4,4" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
                                              adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}"
                                              VerticalContentAlignment="Center"
@@ -1229,7 +1699,7 @@
                                     </Viewbox>
                                 </Grid>
 
-                                <Button Grid.Column="5" ToolTip="{DynamicResource Search_Tooltip_Clear}" Padding="6,4" Margin="4,0,0,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerDeleteSearchClick">
+                                <Button Grid.Column="5" ToolTip="{DynamicResource Search_Tooltip_Clear}" Padding="6,4" Margin="4,0,0,0" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnNewExplorerDeleteSearchClick">
                                     <Viewbox Width="14" Height="14" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
@@ -1237,18 +1707,20 @@
                                     </Viewbox>
                                 </Button>
 
-                                <ComboBox Grid.Column="7" x:Name="NewExplorerClassFilter" MinWidth="140" VerticalContentAlignment="Center" SelectionChanged="OnNewExplorerClassFilterChanged" SelectedIndex="0">
-                                    <ComboBoxItem Content="{DynamicResource NewExplorer_ClassFilter_All}" />
-                                    <ComboBoxItem Content="Texture2D" />
-                                    <ComboBoxItem Content="StaticMesh" />
-                                    <ComboBoxItem Content="SkeletalMesh" />
-                                    <ComboBoxItem Content="Material" />
-                                    <ComboBoxItem Content="MaterialInstance" />
-                                    <ComboBoxItem Content="SoundWave" />
-                                    <ComboBoxItem Content="Blueprint" />
-                                    <ComboBoxItem Content="DataTable" />
-                                    <ComboBoxItem Content="StringTable" />
-                                </ComboBox>
+                                <Border Grid.Column="7" Style="{StaticResource FModelJP5InputHostBorder}">
+                                    <ComboBox x:Name="NewExplorerClassFilter" Style="{StaticResource FModelJP5ClassFilterCombo}" MinWidth="140" VerticalContentAlignment="Center" SelectionChanged="OnNewExplorerClassFilterChanged" SelectedIndex="0">
+                                        <ComboBoxItem Content="{DynamicResource NewExplorer_ClassFilter_All}" />
+                                        <ComboBoxItem Content="Texture2D" />
+                                        <ComboBoxItem Content="StaticMesh" />
+                                        <ComboBoxItem Content="SkeletalMesh" />
+                                        <ComboBoxItem Content="Material" />
+                                        <ComboBoxItem Content="MaterialInstance" />
+                                        <ComboBoxItem Content="SoundWave" />
+                                        <ComboBoxItem Content="Blueprint" />
+                                        <ComboBoxItem Content="DataTable" />
+                                        <ComboBoxItem Content="StringTable" />
+                                    </ComboBox>
+                                </Border>
                             </Grid>
                         </Border>
 
@@ -1714,122 +2186,8 @@
                     </Expander>
                 </Grid>
             </GroupBox>
+            </Border>
         </Grid>
 
-        <StatusBar Grid.Row="3" MinHeight="28" MaxHeight="28"
-                   adonisExtensions:LayerExtension.Layer="3">
-            <StatusBar.Style>
-                <Style TargetType="{x:Type StatusBar}" BasedOn="{StaticResource {x:Type StatusBar}}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Ready}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Completed}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopping}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Stopped}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Failed}">
-                            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
-                            <Setter Property="Foreground" Value="White" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding StatusChangeAttempted, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard Duration="0:0:0.8">
-                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(StatusBar.Background).(SolidColorBrush.Color)" FillBehavior="Stop">
-                                            <ColorAnimationUsingKeyFrames.KeyFrames>
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0" Value="#CE5555" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0.2" Value="#C22B2B" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0.4" Value="#CE5555" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0.6" Value="#C22B2B" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0.8" Value="#CE5555" />
-                                            </ColorAnimationUsingKeyFrames.KeyFrames>
-                                        </ColorAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.EnterActions>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding OperationCancelled, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard Duration="0:0:1">
-                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(StatusBar.Background).(SolidColorBrush.Color)" FillBehavior="Stop">
-                                            <ColorAnimationUsingKeyFrames.KeyFrames>
-                                                <DiscreteColorKeyFrame KeyTime="0:0:0" Value="#C22B2B" />
-                                                <DiscreteColorKeyFrame KeyTime="0:0:1" Value="#CE5555" />
-                                            </ColorAnimationUsingKeyFrames.KeyFrames>
-                                        </ColorAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.EnterActions>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StatusBar.Style>
-
-            <StatusBarItem Margin="5,0,0,0" >
-                <TextBlock>
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Text" Value="{Binding Status.Label}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}">
-                                    <Setter Property="Text" Value="{Binding Status.Label, StringFormat='{}{0} …'}" />
-                                </DataTrigger>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding CanBeCanceled, Source={x:Static services:ApplicationService.ThreadWorkerView}}" Value="True" />
-                                        <Condition Binding="{Binding Status.Kind}" Value="{x:Static local:EStatusKind.Loading}" />
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="Text" Value="{Binding Status.Label, StringFormat='{}{0} …    ESC を押してキャンセルします'}" />
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </StatusBarItem>
-
-            <StatusBarItem Margin="0 0 5 0" HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal">
-                    <StatusBarItem Margin="0 0 10 0" HorizontalContentAlignment="Stretch">
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource StatusBarIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </StatusBarItem>
-
-                    <StatusBarItem Width="30" HorizontalContentAlignment="Stretch" ToolTip="Auto Open Sounds Enabled">
-                        <StatusBarItem.Style>
-                            <Style TargetType="StatusBarItem">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAutoOpenSounds, Source={x:Static settings:UserSettings.Default}}" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </StatusBarItem.Style>
-                        <TextBlock HorizontalAlignment="Center" FontWeight="SemiBold" Text="SND" />
-                    </StatusBarItem>
-
-                    <StatusBarItem Margin="10 0 0 0">
-                        <TextBlock Text="{Binding LastUpdateCheck, Source={x:Static settings:UserSettings.Default}, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, StringFormat=最終更新 : {0}}" />
-                    </StatusBarItem>
-                </StackPanel>
-            </StatusBarItem>
-        </StatusBar>
     </Grid>
 </adonisControls:AdonisWindow>

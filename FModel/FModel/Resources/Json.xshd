@@ -1,12 +1,12 @@
 <SyntaxDefinition name="Json" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
                   extensions=".json">
   
-  <Color name="Bool" foreground="#61AFEF" />
-  <Color name="Number" foreground="#F78C6C" />
-  <Color name="String" foreground="#C3E88D" />
-  <Color name="Null" foreground="#7F848E" />
-  <Color name="FieldName" foreground="#FFCB6B" />
-  <Color name="Punctuation" foreground="#89DDFF" />
+  <Color name="Bool" foreground="#4FC1FF" />
+  <Color name="Number" foreground="#FF9E64" />
+  <Color name="String" foreground="#A7E37E" />
+  <Color name="Null" foreground="#8B93A7" />
+  <Color name="FieldName" foreground="#FFD166" />
+  <Color name="Punctuation" foreground="#7DD3FC" />
 
   <RuleSet name="String">
     <Span begin="\\" end="."/>

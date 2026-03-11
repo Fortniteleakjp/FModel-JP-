@@ -310,6 +310,26 @@ public partial class MainWindow
         Helper.OpenWindow<AdonisWindow>("ファイル内検索", () => new ContentSearchView().Show());
     }
 
+    private void OnThemeDarkClick(object sender, RoutedEventArgs e)
+    {
+        if (UserSettings.Default.UseDarkTheme)
+            return;
+
+        UserSettings.Default.UseDarkTheme = true;
+        if (Application.Current is App app)
+            app.ApplyTheme(true);
+    }
+
+    private void OnThemeLightClick(object sender, RoutedEventArgs e)
+    {
+        if (!UserSettings.Default.UseDarkTheme)
+            return;
+
+        UserSettings.Default.UseDarkTheme = false;
+        if (Application.Current is App app)
+            app.ApplyTheme(false);
+    }
+
     private void OnProfileViewClick(object sender, RoutedEventArgs e)
     {
         Helper.OpenWindow<AdonisWindow>("プロファイル", () => new ProfileWindow().Show());
@@ -1703,5 +1723,10 @@ public partial class MainWindow
             Log.Error(ex, $"Error setting property value for '{property.Name}'.");
             return false;
         }
+    }
+
+    private void TabControlName_SelectionChanged_2(object sender, SelectionChangedEventArgs e)
+    {
+
     }
 }
