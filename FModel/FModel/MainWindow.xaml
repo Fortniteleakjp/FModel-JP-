@@ -288,6 +288,14 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <Style TargetType="Grid">
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+            </Style>
+            <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            </Style>
             <Style x:Key="FModelJP5TestMenuItem" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                 <Setter Property="Padding" Value="12,6" />
                 <Setter Property="MinWidth" Value="260" />
@@ -874,9 +882,9 @@
 
         <Grid x:Name="RootGrid" Grid.Row="3" Margin="12,6,12,8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.4*" MinWidth="400" />
+                <ColumnDefinition Width="0.45*" MinWidth="320" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="0.6*" />
+                <ColumnDefinition Width="0.55*" MinWidth="320" />
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" CornerRadius="16" Padding="8" Margin="0,0,8,0"
@@ -888,11 +896,19 @@
                       BorderThickness="0"
                       adonisExtensions:CornerRadiusExtension.CornerRadius="14">
                     <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange"
+                                ItemContainerStyle="{StaticResource FModelJP5TabItem}"
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Stretch">
-                        <TabItem Style="{StaticResource TabItemFillSpace}" Header="{DynamicResource Tab_Archives}">
-                            <DockPanel>
-                                <Grid>
+                        <TabControl.Resources>
+                            <Style TargetType="Grid" BasedOn="{StaticResource {x:Type Grid}}">
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="VerticalAlignment" Value="Stretch" />
+                                <Setter Property="MinWidth" Value="0" />
+                            </Style>
+                        </TabControl.Resources>
+                        <TabItem Header="{DynamicResource Tab_Archives}">
+                            <DockPanel LastChildFill="True">
+                                <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="0,0,0,6">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="5" />
@@ -970,7 +986,7 @@
                                 </Grid>
                             </DockPanel>
                         </TabItem>
-                        <TabItem Style="{StaticResource TabItemFillSpace}" Header="{DynamicResource Tab_Folders}">
+                        <TabItem Header="{DynamicResource Tab_Folders}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -1121,11 +1137,11 @@
                                 </StackPanel>
                             </Grid>
                         </TabItem>
-                        <TabItem Style="{StaticResource TabItemFillSpace}"
+                            <TabItem
                              Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
                              HeaderStringFormat="{}{0} 個のファイル">
-                            <DockPanel>
-                                <Grid DockPanel.Dock="Top">
+                            <DockPanel LastChildFill="True">
+                                <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
@@ -1151,7 +1167,7 @@
                                         </Button>
                                     </StackPanel>
                                 </Grid>
-                                <Grid DockPanel.Dock="Top">
+                                <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="*" />
@@ -1482,7 +1498,7 @@
                                 </Grid>
                             </DockPanel>
                         </TabItem>
-                        <TabItem Style="{StaticResource TabItemFillSpace}" Header="リスト" IsEnabled="{Binding Status.IsReady}">
+                        <TabItem Header="リスト" IsEnabled="{Binding Status.IsReady}">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="10">
                                     <TextBlock Text="リスト (Lists)" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
@@ -1636,16 +1652,7 @@
                             <RowDefinition Height="Auto" />
                             <!-- ログ欄 -->
                         </Grid.RowDefinitions>
-                        <DockPanel Grid.Row="0" LastChildFill="False" Margin="0,0,0,8">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" DockPanel.Dock="Left">
-                                <TextBlock Text="FModelJP 5.0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Opacity="0.85"
-                                           Text="{Binding GameDisplayName, StringFormat=接続中: {0}}" />
-                                <Separator Margin="12,0" Width="1" Height="18" />
-                                <TextBlock VerticalAlignment="Center" Opacity="0.85"
-                                           Text="{Binding Status.Label, StringFormat=状態: {0}}" />
-                            </StackPanel>
-
+                        <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,8">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
                                 <ToggleButton Style="{StaticResource FModelJP5RoundedToggleButton}"
                                               IsChecked="{Binding IsChecked, ElementName=NewExplorerMenuItem, Mode=TwoWay}" Height="29" Width="91" Margin="0,0,6,0">
@@ -1660,6 +1667,15 @@
                                 <Button Style="{StaticResource FModelJP5SearchActionButton}" Click="OnThemeLightClick" Width="46">
                                     <TextBlock Text="Light" />
                                 </Button>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="FModelJP 5.0" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Opacity="0.85" TextTrimming="CharacterEllipsis"
+                                           Text="{Binding GameDisplayName, StringFormat=接続中: {0}}" />
+                                <Separator Margin="12,0" Width="1" Height="18" />
+                                <TextBlock VerticalAlignment="Center" Opacity="0.85" TextTrimming="CharacterEllipsis"
+                                           Text="{Binding Status.Label, StringFormat=状態: {0}}" />
                             </StackPanel>
                         </DockPanel>
                         <TabControl Grid.Row="1"
