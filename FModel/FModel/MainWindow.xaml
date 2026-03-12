@@ -302,6 +302,41 @@
                 <Setter Property="StaysOpenOnClick" Value="True" />
                 <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=Header}" />
             </Style>
+            <Style x:Key="FModelJP5ContextMenuItem" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                <Setter Property="Padding" Value="12,7" />
+                <Setter Property="Margin" Value="2" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Style.Triggers>
+                    <Trigger Property="IsHighlighted" Value="True">
+                        <Setter Property="Background" Value="#332A9D8F" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.55" />
+                    </Trigger>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="FontWeight" Value="Normal" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5ContextMenu" TargetType="ContextMenu" BasedOn="{StaticResource {x:Type ContextMenu}}">
+                <Setter Property="Background" Value="#E6101824" />
+                <Setter Property="BorderBrush" Value="#4DFFFFFF" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="6" />
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                <Setter Property="HasDropShadow" Value="True" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#F9FFFFFF" />
+                        <Setter Property="BorderBrush" Value="#33111C2E" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
             <Style TargetType="Button" BasedOn="{StaticResource FModelJP5RoundedButton}" />
             <Style TargetType="ToggleButton" BasedOn="{StaticResource FModelJP5RoundedToggleButton}" />
             <Style TargetType="TextBox" BasedOn="{StaticResource FModelJP5RoundedTextBox}" />
@@ -377,11 +412,13 @@
             </Style>
             <Style TargetType="ComboBoxItem" BasedOn="{StaticResource FModelJP5RoundedComboItem}" />
             <Style x:Key="FModelJP5TabItem" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-                <Setter Property="Padding" Value="14,8" />
-                <Setter Property="Margin" Value="0,0,6,0" />
+                <Setter Property="Padding" Value="16,9" />
+                <Setter Property="Margin" Value="0,0,8,0" />
+                <Setter Property="MinHeight" Value="34" />
+                <Setter Property="FontWeight" Value="SemiBold" />
                 <Setter Property="Foreground" Value="White" />
-                <Setter Property="Background" Value="#66213357" />
-                <Setter Property="BorderBrush" Value="#665EA3EC" />
+                <Setter Property="Background" Value="#7A1E3A5F" />
+                <Setter Property="BorderBrush" Value="#7A5EA3EC" />
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="Template">
                     <Setter.Value>
@@ -390,7 +427,7 @@
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="10,10,0,0"
+                                    CornerRadius="12,12,0,0"
                                     Padding="{TemplateBinding Padding}">
                                 <ContentPresenter x:Name="ContentSite"
                                                   ContentSource="Header"
@@ -400,11 +437,13 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="TabBorder" Property="Opacity" Value="0.95" />
+                                    <Setter TargetName="TabBorder" Property="Opacity" Value="0.97" />
+                                    <Setter TargetName="TabBorder" Property="BorderBrush" Value="#AA93C5FD" />
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
                                     <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                    <Setter TargetName="TabBorder" Property="BorderThickness" Value="1.2" />
                                     <Setter Property="Panel.ZIndex" Value="10" />
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
@@ -417,16 +456,28 @@
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
                         <Setter Property="Foreground" Value="#FF1F2937" />
-                        <Setter Property="Background" Value="#FFF1F6FD" />
-                        <Setter Property="BorderBrush" Value="#335B8FCB" />
+                        <Setter Property="Background" Value="#FFF4F8FE" />
+                        <Setter Property="BorderBrush" Value="#4D5B8FCB" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-            <Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+            <Style x:Key="FModelJP5MainTabControl" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
                 <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
                 <Setter Property="ItemContainerStyle" Value="{StaticResource FModelJP5TabItem}" />
+                <Setter Property="Background" Value="#44111A2B" />
+                <Setter Property="BorderBrush" Value="#3D8FB7E8" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="4" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#EFFFFFFF" />
+                        <Setter Property="BorderBrush" Value="#336797C9" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="TabControl" BasedOn="{StaticResource FModelJP5MainTabControl}">
             </Style>
             <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
                 <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
@@ -490,6 +541,42 @@
                             <Setter Property="BorderThickness" Value="0" />
                         </Style>
                     </Menu.Style>
+                    <Menu.Resources>
+                        <Style x:Key="FModelJP5MainMenuItem" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                            <Setter Property="Padding" Value="12,7" />
+                            <Setter Property="Margin" Value="1,0" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="9" />
+                            <Style.Triggers>
+                                <Trigger Property="Role" Value="SubmenuHeader">
+                                    <Setter Property="Padding" Value="11,7" />
+                                </Trigger>
+                                <Trigger Property="Role" Value="SubmenuItem">
+                                    <Setter Property="Padding" Value="11,7" />
+                                </Trigger>
+                                <Trigger Property="IsHighlighted" Value="True">
+                                    <Setter Property="Background" Value="#8A213357" />
+                                    <Setter Property="BorderBrush" Value="#AA93C5FD" />
+                                </Trigger>
+                                <Trigger Property="IsSubmenuOpen" Value="True">
+                                    <Setter Property="Background" Value="#9A1E3A5F" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.55" />
+                                </Trigger>
+                                <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                                    <Setter Property="Foreground" Value="#FF1F2937" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                        <Style TargetType="MenuItem" BasedOn="{StaticResource FModelJP5MainMenuItem}" />
+                    </Menu.Resources>
                     <MenuItem Header="{DynamicResource Menu_Directory}">
                         <MenuItem Header="{DynamicResource Menu_Directory_Selector}" Command="{Binding MenuCommand}" CommandParameter="Directory_Selector">
                             <MenuItem.Icon>
@@ -896,6 +983,7 @@
                       BorderThickness="0"
                       adonisExtensions:CornerRadiusExtension.CornerRadius="14">
                     <TabControl x:Name="LeftTabControl" SelectionChanged="OnTabItemChange"
+                                Style="{StaticResource FModelJP5MainTabControl}"
                                 ItemContainerStyle="{StaticResource FModelJP5TabItem}"
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Stretch">
@@ -1031,7 +1119,10 @@
                                 <Separator Grid.Row="1" Style="{StaticResource CustomSeparator}" Margin="0" />
                                 <TreeView Grid.Row="2" x:Name="AssetsFolderName" Style="{StaticResource AssetsFolderTreeView}" PreviewMouseDoubleClick="OnAssetsTreeMouseDoubleClick" SelectedItemChanged="OnAssetsFolderSelectedItemChanged">
                                     <TreeView.ContextMenu>
-                                        <ContextMenu>
+                                        <ContextMenu Style="{StaticResource FModelJP5ContextMenu}">
+                                            <ContextMenu.Resources>
+                                                <Style TargetType="MenuItem" BasedOn="{StaticResource FModelJP5ContextMenuItem}" />
+                                            </ContextMenu.Resources>
                                             <MenuItem Header="{DynamicResource Ctx_SaveUasset}" Click="OnFolderExportClick">
                                                 <MenuItem.Icon>
                                                     <Viewbox Width="16" Height="16">
@@ -1180,7 +1271,10 @@
 
                                     <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick" PreviewKeyDown="OnPreviewKeyDown">
                                         <ListBox.ContextMenu>
-                                            <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                            <ContextMenu Style="{StaticResource FModelJP5ContextMenu}" DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                                <ContextMenu.Resources>
+                                                    <Style TargetType="MenuItem" BasedOn="{StaticResource FModelJP5ContextMenuItem}" />
+                                                </ContextMenu.Resources>
                                                 <MenuItem Header="{DynamicResource Ctx_OpenNewTab}" Click="OnNewExplorerOpenNewTabClick">
                                                     <MenuItem.Icon>
                                                         <Viewbox Width="16" Height="16">
@@ -1857,7 +1951,10 @@
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
                                         <ListBox.ContextMenu>
-                                            <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                            <ContextMenu Style="{StaticResource FModelJP5ContextMenu}" DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                                <ContextMenu.Resources>
+                                                    <Style TargetType="MenuItem" BasedOn="{StaticResource FModelJP5ContextMenuItem}" />
+                                                </ContextMenu.Resources>
                                                 <MenuItem Header="{DynamicResource Ctx_OpenNewTab}" Command="{Binding DataContext.RightClickMenuCommand}">
                                                     <MenuItem.CommandParameter>
                                                         <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">

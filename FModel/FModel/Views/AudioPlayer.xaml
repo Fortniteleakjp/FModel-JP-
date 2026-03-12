@@ -3,6 +3,7 @@
          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
          xmlns:local="clr-namespace:FModel"
          xmlns:audioControls="clr-namespace:FModel.Views.Resources.Controls.Aup"
+         xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework"
          xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
          xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
          xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
@@ -21,16 +22,92 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <LinearGradientBrush x:Key="AudioPlayerJP5Background" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Offset="0" Color="#FF111B24"/>
+                <GradientStop Offset="1" Color="#FF0A121A"/>
+            </LinearGradientBrush>
+
+            <Style x:Key="AudioPlayerJP5Card" TargetType="Border">
+                <Setter Property="CornerRadius" Value="14"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderBrush" Value="#33FFFFFF"/>
+                <Setter Property="Background" Value="#1AFFFFFF"/>
+            </Style>
+
+            <Style x:Key="AudioPlayerJP5ToolbarButton" TargetType="Button" BasedOn="{StaticResource {x:Static adonisUi:Styles.ToolbarButton}}">
+                <Setter Property="Background" Value="#22FFFFFF"/>
+                <Setter Property="BorderBrush" Value="#44FFFFFF"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="8"/>
+            </Style>
+
+            <Style x:Key="AudioPlayerJP5ToggleButton" TargetType="primitives:ToggleButton">
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="MinWidth" Value="88"/>
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"/>
+                <Setter Property="Background" Value="#20FFFFFF"/>
+                <Setter Property="BorderBrush" Value="#3FFFFFFF"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="12,4"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="primitives:ToggleButton">
+                            <Border x:Name="Root" CornerRadius="8"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="#35FFFFFF"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="#FF2A9D8F"/>
+                                    <Setter TargetName="Root" Property="BorderBrush" Value="#FF2A9D8F"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Root" Property="Opacity" Value="0.55"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="AudioPlayerJP5SettingLabel" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Opacity" Value="0.92"/>
+                <Setter Property="Foreground" Value="#FFDFF9F6"/>
+                <Setter Property="Margin" Value="0,0,0,6"/>
+            </Style>
+
+            <Style x:Key="AudioPlayerJP5ComboBox" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                <Setter Property="Background" Value="#1EFFFFFF"/>
+                <Setter Property="BorderBrush" Value="#4DFFFFFF"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="8,6"/>
+                <Setter Property="MinHeight" Value="34"/>
+            </Style>
+
+            <LinearGradientBrush x:Key="AudioPlayerJP5SettingsBackground" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Offset="0" Color="#26131F2B"/>
+                <GradientStop Offset="1" Color="#332A9D8F"/>
+            </LinearGradientBrush>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
-    <Grid>
+    <Grid Background="{StaticResource AudioPlayerJP5Background}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <!-- Left Panel: Library & Settings -->
-        <Grid Grid.Column="0" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
+        <Border Grid.Column="0" Margin="14" Style="{StaticResource AudioPlayerJP5Card}">
+            <Grid Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -102,11 +179,12 @@
 
             <!-- Settings (Bottom) -->
             <Border Grid.Row="2" BorderThickness="0,1,0,0" 
-                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}" 
-                    Padding="15" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}">
+                    BorderBrush="#4DFFFFFF" 
+                    Padding="15" Background="{StaticResource AudioPlayerJP5SettingsBackground}">
                 <StackPanel>
-                    <TextBlock Text="{DynamicResource AudioPlayer_PlaybackDevice}" FontSize="11" Opacity="0.7" Margin="0,0,0,4"/>
-                    <ComboBox ItemsSource="{Binding AudioPlayer.AudioDevicesView, IsAsync=True}"
+                    <TextBlock Text="{DynamicResource AudioPlayer_PlaybackDevice}" Style="{StaticResource AudioPlayerJP5SettingLabel}"/>
+                    <ComboBox Style="{StaticResource AudioPlayerJP5ComboBox}"
+                              ItemsSource="{Binding AudioPlayer.AudioDevicesView, IsAsync=True}"
                               SelectedItem="{Binding AudioPlayer.SelectedAudioDevice, Mode=TwoWay}" 
                               SelectionChanged="OnDeviceSwap" Margin="0,0,0,12">
                         <ComboBox.ItemTemplate>
@@ -122,8 +200,9 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{DynamicResource AudioPlayer_Volume}" FontSize="11" Opacity="0.7" VerticalAlignment="Center"/>
+                        <TextBlock Text="{DynamicResource AudioPlayer_Volume}" Style="{StaticResource AudioPlayerJP5SettingLabel}" VerticalAlignment="Center" Margin="0"/>
                         <Slider Grid.Column="1" Margin="10,0" Minimum="0" Maximum="100" 
+                                ValueChanged="OnVolumeChange"
                                 Value="{Binding AudioPlayerVolume, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" 
                                 VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding AudioPlayerVolume, Source={x:Static local:Settings.UserSettings.Default}, StringFormat={}{0}%}" 
@@ -131,7 +210,8 @@
                     </Grid>
                 </StackPanel>
             </Border>
-        </Grid>
+            </Grid>
+        </Border>
 
         <!-- Right Panel: Visualizer & Controls -->
         <Grid Grid.Column="1" ClipToBounds="True">
@@ -169,8 +249,8 @@
 
             <!-- Bottom Floating Controls -->
             <Border VerticalAlignment="Bottom" Margin="20" CornerRadius="12"
-                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
-                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer2BorderBrush}}" BorderThickness="1"
+                    Background="#AA0E1720"
+                    BorderBrush="#40FFFFFF" BorderThickness="1"
                     Padding="20,15">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="15" ShadowDepth="4" Opacity="0.2" Direction="270"/>
@@ -187,7 +267,7 @@
 
                     <!-- Buttons -->
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Previous"
+                        <Button Style="{StaticResource AudioPlayerJP5ToolbarButton}" ToolTip="Previous"
                                 Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Previous" Margin="10,0">
                             <Viewbox Width="20" Height="20">
                                 <Canvas Width="24" Height="24">
@@ -200,7 +280,7 @@
                                 Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="PlayPause" 
                                 Width="48" Height="48" Margin="15,0"/>
 
-                        <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Next"
+                        <Button Style="{StaticResource AudioPlayerJP5ToolbarButton}" ToolTip="Next"
                                 Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Next" Margin="10,0">
                             <Viewbox Width="20" Height="20">
                                 <Canvas Width="24" Height="24">
@@ -208,6 +288,16 @@
                                 </Canvas>
                             </Viewbox>
                         </Button>
+
+                        <primitives:ToggleButton Style="{StaticResource AudioPlayerJP5ToggleButton}"
+                                                 Margin="14,0,0,0"
+                                                 ToolTip="Repeat current track"
+                                                 IsChecked="{Binding AudioPlayer.IsRepeatOne, Mode=TwoWay}">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Repeat" FontWeight="SemiBold"/>
+                                <TextBlock Text=" 1" FontWeight="Bold"/>
+                            </StackPanel>
+                        </primitives:ToggleButton>
                     </StackPanel>
                 </Grid>
             </Border>

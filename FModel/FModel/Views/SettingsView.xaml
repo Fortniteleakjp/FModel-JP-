@@ -22,6 +22,65 @@
                 <ResourceDictionary Source="Resources/Resources.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <LinearGradientBrush x:Key="SettingsJP5WindowBackgroundDark" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#111827" Offset="0" />
+                <GradientStop Color="#1F2937" Offset="0.52" />
+                <GradientStop Color="#0B1220" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="SettingsJP5WindowBackgroundLight" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F4F7FB" Offset="0" />
+                <GradientStop Color="#EAF0F8" Offset="0.52" />
+                <GradientStop Color="#DEE7F2" Offset="1" />
+            </LinearGradientBrush>
+            <Style x:Key="SettingsJP5Card" TargetType="Border">
+                <Setter Property="CornerRadius" Value="14" />
+                <Setter Property="Padding" Value="8" />
+                <Setter Property="Background" Value="#2B111827" />
+                <Setter Property="BorderBrush" Value="#33000000" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#EFFFFFFF" />
+                        <Setter Property="BorderBrush" Value="#22111C2E" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="SettingsJP5Separator" TargetType="Separator" BasedOn="{StaticResource CustomSeparator}">
+                <Setter Property="Background" Value="#6A5EA3EC" />
+                <Setter Property="Foreground" Value="#DCEBFF" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#5B8FCB" />
+                        <Setter Property="Foreground" Value="#33415E" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="8,5" />
+            </Style>
+            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="8,4" />
+            </Style>
+            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="10,6" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Style>
+            <Style TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
+                <Setter Property="Background" Value="#24111A2B" />
+                <Setter Property="BorderBrush" Value="#3D8FB7E8" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#EFFFFFFF" />
+                        <Setter Property="BorderBrush" Value="#336797C9" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
             <controls:OnTagDataTemplateSelector x:Key="TagTemplateSelector" />
             <DataTemplate x:Key="GeneralTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">
@@ -120,7 +179,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_GameTag}"></Separator>
+                    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource SettingsJP5Separator}" Tag="{DynamicResource Settings_GameTag}"></Separator>
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Settings_GameDirectory}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True" Text="{Binding GameDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
@@ -175,7 +234,7 @@
                             <Separator Grid.Row="0"
                                        Grid.Column="0"
                                        Grid.ColumnSpan="7"
-                                       Style="{StaticResource CustomSeparator}"
+                                       Style="{StaticResource SettingsJP5Separator}"
                                        Tag="{DynamicResource Settings_DiffTag}"></Separator>
 
                             <TextBlock Grid.Row="1"
@@ -287,7 +346,7 @@
                     <Separator Grid.Row="12"
                                Grid.Column="0"
                                Grid.ColumnSpan="5"
-                               Style="{StaticResource CustomSeparator}" />
+                               Style="{StaticResource SettingsJP5Separator}" />
 
                     <TextBlock Grid.Row="13"
                                Grid.Column="0"
@@ -354,7 +413,7 @@
                     <Button Grid.Row="19" Grid.Column="6" Content="?" HorizontalAlignment="Right" Width="25"
                             Margin="0 5 0 0" Click="OnShowFilenameFormatHelpClick" />
 
-                    <Separator Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_Versioning}"></Separator>
+                    <Separator Grid.Row="20" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource SettingsJP5Separator}" Tag="{DynamicResource Settings_Versioning}"></Separator>
 
                     <TextBlock Grid.Row="21" Grid.Column="0" Text="{DynamicResource Settings_Versioning}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <Grid Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5">
@@ -906,6 +965,16 @@
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="{StaticResource SettingsJP5WindowBackgroundDark}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource SettingsJP5WindowBackgroundLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -915,7 +984,8 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TreeView Grid.Row="0" Grid.Column="0" x:Name="SettingsTree" SelectedItemChanged="OnSelectedItemChanged"
+        <Border Grid.Row="0" Grid.Column="0" Margin="10,10,6,6" Style="{StaticResource SettingsJP5Card}">
+            <TreeView x:Name="SettingsTree" SelectedItemChanged="OnSelectedItemChanged"
                   Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}">
             <TreeViewItem Tag="GeneralTemplate">
                 <TreeViewItem.Header>
@@ -992,14 +1062,21 @@
                     </StackPanel>
                 </TreeViewItem.Header>
             </TreeViewItem>
-        </TreeView>
+            </TreeView>
+        </Border>
 
-        <Grid Grid.Row="0" Grid.Column="1" Margin="{adonisUi:Space 1, 0.5}" HorizontalAlignment="Stretch">
-            <ContentControl ContentTemplateSelector="{StaticResource TagTemplateSelector}" Content="{Binding SelectedItem.Tag, ElementName=SettingsTree}" />
-        </Grid>
+        <Border Grid.Row="0" Grid.Column="1" Margin="6,10,10,6" Style="{StaticResource SettingsJP5Card}">
+            <Grid HorizontalAlignment="Stretch">
+                <ContentControl ContentTemplateSelector="{StaticResource TagTemplateSelector}" Content="{Binding SelectedItem.Tag, ElementName=SettingsTree}" />
+            </Grid>
+        </Border>
 
         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" adonisExtensions:LayerExtension.IncreaseLayer="True"
-                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
+                Margin="10,0,10,10"
+                CornerRadius="12"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                BorderBrush="#3D8FB7E8"
+                BorderThickness="1">
             <Grid Margin="30, 12, 6, 12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

@@ -22,25 +22,97 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <LinearGradientBrush x:Key="UpdateJP5WindowBackgroundDark" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#111827" Offset="0" />
+                <GradientStop Color="#1F2937" Offset="0.55" />
+                <GradientStop Color="#0B1220" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="UpdateJP5WindowBackgroundLight" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F4F7FB" Offset="0" />
+                <GradientStop Color="#EAF0F8" Offset="0.55" />
+                <GradientStop Color="#DEE7F2" Offset="1" />
+            </LinearGradientBrush>
+            <Style x:Key="UpdateJP5Card" TargetType="Border">
+                <Setter Property="CornerRadius" Value="14" />
+                <Setter Property="Padding" Value="12" />
+                <Setter Property="Background" Value="#2B111827" />
+                <Setter Property="BorderBrush" Value="#33000000" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#EFFFFFFF" />
+                        <Setter Property="BorderBrush" Value="#22111C2E" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="UpdateJP5PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="14,8" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="MinHeight" Value="34" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                <Setter Property="BorderBrush" Value="#664A90E2" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+            </Style>
+            <Style x:Key="UpdateJP5SecondaryButton" TargetType="adonisControls:SplitButton" BasedOn="{StaticResource {x:Type adonisControls:SplitButton}}">
+                <Setter Property="Padding" Value="12,7" />
+                <Setter Property="MinHeight" Value="34" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Background" Value="#99213357" />
+                <Setter Property="BorderBrush" Value="#664A90E2" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Foreground" Value="#FF1F2937" />
+                        <Setter Property="Background" Value="#FFEAF2FF" />
+                        <Setter Property="BorderBrush" Value="#335C8DC4" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="UpdateJP5Separator" TargetType="Separator" BasedOn="{StaticResource CustomSeparator}">
+                <Setter Property="Margin" Value="0,2,0,10" />
+                <Setter Property="Background" Value="#6A5EA3EC" />
+                <Setter Property="Foreground" Value="#DCEBFF" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#5B8FCB" />
+                        <Setter Property="Foreground" Value="#33415E" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="{StaticResource UpdateJP5WindowBackgroundDark}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource UpdateJP5WindowBackgroundLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center" Margin="10"
-            Text="{DynamicResource Update_Description}"/>
+        <Border Grid.Row="0" Margin="12,12,12,8" Style="{StaticResource UpdateJP5Card}">
+            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center"
+                       FontSize="14" FontWeight="SemiBold"
+                       Text="{DynamicResource Update_Description}"/>
+        </Border>
 
-        <Grid Grid.Row="1" HorizontalAlignment="Center">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <Border Grid.Row="1" Margin="12,0,12,8" Style="{StaticResource UpdateJP5Card}">
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
             <!-- <Grid.Style> -->
             <!--     <Style TargetType="Grid"> -->
             <!--         <Setter Property="Visibility" Value="Visible" /> -->
@@ -52,12 +124,12 @@
             <!--     </Style> -->
             <!-- </Grid.Style> -->
 
-            <Button Grid.Column="0" Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+            <Button Grid.Column="0" Style="{StaticResource UpdateJP5PrimaryButton}"
                     VerticalAlignment="Top" Height="{Binding ActualHeight, ElementName=RemindButton}"
                     Click="OnDownloadLatest" Content="{DynamicResource Update_DownloadLatest}" />
 
             <StackPanel Grid.Column="2">
-                <adonisControls:SplitButton x:Name="RemindButton" Content="{DynamicResource Update_RemindMe}" Command="{Binding RemindMeCommand}">
+                <adonisControls:SplitButton x:Name="RemindButton" Style="{StaticResource UpdateJP5SecondaryButton}" Content="{DynamicResource Update_RemindMe}" Command="{Binding RemindMeCommand}">
                     <adonisControls:SplitButton.SplitMenu>
                         <ContextMenu>
                             <MenuItem Header="{DynamicResource Update_Remind_3Days}" Command="{Binding RemindMeCommand}" CommandParameter="Days" />
@@ -72,42 +144,51 @@
                     <Run Text="{Binding NextUpdateCheck, Source={x:Static settings:UserSettings.Default}, StringFormat=': {0:MMM d, yyyy}'}"/>
                 </TextBlock>
             </StackPanel>
-        </Grid>
+            </Grid>
+        </Border>
 
-        <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Update_History}" />
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding CommitsView}">
-                <ItemsControl.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.ContainerStyle>
-                            <Style TargetType="GroupItem">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="GroupItem">
-                                            <GroupBox adonisExtensions:LayerExtension.Layer="3"
-                                                      Header="{Binding Name}"
-                                                      HeaderStringFormat="{DynamicResource Update_CommitsOn}"
-                                                      Margin="0 0 0 5">
-                                                <ItemsPresenter />
-                                            </GroupBox>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </GroupStyle.ContainerStyle>
-                        <GroupStyle.Panel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical" />
-                            </ItemsPanelTemplate>
-                        </GroupStyle.Panel>
-                    </GroupStyle>
-                </ItemsControl.GroupStyle>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <controls:CommitControl Margin="0 0 0 1" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <Border Grid.Row="2" Margin="12,0,12,12" Style="{StaticResource UpdateJP5Card}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Separator Grid.Row="0" Style="{StaticResource UpdateJP5Separator}" Tag="{DynamicResource Update_History}" />
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding CommitsView}">
+                        <ItemsControl.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="GroupItem">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="GroupItem">
+                                                    <GroupBox adonisExtensions:LayerExtension.Layer="3"
+                                                              Header="{Binding Name}"
+                                                              HeaderStringFormat="{DynamicResource Update_CommitsOn}"
+                                                              Margin="0 0 0 5">
+                                                        <ItemsPresenter />
+                                                    </GroupBox>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                                <GroupStyle.Panel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical" />
+                                    </ItemsPanelTemplate>
+                                </GroupStyle.Panel>
+                            </GroupStyle>
+                        </ItemsControl.GroupStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:CommitControl Margin="0 0 0 1" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
     </Grid>
 </adonisControls:AdonisWindow>

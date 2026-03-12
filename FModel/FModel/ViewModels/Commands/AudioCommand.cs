@@ -39,6 +39,9 @@ public class AudioCommand : ViewModelCommand<AudioPlayerViewModel>
             case "Save_Playlist":
                 contextViewModel.SavePlaylist();
                 break;
+            case "ToggleRepeatOne":
+                contextViewModel.IsRepeatOne = !contextViewModel.IsRepeatOne;
+                break;
         }
     }
 }
