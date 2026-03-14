@@ -12,6 +12,15 @@ namespace FModel.Views.Resources.Controls;
 
 public partial class DictionaryEditor
 {
+    private static bool IsCustomVersionsTitle(string title) =>
+        title == "Versioning Configuration (Custom Versions)" || title == "バージョン設定（カスタムバージョン）";
+
+    private static bool IsOptionsTitle(string title) =>
+        title == "Versioning Configuration (Options)" || title == "バージョン設定（オプション）";
+
+    private static bool IsMapStructTypesTitle(string title) =>
+        title == "Versioning Configuration (MapStructTypes)" || title == "バージョン設定（MapStructTypes）";
+
     private readonly List<FCustomVersion> _defaultCustomVersions;
     private readonly Dictionary<string, bool> _defaultOptions;
     private readonly Dictionary<string, KeyValuePair<string, string>> _defaultMapStructTypes;
@@ -60,28 +69,27 @@ public partial class DictionaryEditor
     {
         try
         {
-            switch (Title)
+            if (IsCustomVersionsTitle(Title))
             {
-                case "Versioning Configuration (Custom Versions)":
-                    CustomVersions = JsonConvert.DeserializeObject<List<FCustomVersion>>(MyAvalonEditor.Document.Text);
-                    // DialogResult = !CustomVersions.SequenceEqual(_defaultCustomVersions);
-                    DialogResult = true;
-                    Close();
-                    break;
-                case "Versioning Configuration (Options)":
-                    Options = JsonConvert.DeserializeObject<Dictionary<string, bool>>(MyAvalonEditor.Document.Text);
-                    // DialogResult = !Options.SequenceEqual(_defaultOptions);
-                    DialogResult = true;
-                    Close();
-                    break;
-                case "Versioning Configuration (MapStructTypes)":
-                    MapStructTypes = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(MyAvalonEditor.Document.Text);
-                    // DialogResult = !Options.SequenceEqual(_defaultOptions);
-                    DialogResult = true;
-                    Close();
-                    break;
-                default:
-                    throw new NotImplementedException();
+                CustomVersions = JsonConvert.DeserializeObject<List<FCustomVersion>>(MyAvalonEditor.Document.Text);
+                DialogResult = true;
+                Close();
+            }
+            else if (IsOptionsTitle(Title))
+            {
+                Options = JsonConvert.DeserializeObject<Dictionary<string, bool>>(MyAvalonEditor.Document.Text);
+                DialogResult = true;
+                Close();
+            }
+            else if (IsMapStructTypesTitle(Title))
+            {
+                MapStructTypes = JsonConvert.DeserializeObject<Dictionary<string, KeyValuePair<string, string>>>(MyAvalonEditor.Document.Text);
+                DialogResult = true;
+                Close();
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
         catch
@@ -93,21 +101,30 @@ public partial class DictionaryEditor
 
     private void OnReset(object sender, RoutedEventArgs e)
     {
-        MyAvalonEditor.Document = Title switch
+        if (IsCustomVersionsTitle(Title))
         {
-            "Versioning Configuration (Custom Versions)" => new TextDocument
+            MyAvalonEditor.Document = new TextDocument
             {
                 Text = JsonConvert.SerializeObject(_defaultCustomVersions, Formatting.Indented)
-            },
-            "Versioning Configuration (Options)" => new TextDocument
+            };
+        }
+        else if (IsOptionsTitle(Title))
+        {
+            MyAvalonEditor.Document = new TextDocument
             {
                 Text = JsonConvert.SerializeObject(_defaultOptions, Formatting.Indented)
-            },
-            "Versioning Configuration (MapStructTypes)" => new TextDocument
+            };
+        }
+        else if (IsMapStructTypesTitle(Title))
+        {
+            MyAvalonEditor.Document = new TextDocument
             {
                 Text = JsonConvert.SerializeObject(_defaultMapStructTypes, Formatting.Indented)
-            },
-            _ => throw new NotImplementedException()
-        };
+            };
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
     }
 }

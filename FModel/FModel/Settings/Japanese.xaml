@@ -42,6 +42,8 @@
     <system:String x:Key="Settings_MainLanguage_Tooltip">パッケージを解析するときに使用・表示される言語</system:String>
     <system:String x:Key="Settings_FModelLanguage">FModelの言語</system:String>
     <system:String x:Key="Settings_FModelLanguage_Tooltip">FModelのUI言語設定</system:String>
+    <system:String x:Key="Settings_FModelLanguage_OptionEnglish">英語</system:String>
+    <system:String x:Key="Settings_FModelLanguage_OptionJapanese">日本語</system:String>
 
     <!-- VideoPlayer -->
     <system:String x:Key="Video_Play">再生</system:String>
@@ -67,6 +69,8 @@
     <system:String x:Key="Settings_InlineShaderMaps">インラインシェーダーマップのシリアル化</system:String>
     <system:String x:Key="Settings_WwisePrefetch">最大 Wwise Bank (.BNK) プリフェッチ</system:String>
     <system:String x:Key="Settings_SearchMemory">高度な検索のメモリ使用量</system:String>
+    <system:String x:Key="Settings_CriwareDecryptionKey">CRIWARE 復号キー</system:String>
+    <system:String x:Key="Settings_CriwareDecryptionKey_Tooltip">復号キーを10進数または16進数形式で入力してください（有効なキーは最大20桁または8バイト）</system:String>
     <system:String x:Key="Settings_DiffConfig">バージョン比較の設定</system:String>
     <system:String x:Key="Settings_DiffDescription">この機能を使用すると、現在のバージョンと選択したバージョンの比較ができます。&#x0a;ここで、比較の対象を選択してください。(事前にバックアップファイル(大)を作成している必要があります)</system:String>
     <system:String x:Key="Settings_DiffArchiveFolder">アーカイブフォルダ *</system:String>
@@ -246,7 +250,7 @@
     <system:String x:Key="Settings_MapAes_AuthButton">Epic Games APIを認証</system:String>
     <system:String x:Key="Settings_MapAes_AesTag">AESキー取得</system:String>
     <system:String x:Key="Settings_MapAes_MapCode">マップコード:</system:String>
-    <system:String x:Key="Settings_MapAes_GetAes">AESキーを取得</system:String>
+    <system:String x:Key="Settings_MapAes_GetAes">AESキーとマップデータを取得</system:String>
     <system:String x:Key="Settings_MapAes_AesKey">AESキー:</system:String>
     <system:String x:Key="Settings_MapAes_CopyKey">キーをコピー</system:String>
     <system:String x:Key="Settings_MapAes_SaveKey">キーを保存</system:String>

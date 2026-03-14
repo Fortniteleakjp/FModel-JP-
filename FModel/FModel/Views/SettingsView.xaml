@@ -59,7 +59,8 @@
                 <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
                 <Setter Property="Padding" Value="8,5" />
             </Style>
-            <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Style TargetType="ComboBox" BasedOn="{StaticResource UComboBox}">
+                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="" />
                 <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
                 <Setter Property="Padding" Value="8,4" />
             </Style>
@@ -67,6 +68,22 @@
                 <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
                 <Setter Property="Padding" Value="10,6" />
                 <Setter Property="FontWeight" Value="SemiBold" />
+            </Style>
+            <Style x:Key="SettingsJP5PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="12,7" />
+                <Setter Property="MinHeight" Value="34" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="#664A90E2" />
+                <Setter Property="Background" Value="#99213357" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Foreground" Value="#FF1F2937" />
+                        <Setter Property="Background" Value="#FFEAF2FF" />
+                        <Setter Property="BorderBrush" Value="#335C8DC4" />
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
             <Style TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
                 <Setter Property="Background" Value="#24111A2B" />
@@ -393,8 +410,8 @@
                               SelectedValue="{Binding SettingsView.SelectedFModelLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                               SelectedValuePath="Tag">
-                        <ComboBoxItem Content="English" Tag="English" />
-                        <ComboBoxItem Content="日本語" Tag="Japanese" />
+                        <ComboBoxItem Content="{DynamicResource Settings_FModelLanguage_OptionEnglish}" Tag="English" />
+                        <ComboBoxItem Content="{DynamicResource Settings_FModelLanguage_OptionJapanese}" Tag="Japanese" />
                     </ComboBox>
 
                     <TextBlock Grid.Row="17" Grid.Column="0" Text="{DynamicResource Settings_KeepDirectoryStructure}" VerticalAlignment="Center" Margin="0 5 0 5" ToolTip="{DynamicResource Settings_KeepDirectoryStructure_Tooltip}" />
@@ -425,9 +442,9 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Content="{DynamicResource Settings_CustomVersions}" Click="OpenCustomVersions" />
-                        <Button Grid.Column="2" Content="{DynamicResource Settings_Options}" Click="OpenOptions" />
-                        <Button Grid.Column="4" Content="{DynamicResource Settings_MapStructTypes}" Click="OpenMapStructTypes" />
+                        <Button Grid.Column="0" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_CustomVersions}" Click="OpenCustomVersions" />
+                        <Button Grid.Column="2" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_Options}" Click="OpenOptions" />
+                        <Button Grid.Column="4" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_MapStructTypes}" Click="OpenMapStructTypes" />
                     </Grid>
 
                     <TextBlock Grid.Row="22" Grid.Column="0" Text="{DynamicResource Settings_AesReload}" VerticalAlignment="Center" Margin="0 0 0 5"
@@ -453,8 +470,8 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Content="{DynamicResource Settings_AutoData_AES}" Click="OpenAesEndpoint" />
-                        <Button Grid.Column="2" Content="{DynamicResource Settings_AutoData_Mapping}" Click="OpenMappingEndpoint" />
+                        <Button Grid.Column="0" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_AutoData_AES}" Click="OpenAesEndpoint" />
+                        <Button Grid.Column="2" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_AutoData_Mapping}" Click="OpenMappingEndpoint" />
                     </Grid>
 
                     <TextBlock Grid.Row="24" Grid.Column="0" Text="{DynamicResource Settings_LocalMapping}" VerticalAlignment="Center" Margin="0 0 0 5" />
@@ -488,7 +505,7 @@
 
                     <TextBlock Grid.Row="29"
                                Grid.Column="0"
-                               Text="CRIWARE Decryption Key"
+                               Text="{DynamicResource Settings_CriwareDecryptionKey}"
                                VerticalAlignment="Center"
                                Margin="0 0 0 10" />
 
@@ -500,7 +517,7 @@
                              VerticalAlignment="Center"
                              VerticalContentAlignment="Center"
                              MaxLength="20"
-                             ToolTip="Enter decryption key in numeric or hexadecimal format (valid key is up to 20 digits or 8 bytes long)"
+                             ToolTip="{DynamicResource Settings_CriwareDecryptionKey_Tooltip}"
                              TextAlignment="Right"
                              TextChanged="CriwareKeyBox_TextChanged"
                              Loaded="CriwareKeyBox_Loaded"/>
@@ -553,7 +570,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Epic Games認証セクション -->
-                    <Separator Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_MapAes_AuthTag}"></Separator>
+                    <Separator Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource SettingsJP5Separator}" Tag="{DynamicResource Settings_MapAes_AuthTag}"></Separator>
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Settings_MapAes_AuthStatus}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="5"
                                DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
@@ -561,32 +578,32 @@
                                Foreground="{Binding SettingsView.EpicAuthStatusForeground}"
                                VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource Settings_MapAes_AuthTitle}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" Content="{DynamicResource Settings_MapAes_AuthButton}"
+                        <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_MapAes_AuthButton}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.AuthenticateEpicGamesCommand}" Margin="0 0 0 5" />
 
                     <!-- AESキー取得セクション -->
-                    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_MapAes_AesTag}"></Separator>
+                    <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource SettingsJP5Separator}" Tag="{DynamicResource Settings_MapAes_AesTag}"></Separator>
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Settings_MapAes_MapCode}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                              Text="{Binding SettingsView.MapCodeInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
-                    <Button Grid.Row="4" Grid.Column="6" Content="{DynamicResource Settings_MapAes_GetAes}"
+                        <Button Grid.Row="4" Grid.Column="6" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_MapAes_GetAes}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.GetAesKeyCommand}" Margin="0 0 0 5" />
                     <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource Settings_MapAes_AesKey}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                              Text="{Binding SettingsView.RetrievedAesKey, Mode=OneWay}" Margin="0 0 0 5" />
-                    <Button Grid.Row="5" Grid.Column="4" Content="{DynamicResource Settings_MapAes_CopyKey}"
+                        <Button Grid.Row="5" Grid.Column="4" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_MapAes_CopyKey}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.CopyAesKeyCommand}" Margin="0 0 0 5" />
-                    <Button Grid.Row="5" Grid.Column="6" Content="{DynamicResource Settings_MapAes_SaveKey}"
+                        <Button Grid.Row="5" Grid.Column="6" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_MapAes_SaveKey}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.SaveAesKeyCommand}" Margin="0 0 0 5" />
 
                     <!-- pac化セクション -->
-                    <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Settings_MapAes_PacTag}"></Separator>
+                    <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource SettingsJP5Separator}" Tag="{DynamicResource Settings_MapAes_PacTag}"></Separator>
                     <TextBlock Grid.Row="7" Grid.Column="0" Text="{DynamicResource Settings_MapAes_BundlesPath}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <TextBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True"
                              DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
@@ -609,7 +626,7 @@
                               Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SettingsView.IsPieMode, Mode=TwoWay}" />
 
-                    <Button Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="5" Content="{DynamicResource Settings_MapAes_ExecutePac}"
+                        <Button Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="5" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_MapAes_ExecutePac}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}}}"
                             Command="{Binding SettingsView.ExecutePacCommand}" Margin="0 5 0 5" />
 
@@ -690,7 +707,7 @@
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Settings_Creator_LocalizeKey}" VerticalAlignment="Center" Margin="0 5 0 5" />
                         <TextBox Grid.Row="4" Grid.Column="2" Text="{Binding CustomWeaponDamageLocalizeKey, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 5" />
                         
-                        <Button Grid.Row="5" Grid.Column="2" Content="{DynamicResource Settings_Creator_SaveRestart}" Click="SaveAndRestart" Margin="0 10 0 0"/>
+                        <Button Grid.Row="5" Grid.Column="2" Style="{StaticResource SettingsJP5PrimaryButton}" Content="{DynamicResource Settings_Creator_SaveRestart}" Click="SaveAndRestart" Margin="0 10 0 0"/>
                     </Grid>
                 </Grid>
             </DataTemplate>
