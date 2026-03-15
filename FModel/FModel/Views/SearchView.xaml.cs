@@ -30,6 +30,8 @@ public partial class SearchView
     private void OnDeleteSearchClick(object sender, RoutedEventArgs e)
     {
         _applicationView.CUE4Parse.SearchVm.FilterText = string.Empty;
+        _applicationView.CUE4Parse.SearchVm.ExcludeText = string.Empty;
+        _applicationView.CUE4Parse.SearchVm.AssetTypeFilter = EAssetTypeFilter.All;
         _applicationView.CUE4Parse.SearchVm.RefreshFilter();
     }
 

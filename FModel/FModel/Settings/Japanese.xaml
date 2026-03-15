@@ -267,6 +267,8 @@
     <system:String x:Key="Settings_Creator_DamageProperty">ダメージ値のプロパティ</system:String>
     <system:String x:Key="Settings_Creator_LocalizeKey">Localize Key</system:String>
     <system:String x:Key="Settings_Creator_SaveRestart">保存して再起動</system:String>
+    <system:String x:Key="Settings_Models_PreviewTag">プレビュー設定</system:String>
+    <system:String x:Key="Settings_Models_ExportTag">書き出し設定</system:String>
 
     <!-- Settings Models -->
     <system:String x:Key="Settings_Models_Output">Model書き出しフォルダ *</system:String>

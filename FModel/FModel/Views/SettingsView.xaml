@@ -744,15 +744,17 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="5" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Settings_Models_Output}" VerticalAlignment="Center" Margin="0 0 0 5"
                                ToolTip="{DynamicResource Settings_Models_Output_Tooltip}" />
-                    <TextBox Grid.Row="0" Grid.Column="2" IsReadOnly="True" Text="{Binding ModelDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
-                    <Button Grid.Row="0" Grid.Column="4" Content="..." HorizontalAlignment="Right" Click="OnBrowseModels" Margin="0 0 0 5" />
+                    <TextBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" IsReadOnly="True" Text="{Binding ModelDirectory, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5" />
+                    <Button Grid.Row="0" Grid.Column="6" Content="..." HorizontalAlignment="Right" Click="OnBrowseModels" Margin="0 0 0 5" />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource Settings_Models_MeshFormat}" VerticalAlignment="Center" Margin="0 0 0 5"/>
-                    <ComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.MeshExportFormats}" SelectedItem="{Binding SettingsView.SelectedMeshExportFormat, Mode=TwoWay}"
+                    <ComboBox Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.MeshExportFormats}" SelectedItem="{Binding SettingsView.SelectedMeshExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -761,7 +763,7 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <ContentControl Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" FontSize="10" Margin="0 0 0 5">
+                    <ContentControl Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="5" FontSize="10" Margin="0 0 0 5">
                         <ContentControl.Style>
                             <Style TargetType="{x:Type ContentControl}">
                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -802,7 +804,7 @@
                     </ContentControl>
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource Settings_Models_SocketFormat}" VerticalAlignment="Center" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.SocketSettingsEnabled}"/>
-                    <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.SocketExportFormats}" SelectedItem="{Binding SettingsView.SelectedSocketExportFormat, Mode=TwoWay}"
+                    <ComboBox Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.SocketExportFormats}" SelectedItem="{Binding SettingsView.SelectedSocketExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsView}}}" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.SocketSettingsEnabled}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -812,7 +814,7 @@
                     </ComboBox>
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource Settings_Models_CompressionFormat}" VerticalAlignment="Center" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.CompressionSettingsEnabled}"/>
-                    <ComboBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.CompressionFormats}" SelectedItem="{Binding SettingsView.SelectedCompressionFormat, Mode=TwoWay}"
+                    <ComboBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.CompressionFormats}" SelectedItem="{Binding SettingsView.SelectedCompressionFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsView}}}" Margin="0 0 0 5" IsEnabled="{Binding SettingsView.CompressionSettingsEnabled}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -822,7 +824,7 @@
                     </ComboBox>
 
                     <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource Settings_Models_LodFormat}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.LodExportFormats}" SelectedItem="{Binding SettingsView.SelectedLodExportFormat, Mode=TwoWay}"
+                    <ComboBox Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.LodExportFormats}" SelectedItem="{Binding SettingsView.SelectedLodExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -831,57 +833,57 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
 
-                    <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource SettingsJP5Separator}" Tag="{DynamicResource Settings_Models_PreviewTag}" />
 
                     <TextBlock Grid.Row="7" Grid.Column="0" Text="{DynamicResource Settings_Models_MaxTextureSize}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <Slider Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" TickPlacement="None" Minimum="4" Maximum="4096" Ticks="4,8,16,32,64,128,256,512,1024,2048,4096"
-                            AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5"
+                    <Slider Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="5" TickPlacement="None" Minimum="4" Maximum="4096" Ticks="4,8,16,32,64,128,256,512,1024,2048,4096"
+                            AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
                             Value="{Binding PreviewMaxTextureSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"/>
 
                     <TextBlock Grid.Row="8" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewStatic}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewStaticMeshes, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
                     <TextBlock Grid.Row="9" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewSkeletal}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewSkeletalMeshes, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
                     <TextBlock Grid.Row="10" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewAnim}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewAnimations, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
                     <TextBlock Grid.Row="11" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewMaterial}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewMaterials, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
                     <TextBlock Grid.Row="12" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewLevel}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewWorlds, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
                     <TextBlock Grid.Row="13" Grid.Column="0" Text="{DynamicResource Settings_Models_SaveEmbedded}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="13" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveEmbeddedMaterials, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
                     <TextBlock Grid.Row="14" Grid.Column="0" Text="{DynamicResource Settings_Models_SaveMorph}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <CheckBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="14" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveMorphTargets, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
                     <TextBlock Grid.Row="15" Grid.Column="0" Text="{DynamicResource Settings_Models_SaveSkeletonAsMesh}" VerticalAlignment="Center" />
-                    <CheckBox Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="15" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveSkeletonAsMesh, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 0"/>
 
-                    <Separator Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="5" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="7" Style="{StaticResource SettingsJP5Separator}" Tag="{DynamicResource Settings_Models_ExportTag}" />
 
                     <TextBlock Grid.Row="17" Grid.Column="0" Text="{DynamicResource Settings_Models_NaniteFormat}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.NaniteMeshExportFormats}" SelectedItem="{Binding SettingsView.SelectedNaniteMeshExportFormat, Mode=TwoWay}"
+                    <ComboBox Grid.Row="17" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.NaniteMeshExportFormats}" SelectedItem="{Binding SettingsView.SelectedNaniteMeshExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -891,7 +893,7 @@
                     </ComboBox>
 
                     <TextBlock Grid.Row="18" Grid.Column="0" Text="{DynamicResource Settings_Models_MaterialFormat}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.MaterialExportFormats}" SelectedItem="{Binding SettingsView.SelectedMaterialExportFormat, Mode=TwoWay}"
+                    <ComboBox Grid.Row="18" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.MaterialExportFormats}" SelectedItem="{Binding SettingsView.SelectedMaterialExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -901,7 +903,7 @@
                     </ComboBox>
 
                     <TextBlock Grid.Row="19" Grid.Column="0" Text="{DynamicResource Settings_Models_TextureFormat}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <ComboBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="3" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
+                    <ComboBox Grid.Row="19" Grid.Column="2" Grid.ColumnSpan="5" ItemsSource="{Binding SettingsView.TextureExportFormats}" SelectedItem="{Binding SettingsView.SelectedTextureExportFormat, Mode=TwoWay}"
                               DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsView}}}" Margin="0 0 0 5">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -911,12 +913,12 @@
                     </ComboBox>
 
                     <TextBlock Grid.Row="20" Grid.Column="0" Text="{DynamicResource Settings_Models_SaveHdr}" VerticalAlignment="Center" />
-                    <CheckBox Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="20" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveHdrTexturesAsHdr, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
                     <TextBlock Grid.Row="21" Grid.Column="0" Text="{DynamicResource Settings_Models_PreviewTextureExplorer}" VerticalAlignment="Center" />
-                    <CheckBox Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                    <CheckBox Grid.Row="21" Grid.Column="2" Grid.ColumnSpan="5" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewTexturesAssetExplorer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
                 </Grid>
