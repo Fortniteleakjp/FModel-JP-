@@ -16,11 +16,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj",
+      "projectUniqueName": "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj",
       "projectName": "OozSharp",
-      "projectPath": "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj",
+      "projectPath": "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj",
       "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-      "outputPath": "D:\\FModel-JP\\replay-analysis\\OozSharp\\obj\\",
+      "outputPath": "d:\\FModel-JP\\replay-analysis\\OozSharp\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
@@ -81,7 +81,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.104/PortableRuntimeIdentifierGraph.json"
       },
       "net9.0": {
         "targetAlias": "net9.0",
@@ -101,7 +101,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.104/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

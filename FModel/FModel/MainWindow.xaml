@@ -988,7 +988,7 @@
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Stretch">
                         <TabControl.Resources>
-                            <Style TargetType="Grid" BasedOn="{StaticResource {x:Type Grid}}">
+                            <Style TargetType="Grid">
                                 <Setter Property="HorizontalAlignment" Value="Stretch" />
                                 <Setter Property="VerticalAlignment" Value="Stretch" />
                                 <Setter Property="MinWidth" Value="0" />
@@ -996,36 +996,30 @@
                         </TabControl.Resources>
                         <TabItem Header="{DynamicResource Tab_Archives}">
                             <DockPanel LastChildFill="True">
-                                <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="0,0,0,6">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="5" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="10" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource Label_LoadingMode}" VerticalAlignment="Center" />
-                                    <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource FModelJP5InputHostBorder}">
-                                        <ComboBox Style="{StaticResource FModelJP5ClassFilterCombo}" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
-                                              SelectedItem="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
-                                    </Border>
-
-                                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Content="{DynamicResource Button_Load}"
+                                <StackPanel DockPanel.Dock="Top" Margin="0,4,0,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{DynamicResource Label_LoadingMode}" VerticalAlignment="Center" Margin="4,0,10,0" />
+                                        <Border Grid.Column="1" Style="{StaticResource FModelJP5InputHostBorder}">
+                                            <ComboBox Style="{StaticResource FModelJP5ClassFilterCombo}" ItemsSource="{Binding LoadingModes.Modes}" IsEnabled="{Binding Status.IsReady}"
+                                                  SelectedItem="{Binding LoadingMode, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </Border>
+                                    </Grid>
+                                    <Button Content="{DynamicResource Button_Load}" Margin="0,8,0,0"
                                         Style="{StaticResource FModelJP5PrimaryButton}"
                                         MinHeight="38"
                                         Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding Status.IsReady}"
                                         CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
-                                </Grid>
+                                </StackPanel>
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -1036,9 +1030,9 @@
 
                                     <Separator Grid.Row="0" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_ArchivesList}" />
                                     <ListBox Grid.Row="1" x:Name="DirectoryFilesListBox" Margin="0,6,0,0" Style="{StaticResource DirectoryFilesListBox}" MouseDoubleClick="OnMouseDoubleClick" />
-                                    <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_SelectedArchiveInfo}" />
-                                    <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
-                                        <Grid HorizontalAlignment="Stretch">
+                                    <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_SelectedArchiveInfo}" Margin="0,4,0,0" />
+                                    <Border Grid.Row="3" Style="{StaticResource FModelJP5InputHostBorder}" Padding="12,10" Margin="0,4,0,0">
+                                        <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
@@ -1070,7 +1064,7 @@
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding SelectedItem.Guid, ElementName=DirectoryFilesListBox, FallbackValue='00000000000000000000000000000000'}" VerticalAlignment="Center" />
                                             <TextBlock Grid.Row="3" Grid.Column="1" Text="{DynamicResource Label_Guid}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         </Grid>
-                                    </StackPanel>
+                                    </Border>
                                 </Grid>
                             </DockPanel>
                         </TabItem>
@@ -1199,9 +1193,9 @@
                                         </ContextMenu>
                                     </TreeView.ContextMenu>
                                 </TreeView>
-                                <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_FolderInfo}" />
-                                <StackPanel Grid.Row="4" Orientation="Vertical" Margin="0 0 0 5">
-                                    <Grid HorizontalAlignment="Stretch">
+                                <Separator Grid.Row="3" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_FolderInfo}" Margin="0,4,0,0" />
+                                <Border Grid.Row="4" Style="{StaticResource FModelJP5InputHostBorder}" Padding="12,10" Margin="0,4,0,0">
+                                    <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
@@ -1225,12 +1219,10 @@
                                         <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Version, ElementName=AssetsFolderName, FallbackValue='VER_UE4_LATEST', Converter={x:Static converters:TrimRightToLeftConverter.Instance}, ConverterParameter=275}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="4" Grid.Column="1" Text="{DynamicResource Label_ArchiveVersion}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                     </Grid>
-                                </StackPanel>
+                                </Border>
                             </Grid>
                         </TabItem>
-                            <TabItem
-                             Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName}"
-                             HeaderStringFormat="{}{0} 個のファイル">
+                            <TabItem Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName, StringFormat='ファイル ({0})'}">
                             <DockPanel LastChildFill="True">
                                 <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
@@ -1270,8 +1262,7 @@
                                                      DataContext="{Binding SelectedItem.PathAtThisPoint, ElementName=AssetsFolderName, FallbackValue='No/Directory/Detected/In/Folder'}"/>
 
                                     <ListBox Grid.Row="1" x:Name="AssetsListName" Style="{StaticResource AssetsListBox}" PreviewMouseDoubleClick="OnAssetsListMouseDoubleClick" PreviewKeyDown="OnPreviewKeyDown">
-                                        <ListBox.ContextMenu>
-                                            <ContextMenu Style="{StaticResource FModelJP5ContextMenu}" DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                        <ListBox.ContextMenu>                                            <ContextMenu Style="{StaticResource FModelJP5ContextMenu}" DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                                                 <ContextMenu.Resources>
                                                     <Style TargetType="MenuItem" BasedOn="{StaticResource FModelJP5ContextMenuItem}" />
                                                 </ContextMenu.Resources>
@@ -1551,9 +1542,9 @@
                                             </ContextMenu>
                                         </ListBox.ContextMenu>
                                     </ListBox>
-                                    <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_FolderInfo}" />
-                                    <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0 0 0 5">
-                                        <Grid HorizontalAlignment="Stretch">
+                                    <Separator Grid.Row="2" Style="{StaticResource CustomSeparator}" Tag="{DynamicResource Separator_FolderInfo}" Margin="0,4,0,0" />
+                                    <Border Grid.Row="3" Style="{StaticResource FModelJP5InputHostBorder}" Padding="12,10" Margin="0,4,0,0">
+                                        <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
@@ -1588,7 +1579,7 @@
                                             <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding SelectedItem.Vfs.Name, ElementName=AssetsListName, FallbackValue='なし'}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                             <TextBlock Grid.Row="4" Grid.Column="1" Text="{DynamicResource Label_ContainerArchive}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         </Grid>
-                                    </StackPanel>
+                                    </Border>
                                 </Grid>
                             </DockPanel>
                         </TabItem>
@@ -1697,14 +1688,14 @@
                                                 <TextBlock Text="ラップ" VerticalAlignment="Center"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Tag="Search:WID_" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                        <Button Tag="Search:WeaponOnly" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
                                             <StackPanel Orientation="Horizontal">
                                                 <Viewbox Width="16" Height="16" Margin="0,0,8,0">
                                                     <Canvas Width="24" Height="24">
                                                         <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
                                                     </Canvas>
                                                 </Viewbox>
-                                                <TextBlock Text="武器" VerticalAlignment="Center"/>
+                                                <TextBlock Text="武器のみ" VerticalAlignment="Center"/>
                                             </StackPanel>
                                         </Button>
                                         <Button Width="140" Height="40" Margin="5" Click="OnClearSearchClick" IsEnabled="{Binding Status.IsReady}">
@@ -1794,40 +1785,11 @@
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <Border Grid.Row="0" Padding="10" Style="{StaticResource FModelJP5InputHostBorder}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" MinWidth="40" />
-                                        <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="0.5*" MinWidth="200" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,0">
-                                        <Button x:Name="NewExplorerUpButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoUp}" Padding="8,4" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoParentFolderClick">
-                                            <TextBlock Text="↑" FontSize="14" FontWeight="SemiBold" />
-                                        </Button>
-                                        <Button x:Name="NewExplorerBackButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoBack}" Padding="8,4" Margin="4,0,0,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoPreviousFileClick">
-                                            <TextBlock Text="←" FontSize="14" FontWeight="SemiBold" />
-                                        </Button>
-                                        <Button x:Name="NewExplorerForwardButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoForward}" Padding="8,4" Margin="4,0,0,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoNextFileClick">
-                                            <TextBlock Text="→" FontSize="14" FontWeight="SemiBold" />
-                                        </Button>
-                                    </StackPanel>
-
-                                    <Border Grid.Column="1" Style="{StaticResource FModelJP5InputHostBorder}">
-                                        <TextBox x:Name="NewExplorerPathBox" Style="{StaticResource FModelJP5SearchTextBox}" VerticalContentAlignment="Center" ToolTip="{DynamicResource NewExplorer_Path_Tooltip}" KeyDown="OnNewExplorerPathBoxKeyDown" Padding="6,4" BorderThickness="0" />
-                                    </Border>
-
-                                    <Button Grid.Column="2" Content="{DynamicResource NewExplorer_Button_Go}" Padding="12,4" Margin="4,0,0,0" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnNewExplorerGoPathClick" />
-
-                                    <Grid Grid.Column="4">
+                            <DockPanel Grid.Row="0" LastChildFill="True" Margin="4,8,4,12">
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                    <Grid Margin="8,0,0,0">
                                         <TextBox x:Name="NewExplorerSearchBox" Style="{StaticResource FModelJP5SearchTextBox}" AcceptsTab="False" AcceptsReturn="False"
-                                             Padding="28,4,4,4" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
+                                             Padding="28,4,28,4" MinWidth="220" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
                                              adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}"
                                              VerticalContentAlignment="Center"
                                              ToolTip="{DynamicResource NewExplorer_Search_Tooltip}" />
@@ -1836,17 +1798,16 @@
                                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
                                             </Canvas>
                                         </Viewbox>
+                                        <Button ToolTip="{DynamicResource Search_Tooltip_Clear}" Padding="6,4" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnNewExplorerDeleteSearchClick" HorizontalAlignment="Right" Margin="0,0,4,0" Background="Transparent" BorderThickness="0">
+                                            <Viewbox Width="14" Height="14" HorizontalAlignment="Center">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
+                                                </Canvas>
+                                            </Viewbox>
+                                        </Button>
                                     </Grid>
 
-                                    <Button Grid.Column="5" ToolTip="{DynamicResource Search_Tooltip_Clear}" Padding="6,4" Margin="4,0,0,0" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnNewExplorerDeleteSearchClick">
-                                        <Viewbox Width="14" Height="14" HorizontalAlignment="Center">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
-                                            </Canvas>
-                                        </Viewbox>
-                                    </Button>
-
-                                    <Border Grid.Column="7" Style="{StaticResource FModelJP5InputHostBorder}">
+                                    <Border Margin="8,0,0,0" Style="{StaticResource FModelJP5InputHostBorder}">
                                         <ComboBox x:Name="NewExplorerClassFilter" Style="{StaticResource FModelJP5ClassFilterCombo}" MinWidth="140" VerticalContentAlignment="Center" SelectionChanged="OnNewExplorerClassFilterChanged" SelectedIndex="0">
                                             <ComboBoxItem Content="{DynamicResource NewExplorer_ClassFilter_All}" />
                                             <ComboBoxItem Content="Texture2D" />
@@ -1860,8 +1821,31 @@
                                             <ComboBoxItem Content="StringTable" />
                                         </ComboBox>
                                     </Border>
-                                </Grid>
-                            </Border>
+                                </StackPanel>
+
+                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,8,0">
+                                        <Button x:Name="NewExplorerUpButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoUp}" Padding="8,4" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoParentFolderClick">
+                                            <TextBlock Text="↑" FontSize="14" FontWeight="SemiBold" />
+                                        </Button>
+                                        <Button x:Name="NewExplorerBackButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoBack}" Padding="8,4" Margin="4,0,0,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoPreviousFileClick">
+                                            <TextBlock Text="←" FontSize="14" FontWeight="SemiBold" />
+                                        </Button>
+                                        <Button x:Name="NewExplorerForwardButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoForward}" Padding="8,4" Margin="4,0,0,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoNextFileClick">
+                                            <TextBlock Text="→" FontSize="14" FontWeight="SemiBold" />
+                                        </Button>
+                                </StackPanel>
+
+                                <Border Style="{StaticResource FModelJP5InputHostBorder}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0" x:Name="NewExplorerPathBox" Style="{StaticResource FModelJP5SearchTextBox}" VerticalContentAlignment="Center" ToolTip="{DynamicResource NewExplorer_Path_Tooltip}" KeyDown="OnNewExplorerPathBoxKeyDown" Padding="6,4" BorderThickness="0" Background="Transparent" />
+                                        <Button Grid.Column="1" Content="{DynamicResource NewExplorer_Button_Go}" Padding="12,4" Margin="0,0,4,0" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnNewExplorerGoPathClick" Background="Transparent" BorderThickness="0" />
+                                    </Grid>
+                                </Border>
+                            </DockPanel>
 
                             <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="10">
                                 <StackPanel>
@@ -1892,15 +1876,37 @@
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Width="180" Height="210" Margin="6" CornerRadius="8"
-                                                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
-                                                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
-                                                    BorderThickness="1">
+                                                <Border Width="180" Height="210" Margin="6" CornerRadius="8"                                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                                                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                                                        BorderThickness="1"
+                                                        RenderTransformOrigin="0.5,0.5">
+                                                    <Border.RenderTransform>
+                                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                                    </Border.RenderTransform>
+                                                    <Border.Effect>
+                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="8" Opacity="0.1" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
+                                                    </Border.Effect>
                                                     <Border.Style>
                                                         <Style TargetType="Border">
                                                             <Style.Triggers>
                                                                 <Trigger Property="IsMouseOver" Value="True">
                                                                     <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                                    <Trigger.EnterActions>
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.03" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.03" Duration="0:0:0.2" />
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </Trigger.EnterActions>
+                                                                    <Trigger.ExitActions>
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.2" />
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </Trigger.ExitActions>
                                                                 </Trigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -2212,14 +2218,37 @@
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <Border Width="160" Height="190" Margin="6" CornerRadius="8"
-                                                    Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBackground}"
-                                                    BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBorder}"
-                                                    BorderThickness="1">
+                                                        Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBackground}"
+                                                        BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBorder}"
+                                                        BorderThickness="1"
+                                                        RenderTransformOrigin="0.5,0.5">
+                                                    <Border.RenderTransform>
+                                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                                    </Border.RenderTransform>
+                                                    <Border.Effect>
+                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="8" Opacity="0.1" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
+                                                    </Border.Effect>
                                                     <Border.Style>
                                                         <Style TargetType="Border">
                                                             <Style.Triggers>
                                                                 <Trigger Property="IsMouseOver" Value="True">
                                                                     <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
+                                                                    <Trigger.EnterActions>
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.03" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.03" Duration="0:0:0.2" />
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </Trigger.EnterActions>
+                                                                    <Trigger.ExitActions>
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.2" />
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </Trigger.ExitActions>
                                                                 </Trigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -2253,11 +2282,12 @@
                                                         <Border Grid.Row="1" Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardSectionBackground}"
                                                             CornerRadius="0,0,8,8" Padding="10,8">
                                                             <StackPanel>
-                                                                <TextBlock controls:HighlightText.Text="{Binding Name}"
+                                                                 <TextBlock controls:WeaponCardNameLoader.GameFile="{Binding}"
+                                                                     controls:HighlightText.Text="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}"
                                                                        controls:HighlightText.Highlight="{Binding Text, ElementName=NewExplorerSearchBox}"
                                                                        controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
                                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
-                                                                       ToolTip="{Binding Name}" HorizontalAlignment="Center" Margin="0,0,0,4" FontSize="12"/>
+                                                                     ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}" HorizontalAlignment="Center" Margin="0,0,0,4" FontSize="12"/>
                                                                 <Border Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Background}"
                                                                     BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Border}"
                                                                     BorderThickness="1"

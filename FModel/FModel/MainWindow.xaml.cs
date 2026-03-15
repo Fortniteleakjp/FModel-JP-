@@ -47,6 +47,9 @@ public partial class MainWindow
     private const string ExplorerTabHeader = "NEW エクスプローラー";
     private FModel.ViewModels.TabItem _explorerTabVm;
     private readonly List<string> _newExplorerLocationHistory = new();
+    private const string ExportTypeCacheMiss = "__EXPORT_TYPE_MISS__";
+    private readonly object _assetExportTypeCacheLock = new();
+    private readonly Dictionary<string, string> _assetExportTypeCache = new(StringComparer.OrdinalIgnoreCase);
     private int _newExplorerLocationHistoryIndex = -1;
     private bool _isNavigatingNewExplorerHistory;
     private void OnNewExplorerChecked(object sender, RoutedEventArgs e)
@@ -966,20 +969,8 @@ public partial class MainWindow
                     return false;
                 }
 
-                try
-                {
-                    if (_applicationView.CUE4Parse.Provider.TryLoadPackage(file, out var package))
-                    {
-                        var export = package.GetExports().FirstOrDefault();
-                        if (export == null) return false;
-                        return string.Equals(export.ExportType, selectedClass, StringComparison.OrdinalIgnoreCase);
-                    }
-                    return false;
-                }
-                catch
-                {
-                    return false;
-                }
+                return TryGetAssetExportType(file, out var exportType) &&
+                       string.Equals(exportType, selectedClass, StringComparison.OrdinalIgnoreCase);
             }
 
             return true;
@@ -1437,37 +1428,106 @@ public partial class MainWindow
         _applicationView.CUE4Parse.ShowAnimGraph(selectedFiles[0]);
     }
 
-    private void OnAssetListClick(object sender, RoutedEventArgs e)
+    private bool IsFortWeaponRangedItemDefinitionAsset(GameFile file)
+    {
+        if (file == null)
+            return false;
+
+        if (!file.Path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) &&
+            !file.Path.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return TryGetAssetExportType(file, out var exportType) &&
+               string.Equals(exportType, "FortWeaponRangedItemDefinition", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private List<GameFile> BuildSearchResultFiles(string query, bool searchWeaponDefinitionsOnly)
+    {
+        var provider = _applicationView.CUE4Parse.Provider;
+        if (provider?.Files == null || provider.Files.Count == 0)
+            return new List<GameFile>();
+
+        var allFiles = provider.Files.Values
+            .OfType<GameFile>()
+            .DistinctBy(f => f.Path);
+
+        if (searchWeaponDefinitionsOnly)
+        {
+            return allFiles
+                .Where(f => f.Path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) ||
+                            f.Path.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
+                .Where(IsFortWeaponRangedItemDefinitionAsset)
+                .ToList();
+        }
+
+        return allFiles
+            .Where(f => f.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private bool TryGetAssetExportType(GameFile file, out string exportType)
+    {
+        exportType = null;
+        if (file == null)
+            return false;
+
+        lock (_assetExportTypeCacheLock)
+        {
+            if (_assetExportTypeCache.TryGetValue(file.Path, out exportType))
+                return !string.IsNullOrWhiteSpace(exportType) && !string.Equals(exportType, ExportTypeCacheMiss, StringComparison.Ordinal);
+        }
+
+        try
+        {
+            if (!_applicationView.CUE4Parse.Provider.TryLoadPackage(file, out var package))
+            {
+                lock (_assetExportTypeCacheLock)
+                {
+                    _assetExportTypeCache[file.Path] = ExportTypeCacheMiss;
+                }
+                return false;
+            }
+
+            var resolvedType = package.GetExports().FirstOrDefault()?.ExportType;
+            if (string.IsNullOrWhiteSpace(resolvedType))
+            {
+                lock (_assetExportTypeCacheLock)
+                {
+                    _assetExportTypeCache[file.Path] = ExportTypeCacheMiss;
+                }
+                return false;
+            }
+
+            lock (_assetExportTypeCacheLock)
+            {
+                _assetExportTypeCache[file.Path] = resolvedType;
+            }
+
+            exportType = resolvedType;
+            return true;
+        }
+        catch
+        {
+            lock (_assetExportTypeCacheLock)
+            {
+                _assetExportTypeCache[file.Path] = ExportTypeCacheMiss;
+            }
+            return false;
+        }
+    }
+
+    private async void OnAssetListClick(object sender, RoutedEventArgs e)
     {
         if (sender is Button { Tag: string path })
         {
             if (path.StartsWith("Search:"))
             {
                 var query = path.Substring(7);
-                var files = new List<GameFile>();
-                var stack = new Stack<IEnumerable<TreeItem>>();
-
-                if (_applicationView.CUE4Parse.AssetsFolder.Folders != null)
-                    stack.Push(_applicationView.CUE4Parse.AssetsFolder.Folders);
-
-                while (stack.Count > 0)
-                {
-                    var folders = stack.Pop();
-                    foreach (var folder in folders)
-                    {
-                        if (folder.AssetsList?.Assets != null)
-                        {
-                            foreach (var asset in folder.AssetsList.Assets)
-                            {
-                                if (asset is GameFile gf && gf.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
-                                    files.Add(gf);
-                            }
-                        }
-
-                        if (folder.Folders != null && folder.Folders.Count > 0)
-                            stack.Push(folder.Folders);
-                    }
-                }
+                var searchWeaponDefinitionsOnly = string.Equals(query, "WID_", StringComparison.OrdinalIgnoreCase) ||
+                                                  string.Equals(query, "WeaponOnly", StringComparison.OrdinalIgnoreCase);
+                var files = await Task.Run(() => BuildSearchResultFiles(query, searchWeaponDefinitionsOnly));
 
                 if (files.Count > 0)
                 {
