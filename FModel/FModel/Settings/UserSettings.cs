@@ -686,5 +686,13 @@ namespace FModel.Settings
             get => _recentFiles ??= new ObservableCollection<string>();
             set => SetProperty(ref _recentFiles, value);
         }
+
+        private ObservableCollection<string> _exportCartPaths = new();
+        [JsonProperty]
+        public ObservableCollection<string> ExportCartPaths
+        {
+            get => _exportCartPaths ??= new ObservableCollection<string>();
+            set => SetProperty(ref _exportCartPaths, value);
+        }
     }
 }

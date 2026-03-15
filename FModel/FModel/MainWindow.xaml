@@ -580,6 +580,48 @@
                 Background="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}">
                     <TextBlock Text="JP5" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
                 </Border>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Click="OnExportCartClick"
+                            Style="{StaticResource FModelJP5PrimaryButton}"
+                            Padding="12,6"
+                            Margin="8,0,0,0"
+                            MinHeight="34"
+                            ToolTip="{DynamicResource Cart_Button_Export_Tooltip}">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="15" Height="15" Margin="0,0,6,0">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource ExportIcon}" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBlock Text="{DynamicResource Cart_Button_Export}" />
+                            <Border Margin="8,0,0,0" Padding="6,1" CornerRadius="10" Background="#33111827" BorderBrush="#26FFFFFF" BorderThickness="1">
+                                <TextBlock Text="{Binding ExportCartPaths.Count, Source={x:Static settings:UserSettings.Default}}" FontWeight="SemiBold" />
+                            </Border>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="OnShowExportCartClick"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}"
+                            Padding="8,6"
+                            Margin="6,0,0,0"
+                            ToolTip="{DynamicResource Cart_Button_Show_Tooltip}">
+                        <Viewbox Width="15" Height="15">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource NoteIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                    <Button Click="OnClearExportCartClick"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}"
+                            Padding="8,6"
+                            Margin="6,0,0,0"
+                            ToolTip="{DynamicResource Cart_Button_Clear_Tooltip}">
+                        <Viewbox Width="15" Height="15">
+                            <Canvas Width="24" Height="24">
+                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Button>
+                </StackPanel>
                 <Menu Padding="2,0">
                     <Menu.Style>
                         <Style TargetType="Menu" BasedOn="{StaticResource {x:Type Menu}}">
@@ -1398,6 +1440,25 @@
                                                     </MenuItem.Icon>
                                                 </MenuItem>
                                                 <Separator />
+                                                <MenuItem Header="{DynamicResource Ctx_AddToCart}" Click="OnAddAssetsToCartClick">
+                                                    <MenuItem.Icon>
+                                                        <Viewbox Width="16" Height="16">
+                                                            <Canvas Width="24" Height="24">
+                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
+                                                            </Canvas>
+                                                        </Viewbox>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Header="{DynamicResource Ctx_RemoveFromCart}" Click="OnRemoveAssetsFromCartClick">
+                                                    <MenuItem.Icon>
+                                                        <Viewbox Width="16" Height="16">
+                                                            <Canvas Width="24" Height="24">
+                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}" />
+                                                            </Canvas>
+                                                        </Viewbox>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <Separator />
                                                 <MenuItem Command="{Binding DataContext.RightClickMenuCommand}">
                                                     <MenuItem.Header>
                                                         <TextBlock>
@@ -2160,6 +2221,25 @@
                                                         <Viewbox Width="16" Height="16">
                                                             <Canvas Width="24" Height="24">
                                                                 <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource EditIcon}" />
+                                                            </Canvas>
+                                                        </Viewbox>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <Separator />
+                                                <MenuItem Header="{DynamicResource Ctx_AddToCart}" Click="OnAddAssetsToCartClick">
+                                                    <MenuItem.Icon>
+                                                        <Viewbox Width="16" Height="16">
+                                                            <Canvas Width="24" Height="24">
+                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExportIcon}" />
+                                                            </Canvas>
+                                                        </Viewbox>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Header="{DynamicResource Ctx_RemoveFromCart}" Click="OnRemoveAssetsFromCartClick">
+                                                    <MenuItem.Icon>
+                                                        <Viewbox Width="16" Height="16">
+                                                            <Canvas Width="24" Height="24">
+                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}" />
                                                             </Canvas>
                                                         </Viewbox>
                                                     </MenuItem.Icon>

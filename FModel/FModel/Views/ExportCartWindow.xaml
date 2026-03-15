@@ -1,0 +1,123 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.ExportCartWindow"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                             xmlns:local="clr-namespace:FModel.Views"
+                             xmlns:settings="clr-namespace:FModel.Settings"
+                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                             mc:Ignorable="d"
+                             Title="{DynamicResource Cart_Window_Title}" Height="600" Width="800"
+                             WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <LinearGradientBrush x:Key="FModelJP5WindowBackgroundDark" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#111827" Offset="0" />
+                <GradientStop Color="#1F2937" Offset="0.5" />
+                <GradientStop Color="#0B1220" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="FModelJP5WindowBackgroundLight" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F4F7FB" Offset="0" />
+                <GradientStop Color="#EAF0F8" Offset="0.5" />
+                <GradientStop Color="#DEE7F2" Offset="1" />
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="FModelJP5InputBackgroundDark" Color="#CC0F172A" />
+            <SolidColorBrush x:Key="FModelJP5InputBackgroundLight" Color="#FFFDFEFF" />
+            <SolidColorBrush x:Key="FModelJP5InputBorderDark" Color="#4D93C5FD" />
+            <SolidColorBrush x:Key="FModelJP5InputBorderLight" Color="#334980B8" />
+            <Style x:Key="FModelJP5SearchTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="12,7" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="12,8" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                <Setter Property="BorderBrush" Value="#664A90E2" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+            </Style>
+            <Style x:Key="FModelJP5SecondaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="12,8" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Background" Value="#99213357" />
+                <Setter Property="BorderBrush" Value="#664A90E2" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#FFEAF2FF" />
+                        <Setter Property="BorderBrush" Value="#335C8DC4" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="ListBox" BasedOn="{StaticResource {x:Type ListBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Margin="12">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="{StaticResource FModelJP5WindowBackgroundDark}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5WindowBackgroundLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock x:Name="CountTextBlock" DockPanel.Dock="Right" VerticalAlignment="Center" Opacity="0.8" />
+            <TextBox x:Name="SearchTextBox" Style="{StaticResource FModelJP5SearchTextBox}"
+                     TextChanged="OnSearchTextChanged" ToolTip="{DynamicResource Cart_Window_Search_Tooltip}"
+                     adonisExtensions:WatermarkExtension.Watermark="Filter paths..."/>
+        </DockPanel>
+
+        <ListBox Grid.Row="1" x:Name="PathsListBox" ItemsSource="{Binding FilteredPaths}" SelectionMode="Extended"
+                 MouseDoubleClick="OnPathDoubleClick" Style="{StaticResource {x:Type ListBox}}">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="Padding" Value="8,5"/>
+                    <Setter Property="Margin" Value="2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="8"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="{DynamicResource Cart_Window_RemoveSelected}" Click="OnRemoveSelectedClick" Style="{StaticResource FModelJP5SecondaryButton}" />
+            <Button Content="{DynamicResource Cart_Window_Close}" Click="OnCloseClick" IsDefault="True" Margin="8,0,0,0" Style="{StaticResource FModelJP5PrimaryButton}" />
+        </StackPanel>
+    </Grid>
+</adonisControls:AdonisWindow>

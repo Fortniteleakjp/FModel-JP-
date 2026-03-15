@@ -32,6 +32,9 @@
                     <MenuItem Header="{DynamicResource Ctx_ShowMetadata}" Click="OnShowMetadataClick" />
                     <MenuItem Header="{DynamicResource Ctx_OpenReferenceViewer}" Click="OnOpenReferenceViewerClick" />
                     <Separator />
+                    <MenuItem Header="{DynamicResource Ctx_AddToCart}" Click="OnAddToCartClick" />
+                    <MenuItem Header="{DynamicResource Ctx_RemoveFromCart}" Click="OnRemoveFromCartClick" />
+                    <Separator />
                     <MenuItem Header="{DynamicResource Ctx_SaveAsFormat}" Click="OnSaveAsClick" />
                     <MenuItem Header="{DynamicResource Ctx_SaveJson}" Click="OnSaveJsonClick" />
                     <MenuItem Header="{DynamicResource Ctx_SaveTexture}" Click="OnSaveTextureClick" />

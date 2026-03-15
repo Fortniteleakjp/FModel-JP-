@@ -26,6 +26,14 @@
     <system:String x:Key="Menu_Versioning">バージョン管理</system:String>
     <system:String x:Key="Menu_Settings">設定</system:String>
     <system:String x:Key="Menu_Help">ヘルプ</system:String>
+    <system:String x:Key="Cart_Button_Export">カート一括エクスポート</system:String>
+    <system:String x:Key="Cart_Button_Export_Tooltip">保存済みカート内のアセットを一括エクスポートします</system:String>
+    <system:String x:Key="Cart_Button_Show_Tooltip">カート内容を表示します</system:String>
+    <system:String x:Key="Cart_Button_Clear_Tooltip">カートを空にします</system:String>
+    <system:String x:Key="Cart_Window_Title">エクスポートカート</system:String>
+    <system:String x:Key="Cart_Window_Search_Tooltip">カート内パスをフィルタ検索します</system:String>
+    <system:String x:Key="Cart_Window_RemoveSelected">選択した項目を削除</system:String>
+    <system:String x:Key="Cart_Window_Close">閉じる</system:String>
 
     <!-- Settings -->
     <system:String x:Key="Settings_OutputDirectory">出力先</system:String>
@@ -146,6 +154,8 @@
     <system:String x:Key="Ctx_SaveUasset">.uasset 形式で保存</system:String>
     <system:String x:Key="Ctx_SaveDecompiled">Save Folder's Packages Decompiled Blueprints (.cpp)</system:String>
     <system:String x:Key="Ctx_AddToFavorites">お気に入りに追加</system:String>
+    <system:String x:Key="Ctx_AddToCart">カートに追加</system:String>
+    <system:String x:Key="Ctx_RemoveFromCart">カートから削除</system:String>
 
     <!-- About -->
     <system:String x:Key="About_Title">About</system:String>

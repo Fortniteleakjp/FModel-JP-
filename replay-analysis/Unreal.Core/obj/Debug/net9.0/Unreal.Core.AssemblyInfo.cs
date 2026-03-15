@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2020 Shiqan")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Unreal Engine replay reader")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a99a1016cec4d46b9db1463870de7ba6842edb9d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+28129ad1a3c0df172df7b4ec5de792687f92acfd")]
 [assembly: System.Reflection.AssemblyProductAttribute("Unreal.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Unreal.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

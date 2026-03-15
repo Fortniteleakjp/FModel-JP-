@@ -26,6 +26,14 @@
     <system:String x:Key="Menu_Versioning">Versioning</system:String>
     <system:String x:Key="Menu_Settings">Settings</system:String>
     <system:String x:Key="Menu_Help">Help</system:String>
+    <system:String x:Key="Cart_Button_Export">Export Cart</system:String>
+    <system:String x:Key="Cart_Button_Export_Tooltip">Export every asset saved in the cart</system:String>
+    <system:String x:Key="Cart_Button_Show_Tooltip">Show cart contents</system:String>
+    <system:String x:Key="Cart_Button_Clear_Tooltip">Clear the cart</system:String>
+    <system:String x:Key="Cart_Window_Title">Export Cart</system:String>
+    <system:String x:Key="Cart_Window_Search_Tooltip">Filter paths in the cart</system:String>
+    <system:String x:Key="Cart_Window_RemoveSelected">Remove Selected</system:String>
+    <system:String x:Key="Cart_Window_Close">Close</system:String>
 
     <!-- Settings -->
     <system:String x:Key="Settings_OutputDirectory">Output Directory</system:String>
@@ -144,6 +152,8 @@
     <system:String x:Key="Ctx_CopyAssetPathName">Copy as AssetPathName</system:String>
     <system:String x:Key="Ctx_SaveDecompiled">Save Decompiled Blueprints (.cpp)</system:String>
     <system:String x:Key="Ctx_AddToFavorites">Add to Favorites</system:String>
+    <system:String x:Key="Ctx_AddToCart">Add to Cart</system:String>
+    <system:String x:Key="Ctx_RemoveFromCart">Remove from Cart</system:String>
 
     <!-- About -->
     <system:String x:Key="About_Title">About</system:String>
