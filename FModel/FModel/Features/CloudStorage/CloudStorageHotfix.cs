@@ -26,6 +26,11 @@ namespace FModel.Features.CloudStorage
 
         private static readonly HttpClient _httpClient = new HttpClient();
 
+        // ホットフィックスデータをキャッシュして、頻繁なリクエストを防ぐ
+        private static string _cachedHotfixData;
+        private static DateTime _cacheTimestamp;
+        private static readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5); // 5分間キャッシュ
+
         /// <summary>
         /// ホットフィックスの種類
         /// </summary>
@@ -436,11 +441,25 @@ namespace FModel.Features.CloudStorage
         /// </summary>
         private static async Task<string> FetchCurrentDataAsync(string apiEndpoint)
         {
+            // キャッシュが有効な場合はキャッシュから返す
+            if (!string.IsNullOrEmpty(_cachedHotfixData) && DateTime.UtcNow - _cacheTimestamp < _cacheDuration)
+            {
+                FLogger.Append(ELog.Information, () => FLogger.Text("キャッシュされたホットフィックスデータを使用します。", Constants.WHITE));
+                return _cachedHotfixData;
+            }
+
             try
             {
+                FLogger.Append(ELog.Information, () => FLogger.Text("クラウドストレージからホットフィックスデータを取得しています...", Constants.WHITE));
                 var response = await _httpClient.GetAsync(apiEndpoint);
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync();
+                var data = await response.Content.ReadAsStringAsync();
+
+                // 取得したデータをキャッシュ
+                _cachedHotfixData = data;
+                _cacheTimestamp = DateTime.UtcNow;
+
+                return data;
             }
             catch (Exception ex)
             {
