@@ -341,11 +341,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj",
+      "projectUniqueName": "D:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj",
       "projectName": "FortniteReplayReader",
-      "projectPath": "d:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj",
+      "projectPath": "D:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj",
       "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-      "outputPath": "d:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\obj\\",
+      "outputPath": "D:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
@@ -369,22 +369,22 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
-              "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj"
+            "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
+              "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj"
             },
-            "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
-              "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj"
+            "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
+              "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj"
             }
           }
         },
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
-              "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj"
+            "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
+              "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj"
             },
-            "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
-              "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj"
+            "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
+              "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj"
             }
           }
         }

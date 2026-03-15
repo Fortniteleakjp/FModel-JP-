@@ -48,11 +48,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj",
+      "projectUniqueName": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj",
       "projectName": "Unreal.Encryption",
-      "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj",
+      "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj",
       "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-      "outputPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\obj\\",
+      "outputPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\obj\\",
       "projectStyle": "PackageReference",
       "crossTargeting": true,
       "fallbackFolders": [
@@ -76,16 +76,16 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
-              "projectPath": "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj"
+            "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
+              "projectPath": "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj"
             }
           }
         },
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
-              "projectPath": "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj"
+            "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
+              "projectPath": "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj"
             }
           }
         }

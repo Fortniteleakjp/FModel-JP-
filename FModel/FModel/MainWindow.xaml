@@ -491,6 +491,53 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <Style x:Key="FModelJP5ExpanderHeader" TargetType="ToggleButton">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="10,8"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="12,12,0,0">
+                                <DockPanel>
+                                    <Path x:Name="Arrow"
+                                          Data="M 0 0 L 4 4 L 8 0 Z"
+                                          Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                                          VerticalAlignment="Center"
+                                          RenderTransformOrigin="0.5, 0.5"
+                                          Margin="4,0,0,0">
+                                        <Path.RenderTransform>
+                                            <RotateTransform Angle="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                    <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Arrow" Property="Data" Value="M 0 4 L 4 0 L 8 4 Z" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="FModelJP5RichTextBox" TargetType="controls:CustomRichTextBox" BasedOn="{StaticResource CustomRichTextBox}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
             <Style TargetType="TreeView" BasedOn="{StaticResource {x:Type TreeView}}">
                 <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
                 <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
@@ -1766,7 +1813,8 @@
                         <TabControl Grid.Row="1"
                                 x:Name="TabControlName"
                                 adonisExtensions:CornerRadiusExtension.CornerRadius="14"
-                                Style="{StaticResource GameFilesTabControl}" SelectionChanged="TabControlName_SelectionChanged_2" />
+                                Style="{StaticResource GameFilesTabControl}" SelectionChanged="TabControlName_SelectionChanged_2"
+                                Visibility="{Binding IsChecked, ElementName=NewExplorerMenuItem, Converter={StaticResource BoolToVisibilityReversedConverter}}"/>
 
                         <!-- NEW エクスプローラー UI -->
                         <Grid Grid.Row="1" x:Name="NewExplorerGrid" Visibility="{Binding IsChecked, ElementName=NewExplorerMenuItem, Converter={StaticResource BoolToVisibilityConverter}}" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
@@ -2388,36 +2436,41 @@
                             </ScrollViewer>
                         </Grid>
 
-                        <Expander Grid.Row="2" Margin="0 5 0 5" ExpandDirection="Down"
-                              IsExpanded="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="2" />
-                                    <ColumnDefinition Width="24" />
-                                </Grid.ColumnDefinitions>
-
-                                <controls:CustomRichTextBox x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" Grid.Column="0" Grid.ColumnSpan="3" />
-                                <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="-5 -5 5 5">
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Open Output Folder" Padding="0,4,0,4"
-                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory">
-                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource FolderIcon}" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </Button>
-                                    <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Clear Logs" Padding="0,4,0,4"
-                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Clear_Logs">
-                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}"/>
-                                            </Canvas>
-                                        </Viewbox>
-                                    </Button>
-                                </StackPanel>
-                            </Grid>
-                        </Expander>
+                        <Border Grid.Row="2" Margin="0 5 0 5"
+                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                                BorderThickness="1" CornerRadius="12">
+                            <DockPanel>
+                                <ToggleButton x:Name="LogExpanderToggle" DockPanel.Dock="Top"
+                                              IsChecked="{Binding IsLoggerExpanded, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
+                                              Style="{StaticResource FModelJP5ExpanderHeader}">
+                                    <DockPanel Margin="4,2">
+                                        <TextBlock Text="ログ" FontWeight="SemiBold" VerticalAlignment="Center" Opacity="0.8"/>
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <Button Style="{StaticResource FModelJP5SearchActionButton}" ToolTip="出力フォルダを開く" Padding="6,4" Margin="4,0"
+                                                    Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory">
+                                                <Viewbox Width="14" Height="14" HorizontalAlignment="Center">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource FolderIcon}" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </Button>
+                                            <Button Style="{StaticResource FModelJP5SearchActionButton}" ToolTip="ログをクリア" Padding="6,4"
+                                                    Command="{Binding MenuCommand}" CommandParameter="ToolBox_Clear_Logs">
+                                                <Viewbox Width="14" Height="14" HorizontalAlignment="Center">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TrashIcon}"/>
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </Button>
+                                        </StackPanel>
+                                    </DockPanel>
+                                </ToggleButton>
+                                <controls:CustomRichTextBox x:Name="LogRtbName" Style="{StaticResource FModelJP5RichTextBox}"
+                                                            Visibility="{Binding IsChecked, ElementName=LogExpanderToggle, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                            Margin="4,0,4,4"/>
+                            </DockPanel>
+                        </Border>
                     </Grid>
                 </GroupBox>
             </Border>

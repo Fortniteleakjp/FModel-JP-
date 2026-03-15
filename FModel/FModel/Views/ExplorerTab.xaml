@@ -11,7 +11,7 @@
     <Grid>
         <TreeView x:Name="ExplorerTreeView" ItemsSource="{Binding Items}">
             <TreeView.ItemContainerStyle>
-                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemStyle}">
+                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
                 </Style>
             </TreeView.ItemContainerStyle>
