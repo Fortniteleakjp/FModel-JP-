@@ -34,6 +34,15 @@ public static class MeshConverter
     {
         bones = new List<CSkelMeshBone>();
         box = new FBox();
+
+        if (originalSkeleton.ReferenceSkeleton == null ||
+            originalSkeleton.ReferenceSkeleton.FinalRefBoneInfo == null ||
+            originalSkeleton.ReferenceSkeleton.FinalRefBonePose == null ||
+            originalSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length == 0)
+        {
+            return false;
+        }
+
         for (var i = 0; i < originalSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length; i++)
         {
             var skeletalMeshBone = new CSkelMeshBone
