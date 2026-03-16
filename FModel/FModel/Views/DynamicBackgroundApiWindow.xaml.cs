@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Net.Http;
+using System.Net.WebSockets;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,6 +27,7 @@ namespace FModel.Views;
 public partial class DynamicBackgroundApiWindow : AdonisWindow
 {
     private const string ApiUrl = "https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game/dynamicbackgrounds";
+    private const string StatusWebSocketUrl = "wss://fljpapi.jp/api/v3/fortnitestatus";
     private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(15) };
 
     private readonly DispatcherTimer _refreshTimer;
@@ -31,11 +35,40 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
     private string _latestResponseJson = "{}";
     private bool _isRefreshing;
     private int _previewLoadVersion;
+    private readonly int _initialTab;
+    private CancellationTokenSource? _statusSocketCts;
+    private Task? _statusSocketTask;
 
-    public DynamicBackgroundApiWindow()
+    private static readonly Brush NeutralCardBackground = CreateBrush("#3316202A");
+    private static readonly Brush NeutralCardBorder = CreateBrush("#3A7BA8");
+    private static readonly Brush NeutralFooterBackground = CreateBrush("#40101724");
+    private static readonly Brush NeutralFooterBorder = CreateBrush("#4D6EB5E8");
+    private static readonly Brush NeutralPrimaryText = CreateBrush("#E7F4FF");
+    private static readonly Brush NeutralSecondaryText = CreateBrush("#96C4E8");
+    private static readonly Brush NeutralEditorBackground = CreateBrush("#1A2230");
+
+    private static readonly Brush UpCardBackground = CreateBrush("#1F0E2E1B");
+    private static readonly Brush UpCardBorder = CreateBrush("#4D4ADE80");
+    private static readonly Brush UpFooterBackground = CreateBrush("#3320432D");
+    private static readonly Brush UpFooterBorder = CreateBrush("#6657D68D");
+    private static readonly Brush UpPrimaryText = CreateBrush("#E8FFF1");
+    private static readonly Brush UpSecondaryText = CreateBrush("#8FF0B2");
+    private static readonly Brush UpEditorBackground = CreateBrush("#16251B");
+
+    private static readonly Brush DownCardBackground = CreateBrush("#2A2A1012");
+    private static readonly Brush DownCardBorder = CreateBrush("#66E35D6A");
+    private static readonly Brush DownFooterBackground = CreateBrush("#3D351417");
+    private static readonly Brush DownFooterBorder = CreateBrush("#88E35D6A");
+    private static readonly Brush DownPrimaryText = CreateBrush("#FFECEE");
+    private static readonly Brush DownSecondaryText = CreateBrush("#FF9FAA");
+    private static readonly Brush DownEditorBackground = CreateBrush("#24171A");
+
+    public DynamicBackgroundApiWindow(int initialTab = 0)
     {
+        _initialTab = initialTab;
         InitializeComponent();
         ResponseJsonEditor.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("json");
+        StatusJsonEditor.SyntaxHighlighting = AvalonExtensions.HighlighterSelector("json");
 
         _refreshTimer = new DispatcherTimer
         {
@@ -46,13 +79,211 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        ApiTabControl.SelectedIndex = Math.Clamp(_initialTab, 0, ApiTabControl.Items.Count - 1);
+        ApplyStatusTheme(null);
         await RefreshAsync();
         _refreshTimer.Start();
+        StartStatusSocket();
     }
 
     private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         _refreshTimer.Stop();
+        _statusSocketCts?.Cancel();
+    }
+
+    private void StartStatusSocket()
+    {
+        _statusSocketCts?.Cancel();
+        _statusSocketCts = new CancellationTokenSource();
+        _statusSocketTask = Task.Run(() => RunStatusSocketLoopAsync(_statusSocketCts.Token));
+    }
+
+    private async Task RunStatusSocketLoopAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            using var socket = new ClientWebSocket();
+            try
+            {
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    StatusApiStateTextBlock.Text = "WSS接続中...";
+                    StatusTextBlock.Text = "ステータスWSSに接続中...";
+                    ApplyStatusTheme(null);
+                });
+
+                await socket.ConnectAsync(new Uri(StatusWebSocketUrl), cancellationToken).ConfigureAwait(false);
+
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    StatusApiStateTextBlock.Text = "接続済み (受信待機中)";
+                    StatusTextBlock.Text = "ステータスWSS接続済み";
+                });
+
+                await ReceiveStatusMessagesAsync(socket, cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch (Exception ex)
+            {
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    StatusApiStateTextBlock.Text = $"切断: {ex.Message}";
+                    StatusTextBlock.Text = "ステータスWSSが切断されました。再接続します...";
+                    ApplyStatusTheme("DOWN");
+                });
+            }
+
+            if (!cancellationToken.IsCancellationRequested)
+                await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private async Task ReceiveStatusMessagesAsync(ClientWebSocket socket, CancellationToken cancellationToken)
+    {
+        var buffer = new byte[8192];
+
+        while (!cancellationToken.IsCancellationRequested && socket.State == WebSocketState.Open)
+        {
+            using var stream = new MemoryStream();
+            WebSocketReceiveResult result;
+
+            do
+            {
+                result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken).ConfigureAwait(false);
+
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "close", cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+
+                stream.Write(buffer, 0, result.Count);
+            } while (!result.EndOfMessage);
+
+            if (result.MessageType != WebSocketMessageType.Text)
+                continue;
+
+            var json = Encoding.UTF8.GetString(stream.ToArray());
+            await ApplyStatusPayloadAsync(json).ConfigureAwait(false);
+        }
+    }
+
+    private async Task ApplyStatusPayloadAsync(string json)
+    {
+        try
+        {
+            var root = JObject.Parse(json);
+            var fnstatus = root["fnstatus"] as JObject;
+            var queue = root["queue"] as JObject;
+
+            var serviceId = fnstatus?["serviceInstanceId"]?.ToString() ?? "-";
+            var status = fnstatus?["status"]?.ToString() ?? "-";
+            var message = fnstatus?["message"]?.ToString() ?? root["message"]?.ToString() ?? "-";
+            var queueActive = queue?["active"]?.ToString() ?? "-";
+            var expectedWait = queue?["expectedWait"]?.Type == JTokenType.Null
+                ? "null"
+                : queue?["expectedWait"]?.ToString() ?? "-";
+            var maintenanceCount = root["maintenance"] is JArray m ? m.Count.ToString() : "0";
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                StatusJsonEditor.Document ??= new TextDocument();
+                StatusJsonEditor.Document.Text = root.ToString(Formatting.Indented);
+
+                ServiceInstanceIdTextBlock.Text = serviceId;
+                FortniteStatusTextBlock.Text = status;
+                FortniteMessageTextBlock.Text = message;
+                QueueActiveTextBlock.Text = queueActive;
+                QueueWaitTextBlock.Text = expectedWait;
+                MaintenanceCountTextBlock.Text = maintenanceCount;
+                StatusUpdatedAtTextBlock.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                StatusApiStateTextBlock.Text = "受信中 (リアルタイム更新)";
+                StatusTextBlock.Text = $"ステータス更新: {DateTime.Now:yyyy/MM/dd HH:mm:ss}";
+                ApplyStatusTheme(status);
+            });
+        }
+        catch (Exception ex)
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                StatusApiStateTextBlock.Text = $"JSON解析エラー: {ex.Message}";
+                ApplyStatusTheme("DOWN");
+            });
+        }
+    }
+
+    private void ApplyStatusTheme(string? status)
+    {
+        var normalized = status?.Trim().ToUpperInvariant();
+
+        Brush cardBackground;
+        Brush cardBorder;
+        Brush footerBackground;
+        Brush footerBorder;
+        Brush primaryText;
+        Brush secondaryText;
+        Brush editorBackground;
+
+        switch (normalized)
+        {
+            case "UP":
+                cardBackground = UpCardBackground;
+                cardBorder = UpCardBorder;
+                footerBackground = UpFooterBackground;
+                footerBorder = UpFooterBorder;
+                primaryText = UpPrimaryText;
+                secondaryText = UpSecondaryText;
+                editorBackground = UpEditorBackground;
+                break;
+            case "DOWN":
+                cardBackground = DownCardBackground;
+                cardBorder = DownCardBorder;
+                footerBackground = DownFooterBackground;
+                footerBorder = DownFooterBorder;
+                primaryText = DownPrimaryText;
+                secondaryText = DownSecondaryText;
+                editorBackground = DownEditorBackground;
+                break;
+            default:
+                cardBackground = NeutralCardBackground;
+                cardBorder = NeutralCardBorder;
+                footerBackground = NeutralFooterBackground;
+                footerBorder = NeutralFooterBorder;
+                primaryText = NeutralPrimaryText;
+                secondaryText = NeutralSecondaryText;
+                editorBackground = NeutralEditorBackground;
+                break;
+        }
+
+        StatusInfoBorder.Background = cardBackground;
+        StatusInfoBorder.BorderBrush = cardBorder;
+        StatusJsonBorder.Background = cardBackground;
+        StatusJsonBorder.BorderBrush = cardBorder;
+        FooterStatusBorder.Background = footerBackground;
+        FooterStatusBorder.BorderBrush = footerBorder;
+
+        StatusHeaderTextBlock.Foreground = primaryText;
+        StatusApiStateTextBlock.Foreground = secondaryText;
+        ServiceInstanceIdTextBlock.Foreground = primaryText;
+        FortniteStatusTextBlock.Foreground = primaryText;
+        FortniteMessageTextBlock.Foreground = primaryText;
+        QueueActiveTextBlock.Foreground = primaryText;
+        QueueWaitTextBlock.Foreground = primaryText;
+        MaintenanceCountTextBlock.Foreground = primaryText;
+        StatusUpdatedAtTextBlock.Foreground = primaryText;
+        StatusTextBlock.Foreground = secondaryText;
+        StatusJsonEditor.Background = editorBackground;
+    }
+
+    private static SolidColorBrush CreateBrush(string hex)
+    {
+        var brush = (SolidColorBrush)new BrushConverter().ConvertFromString(hex)!;
+        brush.Freeze();
+        return brush;
     }
 
     private async void OnRefreshNowClick(object sender, RoutedEventArgs e)
@@ -84,12 +315,7 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
                 })
                 .ToList() ?? new List<DynamicBackgroundEntry>();
 
-            _entries = allEntries
-                .Where(x => x.Key.Equals("lobby", StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            if (_entries.Count == 0)
-                _entries = allEntries;
+            _entries = allEntries;
 
             BackgroundsListBox.ItemsSource = _entries;
             ResponseJsonEditor.Document ??= new TextDocument();

@@ -250,6 +250,11 @@ public partial class MainWindow
         new Views.DynamicBackgroundApiWindow().Show();
     }
 
+    private void OnFortniteStatusApiClick(object sender, RoutedEventArgs e)
+    {
+        new Views.DynamicBackgroundApiWindow(initialTab: 2).Show();
+    }
+
     private async void OnCloudStorageHotfixClick(object sender, RoutedEventArgs e)
     {
         try
