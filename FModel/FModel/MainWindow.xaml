@@ -2014,7 +2014,7 @@
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Width="150" Height="170" Margin="6" CornerRadius="12"                                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                                                <Border Width="180" Height="210" Margin="6" CornerRadius="12"                                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                                                         BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
                                                         BorderThickness="1"
                                                         RenderTransformOrigin="0.5,0.5">
@@ -2374,7 +2374,7 @@
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Width="150" Height="170" Margin="6" CornerRadius="12"
+                                                <Border Width="180" Height="210" Margin="6" CornerRadius="12"
                                                         Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBackground}"
                                                         BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBorder}"
                                                         BorderThickness="1"
@@ -2513,9 +2513,38 @@
                                         </StackPanel>
                                     </DockPanel>
                                 </ToggleButton>
-                                <controls:CustomRichTextBox x:Name="LogRtbName" Style="{StaticResource FModelJP5RichTextBox}"
-                                                            Visibility="{Binding IsChecked, ElementName=LogExpanderToggle, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                            Margin="4,0,4,4"/>
+                                <Border x:Name="LogContainer" ClipToBounds="True">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Height" Value="0"/>
+                                            <Setter Property="Opacity" Value="0"/>
+                                            <Setter Property="Margin" Value="0"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsChecked, ElementName=LogExpanderToggle}" Value="True">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="Height" To="180" Duration="0:0:0.25" DecelerationRatio="0.5"/>
+                                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3"/>
+                                                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="4,0,4,4" Duration="0:0:0.25" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="Height" To="0" Duration="0:0:0.2" AccelerationRatio="0.5"/>
+                                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
+                                                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="0" Duration="0:0:0.2" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <controls:CustomRichTextBox x:Name="LogRtbName" Style="{StaticResource FModelJP5RichTextBox}" />
+                                </Border>
                             </DockPanel>
                         </Border>
                     </Grid>
