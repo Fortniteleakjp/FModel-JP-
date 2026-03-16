@@ -13,6 +13,7 @@ using CUE4Parse_Conversion.Textures.BC;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.UE4.VirtualFileSystem;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.IO.Objects;
@@ -389,37 +390,61 @@ public class ApplicationViewModel : ViewModel
     {
         if (!isLaunch && !AesManager.HasChange) return;
 
+        var requiredMainGuids = CollectRequiredAesGuids(CUE4Parse.Provider);
+        var requiredDiffGuids = CollectRequiredAesGuids(CUE4Parse.DiffProvider);
+
         CUE4Parse.ClearProvider();
         await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
         {
-            // TODO: refactor after release, select updated keys only
-            var aes = AesManager.AesKeys.Select(x =>
-            {
-                cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
-
-                var k = x.Key.Trim();
-                if (k.Length != 66) k = Constants.ZERO_64_CHAR;
-                return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
-            });
+            var aes = BuildAesKeyPairs(AesManager.AesKeys, requiredMainGuids, cancellationToken);
 
             IEnumerable<KeyValuePair<FGuid, FAesKey>> secondAes = [];
             if (AesManager.DiffAesKeys != null)
-            {
-                secondAes = AesManager.DiffAesKeys.Select(x =>
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    var k = x.Key.Trim();
-                    if (k.Length != 66)
-                        k = Constants.ZERO_64_CHAR;
-                    return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
-                });
-            }
+                secondAes = BuildAesKeyPairs(AesManager.DiffAesKeys, requiredDiffGuids, cancellationToken);
 
             CUE4Parse.LoadVfs(aes, secondAes);
             AesManager.SetAesKeys();
         });
         RaisePropertyChanged(nameof(GameDisplayName));
+    }
+
+    private static HashSet<FGuid> CollectRequiredAesGuids(AbstractVfsFileProvider? provider)
+    {
+        var requiredGuids = new HashSet<FGuid> { Constants.ZERO_GUID };
+        if (provider == null)
+            return requiredGuids;
+
+        foreach (var keyGuid in provider.RequiredKeys)
+            requiredGuids.Add(keyGuid);
+
+        foreach (var vfs in provider.UnloadedVfs)
+            requiredGuids.Add(vfs.EncryptionKeyGuid);
+
+        foreach (var vfs in provider.MountedVfs)
+            requiredGuids.Add(vfs.EncryptionKeyGuid);
+
+        return requiredGuids;
+    }
+
+    private static List<KeyValuePair<FGuid, FAesKey>> BuildAesKeyPairs(IEnumerable<FileItem> sourceKeys, HashSet<FGuid> requiredGuids, System.Threading.CancellationToken cancellationToken)
+    {
+        var result = new List<KeyValuePair<FGuid, FAesKey>>();
+
+        foreach (var source in sourceKeys)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (requiredGuids.Count > 0 && !requiredGuids.Contains(source.Guid))
+                continue;
+
+            var key = source.Key.Trim();
+            if (key.Length != 66)
+                key = Constants.ZERO_64_CHAR;
+
+            result.Add(new KeyValuePair<FGuid, FAesKey>(source.Guid, new FAesKey(key)));
+        }
+
+        return result;
     }
 
     public static async Task InitVgmStream()
