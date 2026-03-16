@@ -841,153 +841,145 @@
                         </MenuItem>
 
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource Menu_Profile}" IsEnabled="{Binding Status.IsReady}">
-                        <MenuItem Header="{DynamicResource Menu_Profile_AllCosmetics}" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
+                    <MenuItem Header="ツール" IsEnabled="{Binding Status.IsReady}">
+                        <MenuItem Header="{DynamicResource Menu_Profile}">
+                            <MenuItem Header="{DynamicResource Menu_Profile_AllCosmetics}" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{DynamicResource Menu_Profile_NewCosmetics}" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
+                        <MenuItem Header="{DynamicResource ReplayAnalysis_Title}" Click="OnReplayAnalysisClick">
                             <MenuItem.Icon>
                                 <Viewbox Width="16" Height="16">
                                     <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
                                     </Canvas>
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="{DynamicResource Menu_Profile_NewCosmetics}" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
+                        <MenuItem Header="API">
+                            <MenuItem Header="ロビー背景 (DynamicBackgrounds)" Click="OnDynamicBackgroundApiClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17M11,9H13V7H11V9Z" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="クラウドストレージ ホットフィックス" Click="OnCloudStorageHotfixClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17M11,9H13V7H11V9Z" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </MenuItem>
-                    </MenuItem>
-                    <MenuItem Header="{DynamicResource Menu_Versioning}" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
-
-                    <MenuItem Header="{DynamicResource ReplayAnalysis_Title}" Click="OnReplayAnalysisClick" IsEnabled="{Binding Status.IsReady}">
-                        <MenuItem.Icon>
-                            <Viewbox Width="16" Height="16">
-                                <Canvas Width="24" Height="24">
-                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-                                </Canvas>
-                            </Viewbox>
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="テスト" IsEnabled="{Binding Status.IsReady}" ItemContainerStyle="{StaticResource FModelJP5TestMenuItem}" ToolTip="テスト操作を連続実行できます">
-                        <MenuItem Header="All Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-
-                        <MenuItem Header="New Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-
-                        <MenuItem Header="New Cosmetics (With Paks)" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics_WithPaks" Click="OnAthenaNewCosmeticsWithPaksClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-
-                        <MenuItem Header="Custom Cosmetics (by Id)" Command="{Binding MenuCommand}" CommandParameter="Athena_Custom_ById" Click="OnAthenaCustomByIdClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-
-                        <MenuItem Header="Pak Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_PakCosmetics" Click="OnAthenaPakCosmeticsClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-
-                        <MenuItem Header="Paks Bulk" Command="{Binding MenuCommand}" CommandParameter="Athena_Paks_Bulk" Click="OnAthenaPaksBulkClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-
-                        <MenuItem Header="Brute Force AES" Click="OnBruteForceAesClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource KeyIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-
-                        <MenuItem Header="Test Edit Asset" Click="OnTestEditAssetClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource EditIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-
-                        <Separator />
-
-                        <MenuItem Header="Back" Command="{Binding MenuCommand}" CommandParameter="Athena_Back" Click="OnAthenaBackClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </MenuItem>
-                    <MenuItem Header="API" IsEnabled="{Binding Status.IsReady}">
-                        <MenuItem Header="ロビー背景 (DynamicBackgrounds)" Click="OnDynamicBackgroundApiClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17M11,9H13V7H11V9Z" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="クラウドストレージ ホットフィックス" Click="OnCloudStorageHotfixClick">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17M11,9H13V7H11V9Z" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
+                        <Separator/>
+                        <MenuItem Header="テスト" ItemContainerStyle="{StaticResource FModelJP5TestMenuItem}" ToolTip="テスト操作を連続実行できます">
+                            <MenuItem Header="All Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_AllCosmetics" Click="OnAthenaAllCosmeticsClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="New Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics" Click="OnAthenaNewCosmeticsClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="New Cosmetics (With Paks)" Command="{Binding MenuCommand}" CommandParameter="Athena_NewCosmetics_WithPaks" Click="OnAthenaNewCosmeticsWithPaksClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource InfoIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Custom Cosmetics (by Id)" Command="{Binding MenuCommand}" CommandParameter="Athena_Custom_ById" Click="OnAthenaCustomByIdClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Pak Cosmetics" Command="{Binding MenuCommand}" CommandParameter="Athena_PakCosmetics" Click="OnAthenaPakCosmeticsClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Paks Bulk" Command="{Binding MenuCommand}" CommandParameter="Athena_Paks_Bulk" Click="OnAthenaPaksBulkClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExtractIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Brute Force AES" Click="OnBruteForceAesClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource KeyIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Test Edit Asset" Click="OnTestEditAssetClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource EditIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Back" Command="{Binding MenuCommand}" CommandParameter="Athena_Back" Click="OnAthenaBackClick">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </MenuItem>
                     </MenuItem>
                     <MenuItem Header="{DynamicResource Menu_Settings}" Command="{Binding MenuCommand}" CommandParameter="Settings" />
                     <MenuItem Header="{DynamicResource Menu_Help}" >
-                        <MenuItem Header="寄付 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate">
+                        <MenuItem Header="寄付">
                             <MenuItem.Icon>
                                 <Viewbox Width="16" Height="16">
                                     <Canvas Width="24" Height="24">
@@ -996,16 +988,7 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="寄付 (JP)" Command="{Binding MenuCommand}" CommandParameter="Help_Donate_JP">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource GiftIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="バグ報告 (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_BugsReport">
+                        <MenuItem Header="バグ報告">
                             <MenuItem.Icon>
                                 <Viewbox Width="16" Height="16">
                                     <Canvas Width="24" Height="24">
@@ -1014,16 +997,7 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="バグ報告 (JP)" Command="{Binding MenuCommand}" CommandParameter="Help_BugsReport_JP">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource BugIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Discordサーバー (英語公式)" Command="{Binding MenuCommand}" CommandParameter="Help_Discord">
+                        <MenuItem Header="Discordサーバー">
                             <MenuItem.Icon>
                                 <Viewbox Width="16" Height="16">
                                     <Canvas Width="24" Height="24">
@@ -1032,15 +1006,8 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Discordサーバー (JP)" Command="{Binding MenuCommand}" CommandParameter="Help_Discord_JP">
-                            <MenuItem.Icon>
-                                <Viewbox Width="16" Height="16">
-                                    <Canvas Width="24" Height="24">
-                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource DiscordIcon}" />
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="{DynamicResource Menu_Versioning}" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
                         <MenuItem Header="FModelについて" Command="{Binding MenuCommand}" CommandParameter="Help_About">
                             <MenuItem.Icon>
                                 <Viewbox Width="16" Height="16">
@@ -2047,7 +2014,7 @@
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Width="180" Height="210" Margin="6" CornerRadius="8"                                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                                                <Border Width="150" Height="170" Margin="6" CornerRadius="12"                                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                                                         BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
                                                         BorderThickness="1"
                                                         RenderTransformOrigin="0.5,0.5">
@@ -2055,7 +2022,7 @@
                                                         <ScaleTransform ScaleX="1" ScaleY="1" />
                                                     </Border.RenderTransform>
                                                     <Border.Effect>
-                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="8" Opacity="0.1" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
+                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="12" Opacity="0.15" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
                                                     </Border.Effect>
                                                     <Border.Style>
                                                         <Style TargetType="Border">
@@ -2065,8 +2032,8 @@
                                                                     <Trigger.EnterActions>
                                                                         <BeginStoryboard>
                                                                             <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.03" Duration="0:0:0.2" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.03" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.02" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.02" Duration="0:0:0.2" />
                                                                             </Storyboard>
                                                                         </BeginStoryboard>
                                                                     </Trigger.EnterActions>
@@ -2095,10 +2062,10 @@
                                                         </Viewbox>
 
                                                         <Border Grid.Row="1" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
-                                                            CornerRadius="0,0,8,8" Padding="10,8">
+                                                            CornerRadius="0,0,12,12" Padding="12,10">
                                                             <StackPanel>
                                                                 <TextBlock Text="{Binding Header}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
-                                                                       ToolTip="{Binding Header}" HorizontalAlignment="Center" Margin="0,0,0,4" FontSize="13"/>
+                                                                       ToolTip="{Binding Header}" HorizontalAlignment="Left" Margin="0,0,0,4" FontSize="13"/>
                                                                 <Grid>
                                                                     <Grid.ColumnDefinitions>
                                                                         <ColumnDefinition Width="*" />
@@ -2407,7 +2374,7 @@
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Width="160" Height="190" Margin="6" CornerRadius="8"
+                                                <Border Width="150" Height="170" Margin="6" CornerRadius="12"
                                                         Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBackground}"
                                                         BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBorder}"
                                                         BorderThickness="1"
@@ -2416,7 +2383,7 @@
                                                         <ScaleTransform ScaleX="1" ScaleY="1" />
                                                     </Border.RenderTransform>
                                                     <Border.Effect>
-                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="8" Opacity="0.1" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
+                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="12" Opacity="0.15" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
                                                     </Border.Effect>
                                                     <Border.Style>
                                                         <Style TargetType="Border">
@@ -2426,8 +2393,8 @@
                                                                     <Trigger.EnterActions>
                                                                         <BeginStoryboard>
                                                                             <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.03" Duration="0:0:0.2" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.03" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.02" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.02" Duration="0:0:0.2" />
                                                                             </Storyboard>
                                                                         </BeginStoryboard>
                                                                     </Trigger.EnterActions>
@@ -2470,14 +2437,14 @@
                                                         </Viewbox>
 
                                                         <Border Grid.Row="1" Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardSectionBackground}"
-                                                            CornerRadius="0,0,8,8" Padding="10,8">
+                                                            CornerRadius="0,0,12,12" Padding="12,10">
                                                             <StackPanel>
                                                                  <TextBlock controls:WeaponCardNameLoader.GameFile="{Binding}"
                                                                      controls:HighlightText.Text="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}"
                                                                        controls:HighlightText.Highlight="{Binding Text, ElementName=NewExplorerSearchBox}"
                                                                        controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
-                                                                       FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
-                                                                     ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}" HorizontalAlignment="Center" Margin="0,0,0,4" FontSize="12"/>
+                                                                       FontWeight="SemiBold" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"
+                                                                     ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}" Margin="0,0,0,4" FontSize="12"/>
                                                                 <Border Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Background}"
                                                                     BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Border}"
                                                                     BorderThickness="1"
