@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2020 Shiqan")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Fortnite Replay reader")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8a1c4d0956fda22f6ef0caba6a179d454374322")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bfda04c9d6b9499b9705f760e66a2ac9285a348c")]
 [assembly: System.Reflection.AssemblyProductAttribute("FortniteReplayReader")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FortniteReplayReader")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

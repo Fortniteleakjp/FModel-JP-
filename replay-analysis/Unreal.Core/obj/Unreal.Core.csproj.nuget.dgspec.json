@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {}
+    "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {}
   },
   "projects": {
-    "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
+    "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
+        "projectUniqueName": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
         "projectName": "Unreal.Core",
-        "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
+        "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
         "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-        "outputPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\obj\\",
+        "outputPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [

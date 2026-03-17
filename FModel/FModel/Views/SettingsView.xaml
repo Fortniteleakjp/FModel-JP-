@@ -407,6 +407,56 @@
                                 <ComboBoxItem Content="{DynamicResource Settings_FModelLanguage_OptionJapanese}" Tag="Japanese" />
                             </ComboBox>
 
+                            <Expander Margin="0 8 0 5" Header="ツイート共有の事前設定" Style="{StaticResource ExpanderButtonLikeHeader}">
+                                <Grid Margin="0,4,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                                              Margin="0 0 0 8"
+                                              Content="選択中の背景URLを優先して共有する"
+                                              IsChecked="{Binding TweetUseSelectedBackgroundUrl, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"/>
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0 0 0 5" Text="共有URL"/>
+                                    <TextBox Grid.Row="1" Grid.Column="2" Margin="0 0 0 5"
+                                             Text="{Binding TweetShareUrl, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" Margin="0 0 0 5" Text="本文"/>
+                                    <TextBox Grid.Row="2" Grid.Column="2" Margin="0 0 0 5"
+                                             TextWrapping="Wrap" AcceptsReturn="True" MinHeight="48"
+                                             Text="{Binding TweetShareText, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0 0 0 5" Text="メンション"/>
+                                    <TextBox Grid.Row="3" Grid.Column="2" Margin="0 0 0 5"
+                                             Text="{Binding TweetShareVia, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0 0 0 5" Text="hashtags"/>
+                                    <TextBox Grid.Row="4" Grid.Column="2" Margin="0 0 0 5"
+                                             Text="{Binding TweetShareHashtags, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                    <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="0 5 0 0" Text="ハッシュタグの位置"/>
+                                    <ComboBox Grid.Row="5" Grid.Column="2" Margin="0 5 0 0"
+                                              SelectedValue="{Binding TweetHashtagPosition, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
+                                              SelectedValuePath="Tag">
+                                        <ComboBoxItem Content="別パラメーター（既定）" Tag="{x:Static model:ETweetHashtagPosition.Separate}"/>
+                                        <ComboBoxItem Content="本文の前" Tag="{x:Static model:ETweetHashtagPosition.BeforeText}"/>
+                                        <ComboBoxItem Content="本文終了後" Tag="{x:Static model:ETweetHashtagPosition.AfterText}"/>
+                                        <ComboBoxItem Content="本文から改行した場所" Tag="{x:Static model:ETweetHashtagPosition.AfterTextNewLine}"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Expander>
+
                             <Grid Margin="0 5 0 0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>

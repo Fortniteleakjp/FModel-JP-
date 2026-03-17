@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using System.Net.Http;
@@ -14,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AdonisUI.Controls;
 using FModel.Extensions;
+using FModel.Settings;
+using FModel;
 using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Win32;
 using Newtonsoft.Json;
@@ -28,6 +31,7 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
 {
     private const string ApiUrl = "https://fortnitecontent-website-prod07.ol.epicgames.com/content/api/pages/fortnite-game/dynamicbackgrounds";
     private const string StatusWebSocketUrl = "wss://fljpapi.jp/api/v3/fortnitestatus";
+    private const string TweetShareBaseUrl = "https://twitter.com/share";
     private static readonly HttpClient HttpClient = new() { Timeout = TimeSpan.FromSeconds(15) };
 
     private readonly DispatcherTimer _refreshTimer;
@@ -62,6 +66,12 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
     private static readonly Brush DownPrimaryText = CreateBrush("#FFECEE");
     private static readonly Brush DownSecondaryText = CreateBrush("#FF9FAA");
     private static readonly Brush DownEditorBackground = CreateBrush("#24171A");
+    private static readonly Brush NeutralBadgeBackground = CreateBrush("#264A5C73");
+    private static readonly Brush NeutralBadgeBorder = CreateBrush("#5096C4E8");
+    private static readonly Brush UpBadgeBackground = CreateBrush("#2A1C6A3D");
+    private static readonly Brush UpBadgeBorder = CreateBrush("#667BE9A2");
+    private static readonly Brush DownBadgeBackground = CreateBrush("#3A5A1E25");
+    private static readonly Brush DownBadgeBorder = CreateBrush("#88F28C99");
 
     public DynamicBackgroundApiWindow(int initialTab = 0)
     {
@@ -180,30 +190,39 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
             var fnstatus = root["fnstatus"] as JObject;
             var queue = root["queue"] as JObject;
 
+            var gameName = fnstatus?["name"]?.ToString()
+                ?? root["game"]?.ToString()
+                ?? root["name"]?.ToString()
+                ?? "Fortnite";
             var serviceId = fnstatus?["serviceInstanceId"]?.ToString() ?? "-";
-            var status = fnstatus?["status"]?.ToString() ?? "-";
+            var rawStatus = fnstatus?["status"]?.ToString() ?? "-";
             var message = fnstatus?["message"]?.ToString() ?? root["message"]?.ToString() ?? "-";
-            var queueActive = queue?["active"]?.ToString() ?? "-";
-            var expectedWait = queue?["expectedWait"]?.Type == JTokenType.Null
-                ? "null"
-                : queue?["expectedWait"]?.ToString() ?? "-";
+            var queueActiveToken = queue?["active"];
+            var queueActive = queueActiveToken?.ToString() ?? "-";
+            var expectedWaitToken = queue?["expectedWait"];
             var maintenanceCount = root["maintenance"] is JArray m ? m.Count.ToString() : "0";
+            var displayStatus = FormatStatusLabel(rawStatus);
+            var displayQueueState = FormatQueueState(queueActiveToken);
+            var displayWait = FormatExpectedWait(expectedWaitToken, queueActiveToken);
 
             await Dispatcher.InvokeAsync(() =>
             {
                 StatusJsonEditor.Document ??= new TextDocument();
                 StatusJsonEditor.Document.Text = root.ToString(Formatting.Indented);
 
+                GameNameTextBlock.Text = gameName;
                 ServiceInstanceIdTextBlock.Text = serviceId;
-                FortniteStatusTextBlock.Text = status;
+                FortniteStatusTextBlock.Text = displayStatus;
+                RawStatusTextBlock.Text = rawStatus;
+                StatusBadgeTextBlock.Text = displayStatus;
                 FortniteMessageTextBlock.Text = message;
-                QueueActiveTextBlock.Text = queueActive;
-                QueueWaitTextBlock.Text = expectedWait;
+                QueueActiveTextBlock.Text = displayQueueState;
+                QueueWaitTextBlock.Text = displayWait;
                 MaintenanceCountTextBlock.Text = maintenanceCount;
                 StatusUpdatedAtTextBlock.Text = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
                 StatusApiStateTextBlock.Text = "受信中 (リアルタイム更新)";
                 StatusTextBlock.Text = $"ステータス更新: {DateTime.Now:yyyy/MM/dd HH:mm:ss}";
-                ApplyStatusTheme(status);
+                ApplyStatusTheme(rawStatus);
             });
         }
         catch (Exception ex)
@@ -227,6 +246,8 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
         Brush primaryText;
         Brush secondaryText;
         Brush editorBackground;
+        Brush badgeBackground;
+        Brush badgeBorder;
 
         switch (normalized)
         {
@@ -238,6 +259,8 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
                 primaryText = UpPrimaryText;
                 secondaryText = UpSecondaryText;
                 editorBackground = UpEditorBackground;
+                badgeBackground = UpBadgeBackground;
+                badgeBorder = UpBadgeBorder;
                 break;
             case "DOWN":
                 cardBackground = DownCardBackground;
@@ -247,6 +270,8 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
                 primaryText = DownPrimaryText;
                 secondaryText = DownSecondaryText;
                 editorBackground = DownEditorBackground;
+                badgeBackground = DownBadgeBackground;
+                badgeBorder = DownBadgeBorder;
                 break;
             default:
                 cardBackground = NeutralCardBackground;
@@ -256,6 +281,8 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
                 primaryText = NeutralPrimaryText;
                 secondaryText = NeutralSecondaryText;
                 editorBackground = NeutralEditorBackground;
+                badgeBackground = NeutralBadgeBackground;
+                badgeBorder = NeutralBadgeBorder;
                 break;
         }
 
@@ -265,11 +292,16 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
         StatusJsonBorder.BorderBrush = cardBorder;
         FooterStatusBorder.Background = footerBackground;
         FooterStatusBorder.BorderBrush = footerBorder;
+        StatusBadgeBorder.Background = badgeBackground;
+        StatusBadgeBorder.BorderBrush = badgeBorder;
 
         StatusHeaderTextBlock.Foreground = primaryText;
         StatusApiStateTextBlock.Foreground = secondaryText;
+        GameNameTextBlock.Foreground = primaryText;
         ServiceInstanceIdTextBlock.Foreground = primaryText;
         FortniteStatusTextBlock.Foreground = primaryText;
+        RawStatusTextBlock.Foreground = primaryText;
+        StatusBadgeTextBlock.Foreground = primaryText;
         FortniteMessageTextBlock.Foreground = primaryText;
         QueueActiveTextBlock.Foreground = primaryText;
         QueueWaitTextBlock.Foreground = primaryText;
@@ -284,6 +316,62 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
         var brush = (SolidColorBrush)new BrushConverter().ConvertFromString(hex)!;
         brush.Freeze();
         return brush;
+    }
+
+    private static string FormatStatusLabel(string? status)
+    {
+        return status?.Trim().ToUpperInvariant() switch
+        {
+            "UP" => "稼働中",
+            "DOWN" => "停止中 / 障害中",
+            null or "" or "-" => "状態不明",
+            _ => status!
+        };
+    }
+
+    private static string FormatQueueState(JToken? queueActiveToken)
+    {
+        if (queueActiveToken is null || queueActiveToken.Type == JTokenType.Null)
+            return "不明";
+
+        if (queueActiveToken.Type == JTokenType.Boolean)
+            return queueActiveToken.Value<bool>() ? "あり" : "なし";
+
+        var raw = queueActiveToken.ToString();
+        if (bool.TryParse(raw, out var isActive))
+            return isActive ? "あり" : "なし";
+
+        return raw;
+    }
+
+    private static string FormatExpectedWait(JToken? expectedWaitToken, JToken? queueActiveToken)
+    {
+        var queueActive = IsQueueActive(queueActiveToken);
+        if (!queueActive)
+            return "待機列なし";
+
+        if (expectedWaitToken is null || expectedWaitToken.Type == JTokenType.Null)
+            return "未定";
+
+        if (expectedWaitToken.Type == JTokenType.Integer || expectedWaitToken.Type == JTokenType.Float)
+        {
+            var rawNumber = expectedWaitToken.Value<double>();
+            return rawNumber > 0 ? $"{rawNumber:0.#}" : "未定";
+        }
+
+        var raw = expectedWaitToken.ToString();
+        return string.IsNullOrWhiteSpace(raw) ? "未定" : raw;
+    }
+
+    private static bool IsQueueActive(JToken? queueActiveToken)
+    {
+        if (queueActiveToken is null || queueActiveToken.Type == JTokenType.Null)
+            return false;
+
+        if (queueActiveToken.Type == JTokenType.Boolean)
+            return queueActiveToken.Value<bool>();
+
+        return bool.TryParse(queueActiveToken.ToString(), out var isActive) && isActive;
     }
 
     private async void OnRefreshNowClick(object sender, RoutedEventArgs e)
@@ -481,6 +569,88 @@ public partial class DynamicBackgroundApiWindow : AdonisWindow
         {
             MessageBox.Show($"画像のコピーに失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    private void OnTweetClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var shareUrl = BuildTweetShareUrl(
+                ResolveTweetTargetUrl(),
+                UserSettings.Default.TweetShareText,
+                UserSettings.Default.TweetShareVia,
+                UserSettings.Default.TweetShareHashtags,
+                UserSettings.Default.TweetHashtagPosition);
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = shareUrl,
+                UseShellExecute = true
+            });
+
+            StatusTextBlock.Text = "ツイート画面を開きました。";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"ツイート画面の起動に失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private string ResolveTweetTargetUrl()
+    {
+        if (UserSettings.Default.TweetUseSelectedBackgroundUrl &&
+            BackgroundsListBox.SelectedItem is DynamicBackgroundEntry selected &&
+            !string.IsNullOrWhiteSpace(selected.BackgroundImage))
+        {
+            return selected.BackgroundImage;
+        }
+
+        return string.IsNullOrWhiteSpace(UserSettings.Default.TweetShareUrl)
+            ? string.Empty
+            : UserSettings.Default.TweetShareUrl.Trim();
+    }
+
+    private static string BuildTweetShareUrl(string url, string text, string via, string hashtags, ETweetHashtagPosition hashtagPosition)
+    {
+        var queryParts = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(url))
+            queryParts.Add($"url={Uri.EscapeDataString(url)}");
+
+        var finalText = EmbedHashtagsInText(text, hashtags, hashtagPosition);
+        if (!string.IsNullOrWhiteSpace(finalText))
+            queryParts.Add($"text={Uri.EscapeDataString(finalText)}");
+
+        if (!string.IsNullOrWhiteSpace(via))
+            queryParts.Add($"via={Uri.EscapeDataString(via)}");
+
+        if (hashtagPosition == ETweetHashtagPosition.Separate && !string.IsNullOrWhiteSpace(hashtags))
+            queryParts.Add($"hashtags={Uri.EscapeDataString(hashtags)}");
+
+        var query = string.Join("&", queryParts);
+        return string.IsNullOrWhiteSpace(query)
+            ? TweetShareBaseUrl
+            : $"{TweetShareBaseUrl}?{query}";
+    }
+
+    private static string EmbedHashtagsInText(string text, string hashtags, ETweetHashtagPosition position)
+    {
+        if (position == ETweetHashtagPosition.Separate || string.IsNullOrWhiteSpace(hashtags))
+            return text;
+
+        var tags = hashtags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (tags.Length == 0)
+            return text;
+
+        var hashtagStr = string.Join(" ", tags.Select(t => t.StartsWith('#') ? t : $"#{t}"));
+
+        return position switch
+        {
+            ETweetHashtagPosition.BeforeText => string.IsNullOrWhiteSpace(text) ? hashtagStr : $"{hashtagStr} {text}",
+            ETweetHashtagPosition.AfterText => string.IsNullOrWhiteSpace(text) ? hashtagStr : $"{text} {hashtagStr}",
+            ETweetHashtagPosition.AfterTextNewLine => string.IsNullOrWhiteSpace(text) ? hashtagStr : $"{text}\n{hashtagStr}",
+            _ => text
+        };
     }
 
     private sealed class DynamicBackgroundEntry

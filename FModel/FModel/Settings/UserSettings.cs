@@ -116,6 +116,54 @@ namespace FModel.Settings
             set => SetProperty(ref _showChangelog, value);
         }
 
+        private string _tweetShareUrl = "https://www.fortnite.com/";
+        [JsonProperty]
+        public string TweetShareUrl
+        {
+            get => _tweetShareUrl;
+            set => SetProperty(ref _tweetShareUrl, value);
+        }
+
+        private string _tweetShareText = "テスト";
+        [JsonProperty]
+        public string TweetShareText
+        {
+            get => _tweetShareText;
+            set => SetProperty(ref _tweetShareText, value);
+        }
+
+        private string _tweetShareVia = "FModelApp";
+        [JsonProperty]
+        public string TweetShareVia
+        {
+            get => _tweetShareVia;
+            set => SetProperty(ref _tweetShareVia, value);
+        }
+
+        private string _tweetShareHashtags = "Fortnite";
+        [JsonProperty]
+        public string TweetShareHashtags
+        {
+            get => _tweetShareHashtags;
+            set => SetProperty(ref _tweetShareHashtags, value);
+        }
+
+        private bool _tweetUseSelectedBackgroundUrl = true;
+        [JsonProperty]
+        public bool TweetUseSelectedBackgroundUrl
+        {
+            get => _tweetUseSelectedBackgroundUrl;
+            set => SetProperty(ref _tweetUseSelectedBackgroundUrl, value);
+        }
+
+        private ETweetHashtagPosition _tweetHashtagPosition = ETweetHashtagPosition.Separate;
+        [JsonProperty]
+        public ETweetHashtagPosition TweetHashtagPosition
+        {
+            get => _tweetHashtagPosition;
+            set => SetProperty(ref _tweetHashtagPosition, value);
+        }
+
         private string _outputDirectory;
         [JsonProperty]
         public string OutputDirectory
