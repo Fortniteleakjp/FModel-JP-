@@ -407,8 +407,11 @@
                                 <ComboBoxItem Content="{DynamicResource Settings_FModelLanguage_OptionJapanese}" Tag="Japanese" />
                             </ComboBox>
 
-                            <Expander Margin="0 8 0 5" Header="ツイート共有の事前設定" Style="{StaticResource ExpanderButtonLikeHeader}">
-                                <Grid Margin="0,4,0,0">
+                            <Expander Margin="0 8 0 5" Style="{StaticResource ExpanderButtonLikeHeader}">
+                                <Expander.Header>
+                                    <TextBlock Text="ツイート共有の事前設定" Foreground="White"/>
+                                </Expander.Header>
+                                <Grid Margin="0,4,0,0" TextElement.Foreground="White">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
