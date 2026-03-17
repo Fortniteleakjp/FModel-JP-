@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2020 SL-x-TnT, Shiqan")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Open source Kraken / Mermaid / Selkie / Leviathan / LZNA / Bitknit decompressor")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3dba1cc7dc003a59caf3110ada3f3792fe2f221f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+caaedaa20adc8da7b72956a0f76e47e0322e32ba")]
 [assembly: System.Reflection.AssemblyProductAttribute("OozSharp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OozSharp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
