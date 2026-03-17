@@ -15,6 +15,48 @@ namespace CUE4Parse.MappingsProvider
         public Dictionary<int, PropertyInfo> Properties;
         public int PropertyCount;
 
+        private static bool TryResolveTypeMapping(TypeMappings? context, string typeName, out Struct? mapping)
+        {
+            mapping = null;
+            if (context == null || string.IsNullOrEmpty(typeName)) return false;
+
+            static string ExtractSimpleTypeName(string name)
+            {
+                var slash = name.LastIndexOf('/');
+                if (slash >= 0 && slash + 1 < name.Length) name = name[(slash + 1)..];
+
+                var dot = name.LastIndexOf('.');
+                if (dot >= 0 && dot + 1 < name.Length) name = name[(dot + 1)..];
+
+                return name;
+            }
+
+            static bool TryByKey(TypeMappings localContext, string key, out Struct? resolved)
+            {
+                resolved = null;
+                if (string.IsNullOrEmpty(key)) return false;
+                if (localContext.Types.TryGetValue(key, out resolved)) return true;
+
+                var withUPrefix = key.StartsWith("U", StringComparison.Ordinal) ? key : "U" + key;
+                if (!ReferenceEquals(withUPrefix, key) && localContext.Types.TryGetValue(withUPrefix, out resolved)) return true;
+
+                if (key.StartsWith("U", StringComparison.Ordinal) && key.Length > 1)
+                {
+                    var withoutUPrefix = key[1..];
+                    if (localContext.Types.TryGetValue(withoutUPrefix, out resolved)) return true;
+                }
+
+                return false;
+            }
+
+            if (TryByKey(context, typeName, out mapping)) return true;
+
+            var simpleName = ExtractSimpleTypeName(typeName);
+            if (!string.Equals(simpleName, typeName, StringComparison.Ordinal) && TryByKey(context, simpleName, out mapping)) return true;
+
+            return false;
+        }
+
         public Struct(TypeMappings? context, string name, int propertyCount)
         {
             Context = context;
@@ -27,7 +69,7 @@ namespace CUE4Parse.MappingsProvider
             SuperType = superType;
             Super = new Lazy<Struct?>(() =>
             {
-                if (SuperType != null && Context != null && Context.Types.TryGetValue(SuperType, out var superStruct))
+                if (SuperType != null && TryResolveTypeMapping(Context, SuperType, out var superStruct))
                 {
                     return superStruct;
                 }
@@ -65,34 +107,47 @@ namespace CUE4Parse.MappingsProvider
 
     public class SerializedStruct : Struct
     {
-        public SerializedStruct(TypeMappings? context, UStruct struc) : base(context, struc.Name, struc.ChildProperties.Length)
+        private static int GetChildPropertyCount(UStruct struc) => struc.ChildProperties?.Length ?? 0;
+
+        public SerializedStruct(TypeMappings? context, UStruct struc) : base(context, struc.Name, GetChildPropertyCount(struc))
         {
             Super = new Lazy<Struct?>(() =>
             {
-                //if (struc.SuperStruct.TryLoad<UStruct>(out var superStruct))
-                var superStruct = struc.SuperStruct.Load<UStruct>();
-                if (superStruct != null)
+                UStruct? superStruct = null;
+                if (struc.SuperStruct is { IsNull: false })
                 {
-                    if (superStruct is UScriptClass)
-                    {
-                        if (Context != null && Context.Types.TryGetValue(superStruct.Name, out var scriptStruct))
-                        {
-                            return scriptStruct;
-                        }
-
-                        Log.Warning("Missing prop mappings for type {0}", superStruct.Name);
-                        return null;
-                    }
-
-                    return new SerializedStruct(Context, superStruct);
+                    // Use TryLoad to avoid NullReference/parse failures while building fallback mappings.
+                    struc.SuperStruct.TryLoad(out superStruct);
                 }
 
-                return null;
+                if (superStruct == null)
+                {
+                    return null;
+                }
+
+                if (superStruct is UScriptClass)
+                {
+                    if (Context != null && Context.Types.TryGetValue(superStruct.Name, out var scriptStruct))
+                    {
+                        return scriptStruct;
+                    }
+
+                    Log.Warning("Missing prop mappings for type {0}", superStruct.Name);
+                    return null;
+                }
+
+                return new SerializedStruct(Context, superStruct);
             });
             Properties = new Dictionary<int, PropertyInfo>();
-            for (var i = 0; i < struc.ChildProperties.Length; i++)
+            var childProperties = struc.ChildProperties;
+            if (childProperties == null)
             {
-                var prop = (FProperty) struc.ChildProperties[i];
+                return;
+            }
+
+            for (var i = 0; i < childProperties.Length; i++)
+            {
+                var prop = (FProperty) childProperties[i];
                 var propInfo = new PropertyInfo(Math.Min(i, prop.ArrayDim - 1), prop.Name.Text, new PropertyType(prop), prop.ArrayDim);
                 for (var j = 0; j < prop.ArrayDim; j++)
                 {

@@ -15,8 +15,10 @@ public class TabSizeConverter : IMultiValueConverter
             return 0;
 
         var hasDivider = parameter is string;
-        var width = tabControl.ActualWidth / (hasDivider ? double.Parse(parameter.ToString() ?? "6") : tabControl.Items.Count);
-        return width <= 1 ? 0 : width - (hasDivider ? 8 : 0);
+        var divisor = hasDivider ? double.Parse(parameter?.ToString() ?? "6") : Math.Max(tabControl.Items.Count, 1);
+        var availableWidth = Math.Max(0, tabControl.ActualWidth - tabControl.Padding.Left - tabControl.Padding.Right - 4);
+        var width = availableWidth / divisor;
+        return width <= 1 ? 0 : Math.Max(0, width - (hasDivider ? 8 : 2));
     }
 
     public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)

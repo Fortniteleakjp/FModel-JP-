@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {}
+    "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {}
   },
   "projects": {
-    "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
+    "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
+        "projectUniqueName": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
         "projectName": "Unreal.Core",
-        "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
+        "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
         "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-        "outputPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\obj\\",
+        "outputPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -51,7 +51,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -78,7 +78,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0": {
           "targetAlias": "net9.0",
@@ -104,7 +104,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

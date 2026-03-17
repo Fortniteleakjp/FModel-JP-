@@ -186,7 +186,7 @@ public partial class SettingsView
 
     private void OpenOptions(object sender, RoutedEventArgs e)
     {
-        var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedOptions, "Versioning Configuration (Options)");
+        var editor = new DictionaryEditor(_applicationView.SettingsView.SelectedOptions, "バージョン設定（オプション）");
         var result = editor.ShowDialog();
         if (!result.HasValue || !result.Value)
             return;

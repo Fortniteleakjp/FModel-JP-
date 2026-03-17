@@ -52,6 +52,18 @@ public enum EBruteForceAesMode
     Gpu
 }
 
+public enum ETweetHashtagPosition
+{
+    [Description("別パラメーター（既定）")]
+    Separate,
+    [Description("本文の前")]
+    BeforeText,
+    [Description("本文終了後")]
+    AfterText,
+    [Description("本文から改行した場所")]
+    AfterTextNewLine
+}
+
 public enum EDiscordRpc
 {
     [Description("常に表示")]

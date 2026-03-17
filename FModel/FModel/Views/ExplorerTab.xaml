@@ -11,7 +11,7 @@
     <Grid>
         <TreeView x:Name="ExplorerTreeView" ItemsSource="{Binding Items}">
             <TreeView.ItemContainerStyle>
-                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemStyle}">
+                <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
                 </Style>
             </TreeView.ItemContainerStyle>
@@ -31,6 +31,9 @@
                     <MenuItem Header="{DynamicResource Ctx_OpenNewTab}" Click="OnOpenNewTabClick" />
                     <MenuItem Header="{DynamicResource Ctx_ShowMetadata}" Click="OnShowMetadataClick" />
                     <MenuItem Header="{DynamicResource Ctx_OpenReferenceViewer}" Click="OnOpenReferenceViewerClick" />
+                    <Separator />
+                    <MenuItem Header="{DynamicResource Ctx_AddToCart}" Click="OnAddToCartClick" />
+                    <MenuItem Header="{DynamicResource Ctx_RemoveFromCart}" Click="OnRemoveFromCartClick" />
                     <Separator />
                     <MenuItem Header="{DynamicResource Ctx_SaveAsFormat}" Click="OnSaveAsClick" />
                     <MenuItem Header="{DynamicResource Ctx_SaveJson}" Click="OnSaveJsonClick" />

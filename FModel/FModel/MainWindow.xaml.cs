@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Windows;
@@ -47,6 +48,9 @@ public partial class MainWindow
     private const string ExplorerTabHeader = "NEW エクスプローラー";
     private FModel.ViewModels.TabItem _explorerTabVm;
     private readonly List<string> _newExplorerLocationHistory = new();
+    private const string ExportTypeCacheMiss = "__EXPORT_TYPE_MISS__";
+    private readonly object _assetExportTypeCacheLock = new();
+    private readonly Dictionary<string, string> _assetExportTypeCache = new(StringComparer.OrdinalIgnoreCase);
     private int _newExplorerLocationHistoryIndex = -1;
     private bool _isNavigatingNewExplorerHistory;
     private void OnNewExplorerChecked(object sender, RoutedEventArgs e)
@@ -244,6 +248,11 @@ public partial class MainWindow
     private void OnDynamicBackgroundApiClick(object sender, RoutedEventArgs e)
     {
         new Views.DynamicBackgroundApiWindow().Show();
+    }
+
+    private void OnFortniteStatusApiClick(object sender, RoutedEventArgs e)
+    {
+        new Views.DynamicBackgroundApiWindow(initialTab: 2).Show();
     }
 
     private async void OnCloudStorageHotfixClick(object sender, RoutedEventArgs e)
@@ -690,6 +699,14 @@ public partial class MainWindow
         if (parameter is not string filePath || string.IsNullOrEmpty(filePath))
             return;
 
+        await OpenAssetPathAsync(filePath, true);
+    }
+
+    private async Task OpenAssetPathAsync(string filePath, bool addToRecent)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+            return;
+
         if (_applicationView.CUE4Parse.Provider.TryGetGameFile(filePath, out var gameFile))
         {
             var selectedItems = new List<GameFile> { gameFile };
@@ -712,8 +729,8 @@ public partial class MainWindow
             FLogger.Append(ELog.Warning, () => FLogger.Text($"Failed to open recent file: {filePath}. File not found in provider.", Constants.RED, true));
         }
 
-        // Add to recent files (and ensure no duplicates, limit size)
-        AddFileToRecent(filePath);
+        if (addToRecent)
+            AddFileToRecent(filePath);
     }
 
     private void OnClearRecentFiles(object? parameter)
@@ -785,6 +802,319 @@ public partial class MainWindow
         }
 
         UserSettings.Save();
+    }
+
+    public void AddAssetPathToExportCart(string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+            return;
+
+        if (UserSettings.Default.ExportCartPaths.Contains(filePath, StringComparer.OrdinalIgnoreCase))
+        {
+            FLogger.Append(ELog.Information, () => FLogger.Text($"Already in export cart: {filePath}", Constants.WHITE, true));
+            return;
+        }
+
+        UserSettings.Default.ExportCartPaths.Add(filePath);
+        UserSettings.Save();
+        FLogger.Append(ELog.Information, () => FLogger.Text($"Added to export cart: {filePath}", Constants.WHITE, true));
+    }
+
+    public void RemoveAssetPathFromExportCart(string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+            return;
+
+        var existingPath = UserSettings.Default.ExportCartPaths
+            .FirstOrDefault(path => path.Equals(filePath, StringComparison.OrdinalIgnoreCase));
+        if (existingPath == null)
+            return;
+
+        UserSettings.Default.ExportCartPaths.Remove(existingPath);
+        UserSettings.Save();
+        FLogger.Append(ELog.Information, () => FLogger.Text($"Removed from export cart: {filePath}", Constants.WHITE, true));
+    }
+
+    public void AddAssetsToExportCart(IEnumerable<GameFile> files)
+    {
+        var addedCount = 0;
+        foreach (var file in files.Where(file => file != null))
+        {
+            if (string.IsNullOrWhiteSpace(file.Path) || UserSettings.Default.ExportCartPaths.Contains(file.Path, StringComparer.OrdinalIgnoreCase))
+                continue;
+
+            UserSettings.Default.ExportCartPaths.Add(file.Path);
+            addedCount++;
+        }
+
+        if (addedCount <= 0)
+        {
+            FLogger.Append(ELog.Information, () => FLogger.Text("Export cart was unchanged.", Constants.WHITE, true));
+            return;
+        }
+
+        UserSettings.Save();
+        FLogger.Append(ELog.Information, () => FLogger.Text($"Added {addedCount} asset(s) to export cart.", Constants.WHITE, true));
+    }
+
+    public void RemoveAssetsFromExportCart(IEnumerable<GameFile> files)
+    {
+        var removedCount = 0;
+        foreach (var file in files.Where(file => file != null))
+        {
+            if (string.IsNullOrWhiteSpace(file.Path))
+                continue;
+
+            var existingPath = UserSettings.Default.ExportCartPaths
+                .FirstOrDefault(path => path.Equals(file.Path, StringComparison.OrdinalIgnoreCase));
+            if (existingPath == null)
+                continue;
+
+            UserSettings.Default.ExportCartPaths.Remove(existingPath);
+            removedCount++;
+        }
+
+        if (removedCount <= 0)
+        {
+            FLogger.Append(ELog.Information, () => FLogger.Text("No selected assets were in the export cart.", Constants.WHITE, true));
+            return;
+        }
+
+        UserSettings.Save();
+        FLogger.Append(ELog.Information, () => FLogger.Text($"Removed {removedCount} asset(s) from export cart.", Constants.WHITE, true));
+    }
+
+    public async Task ExportAssetCartAsync()
+    {
+        var cartPaths = UserSettings.Default.ExportCartPaths
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (cartPaths.Length == 0)
+        {
+            MessageBox.Show(this, "カートは空です。先にアセットを追加してください。", "エクスポートカート", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var exportTargets = new List<GameFile>(cartPaths.Length);
+        var missingPaths = new List<string>();
+        foreach (var cartPath in cartPaths)
+        {
+            if (_applicationView.CUE4Parse.Provider.TryGetGameFile(cartPath, out var gameFile))
+                exportTargets.Add(gameFile);
+            else
+                missingPaths.Add(cartPath);
+        }
+
+        if (exportTargets.Count == 0)
+        {
+            MessageBox.Show(this, "カート内のアセットを現在のプロバイダーで解決できませんでした。ゲームディレクトリかカート内容を確認してください。", "エクスポートカート", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var exportedCount = 0;
+        var failedCount = 0;
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            foreach (var entry in exportTargets)
+            {
+                Thread.Yield();
+                cancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    ExportCartAsset(cancellationToken, entry);
+                    exportedCount++;
+                }
+                catch (Exception ex)
+                {
+                    failedCount++;
+                    Log.Error(ex, "Failed to export cart asset {Path}", entry.Path);
+                }
+            }
+        });
+
+        foreach (var missingPath in missingPaths)
+        {
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Cart asset not found in provider: {missingPath}", Constants.YELLOW, true));
+        }
+
+        MessageBox.Show(this,
+            $"エクスポート完了: {exportedCount} 件\n失敗: {failedCount} 件\n未解決: {missingPaths.Count} 件",
+            "エクスポートカート",
+            MessageBoxButton.OK,
+            failedCount > 0 || missingPaths.Count > 0 ? MessageBoxImage.Warning : MessageBoxImage.Information);
+    }
+
+    private void ExportCartAsset(CancellationToken cancellationToken, GameFile entry)
+    {
+        if (TryGetEncodedAudioExtension(entry, out var encodedAudioExtension))
+        {
+            ExportEncodedAudioAsWav(entry, encodedAudioExtension);
+            return;
+        }
+
+        if (!entry.IsUePackage)
+        {
+            _applicationView.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Properties | EBulkType.Auto);
+            return;
+        }
+
+        if (TryGetAssetExportType(entry, out var exportType))
+        {
+            if (IsSoundWaveExportType(exportType))
+            {
+                _applicationView.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Audio | EBulkType.Auto);
+                return;
+            }
+
+            if (IsTextureExportType(exportType))
+            {
+                _applicationView.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Properties | EBulkType.Auto);
+                _applicationView.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Textures | EBulkType.Auto);
+                return;
+            }
+        }
+
+        _applicationView.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Properties | EBulkType.Auto);
+    }
+
+    private static bool TryGetEncodedAudioExtension(GameFile entry, out string extension)
+    {
+        extension = entry.Extension?.ToLowerInvariant();
+        if (extension is "rada" or "binka")
+            return true;
+
+        if (entry.Name.EndsWith(".rada", StringComparison.OrdinalIgnoreCase))
+        {
+            extension = "rada";
+            return true;
+        }
+
+        if (entry.Name.EndsWith(".binka", StringComparison.OrdinalIgnoreCase))
+        {
+            extension = "binka";
+            return true;
+        }
+
+        return false;
+    }
+
+    private static void ExportEncodedAudioAsWav(GameFile entry, string extension)
+    {
+        var data = entry.Read();
+        var relativePath = UserSettings.Default.KeepDirectoryStructure
+            ? entry.PathWithoutExtension
+            : entry.NameWithoutExtension;
+
+        if (relativePath.StartsWith('/'))
+            relativePath = relativePath[1..];
+
+        var destinationPath = Path.Combine(UserSettings.Default.AudioDirectory, relativePath.Replace('/', Path.DirectorySeparatorChar)) + ".wav";
+        Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
+
+        var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        if (AudioPlayerViewModel.TryDecode(extension, tempPath, data, out var wavPath))
+        {
+            if (File.Exists(destinationPath))
+                File.Delete(destinationPath);
+
+            File.Move(wavPath, destinationPath);
+            Log.Information("Successfully saved {FilePath}", destinationPath);
+            return;
+        }
+
+        throw new InvalidOperationException($"Failed to decode encoded audio '{entry.Path}' as {extension}.");
+    }
+
+    private static bool IsTextureExportType(string exportType)
+        => exportType.Contains("Texture", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsSoundWaveExportType(string exportType)
+        => exportType.Contains("SoundWave", StringComparison.OrdinalIgnoreCase);
+
+    private static IReadOnlyList<GameFile> GetSelectedGameFilesFromContextMenu(object sender)
+    {
+        if (sender is not FrameworkElement { Parent: ContextMenu { PlacementTarget: ListBox listBox } })
+            return Array.Empty<GameFile>();
+
+        return listBox.SelectedItems.Cast<object?>().OfType<GameFile>().ToArray();
+    }
+
+    private void OnAddAssetsToCartClick(object sender, RoutedEventArgs e)
+    {
+        AddAssetsToExportCart(GetSelectedGameFilesFromContextMenu(sender));
+    }
+
+    private void OnRemoveAssetsFromCartClick(object sender, RoutedEventArgs e)
+    {
+        RemoveAssetsFromExportCart(GetSelectedGameFilesFromContextMenu(sender));
+    }
+
+    private async void OnExportCartClick(object sender, RoutedEventArgs e)
+    {
+        await ExportAssetCartAsync();
+    }
+
+    private void OnShowExportCartClick(object sender, RoutedEventArgs e)
+    {
+        var cartPaths = UserSettings.Default.ExportCartPaths
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        if (cartPaths.Length == 0)
+        {
+            MessageBox.Show(this, "カートは空です。", "エクスポートカート", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        var cartWindow = new ExportCartWindow(cartPaths)
+        {
+            Owner = this,
+            OpenAssetAsync = path => OpenAssetPathAsync(path, true),
+            RemoveAssetsAction = RemoveAssetPathsFromExportCart
+        };
+        cartWindow.ShowDialog();
+    }
+
+    private void RemoveAssetPathsFromExportCart(IReadOnlyList<string> paths)
+    {
+        if (paths == null || paths.Count <= 0)
+            return;
+
+        var removedCount = 0;
+        foreach (var path in paths.Where(path => !string.IsNullOrWhiteSpace(path)).Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            var existingPath = UserSettings.Default.ExportCartPaths
+                .FirstOrDefault(saved => saved.Equals(path, StringComparison.OrdinalIgnoreCase));
+            if (existingPath == null)
+                continue;
+
+            UserSettings.Default.ExportCartPaths.Remove(existingPath);
+            removedCount++;
+        }
+
+        if (removedCount <= 0)
+            return;
+
+        UserSettings.Save();
+        FLogger.Append(ELog.Information, () => FLogger.Text($"Removed {removedCount} asset(s) from export cart.", Constants.WHITE, true));
+    }
+
+    private void OnClearExportCartClick(object sender, RoutedEventArgs e)
+    {
+        if (UserSettings.Default.ExportCartPaths.Count <= 0)
+            return;
+
+        var result = MessageBox.Show(this, "カートの中身をすべて削除しますか？", "エクスポートカート", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+        if (result != AdonisUI.Controls.MessageBoxResult.OK)
+            return;
+
+        UserSettings.Default.ExportCartPaths.Clear();
+        UserSettings.Save();
+        FLogger.Append(ELog.Information, () => FLogger.Text("Export cart cleared.", Constants.WHITE, true));
     }
 
     //「テスト」内のボタンを押した際に出てくる注意ウインドウ
@@ -966,20 +1296,8 @@ public partial class MainWindow
                     return false;
                 }
 
-                try
-                {
-                    if (_applicationView.CUE4Parse.Provider.TryLoadPackage(file, out var package))
-                    {
-                        var export = package.GetExports().FirstOrDefault();
-                        if (export == null) return false;
-                        return string.Equals(export.ExportType, selectedClass, StringComparison.OrdinalIgnoreCase);
-                    }
-                    return false;
-                }
-                catch
-                {
-                    return false;
-                }
+                return TryGetAssetExportType(file, out var exportType) &&
+                       string.Equals(exportType, selectedClass, StringComparison.OrdinalIgnoreCase);
             }
 
             return true;
@@ -1437,37 +1755,106 @@ public partial class MainWindow
         _applicationView.CUE4Parse.ShowAnimGraph(selectedFiles[0]);
     }
 
-    private void OnAssetListClick(object sender, RoutedEventArgs e)
+    private bool IsFortWeaponRangedItemDefinitionAsset(GameFile file)
+    {
+        if (file == null)
+            return false;
+
+        if (!file.Path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) &&
+            !file.Path.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return TryGetAssetExportType(file, out var exportType) &&
+               string.Equals(exportType, "FortWeaponRangedItemDefinition", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private List<GameFile> BuildSearchResultFiles(string query, bool searchWeaponDefinitionsOnly)
+    {
+        var provider = _applicationView.CUE4Parse.Provider;
+        if (provider?.Files == null || provider.Files.Count == 0)
+            return new List<GameFile>();
+
+        var allFiles = provider.Files.Values
+            .OfType<GameFile>()
+            .DistinctBy(f => f.Path);
+
+        if (searchWeaponDefinitionsOnly)
+        {
+            return allFiles
+                .Where(f => f.Path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) ||
+                            f.Path.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
+                .Where(IsFortWeaponRangedItemDefinitionAsset)
+                .ToList();
+        }
+
+        return allFiles
+            .Where(f => f.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private bool TryGetAssetExportType(GameFile file, out string exportType)
+    {
+        exportType = null;
+        if (file == null)
+            return false;
+
+        lock (_assetExportTypeCacheLock)
+        {
+            if (_assetExportTypeCache.TryGetValue(file.Path, out exportType))
+                return !string.IsNullOrWhiteSpace(exportType) && !string.Equals(exportType, ExportTypeCacheMiss, StringComparison.Ordinal);
+        }
+
+        try
+        {
+            if (!_applicationView.CUE4Parse.Provider.TryLoadPackage(file, out var package))
+            {
+                lock (_assetExportTypeCacheLock)
+                {
+                    _assetExportTypeCache[file.Path] = ExportTypeCacheMiss;
+                }
+                return false;
+            }
+
+            var resolvedType = package.GetExports().FirstOrDefault()?.ExportType;
+            if (string.IsNullOrWhiteSpace(resolvedType))
+            {
+                lock (_assetExportTypeCacheLock)
+                {
+                    _assetExportTypeCache[file.Path] = ExportTypeCacheMiss;
+                }
+                return false;
+            }
+
+            lock (_assetExportTypeCacheLock)
+            {
+                _assetExportTypeCache[file.Path] = resolvedType;
+            }
+
+            exportType = resolvedType;
+            return true;
+        }
+        catch
+        {
+            lock (_assetExportTypeCacheLock)
+            {
+                _assetExportTypeCache[file.Path] = ExportTypeCacheMiss;
+            }
+            return false;
+        }
+    }
+
+    private async void OnAssetListClick(object sender, RoutedEventArgs e)
     {
         if (sender is Button { Tag: string path })
         {
             if (path.StartsWith("Search:"))
             {
                 var query = path.Substring(7);
-                var files = new List<GameFile>();
-                var stack = new Stack<IEnumerable<TreeItem>>();
-
-                if (_applicationView.CUE4Parse.AssetsFolder.Folders != null)
-                    stack.Push(_applicationView.CUE4Parse.AssetsFolder.Folders);
-
-                while (stack.Count > 0)
-                {
-                    var folders = stack.Pop();
-                    foreach (var folder in folders)
-                    {
-                        if (folder.AssetsList?.Assets != null)
-                        {
-                            foreach (var asset in folder.AssetsList.Assets)
-                            {
-                                if (asset is GameFile gf && gf.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
-                                    files.Add(gf);
-                            }
-                        }
-
-                        if (folder.Folders != null && folder.Folders.Count > 0)
-                            stack.Push(folder.Folders);
-                    }
-                }
+                var searchWeaponDefinitionsOnly = string.Equals(query, "WID_", StringComparison.OrdinalIgnoreCase) ||
+                                                  string.Equals(query, "WeaponOnly", StringComparison.OrdinalIgnoreCase);
+                var files = await Task.Run(() => BuildSearchResultFiles(query, searchWeaponDefinitionsOnly));
 
                 if (files.Count > 0)
                 {

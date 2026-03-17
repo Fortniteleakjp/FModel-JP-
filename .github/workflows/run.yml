@@ -14,8 +14,22 @@ jobs:
     steps:
       - name: Git Checkout
         uses: actions/checkout@v6
-        with:
-          submodules: 'recursive'
+
+      - name: Fetch ACL Submodules
+        shell: pwsh
+        run: |
+          $aclPath = "./FModel/CUE4Parse/CUE4Parse-Natives/ACL/external/acl"
+
+          if (-not (Test-Path (Join-Path $aclPath ".git"))) {
+            if (Test-Path $aclPath) {
+              Remove-Item $aclPath -Recurse -Force
+            }
+
+            git clone --depth 1 https://github.com/nfrechette/acl.git $aclPath
+          }
+
+          git -C $aclPath submodule sync --recursive
+          git -C $aclPath -c protocol.version=2 submodule update --init --force --depth=1 --recursive
 
       - name: .NET 10 Setup
         uses: actions/setup-dotnet@v5
@@ -23,7 +37,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: .NET Restore
-        run: dotnet restore FModel/FModel/FModel.csproj
+        run: dotnet restore FModel/FModel/FModel.csproj -r win-x64
 
       - name: .NET Publish
         run: dotnet publish "./FModel/FModel/FModel.csproj" -c Release --no-restore --no-self-contained -r win-x64 -f net10.0-windows -o "./FModel/FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false

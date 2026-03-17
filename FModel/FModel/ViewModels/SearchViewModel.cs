@@ -1,4 +1,5 @@
 ﻿﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -7,6 +8,8 @@ using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
 using System.Windows.Input;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FModel.ViewModels;
 
@@ -16,8 +19,27 @@ public enum ESortMode
     Desc
 }
 
+public enum EAssetTypeFilter
+{
+    All,
+    UAsset,
+    UMap,
+    UExp,
+    UBulk,
+    UPTNL,
+    Texture,
+    Audio,
+    Model,
+    Animation,
+    Other
+}
+
 public class SearchViewModel : ViewModel
 {
+    private static readonly ConcurrentDictionary<string, Regex> RegexCache = new();
+    private CancellationTokenSource? _filterCts;
+    private const int FilterDelayMs = 150;
+
     private ESortMode _sortMode;
     public ESortMode SortMode
     {
@@ -31,25 +53,71 @@ public class SearchViewModel : ViewModel
         }
     }
 
-    private string _filterText;
+    private string _filterText = string.Empty;
     public string FilterText
     {
         get => _filterText;
-        set => SetProperty(ref _filterText, value);
+        set
+        {
+            if (SetProperty(ref _filterText, value))
+            {
+                DebouncedRefreshFilter();
+            }
+        }
+    }
+
+    private string _excludeText = string.Empty;
+    public string ExcludeText
+    {
+        get => _excludeText;
+        set
+        {
+            if (SetProperty(ref _excludeText, value))
+            {
+                DebouncedRefreshFilter();
+            }
+        }
+    }
+
+    private EAssetTypeFilter _assetTypeFilter = EAssetTypeFilter.All;
+    public EAssetTypeFilter AssetTypeFilter
+    {
+        get => _assetTypeFilter;
+        set
+        {
+            if (SetProperty(ref _assetTypeFilter, value))
+            {
+                RefreshFilter();
+            }
+        }
     }
 
     private bool _hasRegexEnabled;
     public bool HasRegexEnabled
     {
         get => _hasRegexEnabled;
-        set => SetProperty(ref _hasRegexEnabled, value);
+        set
+        {
+            if (SetProperty(ref _hasRegexEnabled, value))
+            {
+                RegexCache.Clear();
+                RefreshFilter();
+            }
+        }
     }
 
     private bool _hasMatchCaseEnabled;
     public bool HasMatchCaseEnabled
     {
         get => _hasMatchCaseEnabled;
-        set => SetProperty(ref _hasMatchCaseEnabled, value);
+        set
+        {
+            if (SetProperty(ref _hasMatchCaseEnabled, value))
+            {
+                RegexCache.Clear();
+                RefreshFilter();
+            }
+        }
     }
 
     public int ResultsCount => SearchResults?.Count ?? 0;
@@ -58,6 +126,14 @@ public class SearchViewModel : ViewModel
     public RangeObservableCollection<GameFile> ContentSearchResults { get; }
 
     public ICommand SortCommand { get; }
+
+    public Array AssetTypeFilters => Enum.GetValues(typeof(EAssetTypeFilter));
+
+    // Pre-computed filter sets for performance
+    private static readonly HashSet<string> TextureExtensions = new(StringComparer.OrdinalIgnoreCase) { "png", "jpg", "jpeg", "bmp", "tga", "dds", "hdr" };
+    private static readonly HashSet<string> AudioExtensions = new(StringComparer.OrdinalIgnoreCase) { "wem", "bnk", "ogg", "mp3", "wav" };
+    private static readonly HashSet<string> ModelExtensions = new(StringComparer.OrdinalIgnoreCase) { "psk", "pskx", "fbx", "gltf", "glb" };
+    private static readonly HashSet<string> AnimationExtensions = new(StringComparer.OrdinalIgnoreCase) { "uasset", "ase", "asex" };
 
     public SearchViewModel()
     {
@@ -78,10 +154,25 @@ public class SearchViewModel : ViewModel
         SearchResultsView.SortDescriptions.Add(new SortDescription("Path", direction));
     }
 
+    private void DebouncedRefreshFilter()
+    {
+        _filterCts?.Cancel();
+        _filterCts = new CancellationTokenSource();
+        var token = _filterCts.Token;
+
+        Task.Delay(FilterDelayMs, token).ContinueWith(t =>
+        {
+            if (!t.IsCanceled)
+            {
+                System.Windows.Application.Current?.Dispatcher.Invoke(RefreshFilter);
+            }
+        }, TaskScheduler.Default);
+    }
+
     public void RefreshFilter()
     {
         if (SearchResultsView.Filter == null)
-            SearchResultsView.Filter = e => ItemFilter(e, FilterText.Trim().Split(' '));
+            SearchResultsView.Filter = e => ItemFilter(e, FilterText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries));
         else
             SearchResultsView.Refresh();
     }
@@ -91,11 +182,69 @@ public class SearchViewModel : ViewModel
         if (item is not GameFile entry)
             return true;
 
-        if (!HasRegexEnabled)
-            return filters.All(x => entry.Path.Contains(x, HasMatchCaseEnabled ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+        // Asset type filter - optimized with early exit
+        if (!AssetTypeFilter.Equals(EAssetTypeFilter.All))
+        {
+            var ext = entry.Extension;
+            var passesTypeFilter = AssetTypeFilter switch
+            {
+                EAssetTypeFilter.UAsset => string.Equals(ext, "uasset", StringComparison.OrdinalIgnoreCase),
+                EAssetTypeFilter.UMap => string.Equals(ext, "umap", StringComparison.OrdinalIgnoreCase),
+                EAssetTypeFilter.UExp => string.Equals(ext, "uexp", StringComparison.OrdinalIgnoreCase),
+                EAssetTypeFilter.UBulk => string.Equals(ext, "ubulk", StringComparison.OrdinalIgnoreCase),
+                EAssetTypeFilter.UPTNL => string.Equals(ext, "uptnl", StringComparison.OrdinalIgnoreCase),
+                EAssetTypeFilter.Texture => TextureExtensions.Contains(ext),
+                EAssetTypeFilter.Audio => AudioExtensions.Contains(ext),
+                EAssetTypeFilter.Model => ModelExtensions.Contains(ext),
+                EAssetTypeFilter.Animation => AnimationExtensions.Contains(ext),
+                EAssetTypeFilter.Other => !GameFile.UeKnownExtensionsSet.Contains(ext),
+                _ => true
+            };
 
-        var o = RegexOptions.None;
-        if (!HasMatchCaseEnabled) o |= RegexOptions.IgnoreCase;
-        return new Regex(FilterText, o).Match(entry.Path).Success;
+            if (!passesTypeFilter)
+                return false;
+        }
+
+        // Exclusion filter - optimized with early exit
+        if (!string.IsNullOrWhiteSpace(ExcludeText))
+        {
+            var excludeFilters = ExcludeText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var pathLower = entry.Path;
+            foreach (var exclude in excludeFilters)
+            {
+                if (pathLower.Contains(exclude, StringComparison.OrdinalIgnoreCase))
+                    return false;
+            }
+        }
+
+        // Main filter
+        if (!HasRegexEnabled)
+        {
+            var path = entry.Path;
+            foreach (var filter in filters)
+            {
+                if (!path.Contains(filter, HasMatchCaseEnabled ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                    return false;
+            }
+            return true;
+        }
+
+        // Regex with cache
+        var cacheKey = $"{FilterText}_{HasMatchCaseEnabled}";
+        var regex = RegexCache.GetOrAdd(cacheKey, _ =>
+        {
+            var options = RegexOptions.None;
+            if (!HasMatchCaseEnabled) options |= RegexOptions.IgnoreCase;
+            return new Regex(FilterText, options, TimeSpan.FromSeconds(1));
+        });
+
+        try
+        {
+            return regex.IsMatch(entry.Path);
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return false;
+        }
     }
 }

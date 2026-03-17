@@ -4,6 +4,7 @@
                              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
                              xmlns:behaviors="clr-namespace:FModel.Views.Resources.Behaviors"
                              xmlns:local="clr-namespace:FModel.Views"
+                             xmlns:settings="clr-namespace:FModel.Settings"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
@@ -23,58 +24,192 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <LinearGradientBrush x:Key="FModelJP5WindowBackgroundDark" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#111827" Offset="0" />
+                <GradientStop Color="#1F2937" Offset="0.5" />
+                <GradientStop Color="#0B1220" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="FModelJP5WindowBackgroundLight" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F4F7FB" Offset="0" />
+                <GradientStop Color="#EAF0F8" Offset="0.5" />
+                <GradientStop Color="#DEE7F2" Offset="1" />
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="FModelJP5InputBackgroundDark" Color="#CC0F172A" />
+            <SolidColorBrush x:Key="FModelJP5InputBackgroundLight" Color="#FFFDFEFF" />
+            <SolidColorBrush x:Key="FModelJP5InputBorderDark" Color="#4D93C5FD" />
+            <SolidColorBrush x:Key="FModelJP5InputBorderLight" Color="#334980B8" />
+            <SolidColorBrush x:Key="FModelJP5ActionButtonBackgroundDark" Color="#99213357" />
+            <SolidColorBrush x:Key="FModelJP5ActionButtonBackgroundLight" Color="#FFEAF2FF" />
+            <SolidColorBrush x:Key="FModelJP5ActionButtonBorderDark" Color="#664A90E2" />
+            <SolidColorBrush x:Key="FModelJP5ActionButtonBorderLight" Color="#335C8DC4" />
+            <SolidColorBrush x:Key="FModelJP5ToggleBackgroundDark" Color="#7A1E3A5F" />
+            <SolidColorBrush x:Key="FModelJP5ToggleBackgroundLight" Color="#FFDCEBFF" />
+            <SolidColorBrush x:Key="FModelJP5ToggleBorderDark" Color="#6F5EA3EC" />
+            <SolidColorBrush x:Key="FModelJP5ToggleBorderLight" Color="#4D5B8FCB" />
+
+            <Style x:Key="FModelJP5RoundedButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="10,6" />
+            </Style>
+            <Style x:Key="FModelJP5RoundedToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                <Setter Property="Padding" Value="10,6" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5ToggleBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5ToggleBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border x:Name="ToggleRoot"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="10">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ToggleRoot" Property="Opacity" Value="0.96" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="ToggleRoot" Property="Opacity" Value="0.86" />
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="ToggleRoot" Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                    <Setter TargetName="ToggleRoot" Property="Background" Value="#AA1E3A5F" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5ToggleBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5ToggleBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5RoundedTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+            </Style>
+            <Style x:Key="FModelJP5RoundedComboBox" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+            </Style>
+            <Style x:Key="FModelJP5SearchTextBox" TargetType="TextBox" BasedOn="{StaticResource FModelJP5RoundedTextBox}">
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="12,7" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border CornerRadius="12"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                <ScrollViewer x:Name="PART_ContentHost" Margin="0" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5SearchActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="8,6" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5ActionButtonBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5ActionButtonBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="ButtonBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="10">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.85" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5ActionButtonBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5ActionButtonBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
             <ObjectDataProvider x:Key="SortModeEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
                 <ObjectDataProvider.MethodParameters>
                     <x:Type TypeName="vm:ESortMode"/>
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
+            <ObjectDataProvider x:Key="AssetTypeFilterEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="vm:EAssetTypeFilter"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+
+            <Style TargetType="TextBox" BasedOn="{StaticResource FModelJP5RoundedTextBox}" />
+            <Style TargetType="Button" BasedOn="{StaticResource FModelJP5RoundedButton}" />
+            <Style TargetType="ToggleButton" BasedOn="{StaticResource FModelJP5RoundedToggleButton}" />
+            <Style TargetType="ComboBox" BasedOn="{StaticResource UComboBox}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+            </Style>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
-    <Grid Margin="5 5">
+    <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="{StaticResource FModelJP5WindowBackgroundDark}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5WindowBackgroundLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <GroupBox adonisExtensions:LayerExtension.Layer="2" Padding="{adonisUi:Space 0}" Background="Transparent">
-            <Grid>
+            <Grid Margin="12,10">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" /> <!-- Search -->
+                    <RowDefinition Height="Auto" /> <!-- Filters -->
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="0 0 0 5" ZIndex="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid Grid.Column="0" ZIndex="1" HorizontalAlignment="Left" Margin="5 2 0 0">
-                        <Viewbox Width="16" Height="16">
-                            <Canvas Width="24" Height="24">
-                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
-                            </Canvas>
-                        </Viewbox>
-                    </Grid>
-                    <TextBox x:Name="WpfSuckMyDick" Grid.Column="0" Grid.ColumnSpan="2" Padding="25 0 0 0"
-                             AcceptsTab="False" AcceptsReturn="False">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                                <Setter Property="Text" Value="{Binding CUE4Parse.SearchVm.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="{DynamicResource Search_Placeholder}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CUE4Parse.SearchVm.HasRegexEnabled}" Value="True">
-                                        <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="{DynamicResource Search_Placeholder_Regex}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <ToggleButton ToolTip="{DynamicResource Search_Tooltip_MatchCase}" Padding="5" IsChecked="{Binding CUE4Parse.SearchVm.HasMatchCaseEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                <!-- Search Bar -->
+                <DockPanel Grid.Row="0" Margin="0 0 0 5" LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <TextBlock Text="{DynamicResource Search_Result_Prefix}" FontStyle="Italic" Margin="8,0,0,0" />
+                        <TextBlock Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat='{}{0:### ### ###}'}" FontStyle="Italic" FontWeight="Bold" />
+                        <TextBlock Text="{DynamicResource Search_Result_Suffix}" FontStyle="Italic" />
+                    </StackPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="8,0,0,0">
+                        <ToggleButton ToolTip="{DynamicResource Search_Tooltip_MatchCase}" Padding="5" IsChecked="{Binding CUE4Parse.SearchVm.HasMatchCaseEnabled}" Style="{StaticResource FModelJP5RoundedToggleButton}">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MatchCaseIcon}" />
                                 </Canvas>
                             </Viewbox>
                         </ToggleButton>
-                        <ToggleButton ToolTip="{DynamicResource Search_Tooltip_Regex}" Padding="5" IsChecked="{Binding CUE4Parse.SearchVm.HasRegexEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
+                        <ToggleButton ToolTip="{DynamicResource Search_Tooltip_Regex}" Padding="5" IsChecked="{Binding CUE4Parse.SearchVm.HasRegexEnabled}" Style="{StaticResource FModelJP5RoundedToggleButton}" Margin="5,0,0,0">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource RegexIcon}" />
@@ -83,7 +218,8 @@
                         </ToggleButton>
                         <ComboBox ItemsSource="{Binding Source={StaticResource SortModeEnum}}"
                                   SelectedItem="{Binding CUE4Parse.SearchVm.SortMode}"
-                                  VerticalAlignment="Center" Margin="5,0,0,0">
+                                  VerticalAlignment="Center" Margin="5,0,0,0"
+                                  Style="{StaticResource FModelJP5RoundedComboBox}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock>
@@ -103,7 +239,7 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button ToolTip="{DynamicResource Search_Tooltip_Clear}" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnDeleteSearchClick">
+                        <Button ToolTip="{DynamicResource Search_Tooltip_Clear}" Padding="5" Margin="5,0,0,0" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnDeleteSearchClick">
                             <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                 <Canvas Width="24" Height="24">
                                     <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
@@ -111,14 +247,61 @@
                             </Viewbox>
                         </Button>
                     </StackPanel>
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                        <TextBlock Text="{DynamicResource Search_Result_Prefix}" FontStyle="Italic" />
-                        <TextBlock Text="{Binding CUE4Parse.SearchVm.ResultsCount, FallbackValue=0, StringFormat='{}{0:### ### ###}'}" FontStyle="Italic" />
-                        <TextBlock Text="{DynamicResource Search_Result_Suffix}" FontStyle="Italic" />
-                    </StackPanel>
-                </Grid>
+                    <Grid>
+                        <Grid ZIndex="1" HorizontalAlignment="Left" Margin="8 2 0 0" IsHitTestVisible="False">
+                            <Viewbox Width="16" Height="16">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
+                                </Canvas>
+                            </Viewbox>
+                        </Grid>
+                        <TextBox x:Name="WpfSuckMyDick" Padding="30 7 0 7"
+                                 AcceptsTab="False" AcceptsReturn="False">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox" BasedOn="{StaticResource FModelJP5SearchTextBox}">
+                                    <Setter Property="Text" Value="{Binding CUE4Parse.SearchVm.FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="{DynamicResource Search_Placeholder}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CUE4Parse.SearchVm.HasRegexEnabled}" Value="True">
+                                            <Setter Property="adonisExtensions:WatermarkExtension.Watermark" Value="{DynamicResource Search_Placeholder_Regex}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </Grid>
+                </DockPanel>
 
-                <ListView Grid.Row="1" x:Name="SearchListView" VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding CUE4Parse.SearchVm.SearchResultsView, IsAsync=True}">
+                <!-- Exclusion and Asset Type Filter Row -->
+                <DockPanel Grid.Row="1" Margin="0 5 0 5" LastChildFill="True">
+                    <ComboBox DockPanel.Dock="Right"
+                              ItemsSource="{Binding Source={StaticResource AssetTypeFilterEnum}}"
+                              SelectedItem="{Binding CUE4Parse.SearchVm.AssetTypeFilter}"
+                              Style="{StaticResource FModelJP5RoundedComboBox}"
+                              VerticalAlignment="Center" Margin="5,0,0,0" MinWidth="100">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Grid>
+                        <Grid ZIndex="1" HorizontalAlignment="Left" Margin="8 2 0 0" IsHitTestVisible="False">
+                            <Viewbox Width="16" Height="16">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}" />
+                                </Canvas>
+                            </Viewbox>
+                        </Grid>
+                        <TextBox Padding="30 7 0 7"
+                                 AcceptsTab="False" AcceptsReturn="False"
+                                 Style="{StaticResource FModelJP5SearchTextBox}"
+                                 Text="{Binding CUE4Parse.SearchVm.ExcludeText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 adonisExtensions:WatermarkExtension.Watermark="除外する文字を入力..." />
+                    </Grid>
+                </DockPanel>
+
+                <ListView Grid.Row="2" x:Name="SearchListView" VirtualizingPanel.IsVirtualizing="True" ItemsSource="{Binding CUE4Parse.SearchVm.SearchResultsView, IsAsync=True}">
                     <ListView.Resources>
                         <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -159,7 +342,15 @@
                     </ListView.View>
                     <ListView.Style>
                         <Style TargetType="ListView" BasedOn="{StaticResource {x:Type ListView}}">
+                            <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+                            <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                            <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                            <Setter Property="BorderThickness" Value="1" />
                             <Style.Triggers>
+                                <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                                    <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                                </DataTrigger>
                                 <DataTrigger Binding="{Binding CUE4Parse.SearchVm.SearchResultsView.Count}" Value="0">
                                     <Setter Property="Template">
                                         <Setter.Value>
