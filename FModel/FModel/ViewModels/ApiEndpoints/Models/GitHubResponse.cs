@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using AdonisUI.Controls;
-using AutoUpdaterDotNET;
 using FModel.Framework;
 using FModel.Settings;
 using MessageBox = AdonisUI.Controls.MessageBox;
@@ -67,7 +73,7 @@ public class GitHubCommit : ViewModel
     public string ShortSha => Sha[..7];
     public bool IsDownloadable => Asset != null;
 
-    public void Download()
+    public async void Download()
     {
         if (IsCurrent)
         {
@@ -96,16 +102,110 @@ public class GitHubCommit : ViewModel
 
         try
         {
-            if (AutoUpdater.DownloadUpdate(new UpdateInfoEventArgs { DownloadURL = Asset.BrowserDownloadUrl }))
-            {
-                Application.Current.Shutdown();
-            }
+            await DownloadAndReplaceExecutableAsync();
+
+            MessageBox.Show(
+                "アップデートを適用するため、FModelを終了して再起動します。",
+                "Update FModel",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+
+            Application.Current.Shutdown();
         }
         catch (Exception exception)
         {
             UserSettings.Default.ShowChangelog = false;
             MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    private async Task DownloadAndReplaceExecutableAsync()
+    {
+        var appPath = Constants.APP_PATH;
+        var baseName = Path.GetFileNameWithoutExtension(appPath);
+        var isDllHost = appPath.EndsWith(".dll", StringComparison.OrdinalIgnoreCase);
+
+        var preferredTargetExePath = appPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
+            ? appPath
+            : Path.ChangeExtension(appPath, ".exe");
+
+        var updateRoot = Path.Combine(Path.GetTempPath(), "FModel-Update", Guid.NewGuid().ToString("N"));
+        var zipPath = Path.Combine(updateRoot, "update.zip");
+        var extractDir = Path.Combine(updateRoot, "extracted");
+        var scriptPath = Path.Combine(updateRoot, "apply_update.cmd");
+
+        Directory.CreateDirectory(updateRoot);
+        Directory.CreateDirectory(extractDir);
+
+        using (var httpClient = new HttpClient())
+        {
+            var zipBytes = await httpClient.GetByteArrayAsync(Asset.BrowserDownloadUrl).ConfigureAwait(false);
+            await File.WriteAllBytesAsync(zipPath, zipBytes).ConfigureAwait(false);
+        }
+
+        ZipFile.ExtractToDirectory(zipPath, extractDir, true);
+
+        var candidateFileNames = new[]
+        {
+            Path.GetFileName(preferredTargetExePath),
+            baseName + ".exe",
+            "FModel.exe"
+        }
+        .Where(name => !string.IsNullOrWhiteSpace(name))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
+        var downloadedExe = candidateFileNames
+            .SelectMany(name => Directory.EnumerateFiles(extractDir, name, SearchOption.AllDirectories))
+            .FirstOrDefault();
+
+        if (string.IsNullOrEmpty(downloadedExe))
+            throw new FileNotFoundException($"更新パッケージ内に実行ファイル ({string.Join(", ", candidateFileNames)}) が見つかりませんでした。", zipPath);
+
+        var replacementTargetPath = downloadedExe.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
+            ? preferredTargetExePath
+            : appPath;
+
+        var restartTargetPath = replacementTargetPath;
+        var script = BuildApplyUpdateScript(Environment.ProcessId, downloadedExe, replacementTargetPath, updateRoot, restartTargetPath, isDllHost);
+        File.WriteAllText(scriptPath, script, Encoding.ASCII);
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = $"/C \"{scriptPath}\"",
+            WorkingDirectory = updateRoot,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        });
+    }
+
+    private static string BuildApplyUpdateScript(int currentProcessId, string sourceExePath, string targetExePath, string cleanupDir, string restartTargetPath, bool wasDllHost)
+    {
+        var script = new StringBuilder();
+        script.AppendLine("@echo off");
+        script.AppendLine("setlocal");
+        script.AppendLine($"set \"PID={currentProcessId}\"");
+        script.AppendLine($"set \"SRC={sourceExePath}\"");
+        script.AppendLine($"set \"DST={targetExePath}\"");
+        script.AppendLine($"set \"RUN={restartTargetPath}\"");
+        script.AppendLine($"set \"CLEANUP={cleanupDir}\"");
+        script.AppendLine();
+        script.AppendLine("for /L %%i in (1,1,90) do (");
+        script.AppendLine("  tasklist /FI \"PID eq %PID%\" | findstr /R /C:\" %PID% \" >nul");
+        script.AppendLine("  if errorlevel 1 goto apply");
+        script.AppendLine("  timeout /t 1 /nobreak >nul");
+        script.AppendLine(")");
+        script.AppendLine();
+        script.AppendLine(":apply");
+        script.AppendLine("copy /Y \"%SRC%\" \"%DST%\" >nul");
+        if (wasDllHost && restartTargetPath.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+            script.AppendLine("start \"\" dotnet \"%RUN%\"");
+        else
+            script.AppendLine("start \"\" \"%RUN%\"");
+        script.AppendLine("rmdir /S /Q \"%CLEANUP%\" >nul 2>nul");
+        script.AppendLine("endlocal");
+        return script.ToString();
     }
 }
 
