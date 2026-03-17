@@ -7,11 +7,57 @@
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
         mc:Ignorable="d"
-        Title="API - Dynamic Backgrounds"
+        Title="API info"
         Height="760" Width="1220"
         WindowStartupLocation="CenterScreen"
         Loaded="OnLoaded"
         Closing="OnClosing">
+    <adonisControls:AdonisWindow.Resources>
+        <Style x:Key="HeaderActionButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="8,0,0,0"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="MinWidth" Value="104"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#F4FAFF"/>
+            <Setter Property="Background" Value="#2A2A3D52"/>
+            <Setter Property="BorderBrush" Value="#5B91C4E8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#3A3E5A75"/>
+                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#7BB8E7FF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#3F1A2A3A"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="HeaderPrimaryActionButtonStyle" TargetType="Button" BasedOn="{StaticResource HeaderActionButtonStyle}">
+            <Setter Property="Background" Value="#2E1E6A46"/>
+            <Setter Property="BorderBrush" Value="#79ADEFCC"/>
+        </Style>
+    </adonisControls:AdonisWindow.Resources>
+
     <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -30,28 +76,32 @@
 
             <Border Grid.Row="0" Padding="14" CornerRadius="10" BorderThickness="1" Margin="0,0,0,12"
                     Background="#4D0E1520" BorderBrush="#4D6EB5E8">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0">
-                        <TextBlock Text="Fortnite Lobby Background API" FontSize="20" FontWeight="Bold" Foreground="#E7F4FF"/>
-                        <TextBlock Text="dynamicbackgrounds を40秒ごとに自動更新し、画像・stage・_typeを確認できます。" Margin="0,4,0,0" Opacity="0.9" Foreground="#BFD7EA"/>
-                    </StackPanel>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Fortnite API info" FontSize="20" FontWeight="Bold" Foreground="#E7F4FF"/>
+                            <TextBlock Text="ロビー背景やフォトナのサーバーステータスを確認できます" Margin="0,4,0,0" Opacity="0.9" Foreground="#BFD7EA"/>
+                        </StackPanel>
 
-                    <Button Grid.Column="1" Margin="8,0,0,0" Padding="14,6" Content="今すぐ更新" Click="OnRefreshNowClick"
-                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
-                    <Button Grid.Column="2" Margin="8,0,0,0" Padding="14,6" Content="画像を保存" Click="OnSaveImageClick"/>
-                    <Button Grid.Column="3" Margin="8,0,0,0" Padding="14,6" Content="画像をコピー" Click="OnCopyImageClick"/>
-                </Grid>
+                        <Button Grid.Column="1" Content="今すぐ更新" Click="OnRefreshNowClick" Style="{StaticResource HeaderPrimaryActionButtonStyle}"/>
+                        <Button Grid.Column="2" Content="画像を保存" Click="OnSaveImageClick" Style="{StaticResource HeaderActionButtonStyle}"/>
+                        <Button Grid.Column="3" Content="画像をコピー" Click="OnCopyImageClick" Style="{StaticResource HeaderActionButtonStyle}"/>
+                        <Button Grid.Column="4" Content="ツイート" Click="OnTweetClick" Style="{StaticResource HeaderPrimaryActionButtonStyle}"/>
+                    </Grid>
+
+                </StackPanel>
             </Border>
 
-            <TabControl Grid.Row="1">
-                <TabItem Header="ロビー背景">
+            <TabControl x:Name="ApiTabControl" Grid.Row="1">
+                <TabItem Header="背景">
                     <Grid Margin="10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2.3*"/>
@@ -162,9 +212,138 @@
                         </Border>
                     </Grid>
                 </TabItem>
+
+                <TabItem Header="ステータス">
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.1*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="1.4*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border x:Name="StatusInfoBorder" Grid.Column="0" CornerRadius="10" BorderThickness="1" BorderBrush="#3A7BA8" Background="#3316202A" Padding="14">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0">
+                                    <TextBlock x:Name="StatusHeaderTextBlock" Text="Fortnite Status" FontSize="18" FontWeight="Bold" Foreground="#E7F4FF"/>
+                                    <TextBlock x:Name="StatusApiStateTextBlock" Margin="0,6,0,0" Foreground="#96C4E8" Text="接続待機中..."/>
+                                </StackPanel>
+
+                                <Border Grid.Row="1" Margin="0,14,0,0" Padding="12" CornerRadius="10" Background="#22101A25" BorderBrush="#223A7BA8" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                            <TextBlock Text="ゲーム名" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                            <TextBlock x:Name="GameNameTextBlock" Margin="0,4,0,0" FontSize="22" FontWeight="Bold" Foreground="#E7F4FF" Text="Fortnite"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                            <TextBlock Text="現在の状態" FontWeight="SemiBold" Foreground="#96C4E8" HorizontalAlignment="Right"/>
+                                            <Border x:Name="StatusBadgeBorder" Margin="0,8,0,0" Padding="12,6" CornerRadius="999" Background="#264A5C73" BorderBrush="#5096C4E8" BorderThickness="1">
+                                                <TextBlock x:Name="StatusBadgeTextBlock" FontSize="14" FontWeight="Bold" Foreground="#E7F4FF" Text="待機中"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="2" Margin="0,12,0,0" Padding="12" CornerRadius="10" Background="#22101A25" BorderBrush="#223A7BA8" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="メッセージ" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                        <TextBlock x:Name="FortniteMessageTextBlock" Margin="0,8,0,0" Foreground="#E7F4FF" Text="-" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Grid Grid.Row="3" Margin="0,12,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Row="0" Grid.Column="0" Padding="12" CornerRadius="10" Background="#22101A25" BorderBrush="#223A7BA8" BorderThickness="1">
+                                        <StackPanel>
+                                            <TextBlock Text="待機列" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                            <TextBlock x:Name="QueueActiveTextBlock" Margin="0,8,0,0" FontSize="18" FontWeight="Bold" Foreground="#E7F4FF" Text="-"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Row="0" Grid.Column="2" Padding="12" CornerRadius="10" Background="#22101A25" BorderBrush="#223A7BA8" BorderThickness="1">
+                                        <StackPanel>
+                                            <TextBlock Text="推定待ち時間" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                            <TextBlock x:Name="QueueWaitTextBlock" Margin="0,8,0,0" FontSize="18" FontWeight="Bold" Foreground="#E7F4FF" Text="-" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Row="1" Grid.Column="0" Margin="0,10,0,0" Padding="12" CornerRadius="10" Background="#22101A25" BorderBrush="#223A7BA8" BorderThickness="1">
+                                        <StackPanel>
+                                            <TextBlock Text="メンテナンス件数" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                            <TextBlock x:Name="MaintenanceCountTextBlock" Margin="0,8,0,0" FontSize="18" FontWeight="Bold" Foreground="#E7F4FF" Text="0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Row="1" Grid.Column="2" Margin="0,10,0,0" Padding="12" CornerRadius="10" Background="#22101A25" BorderBrush="#223A7BA8" BorderThickness="1">
+                                        <StackPanel>
+                                            <TextBlock Text="最終受信" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                            <TextBlock x:Name="StatusUpdatedAtTextBlock" Margin="0,8,0,0" FontSize="16" FontWeight="SemiBold" Foreground="#E7F4FF" Text="-" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <Border Grid.Row="4" Margin="0,12,0,0" Padding="12" CornerRadius="10" Background="#1C0E1520" BorderBrush="#223A7BA8" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="12"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="ステータス" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="2" x:Name="FortniteStatusTextBlock" Foreground="#E7F4FF" Text="-"/>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Text="serviceInstanceId" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="2" Margin="0,8,0,0" x:Name="ServiceInstanceIdTextBlock" Foreground="#E7F4FF" Text="-" TextWrapping="Wrap"/>
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Text="raw status" FontWeight="SemiBold" Foreground="#96C4E8"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="2" Margin="0,8,0,0" x:Name="RawStatusTextBlock" Foreground="#E7F4FF" Text="-"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <Border x:Name="StatusJsonBorder" Grid.Column="2" CornerRadius="10" BorderThickness="1" BorderBrush="#3A7BA8" Background="#3316202A" Padding="1">
+                            <avalonedit:TextEditor x:Name="StatusJsonEditor"
+                                                   Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                                   FontFamily="Consolas"
+                                                   FontSize="9pt"
+                                                   IsReadOnly="True"
+                                                   ShowLineNumbers="True"
+                                                   Foreground="#DAE5F2" />
+                        </Border>
+                    </Grid>
+                </TabItem>
             </TabControl>
 
-            <Border Grid.Row="2" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="#4D6EB5E8" Background="#40101724" Margin="0,10,0,0">
+            <Border x:Name="FooterStatusBorder" Grid.Row="2" Padding="8" CornerRadius="8" BorderThickness="1" BorderBrush="#4D6EB5E8" Background="#40101724" Margin="0,10,0,0">
                 <TextBlock x:Name="StatusTextBlock" Text="読み込み待機中..." Foreground="#BFD7EA"/>
             </Border>
         </Grid>

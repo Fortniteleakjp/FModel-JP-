@@ -30,10 +30,20 @@ namespace CUE4Parse_Conversion.Meshes;
 
 public static class MeshConverter
 {
-    public static bool TryConvert(this USkeleton originalSkeleton, out List<CSkelMeshBone> bones, out FBox box)
+    public static bool TryConvert(this USkeleton? originalSkeleton, out List<CSkelMeshBone> bones, out FBox box)
     {
         bones = new List<CSkelMeshBone>();
         box = new FBox();
+
+        if (originalSkeleton == null ||
+            originalSkeleton.ReferenceSkeleton == null ||
+            originalSkeleton.ReferenceSkeleton.FinalRefBoneInfo == null ||
+            originalSkeleton.ReferenceSkeleton.FinalRefBonePose == null ||
+            originalSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length == 0)
+        {
+            return false;
+        }
+
         for (var i = 0; i < originalSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length; i++)
         {
             var skeletalMeshBone = new CSkelMeshBone

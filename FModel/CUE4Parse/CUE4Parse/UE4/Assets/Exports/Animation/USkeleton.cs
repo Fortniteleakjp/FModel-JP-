@@ -15,7 +15,7 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
     public class USkeleton : UObject
     {
         public EBoneTranslationRetargetingMode[] BoneTree { get; private set; }
-        public FReferenceSkeleton ReferenceSkeleton { get; private set; }
+        public FReferenceSkeleton ReferenceSkeleton { get; private set; } = new();
         public FGuid Guid { get; private set; }
         public FGuid VirtualBoneGuid { get; private set; }
         public Dictionary<FName, FReferencePose> AnimRetargetSources { get; private set; }
@@ -24,7 +24,9 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
         public FPackageIndex[] Sockets { get; private set; }
         public FVirtualBone[] VirtualBones { get; private set; }
 
-        public int BoneCount => ReferenceSkeleton.FinalRefBoneInfo.Length;
+        public int BoneCount => ReferenceSkeleton?.FinalRefBoneInfo?.Length ?? 0;
+
+        public bool IsReferenceSkeletonValid => ReferenceSkeleton != null && ReferenceSkeleton.FinalRefBoneInfo != null && ReferenceSkeleton.FinalRefBoneInfo.Length > 0;
 
         public override void Deserialize(FAssetArchive Ar, long validPos)
         {

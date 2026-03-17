@@ -4,12 +4,107 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+        xmlns:settings="clr-namespace:FModel.Settings"
         mc:Ignorable="d"
         Title="{DynamicResource ReplayAnalysis_Title}"
         Height="600" Width="1000"
         WindowStartupLocation="CenterScreen">
+    <adonisControls:AdonisWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Resources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <LinearGradientBrush x:Key="ReplayJP5WindowBackgroundDark" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#111827" Offset="0" />
+                <GradientStop Color="#1F2937" Offset="0.52" />
+                <GradientStop Color="#0B1220" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ReplayJP5WindowBackgroundLight" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F4F7FB" Offset="0" />
+                <GradientStop Color="#EAF0F8" Offset="0.52" />
+                <GradientStop Color="#DEE7F2" Offset="1" />
+            </LinearGradientBrush>
+            <Style x:Key="ReplayJP5Card" TargetType="Border">
+                <Setter Property="CornerRadius" Value="14" />
+                <Setter Property="Padding" Value="10" />
+                <Setter Property="Background" Value="#2B111827" />
+                <Setter Property="BorderBrush" Value="#33000000" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#EFFFFFFF" />
+                        <Setter Property="BorderBrush" Value="#22111C2E" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ReplayJP5TextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="8,5" />
+            </Style>
+            <Style x:Key="ReplayJP5PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Padding" Value="12,7" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                <Setter Property="BorderBrush" Value="#664A90E2" />
+                <Setter Property="BorderThickness" Value="1" />
+            </Style>
+            <Style x:Key="ReplayJP5TabItem" TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                <Setter Property="Padding" Value="14,8" />
+                <Setter Property="Margin" Value="0,0,6,0" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Background" Value="#7A1E3A5F" />
+                <Setter Property="BorderBrush" Value="#7A5EA3EC" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Foreground" Value="#FF1F2937" />
+                        <Setter Property="Background" Value="#FFF4F8FE" />
+                        <Setter Property="BorderBrush" Value="#4D5B8FCB" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ReplayJP5TabControl" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+                <Setter Property="ItemContainerStyle" Value="{StaticResource ReplayJP5TabItem}" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+                <Setter Property="Background" Value="#24111A2B" />
+                <Setter Property="BorderBrush" Value="#3D8FB7E8" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="4" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#EFFFFFFF" />
+                        <Setter Property="BorderBrush" Value="#336797C9" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ReplayJP5DataGrid" TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="#3D8FB7E8" />
+                <Setter Property="Background" Value="#24111A2B" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#FFFDFEFF" />
+                        <Setter Property="BorderBrush" Value="#336797C9" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </adonisControls:AdonisWindow.Resources>
     <Grid Margin="10">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="{StaticResource ReplayJP5WindowBackgroundDark}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource ReplayJP5WindowBackgroundLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -18,23 +113,26 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,0,0,10">
+        <Border Grid.Row="0" Margin="0,0,0,10" Style="{StaticResource ReplayJP5Card}">
+            <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="ReplayFilePathTextBox" Grid.Column="0" Margin="0,0,10,0" IsReadOnly="True" VerticalContentAlignment="Center" adonisExtensions:WatermarkExtension.Watermark="{DynamicResource ReplayAnalysis_Watermark_SelectReplay}"/>
-            <Button x:Name="SelectReplayFileButton" Grid.Column="1" Content="..." Padding="10,5" Click="OnSelectReplayFileClick" ToolTip="{DynamicResource ReplayAnalysis_Tooltip_SelectFile}"/>
-        </Grid>
+            <TextBox x:Name="ReplayFilePathTextBox" Grid.Column="0" Margin="0,0,10,0" Style="{StaticResource ReplayJP5TextBox}" IsReadOnly="True" VerticalContentAlignment="Center" adonisExtensions:WatermarkExtension.Watermark="{DynamicResource ReplayAnalysis_Watermark_SelectReplay}"/>
+            <Button x:Name="SelectReplayFileButton" Grid.Column="1" Style="{StaticResource ReplayJP5PrimaryButton}" Content="..." Padding="10,5" Click="OnSelectReplayFileClick" ToolTip="{DynamicResource ReplayAnalysis_Tooltip_SelectFile}"/>
+            </Grid>
+        </Border>
 
-        <Grid Grid.Row="1" Margin="0,0,0,10">
+        <Border Grid.Row="1" Margin="0,0,0,10" Style="{StaticResource ReplayJP5Card}">
+            <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <GroupBox Grid.Column="0" Header="{DynamicResource ReplayAnalysis_Header_AnalysisMode}">
+            <GroupBox Grid.Column="0" Header="{DynamicResource ReplayAnalysis_Header_AnalysisMode}" Margin="0,0,8,0">
                 <StackPanel Orientation="Horizontal" Margin="5">
                     <RadioButton x:Name="EventsOnlyRadioButton" Content="{DynamicResource ReplayAnalysis_Mode_EventsOnly}" GroupName="AnalysisMode" IsChecked="True" Margin="5"/>
                     <RadioButton x:Name="MinimalRadioButton" Content="{DynamicResource ReplayAnalysis_Mode_Minimal}" GroupName="AnalysisMode" Margin="5"/>
@@ -43,17 +141,21 @@
                 </StackPanel>
             </GroupBox>
 
-            <Button Grid.Column="1" x:Name="StartAnalysisButton" Content="{DynamicResource ReplayAnalysis_Button_Start}" Padding="20,5" Click="OnStartAnalysisClick" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <Button Grid.Column="2" x:Name="SaveJsonButton" Content="{DynamicResource ReplayAnalysis_Button_SaveJson}" Padding="20,5" Click="OnSaveJsonClick" VerticalAlignment="Center" Margin="10,0,0,0" IsEnabled="False"/>
-        </Grid>
+            <Button Grid.Column="1" x:Name="StartAnalysisButton" Style="{StaticResource ReplayJP5PrimaryButton}" Content="{DynamicResource ReplayAnalysis_Button_Start}" Padding="20,5" Click="OnStartAnalysisClick" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <Button Grid.Column="2" x:Name="SaveJsonButton" Style="{StaticResource ReplayJP5PrimaryButton}" Content="{DynamicResource ReplayAnalysis_Button_SaveJson}" Padding="20,5" Click="OnSaveJsonClick" VerticalAlignment="Center" Margin="10,0,0,0" IsEnabled="False"/>
+            </Grid>
+        </Border>
 
-        <Grid Grid.Row="2" Margin="0,0,0,10">
-            <TextBox x:Name="FilterTextBox" TextChanged="OnFilterTextChanged" adonisExtensions:WatermarkExtension.Watermark="{DynamicResource ReplayAnalysis_Watermark_SearchPlayer}"/>
-        </Grid>
+        <Border Grid.Row="2" Margin="0,0,0,10" Style="{StaticResource ReplayJP5Card}">
+            <Grid>
+                <TextBox x:Name="FilterTextBox" Style="{StaticResource ReplayJP5TextBox}" TextChanged="OnFilterTextChanged" adonisExtensions:WatermarkExtension.Watermark="{DynamicResource ReplayAnalysis_Watermark_SearchPlayer}"/>
+            </Grid>
+        </Border>
 
-        <TabControl Grid.Row="3">
+        <Border Grid.Row="3" Style="{StaticResource ReplayJP5Card}" Padding="8">
+            <TabControl Style="{StaticResource ReplayJP5TabControl}">
             <TabItem Header="{DynamicResource ReplayAnalysis_Tab_EliminationList}">
-                <DataGrid x:Name="AnalysisResultDataGrid" IsReadOnly="True" AutoGenerateColumns="False" MouseDoubleClick="OnDataGridMouseDoubleClick">
+                <DataGrid x:Name="AnalysisResultDataGrid" Style="{StaticResource ReplayJP5DataGrid}" IsReadOnly="True" AutoGenerateColumns="False" MouseDoubleClick="OnDataGridMouseDoubleClick">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="{DynamicResource ReplayAnalysis_Header_Time}" Binding="{Binding Time, StringFormat='hh\\:mm\\:ss'}"/>
                         <DataGridTextColumn Header="{DynamicResource ReplayAnalysis_Header_Eliminator}" Binding="{Binding Eliminator}" Width="*"/>
@@ -70,7 +172,7 @@
                         <TextBlock x:Name="MostKillsTextBlock" Text="-" Margin="0,0,0,15" FontSize="14"/>
 
                         <TextBlock Text="{DynamicResource ReplayAnalysis_Label_WeaponRanking}" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
-                        <DataGrid x:Name="WeaponRankingDataGrid" AutoGenerateColumns="False" IsReadOnly="True" Height="300" CanUserAddRows="False">
+                        <DataGrid x:Name="WeaponRankingDataGrid" Style="{StaticResource ReplayJP5DataGrid}" AutoGenerateColumns="False" IsReadOnly="True" Height="300" CanUserAddRows="False">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="{DynamicResource ReplayAnalysis_Header_Weapon}" Binding="{Binding Key}" Width="*"/>
                                 <DataGridTextColumn Header="{DynamicResource ReplayAnalysis_Header_KillCount}" Binding="{Binding Value}" Width="100"/>
@@ -83,14 +185,15 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         <TextBlock Text="{DynamicResource ReplayAnalysis_Label_Branch}" FontWeight="Bold" Margin="0,0,0,5"/>
-                        <TextBox x:Name="BranchTextBox" IsReadOnly="True" Margin="0,0,0,15"/>
+                        <TextBox x:Name="BranchTextBox" Style="{StaticResource ReplayJP5TextBox}" IsReadOnly="True" Margin="0,0,0,15"/>
 
                         <TextBlock Text="{DynamicResource ReplayAnalysis_Label_LevelNamesAndTimes}" FontWeight="Bold" Margin="0,0,0,5"/>
                         <ListBox x:Name="LevelNamesListBox" Height="200"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-        </TabControl>
+            </TabControl>
+        </Border>
 
         <ProgressBar Grid.Row="4" x:Name="AnalysisProgressBar" Height="10" Margin="0,10,0,0" IsIndeterminate="True" Visibility="Collapsed"/>
         <TextBlock Grid.Row="4" Margin="0,25,0,0" HorizontalAlignment="Center" Foreground="Gray" FontSize="12" TextWrapping="Wrap" Text="{DynamicResource ReplayAnalysis_Footer_Attribution}"/>

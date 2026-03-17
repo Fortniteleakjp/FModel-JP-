@@ -12,7 +12,7 @@
          Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.30'}">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}" >
-            <Setter Property="Title" Value="AES Manager" />
+            <Setter Property="Title" Value="{DynamicResource Menu_Directory_AES}" />
         </Style>
     </adonisControls:AdonisWindow.Style>
     <adonisControls:AdonisWindow.Resources>
@@ -20,24 +20,96 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <!-- JP5.0 Resources -->
+            <LinearGradientBrush x:Key="FModelJP5WindowBackgroundDark" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#111827" Offset="0" />
+                <GradientStop Color="#1F2937" Offset="0.5" />
+                <GradientStop Color="#0B1220" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="FModelJP5WindowBackgroundLight" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F4F7FB" Offset="0" />
+                <GradientStop Color="#EAF0F8" Offset="0.5" />
+                <GradientStop Color="#DEE7F2" Offset="1" />
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="FModelJP5InputBackgroundDark" Color="#CC0F172A" />
+            <SolidColorBrush x:Key="FModelJP5InputBackgroundLight" Color="#FFFDFEFF" />
+            <SolidColorBrush x:Key="FModelJP5InputBorderDark" Color="#4D93C5FD" />
+            <SolidColorBrush x:Key="FModelJP5InputBorderLight" Color="#334980B8" />
+            <Style x:Key="FModelJP5Card" TargetType="Border">
+                <Setter Property="CornerRadius" Value="14" />
+                <Setter Property="Padding" Value="12" />
+                <Setter Property="Background" Value="#2B111827" />
+                <Setter Property="BorderBrush" Value="#33000000" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#EFFFFFFF" />
+                        <Setter Property="BorderBrush" Value="#22111C2E" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5AesTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundDark}" />
+                <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderDark}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Padding" Value="10,6" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5InputBackgroundLight}" />
+                        <Setter Property="BorderBrush" Value="{StaticResource FModelJP5InputBorderLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="FModelJP5PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="12,8" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                <Setter Property="BorderBrush" Value="#664A90E2" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+            </Style>
+            <Style x:Key="FModelJP5SecondaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="12,8" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Background" Value="#99213357" />
+                <Setter Property="BorderBrush" Value="#664A90E2" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#FFEAF2FF" />
+                        <Setter Property="BorderBrush" Value="#335C8DC4" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="{StaticResource FModelJP5WindowBackgroundDark}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource FModelJP5WindowBackgroundLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10 5 10 10">
-            <TextBlock Text="説明" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
-            <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" MaxWidth="576"
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10,12,10,10">
+            <TextBlock Text="{DynamicResource Menu_Directory_AES}" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" MaxWidth="576" Margin="0,8,0,0" Opacity="0.8"
                        Text="アーカイブの情報を解析するには、ほとんどの場合 AESキーが必要です。ここでは、復号化および暗号化アーカイブに使用するキーを設定できます。使用するキーが分からない場合は、 Google で 'fortnite-aes-archive' と検索してください。キーは「0x」で始まり、その後に64文字の英数字が続く必要があります。" />
         </StackPanel>
 
-        <GroupBox Grid.Row="1" adonisExtensions:LayerExtension.Layer="2" Margin="10 10 10 10"
-                  Padding="{adonisUi:Space 0}" Background="Transparent">
+        <Border Grid.Row="1" Style="{StaticResource FModelJP5Card}" Margin="10,0,10,10">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition SharedSizeGroup="Name" Width="Auto" />
@@ -50,16 +122,17 @@
                     <ItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding AesManager.AesKeysView, UpdateSourceTrigger=PropertyChanged}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid Margin="0 2.5 0 2.5">
+                                <Grid Margin="0,4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition SharedSizeGroup="Name" />
                                         <ColumnDefinition Width="10" />
                                         <ColumnDefinition SharedSizeGroup="Key" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right"
+                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Opacity="0.9"
                                                Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBox Grid.Column="2" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch"
+                                             Style="{StaticResource FModelJP5AesTextBox}"
                                              Text="{Binding Key, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinWidth="450" />
                                 </Grid>
                             </DataTemplate>
@@ -67,13 +140,9 @@
                     </ItemsControl>
                 </ScrollViewer>
             </Grid>
-        </GroupBox>
+        </Border>
 
-        <GroupBox Grid.Row="2"
-                  adonisExtensions:LayerExtension.Layer="2"
-                  Margin="10 10 10 18"
-                  Padding="{adonisUi:Space 0}"
-                  Background="Transparent"
+        <Border Grid.Row="2" Style="{StaticResource FModelJP5Card}" Margin="10,0,10,10"
                   Visibility="{Binding IsDiffDirectoryAvailable}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -90,7 +159,7 @@
                                   ItemsSource="{Binding AesManager.DiffAesKeysView, UpdateSourceTrigger=PropertyChanged}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid Margin="0 2.5 0 2.5">
+                                <Grid Margin="0,4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition SharedSizeGroup="Name" />
                                         <ColumnDefinition Width="10" />
@@ -99,10 +168,11 @@
 
                                     <TextBlock Grid.Column="0"
                                                VerticalAlignment="Center"
-                                               HorizontalAlignment="Right"
+                                               HorizontalAlignment="Right" Opacity="0.9"
                                                Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBox Grid.Column="2"
                                              HorizontalContentAlignment="Left"
+                                             Style="{StaticResource FModelJP5AesTextBox}"
                                              HorizontalAlignment="Stretch"
                                              Text="{Binding Key, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              MinWidth="450" />
@@ -112,25 +182,22 @@
                     </ItemsControl>
                 </ScrollViewer>
             </Grid>
-        </GroupBox>
+        </Border>
 
         <Border Grid.Row="3"
                 Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
-                adonisExtensions:LayerExtension.IncreaseLayer="True">
-            <Grid Margin="30, 12, 6, 12">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="決定" Click="OnClick" />
-                <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="再読み込み" Click="OnRefreshAes"
+                adonisExtensions:LayerExtension.IncreaseLayer="True"
+                CornerRadius="0,0,12,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="12">
+                <Button MinWidth="78" IsDefault="False"  IsCancel="False"
+                        Style="{StaticResource FModelJP5SecondaryButton}"
+                        Content="再読み込み" Click="OnRefreshAes"
                         Visibility="{Binding Converter={x:Static converters:EndpointToTypeConverter.Instance}, ConverterParameter={x:Static local:EEndpointType.Aes}}">
                 </Button>
-            </Grid>
+                <Button MinWidth="78" Margin="8,0,0,0" IsDefault="True" IsCancel="False"
+                        Style="{StaticResource FModelJP5PrimaryButton}"
+                        Content="決定" Click="OnClick" />
+            </StackPanel>
         </Border>
     </Grid>
 </adonisControls:AdonisWindow>

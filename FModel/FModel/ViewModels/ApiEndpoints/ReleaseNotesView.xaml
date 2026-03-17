@@ -17,27 +17,30 @@
 
             <Section>
                 <Paragraph FontWeight="Bold" FontSize="18">
-                    <Run x:Name="VersionRun">v4.4.9.3</Run>
+                    <Run x:Name="VersionRun">v5.0.0.0</Run>
                     <Run> 主な変更点</Run>
                 </Paragraph>
-                <BlockUIContainer>
-                    <Image Source="https://i.imgur.com/rEkyvUg.png" Stretch="Uniform" MaxHeight="400" Margin="0,10"/>
-                </BlockUIContainer>
                 <List>
                     <ListItem>
-                        <Paragraph><Run>NEW エクスプローラーでクラス名の色カードを追加</Run></Paragraph>
+                        <Paragraph><Run>FModelJP 5.0 としてメインUIを全面刷新し、全体のレイアウトと操作感を見直しました</Run></Paragraph>
                     </ListItem>
                     <ListItem>
-                        <Paragraph><Run>Animation blueprint(FModel本家のプルリク(656 /LoogLong))で他のアセットも対応(β版)</Run></Paragraph>
+                        <Paragraph><Run>ダークテーマ / ライトテーマの切り替えに対応し、設定画面や各種サブウィンドウのデザインも新UI基準で統一しました</Run></Paragraph>
                     </ListItem>
                     <ListItem>
-                        <Paragraph><Run>Brute Force AES の検証ロジックを改善し、AesManager と同系統の実復号判定（Provider SubmitKey / mount）で正否を判定するように変更</Run></Paragraph>
+                        <Paragraph><Run>ロビー背景APIウィンドウを追加し、ロビー背景の確認に加えてフォートナイトのサーバーの監視もできるようになりました</Run></Paragraph>
                     </ListItem>
                     <ListItem>
-                        <Paragraph><Run>設定に Brute Force AES モードを追加（従来 CPU / GPU 使用）</Run></Paragraph>
+                        <Paragraph><Run>CloudStorage Hotfix の適用機能を追加し、開いているアセットに対してホットフィックスを手動・自動で反映できるようになりました</Run></Paragraph>
                     </ListItem>
                     <ListItem>
-                        <Paragraph><Run>一部メッシュを正常に開けるように修正</Run></Paragraph>
+                        <Paragraph><Run>検索画面を強化し、除外ワード指定、アセット種別フィルター、正規表現検索の改善で目的のファイルを探しやすくしました</Run></Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph><Run>エクスポートカートと右クリックメニューを追加し、複数アセットの一括管理とエクスポートがしやすくなりました</Run></Paragraph>
+                    </ListItem>
+                    <ListItem>
+                        <Paragraph><Run>アニメーション周りの読み込み処理を改善し、一部アニメーションや関連アセットがより正常に開けるようになりました</Run></Paragraph>
                     </ListItem>
                 </List>
             </Section>

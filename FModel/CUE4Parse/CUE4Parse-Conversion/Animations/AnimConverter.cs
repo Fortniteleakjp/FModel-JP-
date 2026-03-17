@@ -116,9 +116,9 @@ namespace CUE4Parse_Conversion.Animations
             return animSet;
         }
 
-        private static CAnimSequence ConvertSequence(this UAnimSequence animSequence, USkeleton skeleton)
+        private static CAnimSequence ConvertSequence(this UAnimSequence animSequence, USkeleton? skeleton)
         {
-            var animSeq = new CAnimSequence(animSequence, skeleton);
+            var animSeq = new CAnimSequence(animSequence, skeleton ?? throw new ArgumentNullException(nameof(skeleton)));
 
             var numBones = skeleton.BoneCount;
             if (animSequence.RawAnimationData is { Length: > 0 })

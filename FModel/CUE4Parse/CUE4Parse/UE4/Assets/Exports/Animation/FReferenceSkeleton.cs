@@ -9,11 +9,18 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation;
 [JsonConverter(typeof(FReferenceSkeletonConverter))]
 public class FReferenceSkeleton
 {
-    public readonly FMeshBoneInfo[] FinalRefBoneInfo;
-    public readonly FTransform[] FinalRefBonePose;
-    public readonly Dictionary<string, int> FinalNameToIndexMap;
+    public FMeshBoneInfo[] FinalRefBoneInfo { get; private set; }
+    public FTransform[] FinalRefBonePose { get; private set; }
+    public Dictionary<string, int> FinalNameToIndexMap { get; private set; }
 
-    public FReferenceSkeleton(FAssetArchive Ar)
+    public FReferenceSkeleton()
+    {
+        FinalRefBoneInfo = [];
+        FinalRefBonePose = [];
+        FinalNameToIndexMap = [];
+    }
+
+    public FReferenceSkeleton(FAssetArchive Ar) : this()
     {
         FinalRefBoneInfo = Ar.ReadArray(() => new FMeshBoneInfo(Ar));
         FinalRefBonePose = Ar.ReadArray(() => new FTransform(Ar));

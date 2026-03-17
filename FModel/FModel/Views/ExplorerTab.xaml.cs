@@ -142,6 +142,22 @@ namespace FModel.Views
             }
         }
 
+        private void OnAddToCartClick(object sender, RoutedEventArgs e)
+        {
+            if (ExplorerTreeView.SelectedItem is ExplorerFileItem item && !item.IsDirectory)
+            {
+                MainWindow.YesWeCats?.AddAssetPathToExportCart(item.FullPath);
+            }
+        }
+
+        private void OnRemoveFromCartClick(object sender, RoutedEventArgs e)
+        {
+            if (ExplorerTreeView.SelectedItem is ExplorerFileItem item && !item.IsDirectory)
+            {
+                MainWindow.YesWeCats?.RemoveAssetPathFromExportCart(item.FullPath);
+            }
+        }
+
         private void OnCopyPathClick(object sender, RoutedEventArgs e)
         {
             if (ExplorerTreeView.SelectedItem is ExplorerFileItem item)

@@ -26,6 +26,14 @@
     <system:String x:Key="Menu_Versioning">Versioning</system:String>
     <system:String x:Key="Menu_Settings">Settings</system:String>
     <system:String x:Key="Menu_Help">Help</system:String>
+    <system:String x:Key="Cart_Button_Export">Export Cart</system:String>
+    <system:String x:Key="Cart_Button_Export_Tooltip">Export every asset saved in the cart</system:String>
+    <system:String x:Key="Cart_Button_Show_Tooltip">Show cart contents</system:String>
+    <system:String x:Key="Cart_Button_Clear_Tooltip">Clear the cart</system:String>
+    <system:String x:Key="Cart_Window_Title">Export Cart</system:String>
+    <system:String x:Key="Cart_Window_Search_Tooltip">Filter paths in the cart</system:String>
+    <system:String x:Key="Cart_Window_RemoveSelected">Remove Selected</system:String>
+    <system:String x:Key="Cart_Window_Close">Close</system:String>
 
     <!-- Settings -->
     <system:String x:Key="Settings_OutputDirectory">Output Directory</system:String>
@@ -42,6 +50,8 @@
     <system:String x:Key="Settings_MainLanguage_Tooltip">Language used/displayed when parsing packages</system:String>
     <system:String x:Key="Settings_FModelLanguage">FModel Language</system:String>
     <system:String x:Key="Settings_FModelLanguage_Tooltip">FModel UI Language Setting</system:String>
+    <system:String x:Key="Settings_FModelLanguage_OptionEnglish">English</system:String>
+    <system:String x:Key="Settings_FModelLanguage_OptionJapanese">Japanese</system:String>
 
     <!-- VideoPlayer -->
     <system:String x:Key="Video_Play">Play</system:String>
@@ -65,6 +75,8 @@
     <system:String x:Key="Settings_InlineShaderMaps">Serialize Inline Shader Maps</system:String>
     <system:String x:Key="Settings_WwisePrefetch">Max Wwise Bank (.BNK) Prefetch</system:String>
     <system:String x:Key="Settings_SearchMemory">Advanced Search Memory Limit</system:String>
+    <system:String x:Key="Settings_CriwareDecryptionKey">CRIWARE Decryption Key</system:String>
+    <system:String x:Key="Settings_CriwareDecryptionKey_Tooltip">Enter decryption key in numeric or hexadecimal format (valid key is up to 20 digits or 8 bytes long)</system:String>
     <system:String x:Key="Settings_DiffConfig">Version Comparison Settings</system:String>
     <system:String x:Key="Settings_DiffDescription">Use this feature to compare the current version with a selected version.\nSelect the comparison target here. (Requires a backup file (large) created in advance)</system:String>
     <system:String x:Key="Settings_DiffArchiveFolder">Archive Folder *</system:String>
@@ -140,6 +152,8 @@
     <system:String x:Key="Ctx_CopyAssetPathName">Copy as AssetPathName</system:String>
     <system:String x:Key="Ctx_SaveDecompiled">Save Decompiled Blueprints (.cpp)</system:String>
     <system:String x:Key="Ctx_AddToFavorites">Add to Favorites</system:String>
+    <system:String x:Key="Ctx_AddToCart">Add to Cart</system:String>
+    <system:String x:Key="Ctx_RemoveFromCart">Remove from Cart</system:String>
 
     <!-- About -->
     <system:String x:Key="About_Title">About</system:String>

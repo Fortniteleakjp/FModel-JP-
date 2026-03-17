@@ -201,6 +201,13 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
     public bool IsPlaying => PlayedFile.PlaybackState == PlaybackState.Playing;
     public bool IsPaused => PlayedFile.PlaybackState == PlaybackState.Paused;
 
+    private bool _isRepeatOne;
+    public bool IsRepeatOne
+    {
+        get => _isRepeatOne;
+        set => SetProperty(ref _isRepeatOne, value);
+    }
+
     private readonly ObservableCollection<AudioFile> _audioFiles;
     public ICollectionView AudioFilesView { get; }
     public ICollectionView AudioDevicesView { get; }
@@ -448,6 +455,16 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         Play();
     }
 
+    public void ReplayCurrent()
+    {
+        if (_audioFiles.Count < 1 || SelectedAudioFile == null)
+            return;
+
+        Stop();
+        Load();
+        Play();
+    }
+
     public void Play()
     {
         if (_soundOut == null || IsPlaying)
@@ -596,7 +613,12 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             case ESourceProperty.PlaybackState:
                 {
                     if (viewModel._position == viewModel._length && (PlaybackState) args.Value == PlaybackState.Stopped)
-                        viewModel.Next();
+                    {
+                        if (viewModel.IsRepeatOne)
+                            viewModel.ReplayCurrent();
+                        else
+                            viewModel.Next();
+                    }
 
                     break;
                 }

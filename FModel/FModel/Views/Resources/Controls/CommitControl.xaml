@@ -3,23 +3,76 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+             xmlns:settings="clr-namespace:FModel.Settings"
              xmlns:controls="clr-namespace:FModel.Views.Resources.Controls">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="CommitJP5Card" TargetType="Border">
+                <Setter Property="Background" Value="#24111827" />
+                <Setter Property="BorderBrush" Value="#2F4A6A90" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Padding" Value="4" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#CCFFFFFF" />
+                        <Setter Property="BorderBrush" Value="#335C8DC4" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="CommitJP5TitleText" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#E3EEFF" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Foreground" Value="#1F2937" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="CommitJP5BodyText" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="#C0CFE5" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Foreground" Value="#4B5563" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="CommitJP5BadgeBorder" TargetType="Border">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="7" />
+                <Setter Property="Padding" Value="7,2" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Setter Property="BorderBrush" Value="#3fb950" />
+                        <Setter Property="Background" Value="#0f3fb950" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Setter Property="BorderBrush" Value="#3f92b9" />
+                        <Setter Property="Background" Value="#0f3f92b9" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Border BorderThickness="1" CornerRadius="0.5"
-            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}">
+    <Border Style="{StaticResource CommitJP5Card}">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" Margin="5">
+            <Grid Grid.Column="0" Margin="6,5,5,5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -27,13 +80,17 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Title}" FontWeight="Bold" TextWrapping="Wrap" />
+                <TextBlock Grid.Row="0" Style="{StaticResource CommitJP5TitleText}" Text="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
                 <TextBlock Grid.Row="1" Text="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Description}" TextWrapping="Wrap">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="#C0CFE5"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Commit.Message, Converter={x:Static converters:CommitMessageConverter.Instance}, ConverterParameter=Description}" Value="">
                                     <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                                    <Setter Property="Foreground" Value="#4B5563"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -54,7 +111,7 @@
                             <ImageBrush ImageSource="{Binding Author.AvatarUrl}" />
                         </Ellipse.Fill>
                     </Ellipse>
-                    <TextBlock Grid.Column="2" FontSize="11"><Run Text="{Binding Author.Login, Mode=OneWay}" /><Run Text="{DynamicResource Commit_CommittedBy_Part1}" /><Run Text="{Binding Commit.Author.Date, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, Mode=OneWay}" /><Run Text="{DynamicResource Commit_CommittedBy_Part2}" /></TextBlock>
+                    <TextBlock Grid.Column="2" FontSize="11" Style="{StaticResource CommitJP5BodyText}"><Run Text="{Binding Author.Login, Mode=OneWay}" /><Run Text="{DynamicResource Commit_CommittedBy_Part1}" /><Run Text="{Binding Commit.Author.Date, Converter={x:Static converters:RelativeDateTimeConverter.Instance}, Mode=OneWay}" /><Run Text="{DynamicResource Commit_CommittedBy_Part2}" /></TextBlock>
                 </Grid>
             </Grid>
 
@@ -66,11 +123,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0"
-                        BorderThickness="1"
-                        CornerRadius="2.5"
-                        Padding="5,2"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
+                        Style="{StaticResource CommitJP5BadgeBorder}">
                     <TextBlock FontSize="9" Foreground="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=Border}}">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -85,24 +138,6 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Asset.IsLatest}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                    <Setter Property="BorderBrush" Value="#3fb950" />
-                                    <Setter Property="Background" Value="#0f3fb950" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                    <Setter Property="BorderBrush" Value="#3f92b9" />
-                                    <Setter Property="Background" Value="#0f3f92b9" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
                 </Border>
 
                 <controls:CommitDownloaderControl Grid.Column="2" Commit="{Binding}">
