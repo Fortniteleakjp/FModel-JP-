@@ -81,6 +81,23 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <Style x:Key="UpdateJP5GroupBox" TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+                <Setter Property="Margin" Value="0,0,0,6" />
+                <Setter Property="Padding" Value="8,6" />
+                <Setter Property="Background" Value="#1A1E2840" />
+                <Setter Property="BorderBrush" Value="#2A4A6A90" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Foreground" Value="#9EC8FF" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#0F3A5580" />
+                        <Setter Property="BorderBrush" Value="#335C8DC4" />
+                        <Setter Property="Foreground" Value="#1A4A7A" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </adonisControls:AdonisWindow.Resources>
     <Grid>
@@ -163,10 +180,9 @@
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="GroupItem">
-                                                    <GroupBox adonisExtensions:LayerExtension.Layer="3"
+                                                    <GroupBox Style="{StaticResource UpdateJP5GroupBox}"
                                                               Header="{Binding Name}"
-                                                              HeaderStringFormat="{DynamicResource Update_CommitsOn}"
-                                                              Margin="0 0 0 5">
+                                                              HeaderStringFormat="{DynamicResource Update_CommitsOn}">
                                                         <ItemsPresenter />
                                                     </GroupBox>
                                                 </ControlTemplate>
