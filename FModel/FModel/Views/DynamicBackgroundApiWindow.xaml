@@ -40,7 +40,7 @@
 
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Fortnite API info" FontSize="20" FontWeight="Bold" Foreground="#E7F4FF"/>
-                        <TextBlock Text="dynamicbackgrounds を40秒ごとに自動更新し、全背景の画像・stage・_typeを確認できます。" Margin="0,4,0,0" Opacity="0.9" Foreground="#BFD7EA"/>
+                        <TextBlock Text="ロビー背景やフォトナのサーバーステータスを確認できます" Margin="0,4,0,0" Opacity="0.9" Foreground="#BFD7EA"/>
                     </StackPanel>
 
                     <Button Grid.Column="1" Margin="8,0,0,0" Padding="14,6" Content="今すぐ更新" Click="OnRefreshNowClick"
