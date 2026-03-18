@@ -3,8 +3,7 @@ import sys
 import secrets
 
 sha = sys.argv[1]
-# version = sys.argv[2]
-version = f"5.0.0.0.{sha}"
+version = sys.argv[2]
 
 url = "https://fmodeljpbigbackup.fljpapi.jp/qa/upload"
 headers = {
@@ -13,7 +12,7 @@ headers = {
 data = {
     "changelogUrl": "https://fmodeljp.fljpapi.jp/view/1",
     "downloadUrl": f"https://github.com/Fortniteleakjp/FModel-JP-/releases/download/qa/{sha}.zip",
-    "version": version
+    "version": f"{version}-{sha}"
 }
 
 # 認証（パスワード方式）
