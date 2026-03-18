@@ -429,11 +429,48 @@
                                     BorderThickness="{TemplateBinding BorderThickness}"
                                     CornerRadius="12,12,0,0"
                                     Padding="{TemplateBinding Padding}">
-                                <ContentPresenter x:Name="ContentSite"
-                                                  ContentSource="Header"
-                                                  HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center"
-                                                  RecognizesAccessKey="True" />
+                                <Grid>
+                                    <ContentPresenter x:Name="ContentSite"
+                                                      ContentSource="Header"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"
+                                                      RecognizesAccessKey="True" />
+                                    <Button x:Name="CloseButton"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Command="{Binding DataContext.CloseCommand, RelativeSource={RelativeSource AncestorType=TabItem}}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Setter Property="Padding" Value="4"/>
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="10">
+                                                                <ContentPresenter/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.IsClosable, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <Viewbox Width="10" Height="10">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Button>
+                                </Grid>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
@@ -572,7 +609,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" Margin="10,10,10,0" Padding="10,6" CornerRadius="16" Style="{StaticResource FModelJP5TopMenuShell}">
+        <Border Grid.Row="0" Margin="10,20,10,10" Padding="10,6" CornerRadius="16" Style="{StaticResource FModelJP5TopMenuShell}">
             <DockPanel LastChildFill="True">
                 <Border DockPanel.Dock="Left" Margin="0,0,12,0" Padding="10,4" CornerRadius="12"
                 Background="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}">
@@ -620,7 +657,7 @@
                         </Viewbox>
                     </Button>
                 </StackPanel>
-                <Menu Padding="2,0">
+                <Menu Padding="2,10">
                     <Menu.Style>
                         <Style TargetType="Menu" BasedOn="{StaticResource {x:Type Menu}}">
                             <Setter Property="Background" Value="Transparent" />
@@ -1057,7 +1094,7 @@
                                 <Setter Property="MinWidth" Value="0" />
                             </Style>
                         </TabControl.Resources>
-                        <TabItem Header="{DynamicResource Tab_Archives}">
+                        <TabItem Header="{DynamicResource Tab_Archives}" Margin="0,0,-27,0">
                             <DockPanel LastChildFill="True">
                                 <StackPanel DockPanel.Dock="Top" Margin="0,4,0,8">
                                     <Grid>
@@ -1131,7 +1168,7 @@
                                 </Grid>
                             </DockPanel>
                         </TabItem>
-                        <TabItem Header="{DynamicResource Tab_Folders}">
+                        <TabItem Header="{DynamicResource Tab_Folders}" Margin="36,0,-54,0">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -1285,7 +1322,7 @@
                                 </Border>
                             </Grid>
                         </TabItem>
-                            <TabItem Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName, StringFormat='ファイル ({0})'}">
+                            <TabItem Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName, StringFormat='ファイル ({0})'}" Margin="63,0,-79,0">
                             <DockPanel LastChildFill="True">
                                 <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
@@ -1665,7 +1702,7 @@
                                 </Grid>
                             </DockPanel>
                         </TabItem>
-                        <TabItem Header="リスト" IsEnabled="{Binding Status.IsReady}">
+                        <TabItem Header="リスト" IsEnabled="{Binding Status.IsReady}" RenderTransformOrigin="0.744,0.549" Margin="89,0,-94,0">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="10">
                                     <TextBlock Text="リスト (Lists)" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
