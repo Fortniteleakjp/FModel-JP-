@@ -10,3 +10,7 @@ d:\FModel-JP\replay-analysis\Unreal.Encryption\obj\Release\net9.0\Unreal.E.E1811
 d:\FModel-JP\replay-analysis\Unreal.Encryption\obj\Release\net9.0\Unreal.Encryption.dll
 d:\FModel-JP\replay-analysis\Unreal.Encryption\obj\Release\net9.0\refint\Unreal.Encryption.dll
 d:\FModel-JP\replay-analysis\Unreal.Encryption\obj\Release\net9.0\ref\Unreal.Encryption.dll
+D:\FModel-JP\replay-analysis\Unreal.Encryption\bin\Release\net9.0\Unreal.Encryption.pdb
+D:\FModel-JP\replay-analysis\Unreal.Encryption\bin\Release\net9.0\OozSharp.pdb
+D:\FModel-JP\replay-analysis\Unreal.Encryption\obj\Release\net9.0\Unreal.Encryption.sourcelink.json
+D:\FModel-JP\replay-analysis\Unreal.Encryption\obj\Release\net9.0\Unreal.Encryption.pdb

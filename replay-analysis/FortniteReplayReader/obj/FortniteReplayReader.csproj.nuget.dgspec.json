@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj": {}
+    "D:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj": {}
   },
   "projects": {
-    "d:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj": {
+    "D:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj",
+        "projectUniqueName": "D:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj",
         "projectName": "FortniteReplayReader",
-        "projectPath": "d:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj",
+        "projectPath": "D:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\FortniteReplayReader.csproj",
         "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-        "outputPath": "d:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\obj\\",
+        "outputPath": "D:\\FModel-JP\\replay-analysis\\FortniteReplayReader\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -35,22 +35,22 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
-                "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj"
+              "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
+                "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj"
               },
-              "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
-                "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj"
+              "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
+                "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj"
               }
             }
           },
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
-                "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj"
+              "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
+                "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj"
               },
-              "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
-                "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj"
+              "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
+                "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj"
               }
             }
           }
@@ -74,6 +74,12 @@
             "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.25, )",
+              "autoReferenced": true
             }
           },
           "imports": [
@@ -87,12 +93,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0": {
           "targetAlias": "net9.0",
@@ -100,6 +120,12 @@
             "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.14, )",
+              "autoReferenced": true
             }
           },
           "imports": [
@@ -113,23 +139,42 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     },
-    "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
+    "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj",
+        "projectUniqueName": "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj",
         "projectName": "OozSharp",
-        "projectPath": "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj",
+        "projectPath": "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj",
         "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-        "outputPath": "d:\\FModel-JP\\replay-analysis\\OozSharp\\obj\\",
+        "outputPath": "D:\\FModel-JP\\replay-analysis\\OozSharp\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -174,6 +219,14 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.25, )",
+              "autoReferenced": true
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -185,15 +238,37 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0": {
           "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.14, )",
+              "autoReferenced": true
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -205,23 +280,42 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     },
-    "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
+    "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
+        "projectUniqueName": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
         "projectName": "Unreal.Core",
-        "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
+        "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\Unreal.Core.csproj",
         "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-        "outputPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Core\\obj\\",
+        "outputPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Core\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -270,6 +364,12 @@
             "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.25, )",
+              "autoReferenced": true
             }
           },
           "imports": [
@@ -283,12 +383,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0": {
           "targetAlias": "net9.0",
@@ -296,6 +410,12 @@
             "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.14, )",
+              "autoReferenced": true
             }
           },
           "imports": [
@@ -309,23 +429,42 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     },
-    "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
+    "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj",
+        "projectUniqueName": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj",
         "projectName": "Unreal.Encryption",
-        "projectPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj",
+        "projectPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\Unreal.Encryption.csproj",
         "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-        "outputPath": "d:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\obj\\",
+        "outputPath": "D:\\FModel-JP\\replay-analysis\\Unreal.Encryption\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "fallbackFolders": [
@@ -349,16 +488,16 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
-                "projectPath": "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj"
+              "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
+                "projectPath": "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj"
               }
             }
           },
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
-                "projectPath": "d:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj"
+              "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj": {
+                "projectPath": "D:\\FModel-JP\\replay-analysis\\OozSharp\\OozSharp.csproj"
               }
             }
           }
@@ -378,6 +517,14 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.25, )",
+              "autoReferenced": true
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -389,15 +536,37 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         },
         "net9.0": {
           "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.14, )",
+              "autoReferenced": true
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -409,12 +578,31 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     }

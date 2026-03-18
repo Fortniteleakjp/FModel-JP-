@@ -12,3 +12,9 @@ d:\FModel-JP\replay-analysis\FortniteReplayReader\obj\Release\net9.0\Fortnite.E7
 d:\FModel-JP\replay-analysis\FortniteReplayReader\obj\Release\net9.0\FortniteReplayReader.dll
 d:\FModel-JP\replay-analysis\FortniteReplayReader\obj\Release\net9.0\refint\FortniteReplayReader.dll
 d:\FModel-JP\replay-analysis\FortniteReplayReader\obj\Release\net9.0\ref\FortniteReplayReader.dll
+D:\FModel-JP\replay-analysis\FortniteReplayReader\bin\Release\net9.0\FortniteReplayReader.pdb
+D:\FModel-JP\replay-analysis\FortniteReplayReader\bin\Release\net9.0\Unreal.Core.pdb
+D:\FModel-JP\replay-analysis\FortniteReplayReader\bin\Release\net9.0\Unreal.Encryption.pdb
+D:\FModel-JP\replay-analysis\FortniteReplayReader\bin\Release\net9.0\OozSharp.pdb
+D:\FModel-JP\replay-analysis\FortniteReplayReader\obj\Release\net9.0\FortniteReplayReader.sourcelink.json
+D:\FModel-JP\replay-analysis\FortniteReplayReader\obj\Release\net9.0\FortniteReplayReader.pdb

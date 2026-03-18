@@ -54,8 +54,8 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 #if DEBUG
         var loadingTime = Stopwatch.StartNew();
 #endif
-        _applicationView.CUE4Parse.AssetsFolder.Folders.Clear();
-        _applicationView.CUE4Parse.SearchVm.SearchResults.Clear();
+        _applicationView.CUE4Parse.AssetsFolder.Folders?.Clear();
+        _applicationView.CUE4Parse.SearchVm?.SearchResults?.Clear();
         MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
         Helper.CloseWindow<AdonisWindow>("検索ウィンドウ"); // close search window if opened
 

@@ -7,3 +7,6 @@ d:\FModel-JP\replay-analysis\OozSharp\obj\Release\net9.0\OozSharp.csproj.CoreCom
 d:\FModel-JP\replay-analysis\OozSharp\obj\Release\net9.0\OozSharp.dll
 d:\FModel-JP\replay-analysis\OozSharp\obj\Release\net9.0\refint\OozSharp.dll
 d:\FModel-JP\replay-analysis\OozSharp\obj\Release\net9.0\ref\OozSharp.dll
+D:\FModel-JP\replay-analysis\OozSharp\bin\Release\net9.0\OozSharp.pdb
+D:\FModel-JP\replay-analysis\OozSharp\obj\Release\net9.0\OozSharp.sourcelink.json
+D:\FModel-JP\replay-analysis\OozSharp\obj\Release\net9.0\OozSharp.pdb

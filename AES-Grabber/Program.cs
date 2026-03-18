@@ -32,7 +32,7 @@ class Program
                 throw new Exception("Map code cannot be empty");
 
             //最新ビルド情報取得
-            var mappingsData = await EpicGamesApiService.GetJsonAsync<JsonElement>("https://fortnitecentral.genxgames.gg/api/v1/mappings");
+            var mappingsData = await EpicGamesApiService.GetJsonAsync<JsonElement>("https://api.fortniteapi.com/v1/mappings");
 
             string versionStr = mappingsData.GetProperty("version").GetString()
                 ?? throw new Exception("Failed to get version from mappings data.");

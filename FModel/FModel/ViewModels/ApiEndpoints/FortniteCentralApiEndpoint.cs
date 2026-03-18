@@ -13,7 +13,7 @@ public class FortniteCentralApiEndpoint : AbstractApiProvider
 
     public async Task<IDictionary<string, IDictionary<string, string>>> GetHotfixesAsync(CancellationToken token, string language = "en")
     {
-        var request = new FRestRequest("https://fortnitecentral.genxgames.gg/api/v1/hotfixes")
+        var request = new FRestRequest("https://api.fortniteapi.com/v1/cloudstorage/hotfixes")
         {
             Interceptors = [_interceptor]
         };

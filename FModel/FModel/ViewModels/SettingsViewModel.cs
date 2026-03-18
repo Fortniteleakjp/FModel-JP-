@@ -652,7 +652,7 @@ public partial class SettingsViewModel // partial 修飾子を追加
 
             // Get latest build version
             Log.Information("最新ビルドバージョンを取得中...");
-            var mappingsData = await httpClient.GetFromJsonAsync<JsonElement?>("https://fortnitecentral.genxgames.gg/api/v1/mappings");
+            var mappingsData = await httpClient.GetFromJsonAsync<JsonElement?>("https://api.fortniteapi.com/v1/mappings");
             string versionStr = mappingsData?.GetProperty("version").GetString() ?? throw new Exception("Failed to get version from mappings data.");
             Log.Information("最新バージョン取得完了: {Version}", versionStr);
             FLogger.Append(ELog.Information, () => FLogger.Text($"Latest version: {versionStr}", Constants.WHITE, true));

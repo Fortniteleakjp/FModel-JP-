@@ -2,6 +2,7 @@
   <PropertyGroup>
     <ProjectGuid>{178417EC-1177-413E-BE85-C83AECD64279}</ProjectGuid>
     <TargetFramework>net8.0</TargetFramework>
+    <IsPublishable>false</IsPublishable>
     <AssemblyTitle>UAssetAPI</AssemblyTitle>
     <Product>UAssetAPI</Product>
     <Copyright>Copyright © Atenfyr 2024</Copyright>
@@ -59,10 +60,13 @@
         </ItemGroup>
     </When>
   </Choose>
-  <Target Name="BeforeBuildMigrated" BeforeTargets="PreBuildEvent">
+  <Target Name="BeforeBuildMigrated" BeforeTargets="CoreCompile">
     <Exec ContinueOnError="true" ConsoleToMsBuild="true" Command="git rev-parse --short HEAD">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
     </Exec>
+    <PropertyGroup>
+      <GitCommit Condition="'$(GitCommit)' == ''">unknown</GitCommit>
+    </PropertyGroup>
     <WriteLinesToFile File="$(ProjectDir)git_commit.txt" Overwrite="true" Lines="$(GitCommit)" />
   </Target>
   <Target Name="AfterBuildMigrated" AfterTargets="Build">

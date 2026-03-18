@@ -8,3 +8,6 @@ d:\FModel-JP\replay-analysis\Unreal.Core\obj\Release\net9.0\Unreal.Core.csproj.C
 d:\FModel-JP\replay-analysis\Unreal.Core\obj\Release\net9.0\Unreal.Core.dll
 d:\FModel-JP\replay-analysis\Unreal.Core\obj\Release\net9.0\refint\Unreal.Core.dll
 d:\FModel-JP\replay-analysis\Unreal.Core\obj\Release\net9.0\ref\Unreal.Core.dll
+D:\FModel-JP\replay-analysis\Unreal.Core\bin\Release\net9.0\Unreal.Core.pdb
+D:\FModel-JP\replay-analysis\Unreal.Core\obj\Release\net9.0\Unreal.Core.sourcelink.json
+D:\FModel-JP\replay-analysis\Unreal.Core\obj\Release\net9.0\Unreal.Core.pdb

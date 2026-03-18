@@ -708,7 +708,7 @@ public partial class CUE4ParseViewModel : ViewModel
             {
                 // deprecated values
                 if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") endpoint.Path = "$.[0].['url','fileName']";
-                if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/mappings")
+                if (endpoint.Url == "https://api.fortniteapi.com/v1/mappings")
                 {
                     endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/mappings";
                     endpoint.Path = "$.mappings.ZStandard";
