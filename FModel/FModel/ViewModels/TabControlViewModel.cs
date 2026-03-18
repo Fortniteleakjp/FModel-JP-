@@ -327,7 +327,15 @@ public class TabItem : ViewModel
     }
 
 
-    public string Header => $"{Entry.Name}{(string.IsNullOrEmpty(TitleExtra) ? "" : $" ({TitleExtra})")}";
+    public string Header
+    {
+        get
+        {
+            var entryName = SanitizeDisplayText(Entry?.Name);
+            var titleExtra = SanitizeDisplayText(TitleExtra);
+            return $"{entryName}{(string.IsNullOrEmpty(titleExtra) ? "" : $" ({titleExtra})")}";
+        }
+    }
 
     public bool HasImage => SelectedImage != null;
     public bool HasMultipleImages => _images.Count > 1;
@@ -443,9 +451,11 @@ public class TabItem : ViewModel
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            _originalDocumentText = text;
+            _originalDocumentText = SanitizeDisplayText(text);
             Document ??= new TextDocument();
-            Document.Text = string.IsNullOrEmpty(JsonFilterText) ? text : FilterJsonText(text, JsonFilterText);
+            Document.Text = string.IsNullOrEmpty(JsonFilterText)
+                ? _originalDocumentText
+                : FilterJsonText(_originalDocumentText, JsonFilterText);
             Document.UndoStack.ClearAll();
 
             if (save) SaveProperty(updateUi);
@@ -467,6 +477,15 @@ public class TabItem : ViewModel
 
         var filteredLines = originalText.Split(new[] { '\r', '\n' }, StringSplitOptions.None).Where(line => !line.Contains(filter, StringComparison.OrdinalIgnoreCase));
         return string.Join(Environment.NewLine, filteredLines);
+    }
+
+    private static string SanitizeDisplayText(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        // Remove trailing hidden/control chars that can appear as a single extra glyph in UI.
+        return text.TrimEnd('\0', '\u001A', '\uFEFF');
     }
 
     public void SaveImage() => SaveImage(SelectedImage, true);
