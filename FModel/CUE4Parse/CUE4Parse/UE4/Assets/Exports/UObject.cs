@@ -277,47 +277,7 @@ public class UObject : AbstractPropertyHolder
 
         Struct? propMappings = null;
         if (struc is UScriptClass)
-        {
-            var mappings = Ar.Owner!.Mappings?.Types;
-            if (mappings != null)
-            {
-                static string ExtractSimpleTypeName(string name)
-                {
-                    var slash = name.LastIndexOf('/');
-                    if (slash >= 0 && slash + 1 < name.Length) name = name[(slash + 1)..];
-
-                    var dot = name.LastIndexOf('.');
-                    if (dot >= 0 && dot + 1 < name.Length) name = name[(dot + 1)..];
-
-                    return name;
-                }
-
-                bool TryResolve(string key)
-                {
-                    if (string.IsNullOrEmpty(key)) return false;
-                    if (mappings.TryGetValue(key, out propMappings)) return true;
-
-                    var withUPrefix = key.StartsWith("U", StringComparison.Ordinal) ? key : "U" + key;
-                    if (!ReferenceEquals(withUPrefix, key) && mappings.TryGetValue(withUPrefix, out propMappings)) return true;
-
-                    if (key.StartsWith("U", StringComparison.Ordinal) && key.Length > 1)
-                    {
-                        return mappings.TryGetValue(key[1..], out propMappings);
-                    }
-
-                    return false;
-                }
-
-                if (!TryResolve(type))
-                {
-                    var simpleName = ExtractSimpleTypeName(type);
-                    if (!string.Equals(simpleName, type, StringComparison.Ordinal))
-                    {
-                        TryResolve(simpleName);
-                    }
-                }
-            }
-        }
+            Ar.Owner!.Mappings?.Types.TryGetValue(type, out propMappings);
         else
             propMappings = new SerializedStruct(Ar.Owner!.Mappings, struc);
 
@@ -326,8 +286,6 @@ public class UObject : AbstractPropertyHolder
             throw new ParserException(Ar, "Missing prop mappings for type " + type);
         }
 
-        Struct? fallbackPropMappings = null;
-
         using var it = new FIterator(header);
         do
         {
@@ -335,25 +293,14 @@ public class UObject : AbstractPropertyHolder
             // The value has content and needs to be serialized normally
             if (isNonZero)
             {
-                var hasProperty = propMappings.TryGetValue(val, out var propertyInfo);
-                if (!hasProperty && struc is UScriptClass)
-                {
-                    fallbackPropMappings ??= new SerializedStruct(Ar.Owner!.Mappings, struc);
-                    hasProperty = fallbackPropMappings.TryGetValue(val, out propertyInfo);
-                    if (hasProperty)
-                    {
-                        Log.Warning("{0}: Falling back to SerializedStruct mappings for property index {1}", type, val);
-                    }
-                }
-
-                if (hasProperty)
+                if (propMappings.TryGetValue(val, out var propertyInfo))
                 {
                     var tag = new FPropertyTag(Ar, propertyInfo, ReadType.NORMAL);
                     if (tag.Tag != null)
                         properties.Add(tag);
                     else
                     {
-                        Log.Warning("{0}: Failed to serialize property {1} {2}. Skipping...", type, propertyInfo.MappingType.Type, propertyInfo.Name);
+                        throw new ParserException(Ar, $"{type}: Failed to serialize property {propertyInfo.MappingType.Type} {propertyInfo.Name}. Can't proceed with serialization (Serialized {properties.Count} properties until now)");
                     }
                 }
                 else
@@ -364,18 +311,7 @@ public class UObject : AbstractPropertyHolder
             // The value is serialized as zero meaning we don't have to read any bytes here
             else
             {
-                var hasProperty = propMappings.TryGetValue(val, out var propertyInfo);
-                if (!hasProperty && struc is UScriptClass)
-                {
-                    fallbackPropMappings ??= new SerializedStruct(Ar.Owner!.Mappings, struc);
-                    hasProperty = fallbackPropMappings.TryGetValue(val, out propertyInfo);
-                    if (hasProperty)
-                    {
-                        Log.Warning("{0}: Falling back to SerializedStruct mappings for zero property index {1}", type, val);
-                    }
-                }
-
-                if (hasProperty)
+                if (propMappings.TryGetValue(val, out var propertyInfo))
                 {
                     properties.Add(new FPropertyTag(Ar, propertyInfo, ReadType.ZERO));
                 }

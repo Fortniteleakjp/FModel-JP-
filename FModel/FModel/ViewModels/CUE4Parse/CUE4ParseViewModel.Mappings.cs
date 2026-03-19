@@ -43,8 +43,7 @@ public partial class CUE4ParseViewModel
             else if (endpoint.IsValid)
             {
                 var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
-                if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']")
-                    endpoint.Path = "$.[0].['url','fileName']";
+                NormalizeMappingsEndpoint(endpoint);
                 var mappings = _apiEndpointView.DynamicApi.GetMappings(CancellationToken.None, endpoint.Url, endpoint.Path);
                 if (mappings is { Length: > 0 })
                 {
@@ -59,20 +58,39 @@ public partial class CUE4ParseViewModel
                             _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
                         }
 
-                        provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
+                        var candidateMappings = new FileUsmapTypeMappingsProvider(mappingPath);
+                        if (IsBrokenFortniteSkeletonMappings(provider, candidateMappings))
+                        {
+                            Log.Warning("Skipping invalid Fortnite mappings '{FileName}' (Skeleton has no properties)", mapping.FileName);
+                            continue;
+                        }
+
+                        provider.MappingsContainer = candidateMappings;
                         break;
                     }
                 }
 
                 if (provider.MappingsContainer == null)
                 {
-                    var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
-                    if (latestUsmaps.Length <= 0)
-                        return;
+                    var usmaps = new DirectoryInfo(mappingsFolder).GetFiles("*.usmap")
+                        .OrderByDescending(f => f.LastWriteTime);
 
-                    var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
-                    provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
-                    l = ELog.Warning;
+                    foreach (var usmapInfo in usmaps)
+                    {
+                        var candidateMappings = new FileUsmapTypeMappingsProvider(usmapInfo.FullName);
+                        if (IsBrokenFortniteSkeletonMappings(provider, candidateMappings))
+                        {
+                            Log.Warning("Skipping local invalid Fortnite mappings '{FileName}' (Skeleton has no properties)", usmapInfo.Name);
+                            continue;
+                        }
+
+                        provider.MappingsContainer = candidateMappings;
+                        l = ELog.Warning;
+                        break;
+                    }
+
+                    if (provider.MappingsContainer == null)
+                        return;
                 }
             }
 

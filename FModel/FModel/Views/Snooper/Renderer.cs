@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion.Meshes;
@@ -304,15 +303,21 @@ public class Renderer : IDisposable
     public void Update(Snooper wnd, float deltaSeconds)
     {
         if (Options.Animations.Count > 0) Options.Tracker.Update(deltaSeconds);
-        Parallel.ForEach(Options.Animations, animation =>
+
+        // OpenGL calls must stay on the render thread. Updating animation matrices in parallel
+        // can execute GL.BindBuffer on worker threads and crash with access violations.
+        var animations = Options.Animations.ToArray();
+        foreach (var animation in animations)
         {
             animation.TimeCalculation(Options.Tracker.ElapsedTime);
             foreach (var guid in animation.AttachedModels)
             {
-                if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel skeletalModel) return;
+                if (!Options.TryGetModel(guid, out var m) || m is not SkeletalModel skeletalModel)
+                    continue;
+
                 skeletalModel.Skeleton.UpdateAnimationMatrices(animation, AnimateWithRotationOnly);
             }
-        });
+        }
 
         {
             foreach (var model in Options.Models.Values)
