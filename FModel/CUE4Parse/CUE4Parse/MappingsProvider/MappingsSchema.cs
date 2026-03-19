@@ -15,48 +15,6 @@ namespace CUE4Parse.MappingsProvider
         public Dictionary<int, PropertyInfo> Properties;
         public int PropertyCount;
 
-        private static bool TryResolveTypeMapping(TypeMappings? context, string typeName, out Struct? mapping)
-        {
-            mapping = null;
-            if (context == null || string.IsNullOrEmpty(typeName)) return false;
-
-            static string ExtractSimpleTypeName(string name)
-            {
-                var slash = name.LastIndexOf('/');
-                if (slash >= 0 && slash + 1 < name.Length) name = name[(slash + 1)..];
-
-                var dot = name.LastIndexOf('.');
-                if (dot >= 0 && dot + 1 < name.Length) name = name[(dot + 1)..];
-
-                return name;
-            }
-
-            static bool TryByKey(TypeMappings localContext, string key, out Struct? resolved)
-            {
-                resolved = null;
-                if (string.IsNullOrEmpty(key)) return false;
-                if (localContext.Types.TryGetValue(key, out resolved)) return true;
-
-                var withUPrefix = key.StartsWith("U", StringComparison.Ordinal) ? key : "U" + key;
-                if (!ReferenceEquals(withUPrefix, key) && localContext.Types.TryGetValue(withUPrefix, out resolved)) return true;
-
-                if (key.StartsWith("U", StringComparison.Ordinal) && key.Length > 1)
-                {
-                    var withoutUPrefix = key[1..];
-                    if (localContext.Types.TryGetValue(withoutUPrefix, out resolved)) return true;
-                }
-
-                return false;
-            }
-
-            if (TryByKey(context, typeName, out mapping)) return true;
-
-            var simpleName = ExtractSimpleTypeName(typeName);
-            if (!string.Equals(simpleName, typeName, StringComparison.Ordinal) && TryByKey(context, simpleName, out mapping)) return true;
-
-            return false;
-        }
-
         public Struct(TypeMappings? context, string name, int propertyCount)
         {
             Context = context;
@@ -69,7 +27,7 @@ namespace CUE4Parse.MappingsProvider
             SuperType = superType;
             Super = new Lazy<Struct?>(() =>
             {
-                if (SuperType != null && TryResolveTypeMapping(Context, SuperType, out var superStruct))
+                if (SuperType != null && Context != null && Context.Types.TryGetValue(SuperType, out var superStruct))
                 {
                     return superStruct;
                 }
