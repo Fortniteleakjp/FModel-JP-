@@ -5,7 +5,6 @@ using System.Linq;
 
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
-using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
 
@@ -104,8 +103,8 @@ namespace CUE4Parse.FileProvider
 
                 if (uproject is null && OnDemandOptions is not null && upperExt is "UONDEMANDTOC")
                 {
-                    var ioChunkTok = new IoChunkToc(file.FullName);
-                    RegisterVfs(ioChunkTok, OnDemandOptions);
+                    // Route through RegisterVfs to reuse centralized error handling for unsupported toc variants.
+                    RegisterVfs(file);
                     continue;
                 }
 
