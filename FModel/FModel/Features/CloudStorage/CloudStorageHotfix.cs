@@ -83,7 +83,7 @@ namespace FModel.Features.CloudStorage
             var rawHotfixText = ExtractHotfixText(currentData, filePath);
             if (string.IsNullOrWhiteSpace(rawHotfixText))
             {
-                FLogger.Append(ELog.Information, () => FLogger.Text($"このファイルに適用可能なクラウドホットフィックスは見つかりませんでした: {filePath}", Constants.WHITE));
+                Log.Debug("No cloud hotfix text found for file: {FilePath}", filePath);
                 return;
             }
 
@@ -93,7 +93,7 @@ namespace FModel.Features.CloudStorage
 
             if (entries.Count == 0)
             {
-                FLogger.Append(ELog.Information, () => FLogger.Text($"対象DataTableのホットフィックス行が見つかりませんでした: {filePath}", Constants.WHITE));
+                Log.Debug("No matching hotfix entries for DataTable: {FilePath}", filePath);
                 return;
             }
 
@@ -444,13 +444,11 @@ namespace FModel.Features.CloudStorage
             // キャッシュが有効な場合はキャッシュから返す
             if (!string.IsNullOrEmpty(_cachedHotfixData) && DateTime.UtcNow - _cacheTimestamp < _cacheDuration)
             {
-                FLogger.Append(ELog.Information, () => FLogger.Text("キャッシュされたホットフィックスデータを使用します。", Constants.WHITE));
                 return _cachedHotfixData;
             }
 
             try
             {
-                FLogger.Append(ELog.Information, () => FLogger.Text("クラウドストレージからホットフィックスデータを取得しています...", Constants.WHITE));
                 var response = await _httpClient.GetAsync(apiEndpoint);
                 response.EnsureSuccessStatusCode();
                 var data = await response.Content.ReadAsStringAsync();
@@ -641,12 +639,6 @@ namespace FModel.Features.CloudStorage
 
                 // データをログに出力
                 FLogger.Append(ELog.Information, () => FLogger.Text($"クラウドストレージから {dataDict.Count} 件のデータをダウンロードしました。", Constants.WHITE));
-                
-                // データの概要を表示
-                foreach (var kvp in dataDict)
-                {
-                    FLogger.Append(ELog.Information, () => FLogger.Text($"  - {kvp.Key}: {kvp.Value?.GetType().Name ?? "null"}", Constants.WHITE));
-                }
             }
             catch (Exception ex)
             {
