@@ -11,6 +11,7 @@ using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.Utils;
+using Serilog;
 using static CUE4Parse.UE4.Assets.Exports.Animation.AnimationCompressionFormat;
 using static CUE4Parse.UE4.Assets.Exports.Animation.AnimationKeyFormat;
 using static CUE4Parse.UE4.Assets.Exports.Animation.AnimationCompressionUtils;
@@ -223,6 +224,11 @@ namespace CUE4Parse_Conversion.Animations
                     }
                     catch (Exception e) when (e is ACLException or EntryPointNotFoundException or DllNotFoundException)
                     {
+                        Log.Warning(e,
+                            "ACL decode failed for animation '{AnimationName}'. Falling back to reference pose (static). " +
+                            "Verify CUE4Parse-Natives.dll is bundled and up to date.",
+                            animSequence.Name);
+
                         var refPose = animSeq.RetargetBasePose ?? skeleton.ReferenceSkeleton.FinalRefBonePose;
                         for (var boneIndex = 0; boneIndex < numBones; boneIndex++)
                         {
