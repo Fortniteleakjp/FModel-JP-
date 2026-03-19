@@ -238,7 +238,7 @@ public class Options
 
     public void AnimateMesh(bool value)
     {
-        ModelIsWaitingAnimation = value;
+        Services.ApplicationService.ApplicationView.CUE4Parse.ModelIsWaitingAnimation = value;
     }
 
     /// <summary>
