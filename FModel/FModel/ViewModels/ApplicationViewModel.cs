@@ -120,7 +120,7 @@ public class ApplicationViewModel : ViewModel
                 path = $"/{path}";
             }
 
-            paths.Add($"{path}.{file.NameWithoutExtension}");
+            paths.Add(path);
         }
 
         if (paths.Count > 0)
