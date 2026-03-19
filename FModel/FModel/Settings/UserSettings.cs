@@ -639,6 +639,14 @@ namespace FModel.Settings
             set => SetProperty(ref _previewAnimations, value);
         }
 
+        private bool _enableAnimGraphViewer = false;
+        [JsonProperty]
+        public bool EnableAnimGraphViewer
+        {
+            get => _enableAnimGraphViewer;
+            set => SetProperty(ref _enableAnimGraphViewer, value);
+        }
+
         private bool _previewMaterials = true;
         [JsonProperty]
         public bool PreviewMaterials

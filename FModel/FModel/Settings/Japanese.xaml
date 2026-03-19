@@ -136,6 +136,7 @@
     <system:String x:Key="Ctx_OpenNewTab">新規タブで開く</system:String>
     <system:String x:Key="Ctx_ShowMetadata">metadataを表示</system:String>
     <system:String x:Key="Ctx_CompareFiles">ファイルを比較する</system:String>
+    <system:String x:Key="Ctx_OpenAnimGraphViewer">アセット グラフビューアーを起動</system:String>
     <system:String x:Key="Ctx_OpenReferenceViewer">参照ビューアを起動</system:String>
     <system:String x:Key="Ctx_PlayVideo">動画を再生</system:String>
     <system:String x:Key="Ctx_SaveData">データを保存</system:String>
@@ -293,6 +294,7 @@
     <system:String x:Key="Settings_Models_PreviewStatic">スタティックメッシュのプレビュー</system:String>
     <system:String x:Key="Settings_Models_PreviewSkeletal">スケルタルメッシュをプレビュー</system:String>
     <system:String x:Key="Settings_Models_PreviewAnim">アニメーションをプレビュー</system:String>
+    <system:String x:Key="Settings_Models_EnableAnimGraphViewer">アセット グラフビューアーを有効化</system:String>
     <system:String x:Key="Settings_Models_PreviewMaterial">マテリアルをプレビュー</system:String>
     <system:String x:Key="Settings_Models_PreviewLevel">レベル（.umap）をプレビュー</system:String>
     <system:String x:Key="Settings_Models_SaveEmbedded">メッシュに埋め込まれたマテリアルを保存</system:String>

@@ -931,6 +931,11 @@
                               IsChecked="{Binding PreviewAnimations, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
+                                                        <TextBlock Text="{DynamicResource Settings_Models_EnableAnimGraphViewer}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                                        <CheckBox Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                                                            IsChecked="{Binding EnableAnimGraphViewer, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"
+                                                            Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+
                             <TextBlock Text="{DynamicResource Settings_Models_PreviewMaterial}" VerticalAlignment="Center" Margin="0 0 0 5" />
                             <CheckBox Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding PreviewMaterials, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"

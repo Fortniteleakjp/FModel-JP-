@@ -1561,6 +1561,12 @@ public partial class CUE4ParseViewModel : ViewModel
 
     public void ShowAnimGraph(GameFile entry)
     {
+        if (!UserSettings.Default.EnableAnimGraphViewer)
+        {
+            FLogger.Append(ELog.Warning, () => FLogger.Text("Asset Graph Viewer is disabled in settings", Constants.WHITE, true));
+            return;
+        }
+
         if (entry is null)
         {
             Log.Warning("ShowAnimGraph called with null entry");
@@ -1604,6 +1610,9 @@ public partial class CUE4ParseViewModel : ViewModel
 
     private static bool TryOpenGraphViewer(UObject asset, AnimGraphViewModel? existingViewModel = null)
     {
+        if (!UserSettings.Default.EnableAnimGraphViewer)
+            return false;
+
         var graphVm = existingViewModel ?? AnimGraphViewModel.ExtractFromObject(asset);
         if (graphVm.Nodes.Count == 0)
             graphVm = CreateFallbackAssetGraphViewModel(asset);

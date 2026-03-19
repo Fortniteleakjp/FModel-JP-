@@ -135,6 +135,7 @@
     <system:String x:Key="Ctx_ShowMetadata">Show Metadata</system:String>
     <system:String x:Key="Ctx_CompareFiles">Compare Files</system:String>
     <system:String x:Key="Ctx_OpenReferenceViewer">Open Reference Viewer</system:String>
+    <system:String x:Key="Ctx_OpenAnimGraphViewer">Open Asset Graph Viewer</system:String>
     <system:String x:Key="Ctx_PlayVideo">Play Video</system:String>
     <system:String x:Key="Ctx_SaveData">Save Data</system:String>
     <system:String x:Key="Ctx_SaveJson">Save as JSON</system:String>
@@ -290,6 +291,7 @@
     <system:String x:Key="Settings_Models_PreviewStatic">Preview Static Meshes</system:String>
     <system:String x:Key="Settings_Models_PreviewSkeletal">Preview Skeletal Meshes</system:String>
     <system:String x:Key="Settings_Models_PreviewAnim">Preview Animations</system:String>
+    <system:String x:Key="Settings_Models_EnableAnimGraphViewer">Enable Asset Graph Viewer</system:String>
     <system:String x:Key="Settings_Models_PreviewMaterial">Preview Materials</system:String>
     <system:String x:Key="Settings_Models_PreviewLevel">Preview Levels (.umap)</system:String>
     <system:String x:Key="Settings_Models_SaveEmbedded">Save Embedded Materials</system:String>
