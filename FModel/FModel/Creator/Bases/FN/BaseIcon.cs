@@ -12,6 +12,7 @@ using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.GameplayTags;
 using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
 using FModel.Settings;
 using SkiaSharp;
@@ -36,6 +37,9 @@ public class BaseIcon : UCreator
 
         if (Object.TryGetValue(out FInstancedStruct[] dataList, "DataList"))
         {
+            if (TryGetDataListRarity(dataList, out var dataListRarity))
+                GetRarity(dataListRarity);
+
             GetSeries(dataList);
             Preview = Utils.GetBitmap(dataList);
         }
@@ -202,6 +206,47 @@ public class BaseIcon : UCreator
         {
             Background = new[] { SKColor.Parse(color1.Hex), SKColor.Parse(color3.Hex) };
             Border = new[] { SKColor.Parse(color2.Hex), SKColor.Parse(color1.Hex) };
+        }
+    }
+
+    protected static bool TryGetDataListRarity(FInstancedStruct[] dataList, out EFortRarity rarity)
+    {
+        foreach (var data in dataList)
+        {
+            var fallback = data.NonConstStruct;
+            if (fallback.TryGetValue(out rarity, "Rarity"))
+                return true;
+
+            if (fallback.TryGetValue(out FName rarityName, "Rarity") &&
+                TryParseRarity(rarityName.Text, out rarity))
+                return true;
+
+            if (fallback.TryGetValue(out string rarityText, "Rarity") &&
+                TryParseRarity(rarityText, out rarity))
+                return true;
+        }
+
+        rarity = default;
+        return false;
+    }
+
+    private static bool TryParseRarity(string raw, out EFortRarity rarity)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            rarity = default;
+            return false;
+        }
+
+        try
+        {
+            rarity = EnumUtils.GetValueByName<EFortRarity>(raw);
+            return true;
+        }
+        catch
+        {
+            rarity = default;
+            return false;
         }
     }
 

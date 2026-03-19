@@ -51,6 +51,11 @@ public class BaseCommunity : BaseIcon
         {
             _rarityName = series.Name;
         }
+        else if (Object.TryGetValue(out FInstancedStruct[] rarityDataList, "DataList") &&
+                 TryGetDataListRarity(rarityDataList, out var rarity))
+        {
+            _rarityName = rarity.GetDescription();
+        }
         else
         {
             _rarityName = Object.GetOrDefault("Rarity", EFortRarity.Uncommon).GetDescription();
