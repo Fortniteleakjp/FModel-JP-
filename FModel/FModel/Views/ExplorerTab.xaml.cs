@@ -16,38 +16,6 @@ namespace FModel.Views
             this.DataContext = new ExplorerTabViewModel(rootPath);
         }
 
-        private void OnOpenNewTabClick(object sender, RoutedEventArgs e)
-        {
-            if (ExplorerTreeView.SelectedItem is ExplorerFileItem item && !item.IsDirectory)
-            {
-                var appView = ApplicationService.ApplicationView;
-                if (appView.CUE4Parse.Provider.TryGetGameFile(item.FullPath, out var gameFile))
-                {
-                    var selectedItems = new List<CUE4Parse.FileProvider.Objects.GameFile> { gameFile };
-                    if (appView.RightClickMenuCommand.CanExecute(new object[] { "Assets_Extract_New_Tab", selectedItems }))
-                    {
-                        appView.RightClickMenuCommand.Execute(new object[] { "Assets_Extract_New_Tab", selectedItems });
-                    }
-                }
-            }
-        }
-
-        private void OnShowMetadataClick(object sender, RoutedEventArgs e)
-        {
-            if (ExplorerTreeView.SelectedItem is ExplorerFileItem item && !item.IsDirectory)
-            {
-                var appView = ApplicationService.ApplicationView;
-                if (appView.CUE4Parse.Provider.TryGetGameFile(item.FullPath, out var gameFile))
-                {
-                    var selectedItems = new List<CUE4Parse.FileProvider.Objects.GameFile> { gameFile };
-                    if (appView.RightClickMenuCommand.CanExecute(new object[] { "Assets_Show_Metadata", selectedItems }))
-                    {
-                        appView.RightClickMenuCommand.Execute(new object[] { "Assets_Show_Metadata", selectedItems });
-                    }
-                }
-            }
-        }
-
         private void OnOpenReferenceViewerClick(object sender, RoutedEventArgs e)
         {
             if (ExplorerTreeView.SelectedItem is ExplorerFileItem item && !item.IsDirectory)

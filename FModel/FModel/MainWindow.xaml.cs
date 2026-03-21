@@ -1708,32 +1708,6 @@ public partial class MainWindow
         return null;
     }
 
-    // NEW エクスプローラー用：新しいタブで開く
-    private void OnNewExplorerOpenNewTabClick(object sender, RoutedEventArgs e)
-    {
-        var selectedFiles = GetSelectedFilesFromNewExplorerContextMenu();
-        if (selectedFiles == null || selectedFiles.Count == 0)
-            return;
-
-        if (_applicationView.RightClickMenuCommand.CanExecute(new object[] { "Assets_Extract_New_Tab", selectedFiles }))
-        {
-            _applicationView.RightClickMenuCommand.Execute(new object[] { "Assets_Extract_New_Tab", selectedFiles });
-        }
-    }
-
-    // NEW エクスプローラー用：メタデータを表示
-    private void OnNewExplorerShowMetadataClick(object sender, RoutedEventArgs e)
-    {
-        var selectedFiles = GetSelectedFilesFromNewExplorerContextMenu();
-        if (selectedFiles == null || selectedFiles.Count == 0)
-            return;
-
-        if (_applicationView.RightClickMenuCommand.CanExecute(new object[] { "Assets_Show_Metadata", selectedFiles }))
-        {
-            _applicationView.RightClickMenuCommand.Execute(new object[] { "Assets_Show_Metadata", selectedFiles });
-        }
-    }
-
     private void OnAssetsOpenGraphViewerClick(object sender, RoutedEventArgs e)
     {
         if (AssetsListName?.SelectedItems == null || AssetsListName.SelectedItems.Count == 0)

@@ -1366,7 +1366,13 @@
                                                 <ContextMenu.Resources>
                                                     <Style TargetType="MenuItem" BasedOn="{StaticResource FModelJP5ContextMenuItem}" />
                                                 </ContextMenu.Resources>
-                                                <MenuItem Header="{DynamicResource Ctx_OpenNewTab}" Click="OnNewExplorerOpenNewTabClick">
+                                                <MenuItem Header="{DynamicResource Ctx_OpenNewTab}" Command="{Binding DataContext.RightClickMenuCommand}">
+                                                    <MenuItem.CommandParameter>
+                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                            <Binding Source="Assets_Extract_New_Tab" />
+                                                            <Binding Path="SelectedItems" />
+                                                        </MultiBinding>
+                                                    </MenuItem.CommandParameter>
                                                     <MenuItem.Icon>
                                                         <Viewbox Width="16" Height="16">
                                                             <Canvas Width="24" Height="24">
@@ -1375,7 +1381,13 @@
                                                         </Viewbox>
                                                     </MenuItem.Icon>
                                                 </MenuItem>
-                                                <MenuItem Header="{DynamicResource Ctx_ShowMetadata}" Click="OnNewExplorerShowMetadataClick">
+                                                <MenuItem Header="{DynamicResource Ctx_ShowMetadata}" Command="{Binding DataContext.RightClickMenuCommand}">
+                                                    <MenuItem.CommandParameter>
+                                                        <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                            <Binding Source="Assets_Show_Metadata" />
+                                                            <Binding Path="SelectedItems" />
+                                                        </MultiBinding>
+                                                    </MenuItem.CommandParameter>
                                                     <MenuItem.Icon>
                                                         <Viewbox Width="16" Height="16">
                                                             <Canvas Width="24" Height="24">

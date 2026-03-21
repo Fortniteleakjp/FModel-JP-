@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+             xmlns:services="clr-namespace:FModel.Services"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="600">
     <Grid>
@@ -27,9 +29,23 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
             <TreeView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="{DynamicResource Ctx_OpenNewTab}" Click="OnOpenNewTabClick" />
-                    <MenuItem Header="{DynamicResource Ctx_ShowMetadata}" Click="OnShowMetadataClick" />
+                <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
+                    <MenuItem Header="{DynamicResource Ctx_OpenNewTab}" Command="{Binding Source={x:Static services:ApplicationService.ApplicationView}, Path=RightClickMenuCommand}">
+                        <MenuItem.CommandParameter>
+                            <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                <Binding Source="Assets_Extract_New_Tab" />
+                                <Binding Path="SelectedItem" />
+                            </MultiBinding>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
+                    <MenuItem Header="{DynamicResource Ctx_ShowMetadata}" Command="{Binding Source={x:Static services:ApplicationService.ApplicationView}, Path=RightClickMenuCommand}">
+                        <MenuItem.CommandParameter>
+                            <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                <Binding Source="Assets_Show_Metadata" />
+                                <Binding Path="SelectedItem" />
+                            </MultiBinding>
+                        </MenuItem.CommandParameter>
+                    </MenuItem>
                     <MenuItem Header="{DynamicResource Ctx_OpenReferenceViewer}" Click="OnOpenReferenceViewerClick" />
                     <Separator />
                     <MenuItem Header="{DynamicResource Ctx_AddToCart}" Click="OnAddToCartClick" />

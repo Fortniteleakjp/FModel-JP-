@@ -5,6 +5,7 @@ using System.Threading;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
 using FModel.Services;
+using FModel.ViewModels;
 using Serilog;
 
 namespace FModel.ViewModels.Commands;
@@ -22,10 +23,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         if (parameter is not object[] parameters || parameters.Length < 2 || parameters[0] is not string trigger)
             return;
 
-        if (parameters[1] is not IEnumerable rawEntries)
-            return;
-
-        var entries = rawEntries.Cast<object?>().OfType<GameFile>().ToArray();
+        var entries = ResolveEntries(contextViewModel, parameters[1]);
         if (!entries.Any()) return;
 
         var updateUi = entries.Length > 1 ? EBulkType.Auto : EBulkType.None;
@@ -126,5 +124,26 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     break;
             }
         });
+    }
+
+    private static GameFile[] ResolveEntries(ApplicationViewModel contextViewModel, object parameter)
+    {
+        if (parameter is IEnumerable rawEntries && parameter is not string)
+        {
+            return rawEntries.Cast<object?>().Select(item => ResolveEntry(contextViewModel, item)).OfType<GameFile>().ToArray();
+        }
+
+        var entry = ResolveEntry(contextViewModel, parameter);
+        return entry is null ? [] : [entry];
+    }
+
+    private static GameFile ResolveEntry(ApplicationViewModel contextViewModel, object item)
+    {
+        return item switch
+        {
+            GameFile gameFile => gameFile,
+            ExplorerFileItem { IsDirectory: false } explorerFileItem when contextViewModel.CUE4Parse.Provider.TryGetGameFile(explorerFileItem.FullPath, out var gameFile) => gameFile,
+            _ => null
+        };
     }
 }

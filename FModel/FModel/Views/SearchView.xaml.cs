@@ -58,17 +58,6 @@ public partial class SearchView
         } while (MainWindow.YesWeCats.AssetsListName.SelectedItem == null);
     }
 
-    private async void OnAssetExtract(object sender, RoutedEventArgs e)
-    {
-        if (SearchListView.SelectedItem is not GameFile entry)
-            return;
-
-        WindowState = WindowState.Minimized;
-        await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.Extract(cancellationToken, entry, true));
-
-        MainWindow.YesWeCats.Activate();
-    }
-
     private void OnWindowKeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key != Key.Enter) return;
