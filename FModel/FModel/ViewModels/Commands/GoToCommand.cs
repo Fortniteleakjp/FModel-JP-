@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FModel.Framework;
 using FModel.Services;
 
@@ -21,35 +22,37 @@ public class GoToCommand : ViewModelCommand<CustomDirectoriesViewModel>
 
     public TreeItem JumpTo(string directory)
     {
+        if (string.IsNullOrWhiteSpace(directory))
+            return null;
+
+        var folders = directory
+            .Replace('\\', '/')
+            .Trim('/')
+            .Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (folders.Length == 0)
+            return null;
+
         MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
         var root = _applicationView.CUE4Parse.AssetsFolder.Folders;
         if (root is not { Count: > 0 }) return null;
 
-        var i = 0;
-        var done = false;
-        var folders = directory.Split('/');
-        while (!done)
+        for (var i = 0; i < folders.Length; i++)
         {
-            foreach (var folder in root)
+            var next = root.FirstOrDefault(folder =>
+                folder.Header.Equals(folders[i], StringComparison.OrdinalIgnoreCase));
+            if (next is null)
+                return null;
+
+            next.IsExpanded = true;
+            if (i == folders.Length - 1)
             {
-                if (!folder.Header.Equals(folders[i], i == 0 ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
-                    continue;
-
-                folder.IsExpanded = true; // folder found = expand
-
-                // is this the last folder aka the one we want to jump in
-                if (i >= folders.Length - 1)
-                {
-                    folder.IsSelected = true; // select it
-                    return folder;
-                }
-
-                root = folder.Folders; // grab his subfolders
-                break;
+                next.IsSelected = true;
+                return next;
             }
 
-            i++;
-            done = i == folders.Length || root.Count == 0;
+            root = next.Folders;
+            if (root is not { Count: > 0 })
+                return null;
         }
 
         return null;

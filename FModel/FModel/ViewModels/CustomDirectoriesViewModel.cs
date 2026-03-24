@@ -13,6 +13,14 @@ namespace FModel.ViewModels;
 
 public class CustomDirectoriesViewModel : ViewModel
 {
+    private static string NormalizeDirectoryPath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return string.Empty;
+
+        return path.Replace('\\', '/').TrimEnd('/');
+    }
+
     private GoToCommand _goToCommand;
     public GoToCommand GoToCommand => _goToCommand ??= new GoToCommand(this);
     private AddEditDirectoryCommand _addEditDirectoryCommand;
@@ -37,6 +45,7 @@ public class CustomDirectoriesViewModel : ViewModel
 
     public void Add(CustomDirectory dir)
     {
+        dir.DirectoryPath = NormalizeDirectoryPath(dir.DirectoryPath);
         _directories.Add(new MenuItem { Header = dir.Header, Tag = dir.DirectoryPath, ItemsSource = EnumerateCommands(dir) });
         Save();
     }
@@ -46,6 +55,7 @@ public class CustomDirectoriesViewModel : ViewModel
         if (_directories.ElementAt(index) is not MenuItem dir) return;
 
         dir.Header = newDir.Header;
+        newDir.DirectoryPath = NormalizeDirectoryPath(newDir.DirectoryPath);
         dir.Tag = newDir.DirectoryPath;
         if (dir.ItemsSource is IEnumerable<MenuItem> items)
         {
@@ -94,9 +104,7 @@ public class CustomDirectoriesViewModel : ViewModel
 
         foreach (var setting in UserSettings.Default.CurrentDir.Directories)
         {
-            var path = setting.DirectoryPath;
-            if (path.EndsWith('/'))
-                path = path[..^1];
+            var path = NormalizeDirectoryPath(setting.DirectoryPath);
 
             yield return new MenuItem
             {
