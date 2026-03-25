@@ -64,7 +64,12 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
         if (e.PropertyName != "Key")
             return;
 
-        var key = Helper.FixKey(collection[e.CollectionIndex].Key);
+        if (e.CollectionIndex < 0 || e.CollectionIndex >= collection.Count)
+            return;
+
+        var item = collection[e.CollectionIndex];
+
+        var key = Helper.FixKey(item.Key);
         if (e.CollectionIndex == 0)
         {
             if (!HasChange)
@@ -80,12 +85,12 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
                 new()
                 {
                     Key = key,
-                    Name = collection[e.CollectionIndex].Name,
-                    Guid = collection[e.CollectionIndex].Guid.ToString()
+                    Name = item.Name,
+                    Guid = item.Guid.ToString()
                 }
             };
         }
-        else if (settings.DynamicKeys.FirstOrDefault(x => x.Guid == collection[e.CollectionIndex].Guid.ToString()) is { } d)
+        else if (settings.DynamicKeys.FirstOrDefault(x => x.Guid == item.Guid.ToString()) is { } d)
         {
             if (!HasChange)
                 HasChange = Helper.FixKey(d.Key) != key;
@@ -98,8 +103,8 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
             settings.DynamicKeys.Add(new DynamicKey
             {
                 Key = key,
-                Name = collection[e.CollectionIndex].Name,
-                Guid = collection[e.CollectionIndex].Guid.ToString()
+                Name = item.Name,
+                Guid = item.Guid.ToString()
             });
         }
     }

@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using AdonisUI.Controls;
 using UAssetAPI;
 using UAssetAPI.PropertyTypes.Objects;
@@ -1307,31 +1308,29 @@ public partial class MainWindow
 
         if (dataContext is FModel.ViewModels.AssetsFolderViewModel rootVm)
         {
-            rootVm.FoldersView.Filter = o =>
+            rootVm.FoldersView.Filter = hasTextFilter ? o =>
             {
-                if (!hasTextFilter) return true;
                 if (o is not FModel.ViewModels.TreeItem item) return false;
 
                 if (regex != null) return regex.IsMatch(item.Header);
                 if (filterText.StartsWith("regex:", StringComparison.OrdinalIgnoreCase)) return false;
                 return filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
-            };
+            } : null;
             rootVm.FoldersView.Refresh();
         }
         else if (dataContext is FModel.ViewModels.TreeItem treeItem)
         {
-            treeItem.FoldersView.Filter = o =>
+            treeItem.FoldersView.Filter = hasTextFilter ? o =>
             {
-                if (!hasTextFilter) return true;
                 if (o is not FModel.ViewModels.TreeItem item) return false;
 
                 if (regex != null) return regex.IsMatch(item.Header);
                 if (filterText.StartsWith("regex:", StringComparison.OrdinalIgnoreCase)) return false;
                 return filters.All(x => item.Header.Contains(x, StringComparison.OrdinalIgnoreCase));
-            };
+            } : null;
             treeItem.FoldersView.Refresh();
 
-            treeItem.AssetsList.AssetsView.Filter = FilterAsset;
+            treeItem.AssetsList.AssetsView.Filter = (hasTextFilter || hasClassFilter) ? (Predicate<object>)FilterAsset : null;
             treeItem.AssetsList.AssetsView.Refresh();
         }
     }
@@ -1496,6 +1495,87 @@ public partial class MainWindow
 
         if (closeExplorer)
             NewExplorerMenuItem.IsChecked = false;
+    }
+
+    private void OnCloseNewExplorerClick(object sender, RoutedEventArgs e)
+    {
+        NewExplorerMenuItem.IsChecked = false;
+    }
+
+    private void OnNewExplorerListPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (sender is not ListBox listBox)
+            return;
+
+        var scrollViewer = GetScrollViewer(listBox);
+        if (scrollViewer != null)
+        {
+            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
+            e.Handled = true;
+        }
+    }
+
+    private void OnNewExplorerListKeyDown(object sender, KeyEventArgs e)
+    {
+        if (sender is not ListBox listBox) return;
+        if (e.Key != Key.Up && e.Key != Key.Down && e.Key != Key.PageUp && e.Key != Key.PageDown) return;
+
+        int itemCount = listBox.Items.Count;
+        if (itemCount == 0) return;
+
+        var wrapPanel = FindVisualChild<WrapPanel>(listBox);
+        if (wrapPanel == null) return;
+
+        int selectedIndex = listBox.SelectedIndex < 0 ? 0 : listBox.SelectedIndex;
+
+        // WrapPanel の1行あたりアイテム数を算出
+        int itemsPerRow = 1;
+        if (listBox.ItemContainerGenerator.ContainerFromIndex(0) is FrameworkElement firstItem && firstItem.ActualWidth > 0)
+        {
+            double itemW = firstItem.ActualWidth + firstItem.Margin.Left + firstItem.Margin.Right;
+            if (itemW > 0)
+                itemsPerRow = Math.Max(1, (int)(wrapPanel.ActualWidth / itemW));
+        }
+
+        int delta = e.Key switch
+        {
+            Key.Up       => -itemsPerRow,
+            Key.Down     =>  itemsPerRow,
+            Key.PageUp   => -itemsPerRow * 3,
+            Key.PageDown =>  itemsPerRow * 3,
+            _            => 0
+        };
+
+        int newIndex = Math.Max(0, Math.Min(selectedIndex + delta, itemCount - 1));
+        if (newIndex == selectedIndex) return;
+
+        listBox.SelectedIndex = newIndex;
+        listBox.ScrollIntoView(listBox.Items[newIndex]);
+        e.Handled = true;
+    }
+
+    private static ScrollViewer GetScrollViewer(DependencyObject depObj)
+    {
+        if (depObj is ScrollViewer sv) return sv;
+
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+        {
+            var child = VisualTreeHelper.GetChild(depObj, i);
+            var result = GetScrollViewer(child);
+            if (result != null) return result;
+        }
+        return null;
+    }
+
+    private static T FindVisualChild<T>(DependencyObject depObj) where T : DependencyObject
+    {
+        if (depObj is T match) return match;
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+        {
+            var result = FindVisualChild<T>(VisualTreeHelper.GetChild(depObj, i));
+            if (result != null) return result;
+        }
+        return null;
     }
 
     private void TrackNewExplorerLocation(TreeItem selectedFolder)

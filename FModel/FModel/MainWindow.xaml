@@ -166,6 +166,7 @@
             <Style x:Key="FModelJP5SearchActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                 <Setter Property="Padding" Value="8,6" />
                 <Setter Property="Foreground" Value="White" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="10" />
                 <Setter Property="FontSize" Value="14" />
                 <Setter Property="FontWeight" Value="SemiBold" />
                 <Setter Property="Background" Value="{StaticResource FModelJP5ActionButtonBackgroundDark}" />
@@ -178,7 +179,7 @@
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="10">
+                                    CornerRadius="{Binding Path=(adonisExtensions:CornerRadiusExtension.CornerRadius), RelativeSource={RelativeSource TemplatedParent}}">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                             <ControlTemplate.Triggers>
@@ -212,7 +213,7 @@
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="12">
+                                    CornerRadius="{Binding Path=(adonisExtensions:CornerRadiusExtension.CornerRadius), RelativeSource={RelativeSource TemplatedParent}}">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                             <ControlTemplate.Triggers>
@@ -1715,132 +1716,146 @@
                                 </Grid>
                             </DockPanel>
                         </TabItem>
-                        <TabItem Header="リスト" IsEnabled="{Binding Status.IsReady}" RenderTransformOrigin="0.744,0.549" Margin="89,0,-94,0">
+                        <TabItem Header="" IsEnabled="{Binding Status.IsReady}" RenderTransformOrigin="0.744,0.549" Margin="89,0,-94,0">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <StackPanel Margin="10">
                                     <TextBlock Text="リスト (Lists)" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
-                                    <WrapPanel Orientation="Horizontal">
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Characters" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="スキン" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Dances" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AnimationIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="エモート" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Backpacks" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="バックアクセサリ" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Pickaxes" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="ツルハシ" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/LoadingScreens" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="ロード画面" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Gliders" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="グライダー" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Sprays" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="スプレー" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Dances/Emoji" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="エモートアイコン" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/BannerIcons" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="バナー" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/ItemWraps" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="ラップ" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Tag="Search:WeaponOnly" Width="140" Height="40" Margin="5" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="武器のみ" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Width="140" Height="40" Margin="5" Click="OnClearSearchClick" IsEnabled="{Binding Status.IsReady}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Viewbox Width="16" Height="16" Margin="0,0,8,0">
-                                                    <Canvas Width="24" Height="24">
-                                                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}" />
-                                                    </Canvas>
-                                                </Viewbox>
-                                                <TextBlock Text="検索解除" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                    </WrapPanel>
+                                    <StackPanel>
+                                        <!-- カテゴリー: コスメティクス -->
+                                        <TextBlock Text="コスメティクス" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                        <WrapPanel Orientation="Horizontal">
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Characters" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="スキン" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Dances" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AnimationIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="エモート" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Backpacks" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="バックアクセサリ" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Pickaxes" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="ツルハシ" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Gliders" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="グライダー" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/ItemWraps" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="ラップ" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Sprays" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="コラー" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </WrapPanel>
+                                        
+                                        <!-- カテゴリー: UI要素 -->
+                                        <TextBlock Text="UI要素" FontSize="12" FontWeight="SemiBold" Margin="0,12,0,8"/>
+                                        <WrapPanel Orientation="Horizontal">
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/LoadingScreens" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="ロード画面" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/Cosmetics/Dances/Emoji" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="エモートアイコン" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Tag="FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Items/BannerIcons" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource TextureIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="バナー" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </WrapPanel>
+                                        
+                                        <!-- カテゴリー: 検索 -->
+                                        <TextBlock Text="検索" FontSize="12" FontWeight="SemiBold" Margin="0,12,0,8"/>
+                                        <WrapPanel Orientation="Horizontal">
+                                            <Button Tag="Search:WeaponOnly" MinWidth="130" Height="36" Margin="3" Click="OnAssetListClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ModelIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="武器のみ" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button MinWidth="130" Height="36" Margin="3" Click="OnClearSearchClick" IsEnabled="{Binding Status.IsReady}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="14" Height="14" Margin="0,0,6,0">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                    <TextBlock Text="検索解除" VerticalAlignment="Center" FontSize="12"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </WrapPanel>
+                                    </StackPanel>
                                 </StackPanel>
                             </ScrollViewer>
                         </TabItem>
@@ -1872,18 +1887,55 @@
                         <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,8">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
                                 <ToggleButton Style="{StaticResource FModelJP5RoundedToggleButton}"
-                                              IsChecked="{Binding IsChecked, ElementName=NewExplorerMenuItem, Mode=TwoWay}" Height="29" Width="91" Margin="0,0,6,0">
-                                    <TextBlock Text="NEW Explorer" />
+                                              IsChecked="{Binding IsChecked, ElementName=NewExplorerMenuItem, Mode=TwoWay}" 
+                                              Height="30" Padding="12,0" Margin="0,0,8,0"
+                                              ToolTip="新しいエクスプローラー表示に切り替えます">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Viewbox Width="14" Height="14" Margin="0,0,8,0">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}, Path=Foreground}" Data="{StaticResource DirectoriesIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                        <TextBlock Text="Explorer" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                    </StackPanel>
                                 </ToggleButton>
-                                <Button Style="{StaticResource FModelJP5SearchActionButton}" Margin="0,0,6,0" Click="OnSearchViewClick" ToolTip="検索を開く" Height="28" Width="50">
-                                    <TextBlock Text="検索" />
+                                <Separator Margin="2,6,10,6">
+                                    <Separator.LayoutTransform>
+                                        <RotateTransform Angle="90" />
+                                    </Separator.LayoutTransform>
+                                </Separator>
+                                <Button Style="{StaticResource FModelJP5SearchActionButton}" Margin="0,0,8,0" Click="OnSearchViewClick" ToolTip="検索パネルを開く" Height="30" Padding="10,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Viewbox Width="12" Height="12" Margin="0,1,6,0">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="{StaticResource SearchIcon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                        <TextBlock Text="検索" VerticalAlignment="Center" />
+                                    </StackPanel>
                                 </Button>
-                                <Button Style="{StaticResource FModelJP5SearchActionButton}" Margin="0,0,6,0" Click="OnThemeDarkClick" Width="44">
-                                    <TextBlock Text="Dark" />
-                                </Button>
-                                <Button Style="{StaticResource FModelJP5SearchActionButton}" Click="OnThemeLightClick" Width="46">
-                                    <TextBlock Text="Light" />
-                                </Button>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnThemeDarkClick" 
+                                            ToolTip="ダークテーマ" adonisExtensions:CornerRadiusExtension.CornerRadius="10,0,0,10" BorderThickness="1,1,0,1" Width="36" Padding="0" Height="30">
+                                        <Viewbox Width="14" Height="14">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 1,1 20,12A8,8 0 0,1 12,20M12,4A8,8 0 0,0 4,12H12V4Z" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Button>
+                                    <Button Grid.Column="1" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnThemeLightClick" 
+                                            ToolTip="ライトテーマ" adonisExtensions:CornerRadiusExtension.CornerRadius="0,10,10,0" BorderThickness="0,1,1,1" Width="36" Padding="0" Height="30">
+                                        <Viewbox Width="14" Height="14">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4V12H20A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4Z" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Button>
+                                </Grid>
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -1920,7 +1972,7 @@
 
                             <DockPanel Grid.Row="0" LastChildFill="True" Margin="4,8,4,12">
                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                    <Grid Margin="8,0,0,0">
+                                    <Grid Margin="12,0,0,0">
                                         <TextBox x:Name="NewExplorerSearchBox" Style="{StaticResource FModelJP5SearchTextBox}" AcceptsTab="False" AcceptsReturn="False"
                                              Padding="28,4,28,4" MinWidth="220" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
                                              adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}"
@@ -1940,7 +1992,7 @@
                                         </Button>
                                     </Grid>
 
-                                    <Border Margin="8,0,0,0" Style="{StaticResource FModelJP5InputHostBorder}">
+                                    <Border Margin="6,0,0,0" Style="{StaticResource FModelJP5InputHostBorder}">
                                         <ComboBox x:Name="NewExplorerClassFilter" Style="{StaticResource FModelJP5ClassFilterCombo}" MinWidth="140" VerticalContentAlignment="Center" SelectionChanged="OnNewExplorerClassFilterChanged" SelectedIndex="0">
                                             <ComboBoxItem Content="{DynamicResource NewExplorer_ClassFilter_All}" />
                                             <ComboBoxItem Content="Texture2D" />
@@ -1954,16 +2006,25 @@
                                             <ComboBoxItem Content="StringTable" />
                                         </ComboBox>
                                     </Border>
+
+                                    <!-- 旧システムに戻すボタン -->
+                                    <Button ToolTip="従来のエクスプローラーに戻る" Margin="8,0,0,0" Padding="8,6" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnCloseNewExplorerClick">
+                                        <Viewbox Width="12" Height="12">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Button>
                                 </StackPanel>
 
-                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,8,0">
-                                        <Button x:Name="NewExplorerUpButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoUp}" Padding="8,4" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoParentFolderClick">
+                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,12,0">
+                                        <Button x:Name="NewExplorerUpButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoUp}" Padding="8,4" Margin="0,0,2,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoParentFolderClick">
                                             <TextBlock Text="↑" FontSize="14" FontWeight="SemiBold" />
                                         </Button>
-                                        <Button x:Name="NewExplorerBackButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoBack}" Padding="8,4" Margin="4,0,0,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoPreviousFileClick">
+                                        <Button x:Name="NewExplorerBackButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoBack}" Padding="8,4" Margin="0,0,2,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoPreviousFileClick">
                                             <TextBlock Text="←" FontSize="14" FontWeight="SemiBold" />
                                         </Button>
-                                        <Button x:Name="NewExplorerForwardButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoForward}" Padding="8,4" Margin="4,0,0,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoNextFileClick">
+                                        <Button x:Name="NewExplorerForwardButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoForward}" Padding="8,4" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoNextFileClick">
                                             <TextBlock Text="→" FontSize="14" FontWeight="SemiBold" />
                                         </Button>
                                 </StackPanel>
@@ -1980,13 +2041,22 @@
                                 </Border>
                             </DockPanel>
 
-                            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="10">
-                                <StackPanel>
+                            <Grid Grid.Row="1" Margin="4,0,4,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" MinWidth="250"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="3*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0" Style="{StaticResource FModelJP5InputHostBorder}" Padding="0" ClipToBounds="True">
                                     <ListBox x:Name="NewExplorerListBox"
                                          ItemsSource="{Binding FoldersView, IsAsync=True}"
                                          MouseDoubleClick="OnNewExplorerListMouseDoubleClick"
                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                         PreviewMouseWheel="OnNewExplorerListPreviewMouseWheel"
+                                         PreviewKeyDown="OnNewExplorerListKeyDown"
+                                         ScrollViewer.CanContentScroll="False"
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
                                         <ListBox.ContextMenu>
@@ -2057,7 +2127,12 @@
                                                     <Setter.Value>
                                                         <ControlTemplate TargetType="ListBox">
                                                             <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                                                                <ItemsPresenter />
+                                                                <ScrollViewer Focusable="False"
+                                                                              CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}"
+                                                                              HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                                                              VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                                                                    <ItemsPresenter />
+                                                                </ScrollViewer>
                                                             </Border>
                                                         </ControlTemplate>
                                                     </Setter.Value>
@@ -2144,11 +2219,18 @@
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
                                     </ListBox>
+                                </Border>
+
+                                <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" ResizeBehavior="PreviousAndNext"/>
+
+                                <Border Grid.Column="2" Style="{StaticResource FModelJP5InputHostBorder}" Padding="0" ClipToBounds="True">
                                     <ListBox x:Name="NewExplorerFilesListBox"
                                          ItemsSource="{Binding AssetsList.AssetsView, IsAsync=True}"
                                          MouseDoubleClick="OnNewExplorerFileMouseDoubleClick"
                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                         PreviewMouseWheel="OnNewExplorerListPreviewMouseWheel"
+                                         ScrollViewer.CanContentScroll="False"
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
                                         <ListBox.ContextMenu>
@@ -2418,7 +2500,12 @@
                                                     <Setter.Value>
                                                         <ControlTemplate TargetType="ListBox">
                                                             <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                                                                <ItemsPresenter />
+                                                                <ScrollViewer Focusable="False"
+                                                                              CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}"
+                                                                              HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                                                              VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                                                                    <ItemsPresenter />
+                                                                </ScrollViewer>
                                                             </Border>
                                                         </ControlTemplate>
                                                     </Setter.Value>
@@ -2537,8 +2624,8 @@
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
                                     </ListBox>
-                                </StackPanel>
-                            </ScrollViewer>
+                                </Border>
+                            </Grid>
                         </Grid>
 
                         <Border Grid.Row="2" Margin="0 5 0 5"
