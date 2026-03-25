@@ -2056,10 +2056,7 @@
                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
                                          PreviewMouseWheel="OnNewExplorerListPreviewMouseWheel"
                                          PreviewKeyDown="OnNewExplorerListKeyDown"
-                                         ScrollViewer.CanContentScroll="True"
-                                         VirtualizingPanel.IsVirtualizing="True"
-                                         VirtualizingPanel.VirtualizationMode="Recycling"
-                                         VirtualizingPanel.ScrollUnit="Pixel"
+                                         ScrollViewer.CanContentScroll="False"
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
                                         <ListBox.ContextMenu>
@@ -2144,7 +2141,7 @@
                                         </ListBox.Style>
                                         <ListBox.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <VirtualizingStackPanel IsItemsHost="True" />
+                                                <WrapPanel IsItemsHost="True" />
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
@@ -2233,10 +2230,7 @@
                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
                                          PreviewMouseWheel="OnNewExplorerListPreviewMouseWheel"
-                                         ScrollViewer.CanContentScroll="True"
-                                         VirtualizingPanel.IsVirtualizing="True"
-                                         VirtualizingPanel.VirtualizationMode="Recycling"
-                                         VirtualizingPanel.ScrollUnit="Pixel"
+                                         ScrollViewer.CanContentScroll="False"
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
                                         <ListBox.ContextMenu>
@@ -2520,7 +2514,7 @@
                                         </ListBox.Style>
                                         <ListBox.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <VirtualizingStackPanel IsItemsHost="True" />
+                                                <WrapPanel IsItemsHost="True" />
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
