@@ -54,18 +54,22 @@ namespace FModel.Views.Resources.Controls
                 return;
             }
 
+            // リサイクルされたアイテムの古い表示を即座にクリア
+            image.Source = null;
+            image.Visibility = Visibility.Collapsed;
+
             try
             {
-                // Reset state
-                image.Source = null;
-                image.Visibility = Visibility.Collapsed;
+                // 高速スクロール中の無駄なロードを防ぐための遅延（デバウンス）
+                await Task.Delay(80).ConfigureAwait(true);
+                if (GetGameFile(image) != file || !image.IsLoaded) return;
 
                 await _semaphore.WaitAsync();
                 try
                 {
                     if (GetGameFile(image) != file) return;
 
-                    var bitmap = await Task.Run(async () =>
+                    var bitmap = await Task.Run(() =>
                     {
                     var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
                     if (provider == null) return null;

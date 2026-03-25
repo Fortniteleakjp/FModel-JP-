@@ -69,9 +69,13 @@ public static class GameFileClassLoader
 
         SetClassName(textBlock, "...");
 
-        await _semaphore.WaitAsync();
         try
         {
+            // デバウンス処理：スクロール中に大量のタスクがセマフォに溜まるのを防ぐ
+            await Task.Delay(50).ConfigureAwait(true);
+            if (!ReferenceEquals(GetGameFile(textBlock), file)) return;
+
+            await _semaphore.WaitAsync();
             if (!ReferenceEquals(GetGameFile(textBlock), file))
                 return;
 

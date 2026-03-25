@@ -70,9 +70,13 @@ public static class WeaponCardNameLoader
             return;
         }
 
-        await _semaphore.WaitAsync();
         try
         {
+            // デバウンス処理：セマフォに並ぶ前に、アイテムがまだ有効か確認
+            await Task.Delay(50).ConfigureAwait(true);
+            if (!ReferenceEquals(GetGameFile(textBlock), file)) return;
+
+            await _semaphore.WaitAsync();
             if (!ReferenceEquals(GetGameFile(textBlock), file))
                 return;
 
