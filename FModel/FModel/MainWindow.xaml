@@ -289,7 +289,7 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-            <Style TargetType="Grid">
+            <Style x:Key="FModelJP5GridStretchStyle" TargetType="Grid">
                 <Setter Property="HorizontalAlignment" Value="Stretch" />
                 <Setter Property="VerticalAlignment" Value="Stretch" />
             </Style>
@@ -2056,7 +2056,10 @@
                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
                                          PreviewMouseWheel="OnNewExplorerListPreviewMouseWheel"
                                          PreviewKeyDown="OnNewExplorerListKeyDown"
-                                         ScrollViewer.CanContentScroll="False"
+                                         ScrollViewer.CanContentScroll="True"
+                                         VirtualizingPanel.IsVirtualizing="True"
+                                         VirtualizingPanel.VirtualizationMode="Recycling"
+                                         VirtualizingPanel.ScrollUnit="Pixel"
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
                                         <ListBox.ContextMenu>
@@ -2141,12 +2144,12 @@
                                         </ListBox.Style>
                                         <ListBox.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                                                <VirtualizingStackPanel IsItemsHost="True" />
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Width="180" Height="210" Margin="6" CornerRadius="12"                                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                                                <Border Width="152" Height="178" Margin="5" CornerRadius="10"                                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
                                                         BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
                                                         BorderThickness="1"
                                                         RenderTransformOrigin="0.5,0.5">
@@ -2154,7 +2157,7 @@
                                                         <ScaleTransform ScaleX="1" ScaleY="1" />
                                                     </Border.RenderTransform>
                                                     <Border.Effect>
-                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="12" Opacity="0.15" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
+                                                        <DropShadowEffect ShadowDepth="0" BlurRadius="6" Opacity="0.08" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
                                                     </Border.Effect>
                                                     <Border.Style>
                                                         <Style TargetType="Border">
@@ -2164,16 +2167,16 @@
                                                                     <Trigger.EnterActions>
                                                                         <BeginStoryboard>
                                                                             <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.02" Duration="0:0:0.2" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.02" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.01" Duration="0:0:0.12" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.01" Duration="0:0:0.12" />
                                                                             </Storyboard>
                                                                         </BeginStoryboard>
                                                                     </Trigger.EnterActions>
                                                                     <Trigger.ExitActions>
                                                                         <BeginStoryboard>
                                                                             <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.2" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.1" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.1" />
                                                                             </Storyboard>
                                                                         </BeginStoryboard>
                                                                     </Trigger.ExitActions>
@@ -2187,27 +2190,27 @@
                                                             <RowDefinition Height="Auto" />
                                                         </Grid.RowDefinitions>
 
-                                                        <Viewbox Grid.Row="0" Margin="30">
+                                                        <Viewbox Grid.Row="0" Margin="24">
                                                             <Canvas Width="24" Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" Data="{StaticResource FolderIcon}" />
+                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" Data="M3,7.2C3,5.98 3.98,5 5.2,5H9.5L11.1,6.8H18.8C20.02,6.8 21,7.78 21,9V17.8C21,19.02 20.02,20 18.8,20H5.2C3.98,20 3,19.02 3,17.8V7.2ZM5.2,8.2V17.8H18.8V9.2H10.4L8.8,7.4H5.2ZM7.1,11.5H12.4V13H7.1V11.5ZM7.1,14.4H16V15.9H7.1V14.4Z" />
                                                             </Canvas>
                                                         </Viewbox>
 
                                                         <Border Grid.Row="1" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
-                                                            CornerRadius="0,0,12,12" Padding="12,10">
+                                                            CornerRadius="0,0,10,10" Padding="10,8">
                                                             <StackPanel>
                                                                 <TextBlock Text="{Binding Header}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
-                                                                       ToolTip="{Binding Header}" HorizontalAlignment="Left" Margin="0,0,0,4" FontSize="13"/>
+                                                                       ToolTip="{Binding Header}" HorizontalAlignment="Left" Margin="0,0,0,3" FontSize="12"/>
                                                                 <Grid>
                                                                     <Grid.ColumnDefinitions>
                                                                         <ColumnDefinition Width="*" />
                                                                         <ColumnDefinition Width="Auto" />
                                                                     </Grid.ColumnDefinitions>
-                                                                    <TextBlock Grid.Column="0" FontSize="11" Opacity="0.6">
+                                                                    <TextBlock Grid.Column="0" FontSize="10" Opacity="0.6">
                                                                     <Run Text="{Binding AssetsList.Assets.Count, Mode=OneWay}" />
                                                                     <Run Text="{DynamicResource NewExplorer_Label_ItemsSuffix}" />
                                                                     </TextBlock>
-                                                                    <TextBlock Grid.Column="1" FontSize="11" Opacity="0.6" HorizontalAlignment="Right">
+                                                                    <TextBlock Grid.Column="1" FontSize="10" Opacity="0.6" HorizontalAlignment="Right">
                                                                     <Run Text="{Binding FoldersView.Count, Mode=OneWay}" />
                                                                     <Run Text="{DynamicResource NewExplorer_Label_FoldersSuffix}" />
                                                                     </TextBlock>
@@ -2230,7 +2233,10 @@
                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
                                          PreviewMouseWheel="OnNewExplorerListPreviewMouseWheel"
-                                         ScrollViewer.CanContentScroll="False"
+                                         ScrollViewer.CanContentScroll="True"
+                                         VirtualizingPanel.IsVirtualizing="True"
+                                         VirtualizingPanel.VirtualizationMode="Recycling"
+                                         VirtualizingPanel.ScrollUnit="Pixel"
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
                                         <ListBox.ContextMenu>
@@ -2514,12 +2520,12 @@
                                         </ListBox.Style>
                                         <ListBox.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                                                <VirtualizingStackPanel IsItemsHost="True" />
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Width="180" Height="210" Margin="6" CornerRadius="12"
+                                                <Border Width="152" Height="178" Margin="5" CornerRadius="10"
                                                         Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBackground}"
                                                         BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBorder}"
                                                         BorderThickness="1"
@@ -2528,7 +2534,7 @@
                                                         <ScaleTransform ScaleX="1" ScaleY="1" />
                                                     </Border.RenderTransform>
                                                     <Border.Effect>
-                                                        <DropShadowEffect ShadowDepth="1" BlurRadius="12" Opacity="0.15" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
+                                                        <DropShadowEffect ShadowDepth="0" BlurRadius="6" Opacity="0.08" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
                                                     </Border.Effect>
                                                     <Border.Style>
                                                         <Style TargetType="Border">
@@ -2538,16 +2544,16 @@
                                                                     <Trigger.EnterActions>
                                                                         <BeginStoryboard>
                                                                             <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.02" Duration="0:0:0.2" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.02" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.01" Duration="0:0:0.12" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.01" Duration="0:0:0.12" />
                                                                             </Storyboard>
                                                                         </BeginStoryboard>
                                                                     </Trigger.EnterActions>
                                                                     <Trigger.ExitActions>
                                                                         <BeginStoryboard>
                                                                             <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.2" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.2" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.1" />
+                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.1" />
                                                                             </Storyboard>
                                                                         </BeginStoryboard>
                                                                     </Trigger.ExitActions>
@@ -2561,11 +2567,11 @@
                                                             <RowDefinition Height="Auto" />
                                                         </Grid.RowDefinitions>
 
-                                                        <Image x:Name="ThumbnailImage" Grid.Row="0" Margin="12" Stretch="Uniform"
+                                                        <Image x:Name="ThumbnailImage" Grid.Row="0" Margin="10" Stretch="Uniform"
                                                            controls:FileIconLoader.GameFile="{Binding}"
                                                            Visibility="Collapsed"/>
 
-                                                        <Viewbox Grid.Row="0" Margin="30">
+                                                        <Viewbox Grid.Row="0" Margin="24">
                                                             <Viewbox.Style>
                                                                 <Style TargetType="Viewbox">
                                                                     <Setter Property="Visibility" Value="Visible"/>
@@ -2582,14 +2588,14 @@
                                                         </Viewbox>
 
                                                         <Border Grid.Row="1" Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardSectionBackground}"
-                                                            CornerRadius="0,0,12,12" Padding="12,10">
+                                                            CornerRadius="0,0,10,10" Padding="10,8">
                                                             <StackPanel>
                                                                  <TextBlock controls:WeaponCardNameLoader.GameFile="{Binding}"
                                                                      controls:HighlightText.Text="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}"
                                                                        controls:HighlightText.Highlight="{Binding Text, ElementName=NewExplorerSearchBox}"
                                                                        controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
                                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"
-                                                                     ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}" Margin="0,0,0,4" FontSize="12"/>
+                                                                     ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}" Margin="0,0,0,3" FontSize="11"/>
                                                                 <Border Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Background}"
                                                                     BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Border}"
                                                                     BorderThickness="1"

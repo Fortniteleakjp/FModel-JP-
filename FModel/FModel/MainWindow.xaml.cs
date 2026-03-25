@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using AdonisUI.Controls;
 using UAssetAPI;
 using UAssetAPI.PropertyTypes.Objects;
@@ -52,6 +53,9 @@ public partial class MainWindow
     private const string ExportTypeCacheMiss = "__EXPORT_TYPE_MISS__";
     private readonly object _assetExportTypeCacheLock = new();
     private readonly Dictionary<string, string> _assetExportTypeCache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly DispatcherTimer _newExplorerFilterDebounceTimer = new() { Interval = TimeSpan.FromMilliseconds(140) };
+    private string _newExplorerLastFilterText = string.Empty;
+    private int _newExplorerLastClassFilterIndex = -1;
     private int _newExplorerLocationHistoryIndex = -1;
     private bool _isNavigatingNewExplorerHistory;
     private void OnNewExplorerChecked(object sender, RoutedEventArgs e)
@@ -116,6 +120,12 @@ public partial class MainWindow
         UpdateRecentFilesMenu();
         UserSettings.Default.RecentFiles.CollectionChanged += RecentFiles_CollectionChanged;
         UpdateNewExplorerNavigationButtons();
+
+        _newExplorerFilterDebounceTimer.Tick += (_, _) =>
+        {
+            _newExplorerFilterDebounceTimer.Stop();
+            ApplyNewExplorerFilter();
+        };
     }
 
     private void RecentFiles_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -1228,11 +1238,13 @@ public partial class MainWindow
 
     private void OnNewExplorerFilterTextChanged(object sender, TextChangedEventArgs e)
     {
-        ApplyNewExplorerFilter();
+        _newExplorerFilterDebounceTimer.Stop();
+        _newExplorerFilterDebounceTimer.Start();
     }
 
     private void OnNewExplorerClassFilterChanged(object sender, SelectionChangedEventArgs e)
     {
+        _newExplorerFilterDebounceTimer.Stop();
         ApplyNewExplorerFilter();
     }
 
@@ -1257,13 +1269,22 @@ public partial class MainWindow
             }
         }
 
-        var filters = filterText.Trim().Split(' ');
+        var filters = filterText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var hasTextFilter = !string.IsNullOrWhiteSpace(filterText);
 
         var selectedIndex = NewExplorerClassFilter.SelectedIndex;
         var selectedItem = NewExplorerClassFilter.SelectedItem as ComboBoxItem;
         var hasClassFilter = selectedIndex > 0;
         var selectedClass = hasClassFilter ? selectedItem?.Content?.ToString() : null;
+
+        if (string.Equals(_newExplorerLastFilterText, filterText, StringComparison.Ordinal) &&
+            _newExplorerLastClassFilterIndex == selectedIndex)
+        {
+            return;
+        }
+
+        _newExplorerLastFilterText = filterText;
+        _newExplorerLastClassFilterIndex = selectedIndex;
 
         bool FilterAsset(object o)
         {
