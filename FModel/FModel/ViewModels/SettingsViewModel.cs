@@ -639,21 +639,46 @@ public partial class SettingsViewModel // partial 修飾子を追加
         Log.Information("AESキー取得開始: MapCode={MapCode}", mapCode);
         FLogger.Append(ELog.Information, () => FLogger.Text($"Attempting to get AES key for map code: {MapCodeInput}", Constants.WHITE, true));
 
-        if (UserSettings.Default.LastAuthResponse?.AccessToken is null)
+            var accessToken = UserSettings.Default.LastAuthResponse?.AccessToken;
+            if (accessToken is null)
         {
             RetrievedAesKey = "Authentication is required.";
             Log.Warning("認証が必要です: AccessTokenがありません");
             FLogger.Append(ELog.Warning, () => FLogger.Text(RetrievedAesKey, Constants.RED, true));
             return;
         }
+
         try
         {
             using var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
             // Get latest build version
             Log.Information("最新ビルドバージョンを取得中...");
             var mappingsData = await httpClient.GetFromJsonAsync<JsonElement?>("https://api.fortniteapi.com/v1/mappings");
-            string versionStr = mappingsData?.GetProperty("version").GetString() ?? throw new Exception("Failed to get version from mappings data.");
+
+            string versionStr = null;
+            if (mappingsData.HasValue)
+            {
+                var root = mappingsData.Value;
+                if (root.ValueKind == JsonValueKind.Array && root.GetArrayLength() > 0)
+                {
+                    // Handle array response: [ { "meta": { "version": "..." } } ]
+                    if (root[0].TryGetProperty("meta", out var meta) && meta.TryGetProperty("version", out var versionElement))
+                        versionStr = versionElement.GetString();
+                }
+                else if (root.ValueKind == JsonValueKind.Object)
+                {
+                    // Handle direct version property or wrapped "data" array
+                    if (root.TryGetProperty("version", out var versionElement))
+                        versionStr = versionElement.GetString();
+                    else if (root.TryGetProperty("data", out var data) && data.ValueKind == JsonValueKind.Array && data.GetArrayLength() > 0 &&
+                             data[0].TryGetProperty("meta", out var meta) && meta.TryGetProperty("version", out var dataVersion))
+                        versionStr = dataVersion.GetString();
+                }
+            }
+
+            if (string.IsNullOrEmpty(versionStr)) throw new Exception("Failed to get version from mappings data.");
             Log.Information("最新バージョン取得完了: {Version}", versionStr);
             FLogger.Append(ELog.Information, () => FLogger.Text($"Latest version: {versionStr}", Constants.WHITE, true));
 
@@ -675,11 +700,15 @@ public partial class SettingsViewModel // partial 修飾子を追加
             var contentUrl = $"https://content-service.bfda.live.use1a.on.epicgames.com/api/content/v2/link/{MapCodeInput}/cooked-content-package?role=client&platform=windows&major={major}&minor={minor}&patch={cl}";
             Log.Information("マップコンテンツ情報を取得中: {ContentUrl}", contentUrl);
             
-            var request = new HttpRequestMessage(HttpMethod.Get, contentUrl);
-            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse.AccessToken);
-            var contentResponse = await httpClient.SendAsync(request);
-            contentResponse.EnsureSuccessStatusCode();
-            var contentData = await contentResponse.Content.ReadFromJsonAsync<JsonElement?>();
+                var contentResponse = await httpClient.GetAsync(contentUrl);
+                contentResponse.EnsureSuccessStatusCode();
+                var contentData = await contentResponse.Content.ReadFromJsonAsync<JsonElement?>();
+
+                if (!contentData.HasValue || contentData.Value.ValueKind != JsonValueKind.Object)
+                {
+                    throw new InvalidOperationException("API response for map content was not a valid JSON object.");
+                }
+
             Log.Information("マップコンテンツ情報取得完了");
 
             if (contentData.HasValue && contentData.Value.TryGetProperty("errorCode", out var errorCode) &&
@@ -691,11 +720,37 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 return;
             }
 
-            if (contentData?.GetProperty("isEncrypted").GetBoolean() == true)
+                // Safely get moduleId and version
+                string moduleId = null;
+                string version = null;
+                bool isEncrypted = false;
+
+                if (contentData.Value.TryGetProperty("isEncrypted", out var isEncryptedElement) &&
+                    isEncryptedElement.ValueKind == JsonValueKind.True)
+                {
+                    isEncrypted = true;
+                }
+
+                if (contentData.Value.TryGetProperty("resolved", out var resolvedElement) &&
+                    resolvedElement.ValueKind == JsonValueKind.Object &&
+                    resolvedElement.TryGetProperty("root", out var rootElement) &&
+                    rootElement.ValueKind == JsonValueKind.Object)
+                {
+                    if (rootElement.TryGetProperty("moduleId", out var moduleIdElement))
+                    {
+                        moduleId = moduleIdElement.GetStringOrNumberValue();
+                    }
+                    if (rootElement.TryGetProperty("version", out var versionElement))
+                    {
+                        version = versionElement.GetStringOrNumberValue();
+                    }
+                }
+
+                if (isEncrypted)
             {
                 Log.Information("マップが暗号化されています。AESキーを取得中...");
-                var moduleId = contentData.Value.GetProperty("resolved").GetProperty("root").GetProperty("moduleId").ToString();
-                var version = contentData.Value.GetProperty("resolved").GetProperty("root").GetProperty("version").ToString();
+                if (string.IsNullOrEmpty(moduleId) || string.IsNullOrEmpty(version))
+                    throw new Exception("Failed to extract moduleId or version from content data for encrypted map.");
                 Log.Information("ModuleID={ModuleId}, Version={Version}", moduleId, version);
 
                 var payload = new[] { new { moduleId, version } };
@@ -707,7 +762,16 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 var keyResponse = await httpClient.SendAsync(keyReq);
                 keyResponse.EnsureSuccessStatusCode();
                 var keyData = await keyResponse.Content.ReadFromJsonAsync<JsonElement[]>();
-                var key = keyData?[0].GetProperty("key").GetProperty("Key").GetString() ?? throw new Exception("Failed to get key from key data.");
+                string key = null;
+                if (keyData != null && keyData.Length > 0 &&
+                    keyData[0].ValueKind == JsonValueKind.Object &&
+                    keyData[0].TryGetProperty("key", out var keyElement) &&
+                    keyElement.ValueKind == JsonValueKind.Object &&
+                    keyElement.TryGetProperty("Key", out var actualKeyElement))
+                {
+                    key = actualKeyElement.GetString();
+                }
+                if (string.IsNullOrEmpty(key)) throw new Exception("Failed to get key from key data.");
                 RetrievedAesKey = "0x" + BitConverter.ToString(Convert.FromBase64String(key)).Replace("-", "");
                 Log.Information("AESキー取得完了: {AESKey}", RetrievedAesKey);
                 FLogger.Append(ELog.Information, () => FLogger.Text($"AES Key retrieved: {RetrievedAesKey}", Constants.GREEN, true));
@@ -755,9 +819,26 @@ public partial class SettingsViewModel // partial 修飾子を追加
         try
         {
             FLogger.Append(ELog.Information, () => FLogger.Text("マニフェストをダウンロードしてPAKファイルを作成しています...", Constants.WHITE, true));
-            
+
             // デバッグ用: contentDataの構造をログ出力
             Log.Information("ContentData構造: {ContentData}", contentData.ToString());
+
+            if (contentData.ValueKind != JsonValueKind.Object)
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("contentDataがオブジェクトではありません。", Constants.RED, true));
+                return;
+            }
+
+            // コンテンツが準備中 (Pending) かどうかをチェック
+            if (contentData.TryGetProperty("status", out var statusProp) && statusProp.GetString() == "pending")
+            {
+                var msg = "コンテンツの準備中(Pending)です。サーバー側での処理に時間がかかっています。数分待ってから再度[AESキーを取得]ボタンを押してください。";
+                FLogger.Append(ELog.Warning, () => FLogger.Text(msg, Constants.YELLOW, true));
+                Log.Information(msg);
+                if (contentData.TryGetProperty("retry-after", out var retryAfter))
+                    Log.Information("再試行推奨時間: {Seconds}秒", retryAfter.GetRawText());
+                return;
+            }
 
             // rootModuleIdを安全に取得
             string rootModuleId = null;
@@ -768,17 +849,23 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 rootModuleId = moduleIdProp.GetStringOrNumberValue();
             }
             
-            // rootModuleIdが取得できない場合、contentから最初のmoduleIdを使用
-            if (string.IsNullOrEmpty(rootModuleId) && contentData.TryGetProperty("content", out var contentArrayProp))
+            if (string.IsNullOrEmpty(rootModuleId))
             {
-                var firstContent = contentArrayProp.EnumerateArray().FirstOrDefault();
-                if (!firstContent.Equals(default(JsonElement)) && firstContent.TryGetProperty("moduleId", out var firstModuleId))
+                // Fallback if resolved.root is not as expected or properties are missing
+                JsonElement fallbackArray;
+                if ((contentData.TryGetProperty("content", out fallbackArray) || 
+                     contentData.TryGetProperty("modules", out fallbackArray)) &&
+                    fallbackArray.ValueKind == JsonValueKind.Array)
                 {
-                    rootModuleId = firstModuleId.GetStringOrNumberValue();
-                    Log.Information("Fallback: 最初のコンテンツからmoduleIdを使用: {ModuleId}", rootModuleId);
+                    var firstItem = fallbackArray.EnumerateArray().FirstOrDefault();
+                    if (!firstItem.Equals(default(JsonElement)) && firstItem.ValueKind == JsonValueKind.Object && firstItem.TryGetProperty("moduleId", out var firstModuleId))
+                    {
+                        rootModuleId = firstModuleId.GetStringOrNumberValue();
+                        Log.Information("Fallback: 最初のコンテンツからmoduleIdを使用: {ModuleId}", rootModuleId);
+                    }
                 }
             }
-            
+
             if (string.IsNullOrEmpty(rootModuleId))
             {
                 FLogger.Append(ELog.Error, () => FLogger.Text("rootModuleIdが取得できませんでした。", Constants.RED, true));
@@ -788,8 +875,15 @@ public partial class SettingsViewModel // partial 修飾子を追加
             
             Log.Information("使用するrootModuleId: {ModuleId}", rootModuleId);
 
-            var moduleInfo = contentData.GetProperty("content").EnumerateArray()
-                .FirstOrDefault(x => x.TryGetProperty("moduleId", out var modId) && 
+            if ((!contentData.TryGetProperty("content", out var contentArrayElement) && 
+                 !contentData.TryGetProperty("modules", out contentArrayElement)) || 
+                contentArrayElement.ValueKind != JsonValueKind.Array)
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("コンテンツデータに有効なモジュール配列('content' または 'modules')が見つかりません。", Constants.RED, true));
+                return;
+            }
+            var moduleInfo = contentArrayElement.EnumerateArray()
+                .FirstOrDefault(x => x.TryGetProperty("moduleId", out var modId) &&
                                    modId.GetStringOrNumberValue() == rootModuleId);
 
             if (moduleInfo.Equals(default(JsonElement)))
@@ -798,10 +892,17 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 return;
             }
 
-            var binaries = moduleInfo.GetProperty("binaries");
-            var baseUrl = binaries.TryGetProperty("baseUrl", out var baseUrlProperty) ? 
+            // Safely get binaries property
+            JsonElement binaries;
+            if (!moduleInfo.TryGetProperty("binaries", out binaries) || binaries.ValueKind != JsonValueKind.Object)
+            {
+                FLogger.Append(ELog.Error, () => FLogger.Text("モジュール情報に'binaries'オブジェクトが見つかりません。", Constants.RED, true));
+                return;
+            }
+
+            var baseUrl = binaries.TryGetProperty("baseUrl", out var baseUrlProperty) ?
                 baseUrlProperty.GetStringOrNumberValue() : null;
-            var manifestUrl = binaries.TryGetProperty("manifest", out var manifestProperty) ? 
+            var manifestUrl = binaries.TryGetProperty("manifest", out var manifestProperty) ?
                 manifestProperty.GetStringOrNumberValue() : null;
 
             // チャンクダウンロード用のパラメータを安全に取得
