@@ -311,6 +311,22 @@ public partial class SettingsViewModel : ViewModel
         set => SetProperty(ref _mapCodeInput, value);
     }
 
+    private string _rootModuleIdInput;
+    public string RootModuleIdInput
+    {
+        get => _rootModuleIdInput;
+        set
+        {
+            if (SetProperty(ref _rootModuleIdInput, value))
+            {
+                UserSettings.Default.RootModuleIdInput = value;
+                (GetAesKeyCommand as RelayCommand)?.RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    public ObservableCollection<string> AvailableRootModuleIds { get; } = new();
+
     private string _retrievedAesKey;
     public string RetrievedAesKey
     {
@@ -415,6 +431,7 @@ public partial class SettingsViewModel : ViewModel
         SelectedBruteForceAesMode = UserSettings.Default.BruteForceAesMode;
         SelectedRestoreTabsOnStartup = UserSettings.Default.RestoreTabsOnStartup;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
+        RootModuleIdInput = UserSettings.Default.RootModuleIdInput;
 
         var ueGames = new ObservableCollection<EGame>(EnumerateUeGames());
         UeGames = new ReadOnlyObservableCollection<EGame>(ueGames);
@@ -511,6 +528,7 @@ public partial class SettingsViewModel : ViewModel
         UserSettings.Default.BruteForceAesMode = SelectedBruteForceAesMode;
         UserSettings.Default.RestoreTabsOnStartup = SelectedRestoreTabsOnStartup;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
+        UserSettings.Default.RootModuleIdInput = RootModuleIdInput?.Trim();
 
         if (SelectedDiscordRpc == EDiscordRpc.Never)
             _discordHandler.Shutdown();
@@ -711,6 +729,25 @@ public partial class SettingsViewModel // partial 修飾子を追加
 
             Log.Information("マップコンテンツ情報取得完了");
 
+            UpdateAvailableRootModuleIds(contentData.Value);
+
+            if (AvailableRootModuleIds.Count == 0)
+            {
+                RetrievedAesKey = "rootModuleId候補が見つかりませんでした。";
+                FLogger.Append(ELog.Error, () => FLogger.Text(RetrievedAesKey, Constants.RED, true));
+                return;
+            }
+
+            var selectedRootModuleId = RootModuleIdInput?.Trim();
+            if (string.IsNullOrWhiteSpace(selectedRootModuleId) ||
+                !AvailableRootModuleIds.Any(x => string.Equals(x, selectedRootModuleId, StringComparison.Ordinal)))
+            {
+                RootModuleIdInput = string.Empty;
+                RetrievedAesKey = "rootModuleId候補を表示しました。選択して再度実行してください。";
+                FLogger.Append(ELog.Warning, () => FLogger.Text(RetrievedAesKey, Constants.YELLOW, true));
+                return;
+            }
+
             if (contentData.HasValue && contentData.Value.TryGetProperty("errorCode", out var errorCode) &&
                 errorCode.GetString() == "errors.com.epicgames.content-service.unexpected_link_type")
             {
@@ -814,6 +851,40 @@ public partial class SettingsViewModel // partial 修飾子を追加
         };
     }
 
+    private void UpdateAvailableRootModuleIds(JsonElement contentData)
+    {
+        var previousSelection = RootModuleIdInput?.Trim();
+
+        if ((!contentData.TryGetProperty("content", out var contentArrayElement) &&
+             !contentData.TryGetProperty("modules", out contentArrayElement)) ||
+            contentArrayElement.ValueKind != JsonValueKind.Array)
+        {
+            return;
+        }
+
+        var ids = contentArrayElement.EnumerateArray()
+            .Where(x => x.ValueKind == JsonValueKind.Object && x.TryGetProperty("moduleId", out _))
+            .Select(x => x.GetProperty("moduleId").GetStringOrNumberValue())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        AvailableRootModuleIds.Clear();
+
+        foreach (var id in ids)
+            AvailableRootModuleIds.Add(id);
+
+        if (!string.IsNullOrWhiteSpace(previousSelection) &&
+            ids.Any(x => string.Equals(x, previousSelection, StringComparison.Ordinal)))
+        {
+            RootModuleIdInput = previousSelection;
+        }
+        else if (!string.IsNullOrWhiteSpace(RootModuleIdInput))
+        {
+            RootModuleIdInput = string.Empty;
+        }
+    }
+
     private async Task DownloadAndCreatePak(JsonElement contentData, string mapCode, string userAgent)
     {
         try
@@ -840,36 +911,13 @@ public partial class SettingsViewModel // partial 修飾子を追加
                 return;
             }
 
-            // rootModuleIdを安全に取得
-            string rootModuleId = null;
-            if (contentData.TryGetProperty("resolved", out var resolvedProp) && 
-                resolvedProp.TryGetProperty("root", out var rootProp) &&
-                rootProp.TryGetProperty("moduleId", out var moduleIdProp))
-            {
-                rootModuleId = moduleIdProp.GetStringOrNumberValue();
-            }
-            
-            if (string.IsNullOrEmpty(rootModuleId))
-            {
-                // Fallback if resolved.root is not as expected or properties are missing
-                JsonElement fallbackArray;
-                if ((contentData.TryGetProperty("content", out fallbackArray) || 
-                     contentData.TryGetProperty("modules", out fallbackArray)) &&
-                    fallbackArray.ValueKind == JsonValueKind.Array)
-                {
-                    var firstItem = fallbackArray.EnumerateArray().FirstOrDefault();
-                    if (!firstItem.Equals(default(JsonElement)) && firstItem.ValueKind == JsonValueKind.Object && firstItem.TryGetProperty("moduleId", out var firstModuleId))
-                    {
-                        rootModuleId = firstModuleId.GetStringOrNumberValue();
-                        Log.Information("Fallback: 最初のコンテンツからmoduleIdを使用: {ModuleId}", rootModuleId);
-                    }
-                }
-            }
+            // rootModuleIdは自動判定せず、ユーザー入力を使用
+            var rootModuleId = RootModuleIdInput?.Trim();
 
             if (string.IsNullOrEmpty(rootModuleId))
             {
-                FLogger.Append(ELog.Error, () => FLogger.Text("rootModuleIdが取得できませんでした。", Constants.RED, true));
-                Log.Error("rootModuleIdが取得できませんでした。");
+                FLogger.Append(ELog.Error, () => FLogger.Text("rootModuleIdを入力してください。", Constants.RED, true));
+                Log.Error("rootModuleIdが未入力です。");
                 return;
             }
             

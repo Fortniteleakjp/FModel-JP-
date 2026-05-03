@@ -423,6 +423,14 @@ namespace FModel.Settings
             set => SetProperty(ref _lastAuthResponse, value);
         }
 
+        private string _rootModuleIdInput = string.Empty;
+        [JsonProperty]
+        public string RootModuleIdInput
+        {
+            get => _rootModuleIdInput;
+            set => SetProperty(ref _rootModuleIdInput, value);
+        }
+
         private Hotkey _dirLeftTab = new(Key.A);
         [JsonProperty]
         public Hotkey DirLeftTab

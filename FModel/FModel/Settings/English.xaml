@@ -260,6 +260,7 @@
     <system:String x:Key="Settings_MapAes_AuthButton">Authenticate Epic Games API</system:String>
     <system:String x:Key="Settings_MapAes_AesTag">AES Key Retrieval</system:String>
     <system:String x:Key="Settings_MapAes_MapCode">Map Code:</system:String>
+    <system:String x:Key="Settings_MapAes_RootModuleId">Root Module ID:</system:String>
     <system:String x:Key="Settings_MapAes_GetAes">Get AES Key</system:String>
     <system:String x:Key="Settings_MapAes_AesKey">AES Key:</system:String>
     <system:String x:Key="Settings_MapAes_CopyKey">Copy Key</system:String>

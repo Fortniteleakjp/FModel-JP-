@@ -261,6 +261,7 @@
     <system:String x:Key="Settings_MapAes_AuthButton">Epic Games APIを認証</system:String>
     <system:String x:Key="Settings_MapAes_AesTag">AESキー取得</system:String>
     <system:String x:Key="Settings_MapAes_MapCode">マップコード:</system:String>
+    <system:String x:Key="Settings_MapAes_RootModuleId">ルートモジュールID:</system:String>
     <system:String x:Key="Settings_MapAes_GetAes">AESキーとマップデータを取得</system:String>
     <system:String x:Key="Settings_MapAes_AesKey">AESキー:</system:String>
     <system:String x:Key="Settings_MapAes_CopyKey">キーをコピー</system:String>
