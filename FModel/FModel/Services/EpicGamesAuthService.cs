@@ -29,6 +29,11 @@ public class EpicGamesAuthService
         Directory.CreateDirectory(Path.GetDirectoryName(DeviceAuthPath)!);
     }
 
+    private static async Task SaveAuthDataAsync(AuthData authData)
+    {
+        await File.WriteAllTextAsync(DeviceAuthPath, JsonSerializer.Serialize(authData, new JsonSerializerOptions { WriteIndented = true }));
+    }
+
     private async Task<T> SendJsonAsync<T>(HttpRequestMessage request, bool throwOnError = true)
     {
         var response = await _httpClient.SendAsync(request);
@@ -48,6 +53,18 @@ public class EpicGamesAuthService
 
     public async Task<AuthData> RefreshTokenAsync(AuthData savedAuth)
     {
+        if (savedAuth == null)
+            return null;
+
+        // Session-only auth (no device credentials) cannot be refreshed and needs re-login when expired.
+        if (string.IsNullOrWhiteSpace(savedAuth.AccountId) ||
+            string.IsNullOrWhiteSpace(savedAuth.DeviceId) ||
+            string.IsNullOrWhiteSpace(savedAuth.Secret))
+        {
+            FLogger.Append(ELog.Warning, () => FLogger.Text("Saved auth does not contain device credentials and cannot be refreshed. Please login again.", Constants.YELLOW, true));
+            return null;
+        }
+
         var bodyContent = new FormUrlEncodedContent(new[]
         {
             new KeyValuePair<string, string>("grant_type", "device_auth"),
@@ -82,17 +99,27 @@ public class EpicGamesAuthService
 
             savedAuth.AccessToken = newAccessToken;
             savedAuth.ExpiresAt = DateTime.Now.AddSeconds(expiresInElement.GetInt32());
-            await File.WriteAllTextAsync(DeviceAuthPath, JsonSerializer.Serialize(savedAuth, new JsonSerializerOptions { WriteIndented = true }));
+            await SaveAuthDataAsync(savedAuth);
             return savedAuth;
         }
         catch (HttpRequestException ex) when (ex.Message.Contains("400"))
         {
-            // 無効な認証情報の場合、保存されたファイルを削除
-            FLogger.Append(ELog.Warning, () => FLogger.Text("Device auth credentials are invalid. Deleting saved auth and re-logging.", Constants.YELLOW, true));
-            if (File.Exists(DeviceAuthPath))
+            // Delete only when credentials are truly invalid.
+            if (ex.Message.Contains("invalid_device_auth", StringComparison.OrdinalIgnoreCase) ||
+                ex.Message.Contains("invalid_grant", StringComparison.OrdinalIgnoreCase) ||
+                ex.Message.Contains("invalid_account_credentials", StringComparison.OrdinalIgnoreCase))
             {
-                File.Delete(DeviceAuthPath);
+                FLogger.Append(ELog.Warning, () => FLogger.Text("Saved device auth is invalid. Deleting saved auth and re-logging.", Constants.YELLOW, true));
+                if (File.Exists(DeviceAuthPath))
+                {
+                    File.Delete(DeviceAuthPath);
+                }
             }
+            else
+            {
+                FLogger.Append(ELog.Warning, () => FLogger.Text($"Device auth refresh returned 400 but saved auth was kept: {ex.Message}", Constants.YELLOW, true));
+            }
+
             return null;
         }
         catch (Exception ex)
@@ -253,13 +280,13 @@ public class EpicGamesAuthService
                         ExpiresAt = DateTime.Now.AddSeconds(finalExpiresInElement.GetInt32())
                     };
 
-                    await File.WriteAllTextAsync(DeviceAuthPath, JsonSerializer.Serialize(authData, new JsonSerializerOptions { WriteIndented = true }));
+                    await SaveAuthDataAsync(authData);
                     FLogger.Append(ELog.Information, () => FLogger.Text("Device auth data saved.", Constants.GREEN, true));
                 }
                 catch (HttpRequestException ex) when (ex.Message.Contains("403") || ex.Message.Contains("missing_permission"))
                 {
-                    // デバイス認証の作成権限がない場合、セッショントークンのみで続行
-                    FLogger.Append(ELog.Warning, () => FLogger.Text("Your account does not have permission to create device auth. Using session token only (you will need to re-login next time).", Constants.YELLOW, true));
+                    // If account cannot create device auth, keep session token persisted until it expires.
+                    FLogger.Append(ELog.Warning, () => FLogger.Text("Your account does not have permission to create device auth. Using saved session token only (re-login required after expiry).", Constants.YELLOW, true));
                     authData = new AuthData
                     {
                         DisplayName = displayName,
@@ -269,7 +296,8 @@ public class EpicGamesAuthService
                         AccessToken = finalAccessToken,
                         ExpiresAt = DateTime.Now.AddSeconds(finalExpiresInElement.GetInt32())
                     };
-                    // 権限がない場合は保存しない
+                    await SaveAuthDataAsync(authData);
+                    FLogger.Append(ELog.Information, () => FLogger.Text("Session auth data saved.", Constants.GREEN, true));
                 }
                 
                 return authData;
@@ -288,9 +316,26 @@ public class EpicGamesAuthService
     public static async Task<AuthData> LoadDeviceAuthAsync()
     {
         if (!File.Exists(DeviceAuthPath)) return null;
-        
-        var json = await File.ReadAllTextAsync(DeviceAuthPath);
-        var authData = JsonSerializer.Deserialize<AuthData>(json);
-        return authData;
+
+        try
+        {
+            var json = await File.ReadAllTextAsync(DeviceAuthPath);
+            var authData = JsonSerializer.Deserialize<AuthData>(json);
+            return authData;
+        }
+        catch (Exception ex)
+        {
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Failed to load saved auth data. Deleting invalid file: {ex.Message}", Constants.YELLOW, true));
+            try
+            {
+                File.Delete(DeviceAuthPath);
+            }
+            catch
+            {
+                // Ignore delete failures, caller will proceed without saved auth.
+            }
+
+            return null;
+        }
     }
 }
