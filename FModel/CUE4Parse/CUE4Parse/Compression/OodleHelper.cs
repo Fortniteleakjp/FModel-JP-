@@ -37,7 +37,6 @@ public static class OodleHelper
 
     public static string OodleFileName => OperatingSystem.IsLinux() ? OODLE_NAME_LINUX : OODLE_NAME_CURRENT;
     public static Oodle? Instance { get; private set; }
-    private static readonly HttpClient DownloadClient = new();
 
     public static void Initialize(string? path = null) =>
         InitializeAsync(path).GetAwaiter().GetResult();
@@ -118,7 +117,7 @@ public static class OodleHelper
         path = ResolvePath(path);
         return File.Exists(path)
             ? Task.FromResult(true)
-            : DownloadOodleDllFromOodleUEAsync(DownloadClient, path, cancellationToken);
+            : DownloadOodleDllFromOodleUEAsync(HttpUtils.DownloadClient, path, cancellationToken);
     }
 
     public static async Task<bool> DownloadOodleDllFromOodleUEAsync(HttpClient client, string path, CancellationToken cancellationToken = default)

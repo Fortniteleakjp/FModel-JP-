@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Wwise.Enums;
+using CUE4Parse.UE4.Wwise.Enums.Flags;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -10,21 +9,22 @@ public class AkPositioningParams
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public readonly EBitsPositioning BitsPositioning;
-    public readonly byte? PathMode;
-    public readonly int? TransitionTime;
-    public readonly List<AkVertex> Vertices;
-    public readonly List<AkPlaylistItem> PlaylistItems;
-    public readonly List<AkPlaylistRange> PlaylistRanges;
+    [JsonConverter(typeof(StringEnumConverter))]
+    public readonly EAkPathMode PathMode;
+    public readonly int TransitionTime;
+    public readonly AkPathVertex[] Vertices;
+    public readonly AkPathListItemOffset[] PlaylistItems;
+    public readonly AkPathListItem[] PlaylistRanges;
 
-    public AkPositioningParams(FArchive Ar)
+    public AkPositioningParams(FWwiseArchive Ar)
     {
         BitsPositioning = Ar.Read<EBitsPositioning>();
 
-        (bool hasPositioning, bool has3dPositioning) = GetPositioningFlags(BitsPositioning);
+        (bool hasPositioning, bool has3dPositioning) = GetPositioningFlags(Ar, BitsPositioning);
 
         if (hasPositioning)
         {
-            if (WwiseVersions.Version <= 56)
+            if (Ar.Version <= 56)
             {
                 Ar.Read<uint>();
                 Ar.Read<float>();
@@ -40,7 +40,7 @@ public class AkPositioningParams
         {
             EPositioningType positioningType = EPositioningType.Undefined;
             byte flags3d = 0;
-            if (WwiseVersions.Version <= 89)
+            if (Ar.Version <= 89)
             {
                 positioningType = Ar.Read<EPositioningType>();
             }
@@ -49,17 +49,17 @@ public class AkPositioningParams
                 flags3d = Ar.Read<byte>();
             }
 
-            if (WwiseVersions.Version <= 89)
+            if (Ar.Version <= 89)
             {
                 Ar.Read<uint>(); // AttenuationId
                 Ar.Read<byte>(); // IsSpatialized
             }
-            else if (WwiseVersions.Version <= 129)
+            else if (Ar.Version <= 129)
             {
                 Ar.Read<uint>(); // AttenuationId
             }
 
-            (bool hasAutomation, bool isDynamic) = GetAutomationAndDynamicFlags(positioningType, flags3d, BitsPositioning);
+            (bool hasAutomation, bool isDynamic) = GetAutomationAndDynamicFlags(Ar, positioningType, flags3d, BitsPositioning);
 
             if (isDynamic)
             {
@@ -68,33 +68,22 @@ public class AkPositioningParams
 
             if (hasAutomation)
             {
-                PathMode = Ar.Read<byte>();
+                PathMode = Ar.Read<EAkPathMode>();
                 TransitionTime = Ar.Read<int>();
 
-                uint numVertices = Ar.Read<uint>();
-                for (int i = 0; i < numVertices; i++)
-                {
-                    Vertices.Add(new AkVertex(Ar));
-                }
+                Vertices = Ar.ReadArray((int) Ar.Read<uint>(), () => new AkPathVertex(Ar));
 
                 uint numPlaylistItems = Ar.Read<uint>();
-                for (int i = 0; i < numPlaylistItems; i++)
-                {
-                    PlaylistItems.Add(new AkPlaylistItem(Ar));
-                }
-
-                for (int i = 0; i < numPlaylistItems; i++)
-                {
-                    PlaylistRanges.Add(new AkPlaylistRange(Ar));
-                }
+                PlaylistItems = Ar.ReadArray((int) numPlaylistItems, () => new AkPathListItemOffset(Ar));
+                PlaylistRanges = Ar.ReadArray((int) numPlaylistItems, () => new AkPathListItem(Ar));
             }
         }
     }
 
-    private static (bool hasPositioning, bool has3dPositioning) GetPositioningFlags(EBitsPositioning bitsPositioning)
+    private static (bool hasPositioning, bool has3dPositioning) GetPositioningFlags(FWwiseArchive Ar, EBitsPositioning bitsPositioning)
     {
         bool hasPositioning, has3dPositioning = false;
-        switch (WwiseVersions.Version)
+        switch (Ar.Version)
         {
             case <= 89:
                 hasPositioning = bitsPositioning.HasFlag(EBitsPositioning.PositioningInfoOverrideParent);
@@ -118,10 +107,10 @@ public class AkPositioningParams
         return (hasPositioning, has3dPositioning);
     }
 
-    private static (bool hasAutomation, bool hasDynamic) GetAutomationAndDynamicFlags(EPositioningType positioningType, int flags3d, EBitsPositioning bitsPositioning)
+    private static (bool hasAutomation, bool hasDynamic) GetAutomationAndDynamicFlags(FWwiseArchive Ar, EPositioningType positioningType, int flags3d, EBitsPositioning bitsPositioning)
     {
         bool hasAutomation, isDynamic;
-        switch (WwiseVersions.Version)
+        switch (Ar.Version)
         {
             case <= 72:
                 hasAutomation = positioningType == EPositioningType.UserDefined3D;
@@ -160,14 +149,14 @@ public class AkPositioningParams
         return (hasAutomation, isDynamic);
     }
 
-    public class AkVertex
+    public readonly struct AkPathVertex
     {
         public readonly float X;
         public readonly float Y;
         public readonly float Z;
         public readonly int Duration;
 
-        public AkVertex(FArchive Ar)
+        public AkPathVertex(FWwiseArchive Ar)
         {
             X = Ar.Read<float>();
             Y = Ar.Read<float>();
@@ -176,25 +165,25 @@ public class AkPositioningParams
         }
     }
 
-    public class AkPlaylistItem
+    public readonly struct AkPathListItemOffset
     {
         public readonly uint VerticesOffset;
         public readonly uint NumVertices;
 
-        public AkPlaylistItem(FArchive Ar)
+        public AkPathListItemOffset(FWwiseArchive Ar)
         {
             VerticesOffset = Ar.Read<uint>();
             NumVertices = Ar.Read<uint>();
         }
     }
 
-    public class AkPlaylistRange
+    public readonly struct AkPathListItem
     {
         public readonly float XRange;
         public readonly float YRange;
         public readonly float ZRange;
 
-        public AkPlaylistRange(FArchive Ar)
+        public AkPathListItem(FWwiseArchive Ar)
         {
             XRange = Ar.Read<float>();
             YRange = Ar.Read<float>();

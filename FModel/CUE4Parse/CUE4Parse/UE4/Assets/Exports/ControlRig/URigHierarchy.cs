@@ -4,7 +4,6 @@ using CUE4Parse.Compression;
 using CUE4Parse.UE4.Assets.Exports.ControlRig.Rigs;
 using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Objects.ControlRig;
-using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Versions;
 using Newtonsoft.Json;
@@ -136,8 +135,16 @@ public class URigHierarchy : UObject
 
             if (numComponents > 0)
             {
-                var scriptStructNames = Ar.ReadArray(Ar.ReadFString);
-                throw new NotImplementedException();
+                var scriptStructNames = archiveForElements.ReadArray(archiveForElements.ReadFString);
+
+                for (var i = 0; i < numComponents; i++)
+                {
+                    var indexOfScriptStruct = archiveForElements.Read<int>();
+                    long archivePositionAfterComponent = archiveForElements.Read<long>();
+                    // just skip for now
+                    // 1 example asset in Subnautica2
+                    archiveForElements.Position = archivePositionAfterComponent;
+                }
             }
         }
     }

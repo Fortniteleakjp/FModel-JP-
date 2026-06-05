@@ -39,7 +39,6 @@ namespace CUE4Parse.UE4.Objects.UObject
         public const uint PACKAGE_FILE_TAG_SWAPPED = 0xC1832A9EU;
         public const uint PACKAGE_FILE_TAG_ACE7 = 0x37454341U; // ACE7
         private const uint PACKAGE_FILE_TAG_ONE = 0x00656E6FU; // SOD2
-        private const uint PACKAGE_FILE_TAG_NTE = 0xD5A8D56E;
         private const uint PACKAGE_FILE_TAG_AE = 0x56DE5ECA; // AshEchoes
 
         public readonly uint Tag;
@@ -139,31 +138,6 @@ namespace CUE4Parse.UE4.Objects.UObject
                 goto afterPackageFlags;
             }
 
-            if (Tag == PACKAGE_FILE_TAG_NTE && Ar.Game == EGame.GAME_NevernessToEverness_CBT1)
-            {
-                var keyData = Ar.Read<FGuid>();
-                var decryptedDataLength = Ar.Read<int>();
-                _ = Ar.Read<int>(); // paddedEncryptedDataLength
-                var encryptedData = Ar.ReadArray<byte>();
-                var isKeyObfuscated = Ar.ReadBoolean();
-
-                if (isKeyObfuscated)
-                {
-                    keyData = new FGuid(
-                        keyData.A ^ keyData.D,
-                        keyData.B ^ keyData.C,
-                        keyData.B,
-                        keyData.A);
-                }
-
-                var key = new FAesKey(Encoding.UTF8.GetBytes(keyData.ToString()));
-                var paddedDecryptedData = encryptedData.Decrypt(key);
-                var decryptedData = paddedDecryptedData[..decryptedDataLength];
-
-                Ar = new FByteArchive("NTE - Decrypted FPackageFileSummary", decryptedData, Ar.Versions);
-                Tag = Ar.Read<uint>();
-            }
-
             if (Tag == PACKAGE_FILE_TAG_AE) Tag = PACKAGE_FILE_TAG;
 
             if (Tag != PACKAGE_FILE_TAG && Tag != PACKAGE_FILE_TAG_SWAPPED)
@@ -182,7 +156,7 @@ namespace CUE4Parse.UE4.Objects.UObject
             }
 
             legacyFileVersion = Ar.Read<int>();
-            if (Ar.Game == EGame.GAME_DeltaForceHawkOps) legacyFileVersion /= 659;
+            if (Ar.Game == EGame.GAME_DeltaForce) legacyFileVersion /= 659;
 
             if (legacyFileVersion < 0) // means we have modern version numbers
             {
@@ -197,7 +171,7 @@ namespace CUE4Parse.UE4.Objects.UObject
 
                 if (legacyFileVersion != -4)
                 {
-                    _ = Ar.Read<int>(); // legacyUE3Version
+                    FileVersionUE.FileVersionUE3 = Ar.Read<int>();
                 }
 
                 FileVersionUE.FileVersionUE4 = Ar.Read<int>();
@@ -223,7 +197,7 @@ namespace CUE4Parse.UE4.Objects.UObject
                     // this file is unversioned, remember that, then use current versions
                     bUnversioned = true;
                     FileVersionUE = Ar.Ver;
-                    FileVersionLicenseeUE = EUnrealEngineObjectLicenseeUEVersion.VER_LIC_AUTOMATIC_VERSION;
+                    FileVersionLicenseeUE = EUnrealEngineObjectLicenseeUEVersion.LIC_AUTOMATIC_VERSION;
                 }
                 else
                 {
@@ -331,7 +305,7 @@ namespace CUE4Parse.UE4.Objects.UObject
 
             ThumbnailTableOffset = Ar.Read<int>();
 
-            if (FileVersionUE >= EUnrealEngineObjectUE5Version.IMPORT_TYPE_HIERARCHIES)
+            if (FileVersionUE >= EUnrealEngineObjectUE5Version.IMPORT_TYPE_HIERARCHIES || Ar.Game is EGame.GAME_DeltaForce)
             {
                 ImportTypeHierarchiesCount = Ar.Read<int>();
                 ImportTypeHierarchiesOffset = Ar.Read<int>();
@@ -341,7 +315,7 @@ namespace CUE4Parse.UE4.Objects.UObject
                 ImportTypeHierarchiesCount = 0;
                 ImportTypeHierarchiesOffset = 0;
             }
-            
+
             if (FileVersionUE < EUnrealEngineObjectUE5Version.PACKAGE_SAVED_HASH)
             {
                 Guid = Ar.Read<FGuid>();
@@ -369,8 +343,6 @@ namespace CUE4Parse.UE4.Objects.UObject
             }
 
             Generations = Ar.ReadArray<FGenerationInfo>();
-
-            if (Ar.Game == EGame.GAME_DeltaForceHawkOps) Ar.Position += 16;
 
             if (FileVersionUE >= EUnrealEngineObjectUE4Version.ENGINE_VERSION_OBJECT)
             {

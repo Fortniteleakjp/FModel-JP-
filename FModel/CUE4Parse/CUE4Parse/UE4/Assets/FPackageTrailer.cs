@@ -16,20 +16,27 @@ public class FPackageTrailer
 
     public FPackageTrailer(FAssetArchive Ar)
     {
-        Package = (FAssetArchive)Ar.Clone();
-        Header = new FHeader(Ar);
-        Ar.Position += (long)Header.PayloadsDataLength;
-        Footer = new FFooter(Ar);
+        try
+        {
+            Package = (FAssetArchive) Ar.Clone();
+            Header = new FHeader(Ar);
+            Ar.Position += (long) Header.PayloadsDataLength;
+            Footer = new FFooter(Ar);
+        }
+        catch
+        {
+            // just in case, so it doesn't fail asset load
+        }
     }
 
     public long FindPayloadOffsetInFile(FSHAHash id)
     {
-        if (id.Hash.All(b => b == 0) || Header.PayloadLookupTable is null)
+        if (!id.IsValid() || Header.PayloadLookupTable is null)
             return -1;
 
         foreach (var entry in Header.PayloadLookupTable)
         {
-            if (entry.Identifier.Hash.SequenceEqual(id.Hash))
+            if (entry.Identifier.Equals(id.Hash))
             {
                 return entry.AccessMode switch
                 {

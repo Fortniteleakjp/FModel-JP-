@@ -28,6 +28,7 @@ public abstract class UTexture : UUnrealMaterial, IAssetUserData
     public EPixelFormat Format { get; protected set; } = EPixelFormat.PF_Unknown;
     public FTexturePlatformData PlatformData { get; private set; } = new();
     public FEditorBulkData? EditorData { get; private set; }
+    public ETextureCookPlatformTilingSettings CookPlatformTilingSettings { get; private set; }
 
     public bool RenderNearestNeighbor => LODGroup == TextureGroup.TEXTUREGROUP_Pixels2D || Filter == TextureFilter.TF_Nearest;
     public bool IsNormalMap => CompressionSettings == TextureCompressionSettings.TC_Normalmap;
@@ -64,7 +65,7 @@ public abstract class UTexture : UUnrealMaterial, IAssetUserData
 
     public override void Deserialize(FAssetArchive Ar, long validPos)
     {
-        if (Ar.Game == EGame.GAME_WorldofJadeDynasty) Ar.Position += 16;
+        if (Ar.Game is EGame.GAME_WorldofJadeDynasty or EGame.GAME_RocoKingdomWorld) Ar.Position += 16;
         base.Deserialize(Ar, validPos);
         LightingGuid = GetOrDefault(nameof(LightingGuid), new FGuid((uint) GetFullName().GetHashCode()));
         CompressionSettings = GetOrDefault(nameof(CompressionSettings), TextureCompressionSettings.TC_Default);
@@ -72,6 +73,7 @@ public abstract class UTexture : UUnrealMaterial, IAssetUserData
         Filter = GetOrDefault(nameof(Filter), TextureFilter.TF_Nearest);
         SRGB = GetOrDefault(nameof(SRGB), true);
         AssetUserData = GetOrDefault<FPackageIndex[]>(nameof(AssetUserData), []);
+        CookPlatformTilingSettings = GetOrDefault<ETextureCookPlatformTilingSettings>(nameof(CookPlatformTilingSettings));
 
         var stripFlags = new FStripDataFlags(Ar);
 
@@ -115,11 +117,11 @@ public abstract class UTexture : UUnrealMaterial, IAssetUserData
             {
                 //?? check whether we can support this pixel format
 #if DEBUG
-                Log.Debug("Loading data for format {Format}", pixelFormatName);
+                //Log.Debug("Loading data for format {Format}", pixelFormatName);
 #endif
                 PlatformData = new FTexturePlatformData(Ar, this, bSerializeMipData);
 
-                if (Ar.Game is EGame.GAME_SeaOfThieves or EGame.GAME_DeltaForceHawkOps) Ar.Position += 4;
+                if (Ar.Game is EGame.GAME_SeaOfThieves or EGame.GAME_DeltaForce) Ar.Position += 4;
 
                 if (Ar.AbsolutePosition != skipOffset)
                 {
@@ -212,7 +214,7 @@ public abstract class UTexture : UUnrealMaterial, IAssetUserData
             for (var i = 0; i < vt.NumMips; i++)
             {
                 var tileOffsetData = vt.GetTileOffsetData(i);
-                if ((tileOffsetData.Width * tileSize <= maxXSize || tileOffsetData.Height * tileSize <= maxYSize))
+                if (tileOffsetData.Width * tileSize <= maxXSize || tileOffsetData.Height * tileSize <= maxYSize)
                     return i;
 
             }

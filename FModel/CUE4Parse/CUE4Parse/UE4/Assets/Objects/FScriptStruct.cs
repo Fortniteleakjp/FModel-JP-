@@ -2,19 +2,21 @@ using System;
 using CUE4Parse.GameTypes._2XKO.Assets.Exports;
 using CUE4Parse.GameTypes.Borderlands4.Assets.Objects;
 using CUE4Parse.GameTypes.Brickadia.Objects;
-using CUE4Parse.GameTypes.SMG.UE4.Assets.Objects;
 using CUE4Parse.GameTypes.DuneAwakening.Assets.Objects;
 using CUE4Parse.GameTypes.FN.Objects;
 using CUE4Parse.GameTypes.Gothic1R.Assets.Objects;
 using CUE4Parse.GameTypes.L2KD.Objects;
 using CUE4Parse.GameTypes.MA.Objects;
 using CUE4Parse.GameTypes.MindsEye.Objects;
+using CUE4Parse.GameTypes.MK1.Assets.Objects;
 using CUE4Parse.GameTypes.NetEase.MAR.Objects;
 using CUE4Parse.GameTypes.NMZ.Assets;
 using CUE4Parse.GameTypes.OtherGames.Objects;
 using CUE4Parse.GameTypes.OuterWorlds2.Objects;
 using CUE4Parse.GameTypes.PUBG.Assets.Objects;
+using CUE4Parse.GameTypes.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SG2.Objects;
+using CUE4Parse.GameTypes.SMG.UE4.Assets.Objects;
 using CUE4Parse.GameTypes.SOD2.Assets.Objects;
 using CUE4Parse.GameTypes.SuicideSquad.Objects;
 using CUE4Parse.GameTypes.SWJS.Objects;
@@ -48,6 +50,7 @@ using CUE4Parse.UE4.Objects.MovieScene;
 using CUE4Parse.UE4.Objects.MovieScene.Evaluation;
 using CUE4Parse.UE4.Objects.Niagara;
 using CUE4Parse.UE4.Objects.PCG;
+using CUE4Parse.UE4.Objects.RenderCore;
 using CUE4Parse.UE4.Objects.StateTree;
 using CUE4Parse.UE4.Objects.StructUtils;
 using CUE4Parse.UE4.Objects.UObject;
@@ -87,7 +90,6 @@ public class FScriptStruct
             "RichCurveKey" => type == ReadType.ZERO ? new FRichCurveKey() : Ar.Read<FRichCurveKey>(),
             "SimpleCurveKey" => type == ReadType.ZERO ? new FSimpleCurveKey() : Ar.Read<FSimpleCurveKey>(),
             "ScalarMaterialInput" => type == ReadType.ZERO ? new FMaterialInput<float>() : new FMaterialInput<float>(Ar),
-            //"ShadingModelMaterialInput" => type == ReadType.ZERO ? new FMaterialInput<uint>() : new FMaterialInput<uint>(Ar),
             "VectorMaterialInput" => type == ReadType.ZERO ? new FMaterialInputVector() : new FMaterialInput<FVector>(Ar),
             "Vector2MaterialInput" => type == ReadType.ZERO ? new FMaterialInputVector2D() : new FMaterialInput<FVector2D>(Ar),
             "MaterialAttributesInput" => type == ReadType.ZERO ? new FExpressionInput() : new FExpressionInput(Ar),
@@ -103,12 +105,18 @@ public class FScriptStruct
             "PannerDetails" => new FPannerDetails(Ar),
             "GameplayTagContainer" => type == ReadType.ZERO ? new FGameplayTagContainer() : new FGameplayTagContainer(Ar),
             "IntPoint" or "Int32Point" => type == ReadType.ZERO ? new FIntPoint() : Ar.Read<FIntPoint>(),
-            "IntVector2" => type == ReadType.ZERO ? new TIntVector2<int>() : Ar.Read<TIntVector2<int>>(),
+            "IntVector2" or "Int32Vector2" => type == ReadType.ZERO ? new TIntVector2<int>() : Ar.Read<TIntVector2<int>>(),
             "UintVector2" or "Uint32Point" => type == ReadType.ZERO ? new TIntVector2<uint>() : Ar.Read<TIntVector2<uint>>(),
             "IntVector" => type == ReadType.ZERO ? new FIntVector() : Ar.Read<FIntVector>(),
             "UintVector" => type == ReadType.ZERO ? new TIntVector3<uint>() : Ar.Read<TIntVector3<uint>>(),
             "IntVector4" => type == ReadType.ZERO ? new TIntVector4<int>() : Ar.Read<TIntVector4<int>>(),
             "UintVector4" => type == ReadType.ZERO ? new TIntVector4<uint>() : Ar.Read<TIntVector4<uint>>(),
+            "Int64Vector2" or "Int64Point" => type == ReadType.ZERO ? new TIntVector2<long>() : Ar.Read<TIntVector2<long>>(),
+            "UInt64Vector2" or "UInt64Point" => type == ReadType.ZERO ? new TIntVector2<ulong>() : Ar.Read<TIntVector2<ulong>>(),
+            "Int64Vector" => type == ReadType.ZERO ? new TIntVector3<long>() : Ar.Read<TIntVector3<long>>(),
+            "UInt64Vector" => type == ReadType.ZERO ? new TIntVector3<ulong>() : Ar.Read<TIntVector3<ulong>>(),
+            "Int64Vector4" => type == ReadType.ZERO ? new TIntVector4<long>() : Ar.Read<TIntVector4<long>>(),
+            "UInt64Vector4" => type == ReadType.ZERO ? new TIntVector4<ulong>() : Ar.Read<TIntVector4<ulong>>(),
             "LevelSequenceObjectReferenceMap" => type == ReadType.ZERO ? new FLevelSequenceObjectReferenceMap() : new FLevelSequenceObjectReferenceMap(Ar),
             "LinearColor" => type == ReadType.ZERO ? new FLinearColor() : Ar.Read<FLinearColor>(),
             "NiagaraVariable" => new FNiagaraVariable(Ar),
@@ -177,6 +185,7 @@ public class FScriptStruct
             "Vector_NetQuantize100" => type == ReadType.ZERO ? new FVector() : Ar.Versions["Vector_NetQuantize_AsStruct"] ? new FStructFallback(Ar, "Vector_NetQuantize") : new FVector(Ar),
             "Vector_NetQuantizeNormal" => type == ReadType.ZERO ? new FVector() : Ar.Versions["Vector_NetQuantize_AsStruct"] ? new FStructFallback(Ar, "Vector_NetQuantize") : new FVector(Ar),
             "ClothLODDataCommon" => type == ReadType.ZERO ? new FClothLODDataCommon() : new FClothLODDataCommon(Ar),
+            "ClothLODData" => type == ReadType.ZERO ? new FClothLODData() : new FClothLODData(Ar),
             "ClothTetherData" => type == ReadType.ZERO ? new FClothTetherData() : new FClothTetherData(Ar),
             "Matrix" => type == ReadType.ZERO ? new FMatrix() : new FMatrix(Ar),
             "Matrix44f" => type == ReadType.ZERO ? new FMatrix() : new FMatrix(Ar, false),
@@ -250,8 +259,8 @@ public class FScriptStruct
             // Metro:Awakening
             "VGCoverDataPoint" => new VGCoverDataPoint(Ar),
 
-            // Marvel Rivals
-            "MarvelSoftObjectPath" => new FMarvelSoftObjectPath(Ar),
+            "MarvelSoftObjectPath" when Ar.Game == EGame.GAME_MarvelRivals => new FMarvelSoftObjectPath(Ar),
+            "SerializablePropertySoftPath" when Ar.Game == EGame.GAME_MarvelRivals => new FSerializablePropertySoftPath(Ar),
 
             // Wuthering Waves
             "VectorDouble" => type == ReadType.ZERO ? new TIntVector3<double>() : Ar.Read<TIntVector3<double>>(),
@@ -342,11 +351,11 @@ public class FScriptStruct
             "BlueprintDefinedScript" when Ar.Game is EGame.GAME_OuterWorlds2 => new FBlueprintFunctionLibraryConditional(Ar, false),
             "AIGroupBehaviorClassSelector" when Ar.Game is EGame.GAME_OuterWorlds2 => new FSoftObjectPath(Ar),
 
-            // The Last Caretaker 
+            // The Last Caretaker
             "VoyagePackedLocalTransform" => new VoyagePackedLocalTransform(Ar),
             "VoyageFloat16" => Ar.Read<FRawStruct<Half>>(),
 
-            "EncVector" when Ar.Game is EGame.GAME_DeltaForceHawkOps => Ar.Read<FVector>(),
+            "EncVector" when Ar.Game is EGame.GAME_DeltaForce => Ar.Read<FVector>(),
 
             "MercunaUsageSpec" when Ar.Game is EGame.GAME_PUBGBlackBudget => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
             "MercunaUsageTypes" when Ar.Game is EGame.GAME_PUBGBlackBudget => type == ReadType.ZERO ? new FRawUIntStruct() : Ar.Read<FRawUIntStruct>(),
@@ -366,12 +375,55 @@ public class FScriptStruct
 
             "ActorReference" when Ar.Game is EGame.GAME_DarkPicturesAnthologyHouseOfAshes or EGame.GAME_DarkPicturesAnthologyManofMedan or
                 EGame.GAME_DarkPicturesAnthologyLittleHope or EGame.GAME_DarkPicturesAnthologyTheDevilinMe or
-                EGame.GAME_TheQuarry or EGame.GAME_TheCastingofFrankStone => new FActorReference(Ar),
+                EGame.GAME_TheQuarry or EGame.GAME_TheCastingofFrankStone or EGame.GAME_Directive8020 => new FActorReference(Ar),
+
+            "ParameterWrapperArray" when Ar.Game is EGame.GAME_NevernessToEverness => new FStructFallback(Ar, structName, new FRawHeader([(0, 1)], ERawHeaderFlags.RawProperties), ReadType.RAW),
+
+            "MercunaPawnUsageFlags" when Ar.Game is EGame.GAME_HighOnLife2 => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+            "MercunaNavUsageTypes" when Ar.Game is EGame.GAME_HighOnLife2 => Ar.Read<FRawUIntStruct>(),
+            "MercunaUsageTypes" => Ar.Read<FRawUIntStruct>(),
+
+            // Windrose
+            "R5CollisionApproximation"  => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+            "R5SoftAssetPath" => new FStructFallback(Ar, structName, new FRawHeader([(0, 1)], ERawHeaderFlags.RawProperties), ReadType.RAW),
+
+            // Armatus
+            "AnimMontageContainer" => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+
+            "BHVRVariantConfigurator" when Ar.Game is EGame.GAME_DeadByDaylight => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+
+            "NiagaraEventGeneratorProperties" when Ar.Game is EGame.GAME_RocoKingdomWorld => new FNiagaraEventGeneratorProperties(Ar),
+
+            "RulesetActorCreationParams" when Ar.Game is EGame.GAME_Solasta2 => new FStructFallback(Ar, structName, new FRawHeader([(0, 6), (1, -1)], ERawHeaderFlags.RawProperties), ReadType.RAW),
+            "HexOffsetCoord" when Ar.Game is EGame.GAME_Solasta2 => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+            "RulesetId" when Ar.Game is EGame.GAME_Solasta2 => new FStructFallback(Ar, structName, new FRawHeader([(0, 1), (1, 1)], ERawHeaderFlags.Reverse | ERawHeaderFlags.RawProperties), ReadType.RAW),
+            "HexCell" when Ar.Game is EGame.GAME_Solasta2 => Ar.Read<FRawStruct<ulong>>(),
+
+            "MovieSceneTangentData" when Ar.Game is EGame.GAME_HonorofKingsWorld or EGame.GAME_TheDivisionResurgence => new FMovieSceneTangentData(Ar.Read<float>(), Ar.Read<float>(), Ar.Read<float>(), Ar.Read<float>(), Ar.Read<ERichCurveTangentWeightMode>()),
+
+            "BodyInstance" when Ar.Game is EGame.GAME_ConanExilesEnhanced => new FBodyInstance(Ar),
+
+            // Cloudheim
+            "NamedGuid" => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+
+            "PackedNormal" when Ar.Game is EGame.GAME_TheDivisionResurgence => new FPackedNormal(Ar),
+
+            "UWEWorldPopSpatialLayer" when Ar.Game is EGame.GAME_Subnautica2 => new FUWEWorldPopSpatialLayer(Ar),
+
+            "LegoConnectionPoint" when Ar.Game is EGame.GAME_Lego2KDrive => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+            "LegoPartLODGeometry" when Ar.Game is EGame.GAME_Lego2KDrive => new FLegoPartLODGeometry(Ar),
+            "LegoPartInstance" when Ar.Game is EGame.GAME_Lego2KDrive => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+            "PerPlatformUObject" or "PerPlatformSoftObjectPtr" when Ar.Game is EGame.GAME_Lego2KDrive => type == ReadType.ZERO ? new FPerPlatformSoftObject() : new FPerPlatformSoftObject(Ar),
+            "PerPlatformMediaSource" when Ar.Game is EGame.GAME_Lego2KDrive => type == ReadType.ZERO ? new FPerPlatformUObject() : new FPerPlatformUObject(Ar),
+
+            "TtScalableShadowFloat" or "TtScalableLightFloat" => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
+            "TtScalableShadowBool" => new FStructFallback(Ar, structName, new FRawHeader([(0,1)])),
 
             _ => Ar.Game switch
             {
                 EGame.GAME_TitanQuest2 => TQ2Structs.ParseTQ2Struct(Ar, structName, struc, type),
                 EGame.GAME_DuneAwakening => DAStructs.ParseDAStruct(Ar, structName, struc, type),
+                EGame.GAME_MortalKombat1 => MK1Structs.ParseMK1Struct(Ar, structName, struc, type),
                 EGame.GAME_Borderlands4 => Borderlands4Structs.ParseBl4Struct(Ar, structName, struc, type),
                 _ when type == ReadType.RAW => new FStructFallback(Ar, structName, FRawHeader.FullRead, ReadType.RAW),
                 _ => type == ReadType.ZERO ? new FStructFallback() : struc != null ? new FStructFallback(Ar, struc) : new FStructFallback(Ar, structName)

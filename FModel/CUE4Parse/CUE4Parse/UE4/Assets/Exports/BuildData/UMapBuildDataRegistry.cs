@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using CUE4Parse.UE4.Assets.Readers;
@@ -26,7 +27,7 @@ public class UMapBuildDataRegistry : UObject
         base.Deserialize(Ar, validPos);
 
         var stripFlags = new FStripDataFlags(Ar);
-        if (Ar.Game is EGame.GAME_Farlight84 or EGame.GAME_OutlastTrials or EGame.GAME_DuetNightAbyss) return;
+        if (Ar.Game is EGame.GAME_Farlight84 or EGame.GAME_OutlastTrials or EGame.GAME_DuetNightAbyss or EGame.GAME_CrystalOfAtlan or EGame.GAME_HonorofKingsWorld) return;
 
         if (!stripFlags.IsAudioVisualDataStripped())
         {
@@ -41,10 +42,13 @@ public class UMapBuildDataRegistry : UObject
             LightBuildData = Ar.ReadMap(Ar.Read<FGuid>, () => new FLightComponentMapBuildData(Ar));
             if (FReflectionCaptureObjectVersion.Get(Ar) >= FReflectionCaptureObjectVersion.Type.MoveReflectionCaptureDataToMapBuildData)
             {
+                if (Ar.Game is EGame.GAME_TheFirstDescendant) return;
+
                 ReflectionCaptureBuildData = Ar.ReadMap(Ar.Read<FGuid>, () => new FReflectionCaptureMapBuildData(Ar));
             }
 
             if (Ar.Game == EGame.GAME_ArenaBreakoutInfinite) return;
+            if (Ar.Game == EGame.GAME_TheDivisionResurgence) Ar.Position += 12;
             if (Ar.Game == EGame.GAME_HogwartsLegacy)
             {
                 Ar.SkipFixedArray(1);
@@ -119,7 +123,12 @@ public class FSkyAtmosphereMapBuildData
     }
 }
 
-public class FReflectionCaptureMapBuildData(FAssetArchive Ar) : FReflectionCaptureData(Ar) { }
+public class FReflectionCaptureMapBuildData : FReflectionCaptureData {
+
+    public FReflectionCaptureMapBuildData() { }
+
+    public FReflectionCaptureMapBuildData(FAssetArchive Ar) : base(Ar) { }
+}
 
 [JsonConverter(typeof(FReflectionCaptureDataConverter))]
 public class FReflectionCaptureData
@@ -127,8 +136,10 @@ public class FReflectionCaptureData
     public int CubemapSize;
     public float AverageBrightness;
     public float Brightness;
-    public byte[]? FullHDRCapturedData;
+    [JsonIgnore] public byte[]? FullHDRCapturedData;
     public FPackageIndex? EncodedCaptureData;
+
+    public FReflectionCaptureData() { }
 
     public FReflectionCaptureData(FAssetArchive Ar)
     {
@@ -146,11 +157,8 @@ public class FReflectionCaptureData
         if (Ar.Game is EGame.GAME_FinalFantasy7Rebirth or EGame.GAME_ArenaBreakoutInfinite) Ar.Position += 4;
         if (Ar.Game == EGame.GAME_HogwartsLegacy)
         {
-            var count = Ar.Read<int>();
-            for (var i = 0; i < count; i++) Ar.SkipFixedArray(1);
-            count = Ar.Read<int>();
-            for (var i = 0; i < count; i++) Ar.SkipFixedArray(1);
-
+            Ar.SkipMultipleFixedArrays(Ar.Read<int>(), 1);
+            Ar.SkipMultipleFixedArrays(Ar.Read<int>(), 1);
         }
 
         if (FMobileObjectVersion.Get(Ar) >= FMobileObjectVersion.Type.StoreReflectionCaptureCompressedMobile &&
@@ -163,7 +171,6 @@ public class FReflectionCaptureData
             Ar.SkipFixedArray(1);
         }
 
-        if (Ar.Game == EGame.GAME_TheFirstDescendant) Ar.Position += 16;
         if (Ar.Game == EGame.GAME_Valorant) Ar.SkipFixedArray(1);
         if (Ar.Game == EGame.GAME_BlackMythWukong)
         {
@@ -194,13 +201,23 @@ public class FStaticShadowDepthMapData(FArchive Ar)
     public FFloat16[] DepthSamples = Ar.ReadArray(() => new FFloat16(Ar));
 }
 
-public class FVolumeLightingSample(FAssetArchive Ar)
+public class FVolumeLightingSample
 {
-    public FVector Position = Ar.Read<FVector>();
-    public float Radius = Ar.Read<float>();
-    public float[][] Lighting = Ar.ReadArray(3, () => Ar.ReadArray<float>(9));
-    public FColor PackedSkyBentNormal = Ar.Read<FColor>();
-    public float DirectionalLightShadowing = Ar.Read<float>();
+    public FVector Position;
+    public float Radius;
+    public float[][] Lighting;
+    public FColor PackedSkyBentNormal;
+    public float DirectionalLightShadowing;
+
+    public FVolumeLightingSample(FArchive Ar, int order)
+    {
+        Position = Ar.Read<FVector>();
+        Radius = Ar.Read<float>();
+        Lighting = Ar.ReadArray(3, () => Ar.ReadArray<float>(order*order));
+        PackedSkyBentNormal = Ar.Read<FColor>();
+        DirectionalLightShadowing = Ar.Read<float>();
+        if (Ar.Game is EGame.GAME_RocoKingdomWorld) Ar.Position += 116;
+    }
 }
 
 public class FPrecomputedLightVolumeData
@@ -208,31 +225,34 @@ public class FPrecomputedLightVolumeData
     public FBox Bounds;
     public float SampleSpacing;
     public int NumSHSamples;
-    public FVolumeLightingSample[] HighQualitySamples;
-    public FVolumeLightingSample[]? LowQualitySamples;
+    public FVolumeLightingSample[] HighQualitySamples = [];
+    public FVolumeLightingSample[] LowQualitySamples = [];
 
-    public FPrecomputedLightVolumeData(FAssetArchive Ar)
+    public FPrecomputedLightVolumeData(FAssetArchive Ar, bool readbValid = true)
     {
-        var bValid = Ar.ReadBoolean();
+        if (readbValid && !Ar.ReadBoolean()) return;
 
-        if (bValid)
+        var bVolumeInitialized = Ar.ReadBoolean();
+        if (bVolumeInitialized)
         {
-            var bVolumeInitialized = Ar.ReadBoolean();
-            if (bVolumeInitialized)
+            Bounds = new FBox(Ar);
+            SampleSpacing = Ar.Read<float>();
+            NumSHSamples = 4;
+            if (FRenderingObjectVersion.Get(Ar) >= FRenderingObjectVersion.Type.IndirectLightingCache3BandSupport)
             {
-                Bounds = new FBox(Ar);
-                SampleSpacing = Ar.Read<float>();
-                NumSHSamples = 4;
-                if (FRenderingObjectVersion.Get(Ar) >= FRenderingObjectVersion.Type.IndirectLightingCache3BandSupport)
-                {
-                    NumSHSamples = Ar.Read<int>();
-                }
+                NumSHSamples = Ar.Read<int>();
+            }
 
-                HighQualitySamples = Ar.ReadArray(() => new FVolumeLightingSample(Ar));
-                if (Ar.Ver >= EUnrealEngineObjectUE4Version.VOLUME_SAMPLE_LOW_QUALITY_SUPPORT)
-                {
-                    LowQualitySamples = Ar.ReadArray(() => new FVolumeLightingSample(Ar));
-                }
+            HighQualitySamples = Ar.ReadArray(() => new FVolumeLightingSample(Ar, NumSHSamples is 9 ? 3 : 2));
+            if (Ar.Ver >= EUnrealEngineObjectUE4Version.VOLUME_SAMPLE_LOW_QUALITY_SUPPORT)
+            {
+                LowQualitySamples = Ar.ReadArray(() => new FVolumeLightingSample(Ar, NumSHSamples is 9 ? 3 : 2));
+            }
+
+            if (Ar.Game is EGame.GAME_RocoKingdomWorld)
+            {
+                Ar.Position += 20;
+                Ar.SkipMultipleFixedArrays([4, 144]);
             }
         }
     }
@@ -428,6 +448,8 @@ public class FLightMap2D : FLightMap
                 }
             }
 
+            if (Ar.Game is EGame.GAME_RocoKingdomWorld) Ar.Position += 72;
+
             for (var CoefficientIndex = 0; CoefficientIndex < NUM_STORED_LIGHTMAP_COEF; CoefficientIndex++)
             {
                 ScaleVectors[CoefficientIndex] = Ar.Read<FVector4>();
@@ -440,7 +462,7 @@ public class FLightMap2D : FLightMap
 
         if (FRenderingObjectVersion.Get(Ar) >= FRenderingObjectVersion.Type.LightmapHasShadowmapData)
         {
-            bShadowChannelValid = Ar.ReadArray(4, () => Ar.ReadBoolean());
+            bShadowChannelValid = Ar.ReadArray(4, Ar.ReadBoolean);
             InvUniformPenumbraSize = Ar.Read<FVector4>();
         }
 
@@ -464,8 +486,8 @@ public class FLightMap2D : FLightMap
             }
         }
 
-        if (Ar.Game == EGame.GAME_RacingMaster) Ar.Position += 20;
-        if (Ar.Game == EGame.GAME_MetroAwakening) Ar.Position += 4;
+        if (Ar.Game is EGame.GAME_RacingMaster) Ar.Position += 20;
+        if (Ar.Game is EGame.GAME_MetroAwakening) Ar.Position += 4;
     }
 }
 
