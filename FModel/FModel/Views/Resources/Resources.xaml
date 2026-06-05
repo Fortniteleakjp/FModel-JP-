@@ -751,12 +751,25 @@
                 <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.ColumnSpan="3"
+            <Border Grid.Column="0"
                     Margin="0"
                     CornerRadius="12"
                     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
                     BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
                     BorderThickness="1">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <!-- No image: the editor fills the whole width.
+                             With an image: keep the editor in column 0 only, side-by-side with the
+                             image (column 2), so the JSON is never hidden behind the image overlay. -->
+                        <Setter Property="Grid.ColumnSpan" Value="3" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedItem.HasImage, ElementName=TabControlName}" Value="True">
+                                <Setter Property="Grid.ColumnSpan" Value="1" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
                 <controls:AvalonEditor x:Name="DynamicArea"
                                DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
             </Border>
