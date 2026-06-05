@@ -28,6 +28,39 @@
     <NoWarn>NU1701</NoWarn>
   </PropertyGroup>
 
+  <!-- FModel-JP merge: upstream's new tiled-explorer / drag-drop / endpoint files target
+       upstream's reworked GameFileViewModel / EAssetCategory data model, which conflicts
+       with the JP fork's custom app. They are excluded so the JP app builds against the
+       updated CUE4Parse. (Parsing features live in CUE4Parse, which IS updated.) -->
+  <ItemGroup>
+    <Compile Remove="Views\Resources\Controls\Aed\JumpElementGenerator.cs" />
+    <Compile Remove="Views\Resources\Controls\Aed\JumpVisualLineText.cs" />
+    <Compile Remove="Views\Resources\Controls\ContextMenus\**\*.cs" />
+    <Page Remove="Views\Resources\Controls\ContextMenus\**\*.xaml" />
+    <Compile Remove="Views\Resources\Controls\Inputs\**\*.cs" />
+    <Page Remove="Views\Resources\Controls\Inputs\**\*.xaml" />
+    <Compile Remove="Views\Resources\Controls\TiledExplorer\**\*.cs" />
+    <Page Remove="Views\Resources\Controls\TiledExplorer\**\*.xaml" />
+    <Compile Remove="Views\Resources\Controls\DropOverlay.xaml.cs" />
+    <Page Remove="Views\Resources\Controls\DropOverlay.xaml" />
+    <Compile Remove="Views\Resources\Controls\ListBoxItemBehavior.cs" />
+    <Compile Remove="Views\Resources\Controls\TypeDataTemplateSelector.cs" />
+    <Compile Remove="Views\Resources\Converters\AnyItemMeetsConditionConverter.cs" />
+    <Compile Remove="Views\Resources\Converters\EnumFlagToBoolConverter.cs" />
+    <Compile Remove="Views\Resources\Converters\FileNameWithoutExtensionConverter.cs" />
+    <Compile Remove="Views\Resources\Converters\FileToGeometryConverter.cs" />
+    <Compile Remove="Views\Resources\Converters\FolderToGeometryConverter.cs" />
+    <Compile Remove="Views\Resources\Converters\GameFileMeetsConditionConverter.cs" />
+    <Compile Remove="Views\Resources\Converters\InvertBoolToVisibilityConverter.cs" />
+    <Compile Remove="Views\Resources\Converters\RatioToGridLengthConverter.cs" />
+    <Compile Remove="Views\Resources\Converters\StatusToTaskbarStateConverter.cs" />
+    <Compile Remove="Views\Resources\Converters\TextToRefreshConverter.cs" />
+    <Page Remove="Views\Resources\Colors.xaml" />
+    <Page Remove="Views\Resources\Icons.xaml" />
+    <Compile Remove="ViewModels\ApiEndpoints\DillyApiEndpoints.cs" />
+    <Compile Remove="Creator\Bases\FN\BaseAssembledMesh.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Remove="Resources\android.png" />
     <None Remove="Resources\apple.png" />
