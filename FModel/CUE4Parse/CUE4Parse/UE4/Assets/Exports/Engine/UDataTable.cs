@@ -5,13 +5,14 @@ using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace CUE4Parse.UE4.Assets.Exports.Engine;
 
 public class UDataTable : UObject
 {
-    public Dictionary<FName, FStructFallback> RowMap { get; private set; }
-    protected string? RowStructName { get; set; } // Only used if set from inheritor
+    public Dictionary<FName, FStructFallback> RowMap { get; protected set; }
+    public string? RowStructName { get; protected set; } // Set by inheritor or during deserialization
 
     public override void Deserialize(FAssetArchive Ar, long validPos)
     {
@@ -21,9 +22,32 @@ public class UDataTable : UObject
         UStruct? rowStruct = null;
         if (string.IsNullOrEmpty(RowStructName))
         {
-            var ptr = GetOrDefault<FPackageIndex>("RowStruct");
-            if (ptr is not null && !ptr.TryLoad<UStruct>(out rowStruct))
+            var ptr = GetOrDefault<FPackageIndex?>("RowStruct");
+            if (ptr != null)
+            {
                 RowStructName = ptr.Name;
+                ptr.TryLoad<UStruct>(out rowStruct);
+            }
+            else
+            {
+                Log.Warning("Can't find or load RowStruct type to serialize DataTable");
+                return;
+            }
+        }
+
+        if (Ar.Game is EGame.GAME_HonorofKingsWorld)
+        {
+            Ar.Position += 16;
+            var numRows1 = Ar.Read<int>();
+            RowMap = new Dictionary<FName, FStructFallback>(numRows1);
+            CustomGameData = Ar.ReadMap(numRows1, Ar.ReadFName, () => (Ar.Read<ulong>(),Ar.Read<ulong>(),  Ar.Read<int>()));
+            for (var i = 0; i < numRows1; i++)
+            {
+                var rowName = Ar.ReadFName();
+                RowMap[rowName] = rowStruct != null ? new FStructFallback(Ar, rowStruct) : new FStructFallback(Ar, RowStructName);
+            }
+
+            return;
         }
 
         var numRows = Ar.Read<int>();
@@ -38,6 +62,7 @@ public class UDataTable : UObject
         {
             var DataTableName = Ar.ReadFString();
             var MetaData = Ar.ReadMap(Ar.ReadFString, () => Ar.ReadMap(Ar.ReadFName, Ar.ReadFString));
+            CustomGameData = (Name: DataTableName, Metadata: MetaData);
         }
     }
 

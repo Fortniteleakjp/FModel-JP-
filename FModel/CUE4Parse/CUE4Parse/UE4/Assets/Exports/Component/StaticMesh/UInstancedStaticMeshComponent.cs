@@ -43,6 +43,12 @@ public class UInstancedStaticMeshComponent : UStaticMeshComponent
         }
 
         var bHasSkipSerializationPropertiesData = FFortniteMainBranchObjectVersion.Get(Ar) < FFortniteMainBranchObjectVersion.Type.ISMComponentEditableWhenInheritedSkipSerialization || Ar.ReadBoolean();
+        if (Ar.Game is EGame.GAME_HonorofKingsWorld)
+        {
+            CustomGameData = Ar.ReadBoolean();
+            bHasSkipSerializationPropertiesData = Ar.ReadBoolean();
+        }
+
         if (bHasSkipSerializationPropertiesData)
         {
             switch (Ar.Game)
@@ -92,7 +98,7 @@ public class UInstancedStaticMeshComponent : UStaticMeshComponent
                     break;
             };
 
-            if (FRenderingObjectVersion.Get(Ar) >= FRenderingObjectVersion.Type.PerInstanceCustomData || Ar.Game == EGame.GAME_DeltaForceHawkOps)
+            if (FRenderingObjectVersion.Get(Ar) >= FRenderingObjectVersion.Type.PerInstanceCustomData || Ar.Game == EGame.GAME_DeltaForce)
             {
                 PerInstanceSMCustomData = Ar.ReadBulkArray(Ar.Read<float>);
             }
@@ -130,6 +136,7 @@ public class UInstancedStaticMeshComponent : UStaticMeshComponent
 
             var renderDataSizeBytes = Ar.Read<ulong>();
             Ar.Position += (long) renderDataSizeBytes;
+            if (Ar.Game is EGame.GAME_Lego2KDrive) Ar.SkipBulkArrayData();
         }
 
         if (Ar.Game is EGame.GAME_Valorant) Ar.Position += 4;

@@ -48,7 +48,6 @@ namespace CUE4Parse_Conversion.Meshes
                     new UEModel(originalSkeleton.Name, originalSkeleton, bones, originalSkeleton.Sockets, originalSkeleton.VirtualBones, Options).Save(Ar);
                     break;
                 case EMeshFormat.Gltf2:
-                    throw new NotImplementedException();
                 case EMeshFormat.OBJ:
                     throw new NotImplementedException();
                 default:
@@ -134,12 +133,15 @@ namespace CUE4Parse_Conversion.Meshes
                 return;
             }
 
-            foreach (var userData in originalMesh.AssetUserData)
+            if (originalMesh.AssetUserData != null)
             {
-                if (userData.TryLoad<UDNAAsset>(out var originalDNA))
+                foreach (var userData in originalMesh.AssetUserData)
                 {
-                    var dna = new DNAExporter(originalDNA, options);
-                    DNAAssets.Add(dna);
+                    if (userData.TryLoad<UDNAAsset>(out var originalDNA))
+                    {
+                        var dna = new DNAExporter(originalDNA, options);
+                        DNAAssets.Add(dna);
+                    }
                 }
             }
 
@@ -158,7 +160,7 @@ namespace CUE4Parse_Conversion.Meshes
             if (Options.MeshFormat == EMeshFormat.UEFormat)
             {
                 using var ueModelArchive = new FArchiveWriter();
-                new UEModel(originalMesh.Name, convertedMesh, originalMesh.MorphTargets, totalSockets.ToArray(), originalMesh.Skeleton, originalMesh.PhysicsAsset, Options).Save(ueModelArchive);
+                new UEModel(originalMesh.Name, convertedMesh, Options.ExportMorphTargets ? originalMesh.MorphTargets : null, totalSockets.ToArray(), originalMesh.Skeleton, originalMesh.PhysicsAsset, Options).Save(ueModelArchive);
                 MeshLods.Add(new Mesh($"{GetExportSavePath()}.uemodel", ueModelArchive.GetBuffer(), convertedMesh.LODs[0].GetMaterials(options)));
                 return;
             }
@@ -182,17 +184,19 @@ namespace CUE4Parse_Conversion.Meshes
                         ext = convertedMesh.LODs[i].NumVerts > 65536 ? "pskx" : "psk";
                         new ActorXMesh(lod, convertedMesh.RefSkeleton, materialExports,
                             Options.ExportMorphTargets ? originalMesh.MorphTargets : null,
-                            totalSockets.ToArray(), lodIndex, Options).Save(Ar);
+                            totalSockets.ToArray(), lod.LODIndex, Options).Save(Ar);
                         break;
                     case EMeshFormat.Gltf2:
                         ext = "glb";
                         new Gltf(ExportName, lod, convertedMesh.RefSkeleton, materialExports, Options,
                             Options.ExportMorphTargets ? originalMesh.MorphTargets : null,
-                            lodIndex).Save(Options.MeshFormat, Ar);
+                            lod.LODIndex).Save(Options.MeshFormat, Ar);
                         break;
                     case EMeshFormat.OBJ:
                         ext = "obj";
-                        new Gltf(ExportName, lod, convertedMesh.RefSkeleton, materialExports, Options).Save(Options.MeshFormat, Ar);
+                        new Gltf(ExportName, lod, convertedMesh.RefSkeleton, materialExports, Options,
+                            Options.ExportMorphTargets ? originalMesh.MorphTargets : null,
+                            lod.LODIndex).Save(Options.MeshFormat, Ar);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(Options.MeshFormat), Options.MeshFormat, null);

@@ -5,35 +5,26 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using CUE4Parse.UE4.IO.Objects;
+using CUE4Parse.UE4.IO.Objects.OnDemand;
+using CUE4Parse.UE4.IO.Objects.OnDemand.V2;
 using CUE4Parse.UE4.Readers;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
 
 namespace CUE4Parse.UE4.IO;
 
 public class IoChunkToc
 {
-    public readonly FOnDemandTocHeader Header;
-    public readonly FTocMeta Meta;
-    public readonly FOnDemandTocContainerEntry[] Containers;
-    public readonly FOnDemandTocAdditionalFile[] AdditionalFiles;
-    public readonly FOnDemandTocTagSet[] TagSets;
+    public IOnDemandToc OnDemandToc;
 
-    public IoChunkToc(string file) : this(new FileInfo(file)) { }
-    public IoChunkToc(FileInfo file) : this(new FByteArchive(file.FullName, File.ReadAllBytes(file.FullName))) { }
+    public IoChunkToc(string file, VersionContainer versions) : this(new FileInfo(file), versions) { }
+    public IoChunkToc(FileInfo file, VersionContainer versions) : this(new FByteArchive(file.FullName, File.ReadAllBytes(file.FullName), versions)) { }
     public IoChunkToc(FArchive Ar)
     {
-        Header = new FOnDemandTocHeader(Ar);
-
-        if (Header.Version >= EOnDemandTocVersion.Meta)
-            Meta = new FTocMeta(Ar);
-
-        Containers = Ar.ReadArray(() => new FOnDemandTocContainerEntry(Ar, Header.Version));
-
-        if (Header.Version >= EOnDemandTocVersion.AdditionalFiles)
-            AdditionalFiles = Ar.ReadArray(() => new FOnDemandTocAdditionalFile(Ar));
-
-        if (Header.Version >= EOnDemandTocVersion.TagSets)
-            TagSets = Ar.ReadArray(() => new FOnDemandTocTagSet(Ar));
+        var bIsLegacy = Ar.Read<ulong>() == 0x6f6e64656d616e64;
+        Ar.Position = 0;
+        
+        OnDemandToc = bIsLegacy ? new Objects.OnDemand.V1.FOnDemandToc(Ar) : new FOnDemandToc(Ar);
     }
 }
 

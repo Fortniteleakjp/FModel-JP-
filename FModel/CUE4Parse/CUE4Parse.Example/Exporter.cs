@@ -54,9 +54,8 @@ public static class Exporter
     {
         Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: AnsiConsoleTheme.Literate).CreateLogger();
 
-        // same with ZlibHelper
-        OodleHelper.DownloadOodleDll();
-        OodleHelper.Initialize(OodleHelper.OODLE_DLL_NAME);
+        ZlibHelper.Initialize();
+        OodleHelper.Initialize();
 
         var version = new VersionContainer(EGame.GAME_UE5_6, ETexturePlatform.DesktopMobile);
         var provider = new DefaultFileProvider(_archiveDirectory, SearchOption.TopDirectoryOnly, version)
@@ -102,7 +101,7 @@ public static class Exporter
                     var pointer = new FPackageIndex(pkg, i + 1).ResolvedObject;
                     if (pointer?.Object is null) continue;
 
-                    var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+                    var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
                     switch (dummy)
                     {
                         case UTexture when type.HasFlag(ExportType.Texture) && pointer.Object.Value is UTexture texture:

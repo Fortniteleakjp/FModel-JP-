@@ -138,7 +138,7 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
             {
                 if (!string.IsNullOrEmpty(CurveCodecPath) && CurveCompressionSettings?.Load<UAnimCurveCompressionSettings>()?.GetCodec(CurveCodecPath) is { } codec)
                 {
-                    CompressedCurveData = new FRawCurveTracks { FloatCurves = codec.ConvertCurves(this) };
+                    CompressedCurveData = new FRawCurveTracks(codec.ConvertCurves(CompressedCurveNames, CompressedCurveByteStream));
                 }
                 else
                 {
@@ -343,6 +343,12 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation
             // FUECompressedAnimData. We'll use a different name for "joined" serialized array here to
             // avoid confuse.
             byte[] serializedByteStream;
+
+            if (Ar.Game is EGame.GAME_RocoKingdomWorld)
+            {
+                Ar.Position += 16;
+                numBytes -= 16;
+            }
 
             if (bUseBulkDataForLoad)
             {

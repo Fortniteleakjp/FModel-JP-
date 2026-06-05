@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Assets.Exports.Nanite;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
 using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Engine;
@@ -108,6 +110,18 @@ public partial class USkeletalMesh : UObject
                     LODModels = LODModels.Concat(fallbackLODModels).ToArray();
                 }
 
+                if (Ar.Game is EGame.GAME_RocoKingdomWorld)
+                {
+                    foreach (var lod in LODModels)
+                    {
+                        for (int i = 0; i < lod.VertexBufferGPUSkin.VertsFloat.Length; i++)
+                        {
+                            var vert = lod.VertexBufferGPUSkin.VertsFloat[i];
+                            vert.Pos = ImportedBounds.BoxExtent * vert.Pos + ImportedBounds.Origin;
+                        }
+                    }
+                }
+
                 if (Ar.Game >= EGame.GAME_UE5_5)
                 {
                     NaniteResources = new FNaniteResources(Ar);
@@ -143,6 +157,18 @@ public partial class USkeletalMesh : UObject
         if (FRenderingObjectVersion.Get(Ar) < FRenderingObjectVersion.Type.TextureStreamingMeshUVChannelData)
         {
             Ar.SkipFixedArray(sizeof(float));
+        }
+
+        if ((Ar.Game >= EGame.GAME_UE4_19 && !Ar.IsFilterEditorOnly) || Ar.Game < EGame.GAME_UE4_19)
+        {
+            if (Ar.Ver >= EUnrealEngineObjectUE4Version.APEX_CLOTH)
+            {
+                if (FSkeletalMeshCustomVersion.Get(Ar) < FSkeletalMeshCustomVersion.Type.NewClothingSystemAdded)
+                {
+                    var num = GetOrDefault("ClothingAssets", Array.Empty<StructProperty>()).Length;
+                    Ar.SkipMultipleFixedArrays(num, 1);
+                }
+            }
         }
 
         // if (bEnablePerPolyCollision)
@@ -182,11 +208,13 @@ public partial class USkeletalMesh : UObject
             return;
         }
 
+        var validLods = new List<int>(LODModels.Length);
         var maxLodLevel = -1;
         for (int i = 0; i < LODModels.Length; i++)
         {
             if (LODModels[i].MorphTargetVertexInfoBuffers is not null)
             {
+                validLods.Add(i);
                 maxLodLevel = i + 1;
             }
         }
@@ -195,7 +223,8 @@ public partial class USkeletalMesh : UObject
 
         for (int index = 0; index < MorphTargets.Length; index++)
         {
-            if (!MorphTargets[index].TryLoad(out UMorphTarget morphTarget)) continue;
+            if (!MorphTargets[index].TryLoad<UMorphTarget>(out var morphTarget))
+                continue;
 
             var morphLODModels = morphTarget.MorphLODModels;
             if (morphLODModels.Length == 0)
@@ -213,10 +242,17 @@ public partial class USkeletalMesh : UObject
                 continue;
             }
 
-            for (int j = 0; j < morphLODModels.Length; j++)
+            foreach (var j in validLods)
             {
-                if (morphLODModels[j].Vertices.Length > 0 || morphLODModels[j].NumBaseMeshVerts == 0 || morphLODModels[j].SectionIndices.Length == 0) continue;
-                morphLODModels[j] = new FMorphTargetLODModel(LODModels[j].MorphTargetVertexInfoBuffers!, index, morphLODModels[j].SectionIndices);
+                if (morphTarget.TryGetCompressedLODModel(j, out var compressedLodModel))
+                {
+                    morphLODModels[j] = new FMorphTargetLODModel(morphLODModels[j].SectionIndices, compressedLodModel.PackedDeltaHeaders, compressedLodModel.PackedDeltaData, compressedLodModel.PositionPrecision, compressedLodModel.TangentPrecision);
+                }
+                else
+                {
+                    if (morphLODModels[j].Vertices.Length > 0 || morphLODModels[j].NumBaseMeshVerts == 0 || morphLODModels[j].SectionIndices.Length == 0) continue;
+                    morphLODModels[j] = new FMorphTargetLODModel(LODModels[j].MorphTargetVertexInfoBuffers!, index, morphLODModels[j].SectionIndices);
+                }
             }
 
             if (morphLODModels.Length >= maxLodLevel) continue;
