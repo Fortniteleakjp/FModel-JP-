@@ -122,13 +122,16 @@ public class GameDirectoryViewModel : ViewModel
         if (!_hiddenArchives.IsMatch(reader.Name)) return;
 
         var fileItem = new FileItem(reader);
-        // EnableCollectionSynchronization lets us mutate the collection off the UI thread
-        // under _lock, avoiding a synchronous Dispatcher round-trip per archive.
+
+        // O(1) de-dup (the hot path when there are many archives) under the lock.
         lock (_lock)
         {
             if (!_byName.TryAdd(reader.Name, fileItem)) return;
-            DirectoryFiles.Add(fileItem);
         }
+
+        // DirectoryFilesView is a manually-created ListCollectionView with UI-thread
+        // affinity, so the bound collection itself must be modified on the UI thread.
+        Application.Current.Dispatcher.Invoke(() => DirectoryFiles.Add(fileItem));
     }
 
     public void Verify(IAesVfsReader reader)
