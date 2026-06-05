@@ -1965,6 +1965,23 @@
                                     </Style.Triggers>
                                 </Style>
                             </Grid.Style>
+                            <Grid.Resources>
+                                <!-- Card-style item containers: transparent + no default chrome so the rounded
+                                     cards show their own hover / selection visuals instead of a square highlight. -->
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Margin" Value="0" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <ContentPresenter />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Grid.Resources>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
@@ -2178,6 +2195,10 @@
                                                                         </BeginStoryboard>
                                                                     </Trigger.ExitActions>
                                                                 </Trigger>
+                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                                    <Setter Property="BorderThickness" Value="2" />
+                                                                </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </Border.Style>
@@ -2552,6 +2573,10 @@
                                                                         </BeginStoryboard>
                                                                     </Trigger.ExitActions>
                                                                 </Trigger>
+                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                                    <Setter Property="BorderThickness" Value="2" />
+                                                                </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </Border.Style>
@@ -2589,7 +2614,7 @@
                                                                        controls:HighlightText.Highlight="{Binding Text, ElementName=NewExplorerSearchBox}"
                                                                        controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
                                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"
-                                                                     ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}" Margin="0,0,0,3" FontSize="11"/>
+                                                                     ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}" Margin="0,0,0,4" FontSize="12"/>
                                                                 <Border Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Background}"
                                                                     BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Border}"
                                                                     BorderThickness="1"
@@ -2614,8 +2639,8 @@
                                                                         <ColumnDefinition Width="*" />
                                                                         <ColumnDefinition Width="Auto" />
                                                                     </Grid.ColumnDefinitions>
-                                                                    <TextBlock Grid.Column="0" Text="{Binding Size, Converter={x:Static converters:SizeToStringConverter.Instance}}" FontSize="10" Opacity="0.6" />
-                                                                    <TextBlock Grid.Column="1" Text="{Binding Extension}" FontSize="10" Opacity="0.6" HorizontalAlignment="Right" />
+                                                                    <TextBlock Grid.Column="0" Text="{Binding Size, Converter={x:Static converters:SizeToStringConverter.Instance}}" FontSize="11" Opacity="0.75" />
+                                                                    <TextBlock Grid.Column="1" Text="{Binding Extension}" FontSize="11" Opacity="0.75" HorizontalAlignment="Right" />
                                                                 </Grid>
                                                             </StackPanel>
                                                         </Border>
