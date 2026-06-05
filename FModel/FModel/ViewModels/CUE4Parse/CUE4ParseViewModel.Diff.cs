@@ -240,7 +240,7 @@ public partial class CUE4ParseViewModel
                 case "pck":
                     {
                         var archive = entry.CreateReader();
-                        var wwise = new WwiseReader(archive);
+                        var wwise = new WwiseReader(new FWwiseArchive(archive), new WwiseGameFileSource(entry));
                         return JsonConvert.SerializeObject(wwise, Formatting.Indented);
                     }
                 // Oodle dictionary

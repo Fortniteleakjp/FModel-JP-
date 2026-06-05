@@ -833,7 +833,7 @@ public partial class CUE4ParseViewModel : ViewModel
 
             var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud", inst[0].Value.SubstringAfterLast("/").SubstringBefore("\""));
             if (!File.Exists(ioStoreOnDemandPath)) return;
-            await Provider.RegisterVfsAsync(new IoChunkToc(ioStoreOnDemandPath));
+            await Provider.RegisterVfsAsync(new IoChunkToc(ioStoreOnDemandPath, Provider.Versions));
             var onDemandCount = await Provider.MountAsync();
             FLogger.Append(ELog.Information, () =>
                 FLogger.Text($"{onDemandCount} on-demand archive{(onDemandCount > 1 ? "s" : "")} streamed via epicgames.com", Constants.WHITE, true));
@@ -1086,7 +1086,7 @@ public partial class CUE4ParseViewModel : ViewModel
             case "bank":
             {
                 var archive = entry.CreateReader();
-                if (!FModProvider.TryLoadBank(archive, entry.NameWithoutExtension, out var fmodReader))
+                if (!FmodProvider.TryLoadBank(archive, entry.NameWithoutExtension, out var fmodReader))
                 {
                     Log.Error($"Failed to load FMOD bank {entry.Path}");
                     break;
@@ -1107,13 +1107,13 @@ public partial class CUE4ParseViewModel : ViewModel
             case "pck":
             {
                 var archive = entry.CreateReader();
-                var wwise = new WwiseReader(archive);
+                var wwise = new WwiseReader(new FWwiseArchive(archive), new WwiseGameFileSource(entry));
                 TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
 
                 var medias = WwiseProvider.ExtractBankSounds(wwise);
                 foreach (var media in medias)
                 {
-                    SaveAndPlaySound(media.OutputPath, media.Extension, media.Data, saveAudio);
+                    SaveAndPlaySound(media.OutputPath, media.Extension, media.Data?.GetData() ?? [], saveAudio);
                 }
 
                 break;
@@ -1307,7 +1307,7 @@ public partial class CUE4ParseViewModel : ViewModel
         var pointer = new FPackageIndex(pkg, index + 1).ResolvedObject;
         if (pointer?.Object is null) return false;
 
-        var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+        var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
         switch (dummy)
         {
             case UVerseDigest when isNone && pointer.Object.Value is UVerseDigest verseDigest:
@@ -1388,7 +1388,7 @@ public partial class CUE4ParseViewModel : ViewModel
                 var extractedSounds = WwiseProvider.ExtractAudioEventSounds(audioEvent);
                 foreach (var sound in extractedSounds)
                 {
-                    SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data, saveAudio);
+                    SaveAndPlaySound(sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio);
                 }
                 return false;
             }
@@ -1682,11 +1682,11 @@ public partial class CUE4ParseViewModel : ViewModel
             if (pointer?.Object is null && pointer.Class?.Object?.Value is null)
                 continue;
 
-            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class?.Object?.Value as UStruct, pkg);
+            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
             if (dummy is not UClass || pointer.Object.Value is not UClass blueprint)
                 continue;
 
-            cppList.Add(blueprint.DecompileBlueprintToPseudo(cookedMetaData));
+            cppList.Add(blueprint.DecompileBlueprintToPseudo(pkg.Mappings, cookedMetaData));
         }
 
         var cpp = cppList.Count > 1 ? string.Join("\n\n", cppList) : cppList.FirstOrDefault() ?? string.Empty;

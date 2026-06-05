@@ -110,7 +110,7 @@ public class GameFileViewModel : ViewModel
                     for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
                     {
                         var pointer = new FPackageIndex(package, i + 1).ResolvedObject;
-                        var dummy = ((AbstractUePackage) package).ConstructObject(pointer.Class?.Object?.Value as UStruct, package);
+                        var dummy = ((AbstractUePackage) package).ConstructObject(pointer.Class, package);
 
                         switch (dummy)
                         {
