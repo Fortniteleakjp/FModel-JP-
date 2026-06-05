@@ -112,20 +112,32 @@ public class GameDirectoryViewModel : ViewModel
 
     private readonly object _lock = new object(); // 同期オブジェクト
 
+    // O(1) name -> FileItem lookup (replaces per-archive linear scans that made
+    // loading many archives scale ~quadratically).
+    private readonly System.Collections.Generic.Dictionary<string, FileItem> _byName =
+        new(System.StringComparer.OrdinalIgnoreCase);
+
     public void Add(IAesVfsReader reader)
     {
         if (!_hiddenArchives.IsMatch(reader.Name)) return;
 
-        if (DirectoryFiles.Any(x => x.Name.Equals(reader.Name, System.StringComparison.OrdinalIgnoreCase)))
-            return;
-
         var fileItem = new FileItem(reader);
-        Application.Current.Dispatcher.Invoke(() => DirectoryFiles.Add(fileItem));
+        // EnableCollectionSynchronization lets us mutate the collection off the UI thread
+        // under _lock, avoiding a synchronous Dispatcher round-trip per archive.
+        lock (_lock)
+        {
+            if (!_byName.TryAdd(reader.Name, fileItem)) return;
+            DirectoryFiles.Add(fileItem);
+        }
     }
 
     public void Verify(IAesVfsReader reader)
     {
-        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file) return;
+        FileItem file;
+        lock (_lock)
+        {
+            if (!_byName.TryGetValue(reader.Name, out file)) return;
+        }
 
         file.IsEnabled = true;
         file.MountPoint = reader.MountPoint;
@@ -134,7 +146,21 @@ public class GameDirectoryViewModel : ViewModel
 
     public void Disable(IAesVfsReader reader)
     {
-        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file) return;
+        FileItem file;
+        lock (_lock)
+        {
+            if (!_byName.TryGetValue(reader.Name, out file)) return;
+        }
+
         file.IsEnabled = false;
+    }
+
+    /// <summary>Thread-safe snapshot of the current archive list (for serialization, etc.).</summary>
+    public FileItem[] SnapshotDirectoryFiles()
+    {
+        lock (_lock)
+        {
+            return DirectoryFiles.ToArray();
+        }
     }
 }

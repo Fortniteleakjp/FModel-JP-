@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using AdonisUI.Controls;
 using FModel.Extensions;
 using FModel.Framework;
@@ -32,10 +33,16 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 Helper.OpenWindow<AdonisWindow>("Backup Manager", () => new BackupManager(contextViewModel.CUE4Parse.Provider.ProjectName).Show());
                 break;
             case "Directory_ArchivesInfo":
+            {
                 contextViewModel.CUE4Parse.TabControl.AddTab("Archives Info");
-                contextViewModel.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
-                contextViewModel.CUE4Parse.TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(contextViewModel.CUE4Parse.GameDirectory.DirectoryFiles, Formatting.Indented), false, false);
+                var tab = contextViewModel.CUE4Parse.TabControl.SelectedTab;
+                tab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+                // Snapshot + serialize off the UI thread so a large archive list doesn't freeze the UI.
+                var archives = contextViewModel.CUE4Parse.GameDirectory.SnapshotDirectoryFiles();
+                var json = await Task.Run(() => JsonConvert.SerializeObject(archives, Formatting.Indented));
+                tab.SetDocumentText(json, false, false);
                 break;
+            }
             case "Views_3dViewer":
                 contextViewModel.CUE4Parse.SnooperViewer.Run();
                 break;
