@@ -751,19 +751,30 @@
                 <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
             </Grid.ColumnDefinitions>
 
-            <!-- No image: the editor spans all 3 columns and fills the whole width.
-                 With an image: the editor stays in column 0 only, side-by-side with the
-                 image (column 2), so the JSON never hides behind / under the image and the
-                 area around the image stays transparent.
-                 ColumnSpan is bound DIRECTLY on the element (not via a Style trigger) because
-                 ElementName bindings inside a Style trigger don't resolve in a DataTemplate. -->
+            <!-- Unified JSON panel: spans the WHOLE tab content (text area + image area) so the
+                 preview image sits on the SAME background as the JSON and looks like it's shown
+                 *inside* the JSON view. This reproduces the editor's old framed look (Layer2 +
+                 rounded + shadow), now extended across the image column as well. -->
+            <Border Grid.Column="0" Grid.ColumnSpan="3"
+                    Margin="0"
+                    CornerRadius="14"
+                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}"
+                    BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.2" />
+                </Border.Effect>
+            </Border>
+
+            <!-- JSON text. With an image it stays in column 0 (never hidden behind / under the
+                 image); without an image it spans all 3 columns. Transparent so the unified JSON
+                 panel above shows through as the shared background.
+                 ColumnSpan is bound DIRECTLY (not via a Style trigger) because ElementName
+                 bindings inside a Style trigger don't resolve in a DataTemplate namescope. -->
             <Border Grid.Column="0"
                     Grid.ColumnSpan="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={x:Static converters:HasImageToColumnSpanConverter.Instance}}"
                     Margin="0"
-                    CornerRadius="12"
-                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
-                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
-                    BorderThickness="1">
+                    Background="Transparent">
                 <controls:AvalonEditor x:Name="DynamicArea"
                                DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
             </Border>
