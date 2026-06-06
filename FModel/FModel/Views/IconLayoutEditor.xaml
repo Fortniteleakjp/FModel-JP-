@@ -142,6 +142,46 @@
         <ScrollViewer Grid.Row="0" Grid.Column="1" Margin="5,10,10,5" VerticalScrollBarVisibility="Auto"
                       adonisExtensions:ScrollViewerExtension.VerticalScrollBarPlacement="Docked">
             <StackPanel>
+                <!-- 画像タイプ -->
+                <Border Style="{StaticResource FModelJP5Card}">
+                    <StackPanel>
+                        <TextBlock Text="画像タイプ（プレビュー＝生成タイプ）" Style="{StaticResource SectionHeader}" />
+                        <ComboBox ItemsSource="{Binding Styles}" SelectedItem="{Binding SelectedStyle, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Border Margin="0,10,0,0" CornerRadius="10" Padding="12,10" BorderThickness="1">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#33E0A030" />
+                                    <Setter Property="BorderBrush" Value="#80E0A030" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsOriginal}" Value="True">
+                                            <Setter Property="Background" Value="#3357A773" />
+                                            <Setter Property="BorderBrush" Value="#8057A773" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock TextWrapping="Wrap" Opacity="0.9">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="このタイプの組み込みプレビューです。下の項目を編集・反映するには「オリジナル」を選んでください。" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOriginal}" Value="True">
+                                                <Setter Property="Text" Value="オリジナル — 下の項目とプレビューの枠ドラッグで自作レイアウトを編集でき、この内容で生成されます。" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
                 <!-- カテゴリ -->
                 <Border Style="{StaticResource FModelJP5Card}">
                     <StackPanel>
@@ -153,37 +193,6 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Border Margin="0,10,0,0" CornerRadius="10" Padding="12,10" BorderThickness="1">
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Background" Value="#33E0A030" />
-                                    <Setter Property="BorderBrush" Value="#80E0A030" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding UseOriginal}" Value="True">
-                                            <Setter Property="Background" Value="#3357A773" />
-                                            <Setter Property="BorderBrush" Value="#8057A773" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <StackPanel>
-                                <CheckBox IsChecked="{Binding UseOriginal, Mode=TwoWay}"
-                                          FontWeight="Bold" FontSize="14"
-                                          Content="画像タイプを「オリジナル」にしてこのレイアウトを使用する" />
-                                <TextBlock Margin="24,4,0,0" Opacity="0.85" TextWrapping="Wrap">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Text" Value="現在の画像タイプ: オリジナル以外 — 生成アイコンは従来のままです（設定→画像生成 の『画像タイプ』でも切替可能）。" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding UseOriginal}" Value="True">
-                                                    <Setter Property="Text" Value="現在の画像タイプ: オリジナル — このレイアウトでアイコンが生成されます。" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </StackPanel>
-                        </Border>
                         <TextBlock Margin="0,8,0,0" Opacity="0.65" TextWrapping="Wrap"
                                    Text="プレビュー上の枠をドラッグで移動、要素を選択してマウスホイールでサイズ変更できます。名前欄にはそのアイテムの名前（武器なら武器名、スキンならスキン名）が入ります。" />
                     </StackPanel>

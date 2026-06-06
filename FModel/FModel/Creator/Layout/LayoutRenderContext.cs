@@ -1,5 +1,6 @@
 using System;
 using System.Windows;
+using CUE4Parse.UE4.Assets.Exports;
 using FModel.Creator.Bases;
 using SkiaSharp;
 
@@ -56,13 +57,23 @@ public class LayoutRenderContext
     }
 }
 
-/// <summary>直近に生成したアイコンの描画コンテキストを保持（編集ウインドウのプレビュー用）。</summary>
+/// <summary>
+/// 直近に生成したアイコンの描画コンテキストと元アセットを保持（編集ウインドウのプレビュー用）。
+/// 元アセット(PackageName/ExportType/Object)を持っておくことで、編集ウインドウ側で
+/// 任意の画像タイプ(EIconStyle)に組み立て直してプレビューできる。
+/// </summary>
 public static class IconLayoutPreview
 {
     public static LayoutRenderContext Current { get; private set; }
+    public static string PackageName { get; private set; }
+    public static string ExportType { get; private set; }
+    public static Lazy<UObject> Object { get; private set; }
 
-    public static void Set(LayoutRenderContext ctx)
+    public static void Set(string packageName, string exportType, Lazy<UObject> obj, LayoutRenderContext ctx)
     {
+        PackageName = packageName;
+        ExportType = exportType;
+        Object = obj;
         if (ctx != null) Current = ctx;
     }
 }

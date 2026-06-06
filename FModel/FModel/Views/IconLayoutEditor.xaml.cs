@@ -160,21 +160,33 @@ public partial class IconLayoutEditor
 
     private void LayoutPreview()
     {
-        var t = _vm.CurrentTemplate;
-        if (t == null || PreviewArea.ActualWidth < 2 || PreviewArea.ActualHeight < 2) return;
+        var img = _vm.PreviewImage;
+        if (img == null || PreviewArea.ActualWidth < 2 || PreviewArea.ActualHeight < 2) return;
+
+        // 描画された画像の実サイズを基準にする（オリジナル=テンプレートサイズ、組み込み=そのスタイルの出力サイズ）
+        double srcW = img.PixelWidth, srcH = img.PixelHeight;
+        if (srcW < 1 || srcH < 1) return;
 
         var availW = PreviewArea.ActualWidth - 16;
         var availH = PreviewArea.ActualHeight - 16;
-        _scale = Math.Min(availW / t.Width, availH / t.Height);
+        _scale = Math.Min(availW / srcW, availH / srcH);
         if (_scale <= 0 || double.IsNaN(_scale) || double.IsInfinity(_scale)) _scale = 1;
 
-        PreviewCanvas.Width = t.Width * _scale;
-        PreviewCanvas.Height = t.Height * _scale;
-        PreviewImg.Width = t.Width * _scale;
-        PreviewImg.Height = t.Height * _scale;
+        PreviewCanvas.Width = srcW * _scale;
+        PreviewCanvas.Height = srcH * _scale;
+        PreviewImg.Width = srcW * _scale;
+        PreviewImg.Height = srcH * _scale;
 
+        // 配置ハンドルは「オリジナル」タイプのときだけ（自作レイアウトの編集対象）
+        var showHandles = _vm.IsOriginal;
         foreach (var h in _handles)
         {
+            if (!showHandles)
+            {
+                h.Visual.Visibility = Visibility.Collapsed;
+                continue;
+            }
+
             var r = ElemRect(h.Element);
             Canvas.SetLeft(h.Visual, r.x * _scale);
             Canvas.SetTop(h.Visual, r.y * _scale);
@@ -300,7 +312,7 @@ public partial class IconLayoutEditor
     /// <summary>選択中の要素をマウスホイールで拡大縮小（テキスト=フォントサイズ、画像=拡縮）。</summary>
     private void OnPreviewWheel(object sender, MouseWheelEventArgs e)
     {
-        if (_selected?.Element == null) return;
+        if (!_vm.IsOriginal || _selected?.Element == null) return;
 
         switch (_selected.Element)
         {
