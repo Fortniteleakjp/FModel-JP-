@@ -1062,6 +1062,7 @@
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="{DynamicResource Menu_Versioning}" Command="{Binding MenuCommand}" CommandParameter="Help_Releases" />
+                        <MenuItem Header="リリースノート" Command="{Binding MenuCommand}" CommandParameter="Help_ReleaseNotes" />
                         <MenuItem Header="FModelについて" Command="{Binding MenuCommand}" CommandParameter="Help_About">
                             <MenuItem.Icon>
                                 <Viewbox Width="16" Height="16">

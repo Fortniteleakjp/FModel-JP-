@@ -67,6 +67,13 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Help_Releases":
                 Helper.OpenWindow<AdonisWindow>("Releases", () => new UpdateView().Show());
                 break;
+            case "Help_ReleaseNotes":
+            {
+                var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
+                contextViewModel.CUE4Parse.TabControl.AddTab(new FakeGameFile("リリースノート"));
+                contextViewModel.CUE4Parse.TabControl.SelectedTab.Content = new FModel.Views.ReleaseNotes.ReleaseNotesView(v);
+                break;
+            }
             case "Help_BugsReport":
                 Process.Start(new ProcessStartInfo { FileName = Constants.ISSUE_LINK, UseShellExecute = true });
                 break;

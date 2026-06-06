@@ -5,53 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <FlowDocumentScrollViewer>
-        <FlowDocument>
-            <Paragraph FontSize="24" FontWeight="Bold">FModelJP リリースノート</Paragraph>
-            <Paragraph>
-                <Run>FModelJPをご利用いただきありがとうございます！</Run>
-            </Paragraph>
-            <Paragraph>
-                <Run>このページは、アップデート後に一度だけ表示されます。</Run>
-            </Paragraph>
-
-            <Section>
-                <Paragraph FontWeight="Bold" FontSize="18">
-                    <Run x:Name="VersionRun">v5.0.0.0</Run>
-                    <Run> 主な変更点</Run>
-                </Paragraph>
-                <List>
-                    <ListItem>
-                        <Paragraph><Run>FModelJP 5.0 としてメインUIを全面刷新し、全体のレイアウトと操作感を見直しました</Run></Paragraph>
-                    </ListItem>
-                    <ListItem>
-                        <Paragraph><Run>ダークテーマ / ライトテーマの切り替えに対応し、設定画面や各種サブウィンドウのデザインも新UI基準で統一しました</Run></Paragraph>
-                    </ListItem>
-                    <ListItem>
-                        <Paragraph><Run>ロビー背景APIウィンドウを追加し、ロビー背景の確認に加えてフォートナイトのサーバーの監視もできるようになりました</Run></Paragraph>
-                    </ListItem>
-                    <ListItem>
-                        <Paragraph><Run>CloudStorage Hotfix の適用機能を追加し、開いているアセットに対してホットフィックスを手動・自動で反映できるようになりました</Run></Paragraph>
-                    </ListItem>
-                    <ListItem>
-                        <Paragraph><Run>検索画面を強化し、除外ワード指定、アセット種別フィルター、正規表現検索の改善で目的のファイルを探しやすくしました</Run></Paragraph>
-                    </ListItem>
-                    <ListItem>
-                        <Paragraph><Run>エクスポートカートと右クリックメニューを追加し、複数アセットの一括管理とエクスポートがしやすくなりました</Run></Paragraph>
-                    </ListItem>
-                    <ListItem>
-                        <Paragraph><Run>アニメーション周りの読み込み処理を改善し、一部アニメーションや関連アセットがより正常に開けるようになりました</Run></Paragraph>
-                    </ListItem>
-                </List>
-            </Section>
-
-            <Paragraph>
-                <Run>すべての変更履歴については、</Run>
-                <Hyperlink NavigateUri="https://github.com/Fortniteleakjp/FModel-JP-/releases" RequestNavigate="Hyperlink_RequestNavigate">
-                    <Run>GitHubのリリース</Run>
-                </Hyperlink>
-                <Run>をご確認ください。</Run>
-            </Paragraph>
-        </FlowDocument>
-    </FlowDocumentScrollViewer>
+    <!-- 本文は Resources/ReleaseNotes.md を読み込み、Markdown として描画する（コードビハインド参照） -->
+    <FlowDocumentScrollViewer x:Name="Viewer" IsToolBarVisible="False"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled" />
 </UserControl>
