@@ -45,6 +45,7 @@ public class CreatorPackage : IDisposable
             case "AthenaMusicPackItemDefinition":
             case "AthenaBattleBusItemDefinition":
             case "AthenaCharacterItemDefinition":
+            case "ExtractableItemDefinition": // ESD_* (Sprites) — render an icon card like cosmetics
             case "AthenaMapMarkerItemDefinition":
             case "AthenaBackpackItemDefinition":
             case "CosmeticShoesItemDefinition":
