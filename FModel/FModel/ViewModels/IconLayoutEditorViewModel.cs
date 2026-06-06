@@ -1,12 +1,13 @@
 using System;
 using System.ComponentModel;
-using System.IO;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using FModel.Creator.Layout;
 using FModel.Framework;
 using FModel.Settings;
 using Serilog;
-using SkiaSharp;
 
 namespace FModel.ViewModels;
 
@@ -43,12 +44,18 @@ public class IconLayoutEditorViewModel : ViewModel
         private set => SetProperty(ref _currentTemplate, value);
     }
 
-    private BitmapImage _previewImage;
-    public BitmapImage PreviewImage
+    private BitmapSource _previewImage;
+    public BitmapSource PreviewImage
     {
         get => _previewImage;
         private set => SetProperty(ref _previewImage, value);
     }
+
+    /// <summary>再描画完了時に発火（ウインドウ側でハンドル位置を更新するため）。</summary>
+    public event Action PreviewRendered;
+
+    private WriteableBitmap _wb;
+    private bool _renderQueued;
 
     public IconLayoutEditorViewModel()
     {
@@ -95,17 +102,60 @@ public class IconLayoutEditorViewModel : ViewModel
     {
         if (e.PropertyName == nameof(IconLayoutTemplate.BackgroundImagePath))
             IconLayoutRenderer.InvalidateBackgroundCache();
-        Render();
+        // Enabled 自体の変更では自動有効化しない（OFFにしたのを即ONに戻さないため）
+        if (e.PropertyName != nameof(IconLayoutTemplate.Enabled))
+            MarkCustomized();
+        QueueRender();
     }
 
-    private void OnElementChanged(object sender, PropertyChangedEventArgs e) => Render();
+    private void OnElementChanged(object sender, PropertyChangedEventArgs e)
+    {
+        MarkCustomized();
+        QueueRender();
+    }
+
+    /// <summary>ユーザーが配置/装飾を変更したら、そのカテゴリを自動的に「使用する」状態にする。</summary>
+    private void MarkCustomized()
+    {
+        if (CurrentTemplate is { Enabled: false })
+            CurrentTemplate.Enabled = true;
+    }
+
+    /// <summary>連続変更（ドラッグ等）の再描画をまとめ、UIの応答性を保つ。</summary>
+    public void QueueRender()
+    {
+        if (_renderQueued) return;
+        _renderQueued = true;
+        Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
+        {
+            _renderQueued = false;
+            Render();
+        }), DispatcherPriority.Background);
+    }
 
     public void Render()
     {
         try
         {
-            using var bmp = IconLayoutRenderer.Render(CurrentTemplate, Context);
-            PreviewImage = ToBitmapImage(bmp);
+            var bmp = IconLayoutRenderer.Render(CurrentTemplate, Context);
+            if (bmp == null) return;
+
+            using (bmp)
+            {
+                int w = bmp.Width, h = bmp.Height;
+                if (_wb == null || _wb.PixelWidth != w || _wb.PixelHeight != h)
+                {
+                    _wb = new WriteableBitmap(w, h, 96, 96, PixelFormats.Pbgra32, null);
+                    PreviewImage = _wb;
+                }
+
+                _wb.Lock();
+                _wb.WritePixels(new Int32Rect(0, 0, w, h), bmp.GetPixels(), bmp.RowBytes * h, bmp.RowBytes);
+                _wb.AddDirtyRect(new Int32Rect(0, 0, w, h));
+                _wb.Unlock();
+            }
+
+            PreviewRendered?.Invoke();
         }
         catch (Exception e)
         {
@@ -122,19 +172,5 @@ public class IconLayoutEditorViewModel : ViewModel
     public void Save()
     {
         UserSettings.Save();
-    }
-
-    private static BitmapImage ToBitmapImage(SKBitmap bmp)
-    {
-        if (bmp == null) return null;
-        using var data = bmp.Encode(SKEncodedImageFormat.Png, 100);
-        using var ms = new MemoryStream(data.ToArray(), false);
-        var img = new BitmapImage();
-        img.BeginInit();
-        img.CacheOption = BitmapCacheOption.OnLoad;
-        img.StreamSource = ms;
-        img.EndInit();
-        img.Freeze();
-        return img;
     }
 }

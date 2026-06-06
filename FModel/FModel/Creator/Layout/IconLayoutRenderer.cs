@@ -23,7 +23,9 @@ public static class IconLayoutRenderer
         var w = Math.Clamp(template.Width, 16, 4096);
         var h = Math.Clamp(template.Height, 16, 4096);
 
-        var bmp = new SKBitmap(w, h, SKColorType.Rgba8888, SKAlphaType.Premul);
+        // BGRA(Premul) で出力すると WPF の Pbgra32(WriteableBitmap) へ無変換でコピーでき、
+        // 編集プレビューの再描画が軽くなる。PNGエンコード経路でも問題なく扱える。
+        var bmp = new SKBitmap(w, h, SKColorType.Bgra8888, SKAlphaType.Premul);
         using var c = new SKCanvas(bmp);
         c.Clear(SKColors.Transparent);
 
@@ -156,7 +158,7 @@ public static class IconLayoutRenderer
             };
 
         var maxWidth = (float) Math.Max(1, e.Width);
-        var shaper = new CustomSKShaper(typeface);
+        var shaper = GetShaper(typeface);
 
         try
         {
@@ -214,6 +216,24 @@ public static class IconLayoutRenderer
         if (tf != null)
             return (name ? tf.DisplayName : tf.Description) ?? tf.Default ?? SKTypeface.Default;
         return SKTypeface.Default;
+    }
+
+    // CustomSKShaper の生成は HarfBuzz のフォント/フェイス確保を伴い高コストなので、
+    // タイプフェイス単位でキャッシュしてドラッグ中の連続再描画を軽くする。
+    // 一括書き出し等でワーカースレッドからも呼ばれ得るため、スレッドローカルにして競合を防ぐ。
+    private static readonly System.Threading.ThreadLocal<Dictionary<SKTypeface, CustomSKShaper>> _shaperCache =
+        new(() => new Dictionary<SKTypeface, CustomSKShaper>());
+
+    private static CustomSKShaper GetShaper(SKTypeface typeface)
+    {
+        typeface ??= SKTypeface.Default;
+        var cache = _shaperCache.Value;
+        if (!cache.TryGetValue(typeface, out var shaper))
+        {
+            shaper = new CustomSKShaper(typeface);
+            cache[typeface] = shaper;
+        }
+        return shaper;
     }
 
     #endregion

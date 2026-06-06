@@ -38,6 +38,7 @@ public partial class IconLayoutEditor
         InitializeComponent();
 
         _vm.PropertyChanged += OnVmPropertyChanged;
+        _vm.PreviewRendered += LayoutPreview;
         Loaded += (_, _) =>
         {
             RebuildHandles();
@@ -48,9 +49,10 @@ public partial class IconLayoutEditor
     private void OnVmPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(IconLayoutEditorViewModel.CurrentTemplate))
+        {
             RebuildHandles();
-
-        LayoutPreview();
+            LayoutPreview();
+        }
     }
 
     private void OnPreviewAreaSizeChanged(object sender, SizeChangedEventArgs e) => LayoutPreview();
@@ -212,6 +214,17 @@ public partial class IconLayoutEditor
         {
             _dragElem.X = Math.Clamp(_startX + dx, 0, t.Width);
             _dragElem.Y = Math.Clamp(_startY + dy, 0, t.Height);
+        }
+
+        // 再描画はコアレスされるため、ハンドルだけは即座に追従させて操作感を保つ
+        var h = _handles.Find(x => x.Element == _dragElem);
+        if (h != null)
+        {
+            var r = ElemRect(_dragElem);
+            Canvas.SetLeft(h.Visual, r.x * _scale);
+            Canvas.SetTop(h.Visual, r.y * _scale);
+            h.Visual.Width = Math.Max(8, r.w * _scale);
+            h.Visual.Height = Math.Max(8, r.h * _scale);
         }
 
         e.Handled = true;

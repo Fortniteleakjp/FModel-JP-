@@ -17,7 +17,7 @@ public class IconLayoutLabelConverter : IValueConverter
         EIconLayoutCategory.Item => "アイテム",
         EIconLayoutBackground.Rarity => "レア度グラデーション",
         EIconLayoutBackground.SolidColor => "単色",
-        EIconLayoutBackground.Image => "画像",
+        EIconLayoutBackground.Image => "オリジナル画像",
         EIconLayoutAlign.Left => "左揃え",
         EIconLayoutAlign.Center => "中央揃え",
         EIconLayoutAlign.Right => "右揃え",
