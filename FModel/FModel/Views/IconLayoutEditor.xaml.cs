@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -30,6 +31,9 @@ public partial class IconLayoutEditor
     private Point _dragStart;
     private IconElementBase _dragElem;
     private double _startX, _startY, _startW, _startH;
+
+    // 選択中の要素（マウスホイールでサイズ変更する対象）
+    private Handle _selected;
 
     public IconLayoutEditor()
     {
@@ -64,6 +68,7 @@ public partial class IconLayoutEditor
         foreach (var h in _handles)
             PreviewCanvas.Children.Remove(h.Visual);
         _handles.Clear();
+        _selected = null;
 
         var t = _vm.CurrentTemplate;
         if (t == null) return;
@@ -71,6 +76,19 @@ public partial class IconLayoutEditor
         AddHandle(t.Preview, "画像", Color.FromRgb(0x5E, 0xA3, 0xEC), isImage: true);
         AddHandle(t.Name, "名前", Color.FromRgb(0x7C, 0xD9, 0x92), isImage: false);
         AddHandle(t.Description, "説明", Color.FromRgb(0xE0, 0xB1, 0x5E), isImage: false);
+        ApplySelectionVisual();
+    }
+
+    private void SetSelected(IconElementBase elem)
+    {
+        _selected = _handles.Find(h => h.Element == elem);
+        ApplySelectionVisual();
+    }
+
+    private void ApplySelectionVisual()
+    {
+        foreach (var h in _handles)
+            h.Visual.BorderThickness = new Thickness(h == _selected ? 3 : 1.5);
     }
 
     private void AddHandle(IconElementBase element, string label, Color color, bool isImage)
@@ -173,6 +191,7 @@ public partial class IconLayoutEditor
     private void Handle_MouseDown(object sender, MouseButtonEventArgs e)
     {
         if (sender is not FrameworkElement fe || fe.Tag is not IconElementBase elem) return;
+        SetSelected(elem);
         _dragElem = elem;
         _resizing = false;
         _dragStart = e.GetPosition(PreviewCanvas);
@@ -186,6 +205,7 @@ public partial class IconLayoutEditor
     private void Grip_MouseDown(object sender, MouseButtonEventArgs e)
     {
         if (sender is not FrameworkElement fe || fe.Tag is not IconImageElement elem) return;
+        SetSelected(elem);
         _dragElem = elem;
         _resizing = true;
         _dragStart = e.GetPosition(PreviewCanvas);
@@ -276,6 +296,74 @@ public partial class IconLayoutEditor
     }
 
     private void OnClose(object sender, RoutedEventArgs e) => Close();
+
+    /// <summary>選択中の要素をマウスホイールで拡大縮小（テキスト=フォントサイズ、画像=拡縮）。</summary>
+    private void OnPreviewWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (_selected?.Element == null) return;
+
+        switch (_selected.Element)
+        {
+            case IconTextElement tx:
+                tx.FontSize = Math.Clamp(tx.FontSize + (e.Delta > 0 ? 2 : -2), 6, 400);
+                break;
+            case IconImageElement im:
+                var factor = e.Delta > 0 ? 1.05 : 1.0 / 1.05;
+                im.Width = Math.Max(1, im.Width * factor);
+                im.Height = Math.Max(1, im.Height * factor);
+                break;
+        }
+
+        e.Handled = true;
+    }
+
+    private void OnExport(object sender, RoutedEventArgs e)
+    {
+        var dlg = new SaveFileDialog
+        {
+            Title = "アイコンレイアウト設定の書き出し",
+            Filter = "JSON ファイル|*.json|すべてのファイル|*.*",
+            FileName = "FModelJP_IconLayout.json"
+        };
+        if (dlg.ShowDialog() != true) return;
+
+        try
+        {
+            File.WriteAllText(dlg.FileName, _vm.ExportJson());
+            AdonisUI.Controls.MessageBox.Show($"レイアウト設定を書き出しました。\n{dlg.FileName}",
+                "書き出し", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            AdonisUI.Controls.MessageBox.Show($"書き出しに失敗しました: {ex.Message}",
+                "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+        }
+    }
+
+    private void OnImport(object sender, RoutedEventArgs e)
+    {
+        var dlg = new OpenFileDialog
+        {
+            Title = "アイコンレイアウト設定の読み込み",
+            Filter = "JSON ファイル|*.json|すべてのファイル|*.*"
+        };
+        if (dlg.ShowDialog() != true) return;
+
+        try
+        {
+            if (_vm.ImportJson(File.ReadAllText(dlg.FileName)))
+                AdonisUI.Controls.MessageBox.Show("レイアウト設定を読み込みました。\n「保存」を押すと確定します。",
+                    "読み込み", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
+            else
+                AdonisUI.Controls.MessageBox.Show("読み込みに失敗しました（形式が不正です）。",
+                    "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+        }
+        catch (Exception ex)
+        {
+            AdonisUI.Controls.MessageBox.Show($"読み込みに失敗しました: {ex.Message}",
+                "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+        }
+    }
 
     #endregion
 }

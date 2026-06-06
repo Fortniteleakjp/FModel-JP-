@@ -7,18 +7,30 @@ using System.Windows.Threading;
 using FModel.Creator.Layout;
 using FModel.Framework;
 using FModel.Settings;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace FModel.ViewModels;
 
 public class IconLayoutEditorViewModel : ViewModel
 {
-    private readonly IconLayoutSettings _settings;
+    private IconLayoutSettings _settings;
 
     /// <summary>プレビューに使うアイテムデータ（現在開いているアセット、無ければサンプル）。</summary>
     public LayoutRenderContext Context { get; }
 
     public string ContextInfo { get; }
+
+    /// <summary>画像タイプ(CosmeticStyle)が「オリジナル」かどうか。ONにするとこのレイアウトで生成される。</summary>
+    public bool UseOriginal
+    {
+        get => UserSettings.Default.CosmeticStyle == EIconStyle.Original;
+        set
+        {
+            UserSettings.Default.CosmeticStyle = value ? EIconStyle.Original : EIconStyle.Default;
+            RaisePropertyChanged(nameof(UseOriginal));
+        }
+    }
 
     public Array Categories => Enum.GetValues(typeof(EIconLayoutCategory));
     public Array BackgroundModes => Enum.GetValues(typeof(EIconLayoutBackground));
@@ -102,24 +114,10 @@ public class IconLayoutEditorViewModel : ViewModel
     {
         if (e.PropertyName == nameof(IconLayoutTemplate.BackgroundImagePath))
             IconLayoutRenderer.InvalidateBackgroundCache();
-        // Enabled 自体の変更では自動有効化しない（OFFにしたのを即ONに戻さないため）
-        if (e.PropertyName != nameof(IconLayoutTemplate.Enabled))
-            MarkCustomized();
         QueueRender();
     }
 
-    private void OnElementChanged(object sender, PropertyChangedEventArgs e)
-    {
-        MarkCustomized();
-        QueueRender();
-    }
-
-    /// <summary>ユーザーが配置/装飾を変更したら、そのカテゴリを自動的に「使用する」状態にする。</summary>
-    private void MarkCustomized()
-    {
-        if (CurrentTemplate is { Enabled: false })
-            CurrentTemplate.Enabled = true;
-    }
+    private void OnElementChanged(object sender, PropertyChangedEventArgs e) => QueueRender();
 
     /// <summary>連続変更（ドラッグ等）の再描画をまとめ、UIの応答性を保つ。</summary>
     public void QueueRender()
@@ -172,5 +170,22 @@ public class IconLayoutEditorViewModel : ViewModel
     public void Save()
     {
         UserSettings.Save();
+    }
+
+    /// <summary>現在のレイアウト設定をJSON文字列にして返す（書き出し用）。</summary>
+    public string ExportJson()
+        => JsonConvert.SerializeObject(_settings, Formatting.Indented, JsonNetSerializer.SerializerSettings);
+
+    /// <summary>JSON文字列からレイアウト設定を読み込んで差し替える（読み込み用）。</summary>
+    public bool ImportJson(string json)
+    {
+        var imported = JsonConvert.DeserializeObject<IconLayoutSettings>(json, JsonNetSerializer.SerializerSettings);
+        if (imported == null) return false;
+
+        UserSettings.Default.IconLayout = imported;
+        _settings = imported;
+        IconLayoutRenderer.InvalidateBackgroundCache();
+        SetCurrentTemplate(_settings.Get(_selectedCategory));
+        return true;
     }
 }

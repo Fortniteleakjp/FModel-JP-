@@ -128,7 +128,7 @@
                 </StackPanel>
 
                 <Border Grid.Row="1" x:Name="PreviewArea" Background="#22000000" CornerRadius="10"
-                        SizeChanged="OnPreviewAreaSizeChanged" ClipToBounds="True">
+                        SizeChanged="OnPreviewAreaSizeChanged" PreviewMouseWheel="OnPreviewWheel" ClipToBounds="True">
                     <Canvas x:Name="PreviewCanvas" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Image x:Name="PreviewImg" Canvas.Left="0" Canvas.Top="0"
                                Source="{Binding PreviewImage}" Stretch="Fill"
@@ -159,7 +159,7 @@
                                     <Setter Property="Background" Value="#33E0A030" />
                                     <Setter Property="BorderBrush" Value="#80E0A030" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentTemplate.Enabled}" Value="True">
+                                        <DataTrigger Binding="{Binding UseOriginal}" Value="True">
                                             <Setter Property="Background" Value="#3357A773" />
                                             <Setter Property="BorderBrush" Value="#8057A773" />
                                         </DataTrigger>
@@ -167,16 +167,16 @@
                                 </Style>
                             </Border.Style>
                             <StackPanel>
-                                <CheckBox IsChecked="{Binding CurrentTemplate.Enabled, Mode=TwoWay}"
+                                <CheckBox IsChecked="{Binding UseOriginal, Mode=TwoWay}"
                                           FontWeight="Bold" FontSize="14"
-                                          Content="このカテゴリにカスタムレイアウトを適用する" />
+                                          Content="画像タイプを「オリジナル」にしてこのレイアウトを使用する" />
                                 <TextBlock Margin="24,4,0,0" Opacity="0.85" TextWrapping="Wrap">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="Text" Value="現在: 無効 — 生成アイコンは従来のレイアウトのままです。" />
+                                            <Setter Property="Text" Value="現在の画像タイプ: オリジナル以外 — 生成アイコンは従来のままです（設定→画像生成 の『画像タイプ』でも切替可能）。" />
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding CurrentTemplate.Enabled}" Value="True">
-                                                    <Setter Property="Text" Value="現在: 有効 — このレイアウトでアイコンが生成されます。" />
+                                                <DataTrigger Binding="{Binding UseOriginal}" Value="True">
+                                                    <Setter Property="Text" Value="現在の画像タイプ: オリジナル — このレイアウトでアイコンが生成されます。" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -185,7 +185,7 @@
                             </StackPanel>
                         </Border>
                         <TextBlock Margin="0,8,0,0" Opacity="0.65" TextWrapping="Wrap"
-                                   Text="プレビュー上の枠をドラッグしたり各項目を変更すると、このカテゴリは自動的に有効になります。名前欄にはそのアイテムの名前（武器なら武器名、スキンならスキン名）が入ります。" />
+                                   Text="プレビュー上の枠をドラッグで移動、要素を選択してマウスホイールでサイズ変更できます。名前欄にはそのアイテムの名前（武器なら武器名、スキンならスキン名）が入ります。" />
                     </StackPanel>
                 </Border>
 
@@ -374,11 +374,13 @@
                 adonisExtensions:LayerExtension.IncreaseLayer="True">
             <Grid Margin="14,10">
                 <TextBlock VerticalAlignment="Center" Opacity="0.65"
-                           Text="ヒント: プレビュー上の枠をドラッグで移動できます。" />
+                           Text="ヒント: 枠をドラッグで移動、選択してホイールでサイズ変更。設定は書き出し/読み込みで共有できます。" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button MinWidth="120" Content="既定に戻す" Click="OnReset" Style="{StaticResource FModelJP5SecondaryButton}" />
-                    <Button MinWidth="100" Margin="8,0,0,0" Content="保存" Click="OnSave" Style="{StaticResource FModelJP5PrimaryButton}" />
-                    <Button MinWidth="100" Margin="8,0,0,0" Content="閉じる" Click="OnClose" Style="{StaticResource FModelJP5SecondaryButton}" />
+                    <Button MinWidth="96" Content="書き出し" Click="OnExport" Style="{StaticResource FModelJP5SecondaryButton}" />
+                    <Button MinWidth="96" Margin="8,0,0,0" Content="読み込み" Click="OnImport" Style="{StaticResource FModelJP5SecondaryButton}" />
+                    <Button MinWidth="110" Margin="8,0,0,0" Content="既定に戻す" Click="OnReset" Style="{StaticResource FModelJP5SecondaryButton}" />
+                    <Button MinWidth="90" Margin="8,0,0,0" Content="保存" Click="OnSave" Style="{StaticResource FModelJP5PrimaryButton}" />
+                    <Button MinWidth="90" Margin="8,0,0,0" Content="閉じる" Click="OnClose" Style="{StaticResource FModelJP5SecondaryButton}" />
                 </StackPanel>
             </Grid>
         </Border>

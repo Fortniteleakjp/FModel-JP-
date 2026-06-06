@@ -34,12 +34,13 @@ public abstract class UCreator
     protected bool TryDrawCustomLayout(out SKBitmap result)
     {
         result = null;
+        // 画像タイプ（CosmeticStyle）が「オリジナル」のときだけカスタムレイアウトを使う。
+        if (Style != EIconStyle.Original) return false;
+
         var settings = UserSettings.Default?.IconLayout;
         if (settings == null || Object == null) return false;
 
         var template = settings.Get(IconLayoutCategoryMap.From(Object.ExportType));
-        if (template is not { Enabled: true }) return false;
-
         result = IconLayoutRenderer.Render(template, LayoutRenderContext.FromCreator(this, Object.ExportType));
         return result != null;
     }
