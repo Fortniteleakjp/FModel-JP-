@@ -100,40 +100,38 @@ public class AssetsFolderViewModel
             var treeItems = new RangeObservableCollection<TreeItem>();
             treeItems.SetSuppressionState(true);
 
+            // O(1) child lookup per node (replaces the previous per-sibling linear scan,
+            // which made large ALL / ALL NEW loads scale ~quadratically with file count).
+            var rootChildren = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
+            var childLookup = new Dictionary<TreeItem, Dictionary<string, TreeItem>>();
+            var builder = new StringBuilder(128);
+
             foreach (var entry in entries)
             {
-                TreeItem lastNode = null;
                 var folders = entry.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                var builder = new StringBuilder(64);
                 var parentNode = treeItems;
+                var parentChildren = rootChildren;
+                TreeItem lastNode = null;
+                builder.Clear();
 
                 for (var i = 0; i < folders.Length - 1; i++)
                 {
                     var folder = folders[i];
-                    builder.Append(folder).Append('/');
-                    lastNode = FindByHeaderOrNull(parentNode, folder);
+                    if (i > 0) builder.Append('/');
+                    builder.Append(folder);
 
-                    static TreeItem FindByHeaderOrNull(IReadOnlyList<TreeItem> list, string header)
+                    if (!parentChildren.TryGetValue(folder, out lastNode))
                     {
-                        for (var i = 0; i < list.Count; i++)
-                        {
-                            if (list[i].Header == header)
-                                return list[i];
-                        }
-
-                        return null;
-                    }
-
-                    if (lastNode == null)
-                    {
-                        var nodePath = builder.ToString();
-                        lastNode = new TreeItem(folder, entry, nodePath[..^1]);
+                        lastNode = new TreeItem(folder, entry, builder.ToString());
                         lastNode.Folders.SetSuppressionState(true);
                         lastNode.AssetsList.Assets.SetSuppressionState(true);
                         parentNode.Add(lastNode);
+                        parentChildren[folder] = lastNode;
+                        childLookup[lastNode] = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
                     }
 
                     parentNode = lastNode.Folders;
+                    parentChildren = childLookup[lastNode];
                 }
 
                 lastNode?.AssetsList.Assets.Add(entry);

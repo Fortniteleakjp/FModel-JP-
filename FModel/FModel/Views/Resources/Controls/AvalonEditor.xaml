@@ -49,14 +49,14 @@
             </Grid>
         </Border>
 
+        <!-- Frame/shadow are intentionally removed here: the tab content template wraps the
+             editor (and the preview image) in a single shared "JSON panel" so the image can
+             sit on the same background and look like it's shown inside the JSON view.
+             The TextEditor keeps its Layer2 background so its text area looks unchanged. -->
         <Border CornerRadius="14"
                 Padding="0"
-                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
-                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}"
-                BorderThickness="1">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.2"/>
-            </Border.Effect>
+                Background="Transparent"
+                BorderThickness="0">
 
             <avalonEdit:TextEditor x:Name="MyAvalonEditor"
                                    SyntaxHighlighting="{Binding Highlighter}"

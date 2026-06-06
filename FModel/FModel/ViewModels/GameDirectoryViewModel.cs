@@ -112,20 +112,35 @@ public class GameDirectoryViewModel : ViewModel
 
     private readonly object _lock = new object(); // 同期オブジェクト
 
+    // O(1) name -> FileItem lookup (replaces per-archive linear scans that made
+    // loading many archives scale ~quadratically).
+    private readonly System.Collections.Generic.Dictionary<string, FileItem> _byName =
+        new(System.StringComparer.OrdinalIgnoreCase);
+
     public void Add(IAesVfsReader reader)
     {
         if (!_hiddenArchives.IsMatch(reader.Name)) return;
 
-        if (DirectoryFiles.Any(x => x.Name.Equals(reader.Name, System.StringComparison.OrdinalIgnoreCase)))
-            return;
-
         var fileItem = new FileItem(reader);
+
+        // O(1) de-dup (the hot path when there are many archives) under the lock.
+        lock (_lock)
+        {
+            if (!_byName.TryAdd(reader.Name, fileItem)) return;
+        }
+
+        // DirectoryFilesView is a manually-created ListCollectionView with UI-thread
+        // affinity, so the bound collection itself must be modified on the UI thread.
         Application.Current.Dispatcher.Invoke(() => DirectoryFiles.Add(fileItem));
     }
 
     public void Verify(IAesVfsReader reader)
     {
-        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file) return;
+        FileItem file;
+        lock (_lock)
+        {
+            if (!_byName.TryGetValue(reader.Name, out file)) return;
+        }
 
         file.IsEnabled = true;
         file.MountPoint = reader.MountPoint;
@@ -134,7 +149,21 @@ public class GameDirectoryViewModel : ViewModel
 
     public void Disable(IAesVfsReader reader)
     {
-        if (DirectoryFiles.FirstOrDefault(x => x.Name == reader.Name) is not { } file) return;
+        FileItem file;
+        lock (_lock)
+        {
+            if (!_byName.TryGetValue(reader.Name, out file)) return;
+        }
+
         file.IsEnabled = false;
+    }
+
+    /// <summary>Thread-safe snapshot of the current archive list (for serialization, etc.).</summary>
+    public FileItem[] SnapshotDirectoryFiles()
+    {
+        lock (_lock)
+        {
+            return DirectoryFiles.ToArray();
+        }
     }
 }

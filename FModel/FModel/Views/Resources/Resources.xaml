@@ -751,12 +751,30 @@
                 <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.ColumnSpan="3"
+            <!-- Unified JSON panel: spans the WHOLE tab content (text area + image area) so the
+                 preview image sits on the SAME background as the JSON and looks like it's shown
+                 *inside* the JSON view. This reproduces the editor's old framed look (Layer2 +
+                 rounded + shadow), now extended across the image column as well. -->
+            <Border Grid.Column="0" Grid.ColumnSpan="3"
                     Margin="0"
-                    CornerRadius="12"
+                    CornerRadius="14"
                     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
-                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer4BorderBrush}}"
                     BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.2" />
+                </Border.Effect>
+            </Border>
+
+            <!-- JSON text. With an image it stays in column 0 (never hidden behind / under the
+                 image); without an image it spans all 3 columns. Transparent so the unified JSON
+                 panel above shows through as the shared background.
+                 ColumnSpan is bound DIRECTLY (not via a Style trigger) because ElementName
+                 bindings inside a Style trigger don't resolve in a DataTemplate namescope. -->
+            <Border Grid.Column="0"
+                    Grid.ColumnSpan="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={x:Static converters:HasImageToColumnSpanConverter.Instance}}"
+                    Margin="0"
+                    Background="Transparent">
                 <controls:AvalonEditor x:Name="DynamicArea"
                                DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
             </Border>
@@ -786,9 +804,8 @@
             <Border x:Name="OverlayImageCard" Grid.Column="2"
                     Margin="0,24,16,0"
                     CornerRadius="12"
-                    BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
-                    BorderThickness="1"
-                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                    BorderThickness="0"
+                    Background="Transparent"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
                     Panel.ZIndex="10"
