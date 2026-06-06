@@ -1511,6 +1511,8 @@ public partial class CUE4ParseViewModel : ViewModel
                     return false;
 
                 creator.ParseForInfo();
+                FModel.Creator.Layout.IconLayoutPreview.Set(
+                    FModel.Creator.Layout.LayoutRenderContext.FromCreator(creator, dummy.ExportType));
                 var bitmaps = creator.Draw();
                 foreach (var bitmap in bitmaps)
                 {

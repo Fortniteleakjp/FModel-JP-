@@ -12,6 +12,7 @@ using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Nanite;
+using FModel.Creator.Layout;
 using FModel.Framework;
 using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -351,6 +352,14 @@ namespace FModel.Settings
         {
             get => _cosmeticStyle;
             set => SetProperty(ref _cosmeticStyle, value);
+        }
+
+        private IconLayoutSettings _iconLayout = new();
+        [JsonProperty]
+        public IconLayoutSettings IconLayout
+        {
+            get => _iconLayout ??= new IconLayoutSettings();
+            set => SetProperty(ref _iconLayout, value);
         }
 
         private bool _cosmeticDisplayAsset;
