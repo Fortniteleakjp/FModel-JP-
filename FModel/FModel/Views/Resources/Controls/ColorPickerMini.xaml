@@ -1,0 +1,49 @@
+<UserControl x:Class="FModel.Views.Resources.Controls.ColorPickerMini"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" d:DesignWidth="240">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Border x:Name="Swatch" Width="30" Height="30" CornerRadius="6"
+                    BorderBrush="#80000000" BorderThickness="1" />
+            <TextBox x:Name="HexBox" Width="110" Margin="8,0,0,0" VerticalAlignment="Center"
+                     MaxLength="9" LostFocus="OnHexLostFocus" KeyDown="OnHexKeyDown" />
+        </StackPanel>
+
+        <Grid Margin="0,6,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="A" VerticalAlignment="Center" Width="14" Opacity="0.8" />
+            <Slider x:Name="SliderA" Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16"
+                    VerticalAlignment="Center" Margin="6,1" ValueChanged="OnSliderChanged" />
+            <TextBlock x:Name="ValA" Grid.Row="0" Grid.Column="2" Width="28" TextAlignment="Right" VerticalAlignment="Center" Opacity="0.8" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="R" VerticalAlignment="Center" Width="14" Opacity="0.8" />
+            <Slider x:Name="SliderR" Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16"
+                    VerticalAlignment="Center" Margin="6,1" ValueChanged="OnSliderChanged" />
+            <TextBlock x:Name="ValR" Grid.Row="1" Grid.Column="2" Width="28" TextAlignment="Right" VerticalAlignment="Center" Opacity="0.8" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="G" VerticalAlignment="Center" Width="14" Opacity="0.8" />
+            <Slider x:Name="SliderG" Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16"
+                    VerticalAlignment="Center" Margin="6,1" ValueChanged="OnSliderChanged" />
+            <TextBlock x:Name="ValG" Grid.Row="2" Grid.Column="2" Width="28" TextAlignment="Right" VerticalAlignment="Center" Opacity="0.8" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="B" VerticalAlignment="Center" Width="14" Opacity="0.8" />
+            <Slider x:Name="SliderB" Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16"
+                    VerticalAlignment="Center" Margin="6,1" ValueChanged="OnSliderChanged" />
+            <TextBlock x:Name="ValB" Grid.Row="3" Grid.Column="2" Width="28" TextAlignment="Right" VerticalAlignment="Center" Opacity="0.8" />
+        </Grid>
+    </StackPanel>
+</UserControl>

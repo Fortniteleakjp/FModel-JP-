@@ -116,6 +116,8 @@ public enum EIconStyle
     Flat,
     [Description("Cataba")]
     Cataba,
+    [Description("オリジナル")]
+    Original,
     // [Description("Community")]
     // CommunityMade
 }

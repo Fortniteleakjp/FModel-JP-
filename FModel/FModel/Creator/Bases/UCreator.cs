@@ -2,7 +2,9 @@ using System;
 using System.Windows;
 using CUE4Parse.UE4.Assets.Exports;
 using FModel.Creator.Bases.FN;
+using FModel.Creator.Layout;
 using FModel.Framework;
+using FModel.Settings;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 
@@ -24,6 +26,24 @@ public abstract class UCreator
 
     public abstract void ParseForInfo();
     public abstract SKBitmap[] Draw();
+
+    /// <summary>
+    /// このアイテムのカテゴリに対してカスタムレイアウトが有効なら、それで1枚描画して true を返す。
+    /// 各 Creator の Draw() の先頭で呼び、true ならそれを返すことで既定描画を置き換える。
+    /// </summary>
+    protected bool TryDrawCustomLayout(out SKBitmap result)
+    {
+        result = null;
+        // 画像タイプ（CosmeticStyle）が「オリジナル」のときだけカスタムレイアウトを使う。
+        if (Style != EIconStyle.Original) return false;
+
+        var settings = UserSettings.Default?.IconLayout;
+        if (settings == null || Object == null) return false;
+
+        var template = settings.Get(IconLayoutCategoryMap.From(Object.ExportType));
+        result = IconLayoutRenderer.Render(template, LayoutRenderContext.FromCreator(this, Object.ExportType));
+        return result != null;
+    }
 
     protected UCreator(UObject uObject, EIconStyle style)
     {

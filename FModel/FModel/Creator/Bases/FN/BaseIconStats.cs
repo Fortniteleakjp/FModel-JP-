@@ -182,6 +182,9 @@ public class BaseIconStats : BaseIcon
 
     public override SKBitmap[] Draw()
     {
+        if (TryDrawCustomLayout(out var custom))
+            return new[] { custom };
+
         var ret = new SKBitmap(Width, Height, SKColorType.Rgba8888, SKAlphaType.Opaque);
         using var c = new SKCanvas(ret);
 
