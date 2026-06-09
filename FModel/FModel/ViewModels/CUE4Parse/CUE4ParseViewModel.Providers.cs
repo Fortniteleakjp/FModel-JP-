@@ -144,6 +144,30 @@ public partial class CUE4ParseViewModel
                                         it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), p.Versions));
                                 });
 
+                                // UEFN（Fortnite Studio）も Fortnite [LIVE] に含める（4sval/FModel PR #663）
+                                try
+                                {
+                                    var dillyManifests = _apiEndpointView.DillyApi.GetManifests(cancellationToken);
+                                    var uefn = dillyManifests?.FirstOrDefault(x => x.AppName == "Fortnite_Studio");
+                                    if (uefn != null && !string.IsNullOrEmpty(uefn.DownloadUrl))
+                                    {
+                                        using var uefnClient = new HttpClient();
+                                        var uefnBytes = uefnClient.GetByteArrayAsync(uefn.DownloadUrl, cancellationToken).GetAwaiter().GetResult();
+                                        var uefnManifest = FBuildPatchAppManifest.Deserialize(uefnBytes, manifestOptions);
+                                        Parallel.ForEach(uefnManifest.Files.Where(x => _fnLiveRegex.IsMatch(x.FileName)), fileManifest =>
+                                        {
+                                            p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
+                                                it => new FRandomAccessStreamArchive(it, uefnManifest.FindFile(it)!.GetStream(), p.Versions));
+                                        });
+                                        FLogger.Append(ELog.Information, () =>
+                                            FLogger.Text("UEFN (Fortnite Studio) も Fortnite [LIVE] に読み込みました", Constants.WHITE, true));
+                                    }
+                                }
+                                catch (Exception uefnEx)
+                                {
+                                    Log.Warning(uefnEx, "UEFN (Fortnite Studio) の読み込みに失敗しました（Fortnite [LIVE] は通常通り利用できます）");
+                                }
+
                                 FLogger.Append(ELog.Information, () =>
                                     FLogger.Text($"Fortnite [LIVE] が {stopwatch.Elapsed:g} で正常にロードされました", Constants.WHITE, true));
                             }
