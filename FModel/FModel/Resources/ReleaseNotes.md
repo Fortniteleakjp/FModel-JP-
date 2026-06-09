@@ -5,11 +5,10 @@ FModelJP をご利用いただきありがとうございます！
 
 ## {version} 主な変更点
 
-- アイコンレイアウト編集の追加-オリジナル
-- C7S3で追加された精霊の画像生成に対応
-- 画像プレビュー表示時にJSONが画像の下に隠れる不具合を修正
-- アーカイブ一覧(pak/utoc)が表示されない不具合を修正
-- アーカイブ一覧と ALL/ALLNEW 読み込みを高速化
-- CUE4Parseの更新に伴う、UE5.9のサポート
+- Fortnite LIVE でUEFNの読み込みを追加
+- 設定で、読み込むかを設定可能
+
+不具合の修正
+- Fortnite LIVEの読み込みを出来るように修正
 
 すべての変更履歴については、[GitHub のリリース](https://github.com/Fortniteleakjp/FModel-JP-/releases) をご確認ください。

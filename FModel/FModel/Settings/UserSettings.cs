@@ -370,6 +370,15 @@ namespace FModel.Settings
             set => SetProperty(ref _cosmeticDisplayAsset, value);
         }
 
+        // Fortnite [LIVE] 読み込み時に UEFN(Fortnite Studio) も同時に読み込むか（PR #663）
+        private bool _loadUefnWithLive = true;
+        [JsonProperty]
+        public bool LoadUefnWithLive
+        {
+            get => _loadUefnWithLive;
+            set => SetProperty(ref _loadUefnWithLive, value);
+        }
+
         private int _imageMergerMargin = 5;
         [JsonProperty]
         public int ImageMergerMargin

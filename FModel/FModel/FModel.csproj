@@ -57,7 +57,6 @@
     <Compile Remove="Views\Resources\Converters\TextToRefreshConverter.cs" />
     <Page Remove="Views\Resources\Colors.xaml" />
     <Page Remove="Views\Resources\Icons.xaml" />
-    <Compile Remove="ViewModels\ApiEndpoints\DillyApiEndpoints.cs" />
     <Compile Remove="Creator\Bases\FN\BaseAssembledMesh.cs" />
   </ItemGroup>
 

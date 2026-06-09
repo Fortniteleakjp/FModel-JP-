@@ -25,6 +25,14 @@ public class Backup
     [J] public long FileSize { get; private set; }
 }
 
+// DillyApi(/v1/manifests) の応答。UEFN(Fortnite_Studio) のマニフェスト取得に使用（PR #663）
+[DebuggerDisplay("{" + nameof(AppName) + "}")]
+public class ManifestInfoDilly
+{
+    [J] public string AppName { get; private set; }
+    [J] public string DownloadUrl { get; private set; }
+}
+
 public class Donator
 {
     [J] public string Username { get; private set; }

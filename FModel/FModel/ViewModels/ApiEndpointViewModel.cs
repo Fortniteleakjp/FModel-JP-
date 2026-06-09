@@ -22,6 +22,7 @@ public class ApiEndpointViewModel
     public FModelApiEndpoint FModelApi { get; }
     public GitHubApiEndpoint GitHubApi { get; }
     public DynamicApiEndpoint DynamicApi { get; }
+    public DillyApiEndpoint DillyApi { get; }
 
     public ApiEndpointViewModel()
     {
@@ -32,6 +33,7 @@ public class ApiEndpointViewModel
         FModelApi = new FModelApiEndpoint(_client);
         GitHubApi = new GitHubApiEndpoint(_client);
         DynamicApi = new DynamicApiEndpoint(_client);
+        DillyApi = new DillyApiEndpoint(_client);
     }
 
     public async Task DownloadFileAsync(string fileLink, string installationPath)
