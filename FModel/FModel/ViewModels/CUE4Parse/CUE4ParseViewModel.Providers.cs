@@ -54,7 +54,7 @@ public partial class CUE4ParseViewModel
                             {
                                 ChunkCacheDirectory = cacheDir,
                                 ManifestCacheDirectory = cacheDir,
-                                ChunkBaseUrl = "http://download.epicgames.com/Builds/Fortnite/CloudDir/",
+                                ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
                                 Decompressor = ManifestZlibngDotNetDecompressor.Decompress,
                                 DecompressorState = ZlibHelper.Instance,
                                 CacheChunksAsIs = false
@@ -121,7 +121,7 @@ public partial class CUE4ParseViewModel
                                 loadingVm.DownloadSize = "0 B";
                                 (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
                                     cancellationToken: cancellationToken,
-                                    elementManifestPredicate: static x => x.Uri.Host == "download.epicgames.com"
+                                    elementManifestPredicate: static x => x.Uri.Host is "egdownload.fastly-edge.com" or "epicgames-download1.akamaized.net" or "download.epicgames.com"
                                 ).GetAwaiter().GetResult();
 
                                 loadingVm.StatusText = "マニフェストを解析中...";
