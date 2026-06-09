@@ -144,7 +144,8 @@ public partial class CUE4ParseViewModel
                                         it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), p.Versions));
                                 });
 
-                                // UEFN（Fortnite Studio）も Fortnite [LIVE] に含める（4sval/FModel PR #663）
+                                // UEFN（Fortnite Studio）も Fortnite [LIVE] に含める（設定で切替可・4sval/FModel PR #663）
+                                if (UserSettings.Default.LoadUefnWithLive)
                                 try
                                 {
                                     var dillyManifests = _apiEndpointView.DillyApi.GetManifests(cancellationToken);

@@ -564,6 +564,13 @@
                                           IsChecked="{Binding ReadShaderMaps, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"/>
                             </StackPanel>
 
+                            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                                <TextBlock Text="Fortnite [LIVE] で UEFN も読み込む" VerticalAlignment="Center" Margin="0 0 10 0"
+                                           ToolTip="ON にすると、Fortnite [LIVE] 読み込み時に UEFN(Fortnite Studio) のアセットも一緒に読み込みます。OFF で通常の Fortnite のみ。" />
+                                <CheckBox Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                                          IsChecked="{Binding LoadUefnWithLive, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}"/>
+                            </StackPanel>
+
                             <TextBlock Text="{DynamicResource Settings_WwisePrefetch}" VerticalAlignment="Center" Margin="0 0 0 5" />
                             <Slider TickPlacement="None" Minimum="0" Maximum="2048" Ticks="0,8,32,128,256,512,1024,2048"
                             AutoToolTipPlacement="BottomRight" IsMoveToPointEnabled="True" IsSnapToTickEnabled="True" Margin="0 5 0 5" Background="#4a4a5e" BorderBrush="#1f2029"
