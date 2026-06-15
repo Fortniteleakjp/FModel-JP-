@@ -76,6 +76,15 @@ namespace CUE4Parse.Compression
                     compressionStream.Dispose();
                     return;
                 }
+                case CompressionMethod.Brotli:
+                {
+                    // 上流同期: upstream版 UsmapParser が Brotli を Compression.Decompress 経由にしたため、
+                    // ここで標準 BrotliStream(System.IO.Compression, 外部パッケージ不要)で解凍する。
+                    using var brotli = new BrotliStream(srcStream, System.IO.Compression.CompressionMode.Decompress);
+                    using var temp = new MemoryStream(uncompressed, uncompressedOffset, uncompressedSize, true);
+                    brotli.CopyTo(temp);
+                    return;
+                }
                 default:
                     if (reader != null) throw new UnknownCompressionMethodException(reader, $"Compression method \"{method}\" is unknown");
                     throw new UnknownCompressionMethodException($"Compression method \"{method}\" is unknown");

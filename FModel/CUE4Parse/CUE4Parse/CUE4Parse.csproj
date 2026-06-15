@@ -2,6 +2,7 @@
   <PropertyGroup>
     <NeutralLanguage>en</NeutralLanguage>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings> <!-- 上流同期: upstream(Directory.Build.props)が有効化済み。コアファイルが共通usingを省略するため必須 -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFramework>net10.0</TargetFramework>
     <IsPublishable>false</IsPublishable>

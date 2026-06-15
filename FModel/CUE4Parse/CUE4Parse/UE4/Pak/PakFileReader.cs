@@ -66,7 +66,8 @@ namespace CUE4Parse.UE4.Pak
                 EGame.GAME_InfinityNikki or EGame.GAME_MeetYourMaker or EGame.GAME_DeadByDaylight or EGame.GAME_WutheringWaves
                     or EGame.GAME_Snowbreak or EGame.GAME_TorchlightInfinite or EGame.GAME_TowerOfFantasy
                     or EGame.GAME_TheDivisionResurgence or EGame.GAME_QQ or EGame.GAME_DreamStar
-                    or EGame.GAME_EtheriaRestart or EGame.GAME_DeadByDaylight_Old or EGame.GAME_WorldofJadeDynasty => true,
+                    or EGame.GAME_EtheriaRestart or EGame.GAME_DeadByDaylight_Old or EGame.GAME_WorldofJadeDynasty
+                    or EGame.GAME_EmbersofTheUncrowned => true,
                 _ => false
             };
         }
@@ -107,6 +108,8 @@ namespace CUE4Parse.UE4.Pak
                         return RennsportCompressedExtract(reader, pakEntry);
                     case EGame.GAME_DragonQuestXI:
                         return DQXIExtract(reader, pakEntry);
+                    case EGame.GAME_CenturyAgeofAshes when pakEntry.CompressionMethod is Compression.CompressionMethod.PWC:
+                        return CenturyExtract(reader, pakEntry);
                     case EGame.GAME_ArenaBreakoutInfinite when header is null || ABIDecryption.encryptedFiles.Contains(pakEntry.Extension, StringComparer.OrdinalIgnoreCase):
                         return ABIExtract(reader, pakEntry);
                 }
@@ -229,7 +232,20 @@ namespace CUE4Parse.UE4.Pak
             watch.Start();
 
             if (Info.Version >= PakFile_Version_PathHashIndex)
-                ReadIndexUpdated(pathComparer);
+            {
+                switch (Game)
+                {
+                    case EGame.GAME_CrystalOfAtlan:
+                        CoAReadIndexUpdated(pathComparer);
+                        break;
+                    case EGame.GAME_DragonSwordAwakening:
+                        DragonSwordReadIndexUpdated(pathComparer);
+                        break;
+                    default:
+                        ReadIndexUpdated(pathComparer);
+                        break;
+                }
+            }
             else if (Info.IndexIsFrozen)
                 ReadFrozenIndex(pathComparer);
             else
@@ -301,12 +317,6 @@ namespace CUE4Parse.UE4.Pak
 
         private void ReadIndexUpdated(StringComparer pathComparer)
         {
-            if (Ar.Game == EGame.GAME_CrystalOfAtlan)
-            {
-                CoAReadIndexUpdated(pathComparer);
-                return;
-            }
-
             // Prepare primary index and decrypt if necessary
             Ar.Position = Info.IndexOffset;
             using FArchive primaryIndex = new FByteArchive($"{Name} - Primary Index", ReadAndDecryptIndex((int) Info.IndexSize));

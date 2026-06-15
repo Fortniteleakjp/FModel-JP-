@@ -21,6 +21,7 @@ using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.MappingsProvider;
+using CUE4Parse.MappingsProvider.Usmap; // 上流同期: FileUsmapTypeMappingsProvider が Usmap/ サブ名前空間へ移動
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
