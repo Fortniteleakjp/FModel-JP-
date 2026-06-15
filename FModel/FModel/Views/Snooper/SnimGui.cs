@@ -70,6 +70,7 @@ public class SnimGui
     private bool _tiOpen;
     private bool _transformOpen;
     private bool _viewportFocus;
+    private bool _viewportPanning; // JP操作性: 中ボタンドラッグでのパン中フラグ
     private OPERATION _guizmoOperation;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
@@ -270,8 +271,12 @@ public class SnimGui
 
 2. Viewport
     - WASD to move around
+    - E / Q to move up / down
     - Shift to move faster
-    - XC to zoom
+    - Mouse Wheel to zoom (dolly in / out)
+    - Middle Mouse Button + Drag to pan
+    - F to focus (frame) the selected model
+    - XC to change the field of view
     - Z to animate the selected model
     - Left Mouse Button pressed to look around
     - Right Click to select a model in the world
@@ -800,6 +805,16 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         ImGui.SetWindowFocus("Outliner");
                         ImGui.SetWindowFocus("Details");
                     }
+                    // JP操作性: マウスホイールでズーム/ドリー(ビューポート上にカーソルがある時のみ)
+                    var wheel = ImGui.GetIO().MouseWheel;
+                    if (wheel != 0f)
+                        s.Renderer.CameraOp.Dolly(wheel);
+                    // JP操作性: 中ボタンドラッグでパン開始
+                    if (ImGui.IsMouseDown(ImGuiMouseButton.Middle) && !_viewportPanning)
+                    {
+                        _viewportPanning = true;
+                        s.CursorState = CursorState.Grabbed;
+                    }
                 }
 
                 if (_viewportFocus && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
@@ -807,10 +822,22 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     s.Renderer.CameraOp.Modify(ImGui.GetIO().MouseDelta);
                 }
 
+                // JP操作性: 中ボタンドラッグでパン(開始後はビューポート外へ出ても継続)
+                if (_viewportPanning && ImGui.IsMouseDragging(ImGuiMouseButton.Middle))
+                {
+                    s.Renderer.CameraOp.Pan(ImGui.GetIO().MouseDelta);
+                }
+
                 // if left button up and mouse was in viewport
                 if (_viewportFocus && ImGui.IsMouseReleased(ImGuiMouseButton.Left))
                 {
                     _viewportFocus = false;
+                    s.CursorState = CursorState.Normal;
+                }
+                // JP操作性: 中ボタンを離したらパン終了
+                if (_viewportPanning && ImGui.IsMouseReleased(ImGuiMouseButton.Middle))
+                {
+                    _viewportPanning = false;
                     s.CursorState = CursorState.Normal;
                 }
             }
