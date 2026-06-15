@@ -5,3 +5,21 @@
 ImageMergerApp/bin/
 ImageMergerApp/obj/
 ImageMergerApp.7z
+
+# --- Build output (applies repo-wide: replay-analysis/, AES-Grabber/, root, etc.) ---
+# NOTE: already-tracked files are not affected by these rules. The vendored native
+# binary FModel/CUE4Parse/CUE4Parse-Natives/bin/Release/CUE4Parse-Natives.dll and the
+# CUE4Parse-Conversion/Resources/*.dll stay tracked intentionally.
+[Bb]in/
+[Oo]bj/
+*.dll.config
+*.user
+*.suo
+
+# --- IDE / editor state ---
+.vs/
+.idea/
+*.userprefs
+
+# --- CI secrets materialized into the workspace (run.yml: secrets.py) ---
+secrets.py

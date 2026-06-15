@@ -434,7 +434,9 @@ namespace FModel.Settings
         }
 
         private AuthResponse _lastAuthResponse = new() { AccessToken = "", ExpiresAt = DateTime.Now };
-        [JsonProperty]
+        // NOTE: アクセストークンを設定ファイル(AppSettingsJP.json)に平文保存しない。
+        // 起動時に InitializeAuthStatus() が deviceAuth.json(DPAPI暗号化)から再構築するため永続化は不要。
+        [JsonIgnore]
         public AuthResponse LastAuthResponse
         {
             get => _lastAuthResponse;

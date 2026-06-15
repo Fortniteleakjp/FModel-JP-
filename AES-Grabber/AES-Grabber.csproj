@@ -26,4 +26,8 @@
 		<Content Include="ueico.ico" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="System.Security.Cryptography.ProtectedData" Version="9.0.0" />
+	</ItemGroup>
+
 </Project>

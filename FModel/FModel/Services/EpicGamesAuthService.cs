@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -29,9 +30,15 @@ public class EpicGamesAuthService
         Directory.CreateDirectory(Path.GetDirectoryName(DeviceAuthPath)!);
     }
 
+    // DPAPI のエントロピー（ユーザースコープ暗号化の補助キー）。
+    private static readonly byte[] _dpapiEntropy = Encoding.UTF8.GetBytes("FModel.DeviceAuth.v1");
+
     private static async Task SaveAuthDataAsync(AuthData authData)
     {
-        await File.WriteAllTextAsync(DeviceAuthPath, JsonSerializer.Serialize(authData, new JsonSerializerOptions { WriteIndented = true }));
+        // DeviceId/Secret は長期再認証に使える機密情報のため、Windows DPAPI(CurrentUser)で暗号化して保存する。
+        var json = JsonSerializer.Serialize(authData, new JsonSerializerOptions { WriteIndented = true });
+        var protectedBytes = ProtectedData.Protect(Encoding.UTF8.GetBytes(json), _dpapiEntropy, DataProtectionScope.CurrentUser);
+        await File.WriteAllBytesAsync(DeviceAuthPath, protectedBytes);
     }
 
     private async Task<T> SendJsonAsync<T>(HttpRequestMessage request, bool throwOnError = true)
@@ -319,8 +326,30 @@ public class EpicGamesAuthService
 
         try
         {
-            var json = await File.ReadAllTextAsync(DeviceAuthPath);
+            var raw = await File.ReadAllBytesAsync(DeviceAuthPath);
+
+            string json;
+            var wasPlaintext = false;
+            try
+            {
+                // 通常は DPAPI で暗号化されている。
+                var unprotected = ProtectedData.Unprotect(raw, _dpapiEntropy, DataProtectionScope.CurrentUser);
+                json = Encoding.UTF8.GetString(unprotected);
+            }
+            catch (CryptographicException)
+            {
+                // 旧バージョンが平文JSONで保存したファイル。読み込んだ後に暗号化形式へ移行する。
+                json = Encoding.UTF8.GetString(raw);
+                wasPlaintext = true;
+            }
+
             var authData = JsonSerializer.Deserialize<AuthData>(json);
+            if (authData != null && wasPlaintext)
+            {
+                // 平文だった資格情報を暗号化して上書き保存（移行）。
+                await SaveAuthDataAsync(authData);
+            }
+
             return authData;
         }
         catch (Exception ex)
