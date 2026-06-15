@@ -73,9 +73,9 @@ public partial class IconLayoutEditor
         var t = _vm.CurrentTemplate;
         if (t == null) return;
 
-        AddHandle(t.Preview, "画像", Color.FromRgb(0x5E, 0xA3, 0xEC), isImage: true);
-        AddHandle(t.Name, "名前", Color.FromRgb(0x7C, 0xD9, 0x92), isImage: false);
-        AddHandle(t.Description, "説明", Color.FromRgb(0xE0, 0xB1, 0x5E), isImage: false);
+        AddHandle(t.Preview, Application.Current.TryFindResource("IconLayout_Handle_Image") as string ?? "画像", Color.FromRgb(0x5E, 0xA3, 0xEC), isImage: true);
+        AddHandle(t.Name, Application.Current.TryFindResource("IconLayout_Handle_Name") as string ?? "名前", Color.FromRgb(0x7C, 0xD9, 0x92), isImage: false);
+        AddHandle(t.Description, Application.Current.TryFindResource("IconLayout_Handle_Description") as string ?? "説明", Color.FromRgb(0xE0, 0xB1, 0x5E), isImage: false);
         ApplySelectionVisual();
     }
 
@@ -280,8 +280,8 @@ public partial class IconLayoutEditor
     {
         var dlg = new OpenFileDialog
         {
-            Title = "背景画像を選択",
-            Filter = "画像ファイル|*.png;*.jpg;*.jpeg;*.bmp;*.webp|すべてのファイル|*.*"
+            Title = Application.Current.TryFindResource("IconLayout_Dialog_BrowseBackground_Title") as string ?? "背景画像を選択",
+            Filter = Application.Current.TryFindResource("IconLayout_Dialog_BrowseBackground_Filter") as string ?? "画像ファイル|*.png;*.jpg;*.jpeg;*.bmp;*.webp|すべてのファイル|*.*"
         };
         if (dlg.ShowDialog() != true || _vm.CurrentTemplate == null) return;
 
@@ -293,7 +293,8 @@ public partial class IconLayoutEditor
     private void OnReset(object sender, RoutedEventArgs e)
     {
         var result = AdonisUI.Controls.MessageBox.Show(
-            "このカテゴリのレイアウトを既定値に戻します。よろしいですか？", "確認",
+            Application.Current.TryFindResource("IconLayout_Msg_ResetConfirm") as string ?? "このカテゴリのレイアウトを既定値に戻します。よろしいですか？",
+            Application.Current.TryFindResource("IconLayout_Caption_Confirm") as string ?? "確認",
             AdonisUI.Controls.MessageBoxButton.YesNo, AdonisUI.Controls.MessageBoxImage.Question);
         if (result == AdonisUI.Controls.MessageBoxResult.Yes)
             _vm.ResetCurrent();
@@ -303,8 +304,9 @@ public partial class IconLayoutEditor
     {
         _vm.Save();
         AdonisUI.Controls.MessageBox.Show(
-            "レイアウトを保存しました。\n次回アイコンを生成（アセットを開く/再読み込み）したときに反映されます。",
-            "保存", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
+            Application.Current.TryFindResource("IconLayout_Msg_Saved") as string ?? "レイアウトを保存しました。\n次回アイコンを生成（アセットを開く/再読み込み）したときに反映されます。",
+            Application.Current.TryFindResource("IconLayout_Caption_Save") as string ?? "保存",
+            AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
     }
 
     private void OnClose(object sender, RoutedEventArgs e) => Close();
@@ -333,8 +335,8 @@ public partial class IconLayoutEditor
     {
         var dlg = new SaveFileDialog
         {
-            Title = "アイコンレイアウト設定の書き出し",
-            Filter = "JSON ファイル|*.json|すべてのファイル|*.*",
+            Title = Application.Current.TryFindResource("IconLayout_Dialog_Export_Title") as string ?? "アイコンレイアウト設定の書き出し",
+            Filter = Application.Current.TryFindResource("IconLayout_Dialog_Json_Filter") as string ?? "JSON ファイル|*.json|すべてのファイル|*.*",
             FileName = "FModelJP_IconLayout.json"
         };
         if (dlg.ShowDialog() != true) return;
@@ -342,13 +344,17 @@ public partial class IconLayoutEditor
         try
         {
             File.WriteAllText(dlg.FileName, _vm.ExportJson());
-            AdonisUI.Controls.MessageBox.Show($"レイアウト設定を書き出しました。\n{dlg.FileName}",
-                "書き出し", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
+            AdonisUI.Controls.MessageBox.Show(
+                string.Format(Application.Current.TryFindResource("IconLayout_Msg_Exported") as string ?? "レイアウト設定を書き出しました。\n{0}", dlg.FileName),
+                Application.Current.TryFindResource("IconLayout_Caption_Export") as string ?? "書き出し",
+                AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
-            AdonisUI.Controls.MessageBox.Show($"書き出しに失敗しました: {ex.Message}",
-                "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+            AdonisUI.Controls.MessageBox.Show(
+                string.Format(Application.Current.TryFindResource("IconLayout_Msg_ExportFailed") as string ?? "書き出しに失敗しました: {0}", ex.Message),
+                Application.Current.TryFindResource("IconLayout_Caption_Error") as string ?? "エラー",
+                AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
         }
     }
 
@@ -356,24 +362,30 @@ public partial class IconLayoutEditor
     {
         var dlg = new OpenFileDialog
         {
-            Title = "アイコンレイアウト設定の読み込み",
-            Filter = "JSON ファイル|*.json|すべてのファイル|*.*"
+            Title = Application.Current.TryFindResource("IconLayout_Dialog_Import_Title") as string ?? "アイコンレイアウト設定の読み込み",
+            Filter = Application.Current.TryFindResource("IconLayout_Dialog_Json_Filter") as string ?? "JSON ファイル|*.json|すべてのファイル|*.*"
         };
         if (dlg.ShowDialog() != true) return;
 
         try
         {
             if (_vm.ImportJson(File.ReadAllText(dlg.FileName)))
-                AdonisUI.Controls.MessageBox.Show("レイアウト設定を読み込みました。\n「保存」を押すと確定します。",
-                    "読み込み", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
+                AdonisUI.Controls.MessageBox.Show(
+                    Application.Current.TryFindResource("IconLayout_Msg_Imported") as string ?? "レイアウト設定を読み込みました。\n「保存」を押すと確定します。",
+                    Application.Current.TryFindResource("IconLayout_Caption_Import") as string ?? "読み込み",
+                    AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
             else
-                AdonisUI.Controls.MessageBox.Show("読み込みに失敗しました（形式が不正です）。",
-                    "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+                AdonisUI.Controls.MessageBox.Show(
+                    Application.Current.TryFindResource("IconLayout_Msg_ImportInvalid") as string ?? "読み込みに失敗しました（形式が不正です）。",
+                    Application.Current.TryFindResource("IconLayout_Caption_Error") as string ?? "エラー",
+                    AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
         }
         catch (Exception ex)
         {
-            AdonisUI.Controls.MessageBox.Show($"読み込みに失敗しました: {ex.Message}",
-                "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+            AdonisUI.Controls.MessageBox.Show(
+                string.Format(Application.Current.TryFindResource("IconLayout_Msg_ImportFailed") as string ?? "読み込みに失敗しました: {0}", ex.Message),
+                Application.Current.TryFindResource("IconLayout_Caption_Error") as string ?? "エラー",
+                AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
         }
     }
 

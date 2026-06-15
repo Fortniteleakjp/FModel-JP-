@@ -189,20 +189,31 @@ public partial class App
 
     private void SetLanguageDictionary()
     {
-        var dict = new ResourceDictionary();
         try
         {
-            switch (UserSettings.Default.FModelLanguage)
+            // 既に読み込まれている言語辞書を除去（言語切替で重複追加しないため）。
+            var existing = Resources.MergedDictionaries
+                .Where(d => d.Source != null &&
+                            (d.Source.OriginalString.Contains("Settings/English.xaml", StringComparison.OrdinalIgnoreCase) ||
+                             d.Source.OriginalString.Contains("Settings/Japanese.xaml", StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+            foreach (var d in existing)
+                Resources.MergedDictionaries.Remove(d);
+
+            // 英語辞書を常に基盤として読み込み、選択言語をその上に重ねる。
+            // これにより選択言語の辞書にキーが欠落していても英語へフォールバックし、空白表示を防ぐ。
+            Resources.MergedDictionaries.Add(new ResourceDictionary
             {
-                case "Japanese":
-                    dict.Source = new Uri("pack://application:,,,/FModel;component/Settings/Japanese.xaml");
-                    break;
-                case "English":
-                default:
-                    dict.Source = new Uri("pack://application:,,,/FModel;component/Settings/English.xaml");
-                    break;
+                Source = new Uri("pack://application:,,,/FModel;component/Settings/English.xaml")
+            });
+
+            if (UserSettings.Default.FModelLanguage == "Japanese")
+            {
+                Resources.MergedDictionaries.Add(new ResourceDictionary
+                {
+                    Source = new Uri("pack://application:,,,/FModel;component/Settings/Japanese.xaml")
+                });
             }
-            Resources.MergedDictionaries.Add(dict);
         }
         catch (Exception ex)
         {
