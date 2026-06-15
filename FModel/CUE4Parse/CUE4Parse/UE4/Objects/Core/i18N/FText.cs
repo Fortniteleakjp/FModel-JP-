@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+using CUE4Parse.GameTypes.EOTU.Encryption;
 using CUE4Parse.UE4.Assets.Exports.Internationalization;
 using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Exceptions;
@@ -140,7 +139,8 @@ public class FText : IUStruct
             ETextHistoryType.TextGenerator => new FTextHistory.TextGenerator(Ar),
             _ => new FTextHistory.None(Ar)
         };
-        if (Ar.Game == EGame.GAME_Splitgate2) Ar.Position += 4;
+
+        if (Ar.Game is EGame.GAME_Splitgate2) Ar.Position += 4;
     }
 
     public FText(string sourceString, string localizedString = "") : this("", "", sourceString, localizedString) { }
@@ -198,10 +198,19 @@ public abstract class FTextHistory : IUStruct
             Key = Ar.ReadFString();
             SourceString = Ar.ReadFString();
             var strNamespace = Namespace;
-            if (Ar.Game is EGame.GAME_HonorofKingsWorld)
+
+            switch (Ar.Game)
             {
-                strNamespace = "";
+                case EGame.GAME_HonorofKingsWorld:
+                    strNamespace = "";
+                    break;
+                case EGame.GAME_EmbersofTheUncrowned:
+                    SourceString = EOTUStringEncryption.DecryptString(SourceString);
+                    break;
+                default:
+                    break;
             }
+
             LocalizedString = Ar.Owner?.Provider?.Internationalization.SafeGet(strNamespace, Key, SourceString) ?? string.Empty;
         }
 
@@ -377,6 +386,8 @@ public abstract class FTextHistory : IUStruct
                 SourceString = t;
                 LocalizedString = Ar.Owner.Provider.Internationalization.SafeGet(table.StringTable.TableNamespace, Key, t);
             }
+            
+            if (Ar.Game is EGame.GAME_DeltaForce) Ar.Position += 4;
         }
     }
 

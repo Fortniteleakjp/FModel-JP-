@@ -175,6 +175,47 @@ public class Camera
         Zoom = Math.Clamp(Zoom - zoomAmount, 1.0f, 89f);
     }
 
+    /// JP操作性: マウスホイールでドリー(前後移動)。FlyCam=視線方向にカメラごと移動、Arcball=注視点までの距離を増減。
+    public void Dolly(float scrollDelta)
+    {
+        if (Math.Abs(scrollDelta) < _zero) return;
+        switch (Mode)
+        {
+            case WorldMode.FlyCam:
+            {
+                var forward = Vector3.Normalize(DirectionArc);
+                var d = forward * Speed * scrollDelta * 0.5f;
+                Position += d;
+                Direction += d;
+                break;
+            }
+            case WorldMode.Arcball:
+            {
+                var toCam = PositionArc; // Direction -> Position
+                var dist = toCam.Length();
+                if (dist < _zero) break;
+                // 距離に比例した倍率ズーム(近いほど細かく寄れる)。注視点を貫通しないよう下限クランプ。
+                var newDist = MathF.Max(dist * (1f - scrollDelta * 0.1f), Near * 2f);
+                Position = Direction + Vector3.Normalize(toCam) * newDist;
+                break;
+            }
+        }
+    }
+
+    /// JP操作性: 中ボタンドラッグで画面平行移動(パン)。カメラ位置と注視点を右/上ベクトルに沿って平行移動する。
+    public void Pan(Vector2 mouseDelta)
+    {
+        if (mouseDelta == Vector2.Zero) return;
+        var forward = Vector3.Normalize(DirectionArc);
+        var right = Vector3.Normalize(Vector3.Cross(forward, Up));
+        var camUp = Vector3.Normalize(Vector3.Cross(right, forward));
+        // 注視点までの距離に応じて感度を調整(遠景ほど大きく動く)ことで、どのスケールでも自然に掴んで動かせる。
+        var panSensitivity = MathF.Max(PositionArc.Length(), 1f) * 0.0015f;
+        var d = (-right * mouseDelta.X + camUp * mouseDelta.Y) * panSensitivity;
+        Position += d;
+        Direction += d;
+    }
+
     public Matrix4x4 GetViewMatrix() => Matrix4x4.CreateLookAt(Position, Direction, Up);
     public Matrix4x4 GetProjectionMatrix()
         => Matrix4x4.CreatePerspectiveFieldOfView(Helper.DegreesToRadians(Zoom), AspectRatio, Near, Far);

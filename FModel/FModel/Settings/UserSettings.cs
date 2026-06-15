@@ -330,6 +330,24 @@ namespace FModel.Settings
             set => SetProperty(ref _bruteForceAesMode, value);
         }
 
+        // エクスポート方式（旧/新パイプライン）。CUE4Parse PR #358 の新パイプラインを段階導入するための切替。
+        private EExportPipeline _exportPipeline = EExportPipeline.Legacy;
+        [JsonProperty]
+        public EExportPipeline ExportPipeline
+        {
+            get => _exportPipeline;
+            set => SetProperty(ref _exportPipeline, value);
+        }
+
+        // このバージョンで初回起動時にエクスポート方式の選択ダイアログを出したか。
+        private bool _hasChosenExportPipeline;
+        [JsonProperty]
+        public bool HasChosenExportPipeline
+        {
+            get => _hasChosenExportPipeline;
+            set => SetProperty(ref _hasChosenExportPipeline, value);
+        }
+
         private EDiscordRpc _discordRpc = EDiscordRpc.Always;
         [JsonProperty]
         public EDiscordRpc DiscordRpc

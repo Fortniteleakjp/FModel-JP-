@@ -178,6 +178,13 @@ public partial class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedBruteForceAesMode, value);
     }
 
+    private EExportPipeline _selectedExportPipeline;
+    public EExportPipeline SelectedExportPipeline
+    {
+        get => _selectedExportPipeline;
+        set => SetProperty(ref _selectedExportPipeline, value);
+    }
+
     private EDiscordRpc _selectedDiscordRpc;
     public EDiscordRpc SelectedDiscordRpc
     {
@@ -276,6 +283,7 @@ public partial class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
     public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
     public ReadOnlyObservableCollection<EBruteForceAesMode> BruteForceAesModes { get; private set; }
+    public ReadOnlyObservableCollection<EExportPipeline> ExportPipelines { get; private set; }
     public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
     public ReadOnlyObservableCollection<ECompressedAudio> CompressedAudios { get; private set; }
     public ReadOnlyObservableCollection<EIconStyle> CosmeticStyles { get; private set; }
@@ -429,6 +437,7 @@ public partial class SettingsViewModel : ViewModel
         CriwareDecryptionKey = _criwareDecryptionKey;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedBruteForceAesMode = UserSettings.Default.BruteForceAesMode;
+        SelectedExportPipeline = UserSettings.Default.ExportPipeline;
         SelectedRestoreTabsOnStartup = UserSettings.Default.RestoreTabsOnStartup;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
         RootModuleIdInput = UserSettings.Default.RootModuleIdInput;
@@ -439,6 +448,7 @@ public partial class SettingsViewModel : ViewModel
         AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
         AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
         BruteForceAesModes = new ReadOnlyObservableCollection<EBruteForceAesMode>(new ObservableCollection<EBruteForceAesMode>(EnumerateBruteForceAesModes()));
+        ExportPipelines = new ReadOnlyObservableCollection<EExportPipeline>(new ObservableCollection<EExportPipeline>(EnumerateExportPipelines()));
         DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
         CompressedAudios = new ReadOnlyObservableCollection<ECompressedAudio>(new ObservableCollection<ECompressedAudio>(EnumerateCompressedAudios()));
         CosmeticStyles = new ReadOnlyObservableCollection<EIconStyle>(new ObservableCollection<EIconStyle>(EnumerateCosmeticStyles()));
@@ -526,6 +536,7 @@ public partial class SettingsViewModel : ViewModel
         UserSettings.Default.TextureExportFormat = SelectedTextureExportFormat;
         UserSettings.Default.AesReload = SelectedAesReload;
         UserSettings.Default.BruteForceAesMode = SelectedBruteForceAesMode;
+        UserSettings.Default.ExportPipeline = SelectedExportPipeline;
         UserSettings.Default.RestoreTabsOnStartup = SelectedRestoreTabsOnStartup;
         UserSettings.Default.DiscordRpc = SelectedDiscordRpc;
         UserSettings.Default.RootModuleIdInput = RootModuleIdInput?.Trim();
@@ -544,6 +555,7 @@ public partial class SettingsViewModel : ViewModel
     private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
     private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
     private IEnumerable<EBruteForceAesMode> EnumerateBruteForceAesModes() => Enum.GetValues<EBruteForceAesMode>();
+    private IEnumerable<EExportPipeline> EnumerateExportPipelines() => Enum.GetValues<EExportPipeline>();
     private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
     private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues<ECompressedAudio>();
     private IEnumerable<EIconStyle> EnumerateCosmeticStyles() => Enum.GetValues<EIconStyle>();

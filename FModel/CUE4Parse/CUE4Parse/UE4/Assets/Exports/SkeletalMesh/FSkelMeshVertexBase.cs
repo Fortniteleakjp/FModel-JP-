@@ -1,4 +1,5 @@
 using CUE4Parse.UE4.Objects.Core.Math;
+using CUE4Parse.UE4.Objects.Meshes;
 using CUE4Parse.UE4.Objects.RenderCore;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Versions;
@@ -12,6 +13,10 @@ public class FSkelMeshVertexBase
     public FVector Pos;
     public FPackedNormal[] Normal;
     public FSkinWeightInfo? Infs;
+
+    // Back-ported from CUE4Parse PR #358 (DTO layer): expose vertex UVs polymorphically for the new
+    // export pipeline. Legacy subclasses keep their existing UV field and override this accessor.
+    public virtual FMeshUVFloat[] UVs => [];
 
     public FSkelMeshVertexBase()
     {

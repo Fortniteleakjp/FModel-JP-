@@ -1,0 +1,73 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.ExportPipelineDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        Title="{DynamicResource ExportPipeline_DialogTitle}"
+        Height="600" Width="900"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="False"
+        ResizeMode="CanResize"
+        Icon="/Resources/FModel.ico">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="{DynamicResource ExportPipeline_DialogTitle}"
+                   FontSize="20" FontWeight="Bold" Margin="0,0,0,6"/>
+        <TextBlock Grid.Row="1" Text="{DynamicResource ExportPipeline_Intro}"
+                   TextWrapping="Wrap" Foreground="#B0B0B0" Margin="0,0,0,16"/>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Legacy pipeline card -->
+            <Border Grid.Column="0" BorderBrush="#3D8B40" BorderThickness="1" CornerRadius="6" Background="#1F2A1F" Padding="16">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{DynamicResource ExportPipeline_Legacy_Header}"
+                               FontSize="15" FontWeight="Bold" Foreground="#8BD18B" Margin="0,0,0,10"/>
+                    <Button DockPanel.Dock="Bottom" Content="{DynamicResource ExportPipeline_Button_UseLegacy}"
+                            Click="OnUseLegacy" Height="36" Margin="0,12,0,0" IsDefault="True"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource ExportPipeline_ProsLabel}" FontWeight="SemiBold" Foreground="#8BD18B" Margin="0,0,0,4"/>
+                            <TextBlock Text="{DynamicResource ExportPipeline_Legacy_Pros}" TextWrapping="Wrap" Margin="0,0,0,12" LineHeight="20"/>
+                            <TextBlock Text="{DynamicResource ExportPipeline_ConsLabel}" FontWeight="SemiBold" Foreground="#E0A060" Margin="0,0,0,4"/>
+                            <TextBlock Text="{DynamicResource ExportPipeline_Legacy_Cons}" TextWrapping="Wrap" LineHeight="20"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- New pipeline card -->
+            <Border Grid.Column="2" BorderBrush="#3F6FB0" BorderThickness="1" CornerRadius="6" Background="#1E2530" Padding="16">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{DynamicResource ExportPipeline_New_Header}"
+                               FontSize="15" FontWeight="Bold" Foreground="#8FB8E8" Margin="0,0,0,10"/>
+                    <Button DockPanel.Dock="Bottom" Content="{DynamicResource ExportPipeline_Button_UseNew}"
+                            Click="OnUseNew" Height="36" Margin="0,12,0,0"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource ExportPipeline_ProsLabel}" FontWeight="SemiBold" Foreground="#8BD18B" Margin="0,0,0,4"/>
+                            <TextBlock Text="{DynamicResource ExportPipeline_New_Pros}" TextWrapping="Wrap" Margin="0,0,0,12" LineHeight="20"/>
+                            <TextBlock Text="{DynamicResource ExportPipeline_ConsLabel}" FontWeight="SemiBold" Foreground="#E0A060" Margin="0,0,0,4"/>
+                            <TextBlock Text="{DynamicResource ExportPipeline_New_Cons}" TextWrapping="Wrap" LineHeight="20"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="3" Text="{DynamicResource ExportPipeline_FooterNote}"
+                   Foreground="#909090" FontSize="11" Margin="0,14,0,0" TextWrapping="Wrap"/>
+    </Grid>
+</adonisControls:AdonisWindow>

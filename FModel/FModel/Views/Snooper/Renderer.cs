@@ -342,6 +342,8 @@ public class Renderer : IDisposable
         }
         if (wnd.KeyboardState.IsKeyPressed(Keys.Space))
             Options.Tracker.IsPaused = !Options.Tracker.IsPaused;
+        if (wnd.KeyboardState.IsKeyPressed(Keys.F) && Options.TryGetModel(out var focusModel)) // JP操作性: 選択モデルにフォーカス(フレーミング)
+            CameraOp.Setup(focusModel.Box);
         if (wnd.KeyboardState.IsKeyPressed(Keys.Delete))
             Options.RemoveModel(Options.SelectedModel);
         if (wnd.KeyboardState.IsKeyPressed(Keys.H))

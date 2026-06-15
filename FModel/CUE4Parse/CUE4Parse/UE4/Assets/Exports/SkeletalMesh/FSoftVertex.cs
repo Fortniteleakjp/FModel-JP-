@@ -10,6 +10,7 @@ public class FSoftVertex : FSkelMeshVertexBase
     private const int MAX_SKELETAL_UV_SETS_UE4 = 4;
 
     public FMeshUVFloat[] UV;
+    public override FMeshUVFloat[] UVs => UV; // PR #358 back-port: expose UVs to the new pipeline
     public FColor Color;
 
     public FSoftVertex(FArchive Ar, bool isRigid = false)

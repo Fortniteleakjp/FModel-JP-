@@ -21,6 +21,7 @@ using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.MappingsProvider;
+using CUE4Parse.MappingsProvider.Usmap; // 上流同期: FileUsmapTypeMappingsProvider が Usmap/ サブ名前空間へ移動
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
@@ -1778,6 +1779,13 @@ public partial class CUE4ParseViewModel : ViewModel
 
     private void SaveExport(UObject export, bool updateUi = true)
     {
+        // エクスポート方式の切替点（CUE4Parse PR #358 の新パイプライン段階導入）。
+        // 新パイプライン選択時、または USD 形式(新パイプライン専用)選択時はそちらを試み、未対応なら旧へフォールバック。
+        var wantsNewPipeline = UserSettings.Default.ExportPipeline == EExportPipeline.New
+            || UserSettings.Default.MeshExportFormat == CUE4Parse_Conversion.Meshes.EMeshFormat.USD;
+        if (wantsNewPipeline && TrySaveExportNewPipeline(export, updateUi))
+            return;
+
         var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
         var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
         if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
@@ -1796,6 +1804,78 @@ public partial class CUE4ParseViewModel : ViewModel
         {
             Log.Error("{FileName} could not be saved", export.Name);
             FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}'", Constants.WHITE, true));
+        }
+    }
+
+    /// <summary>
+    /// 新エクスポートパイプライン（CUE4Parse PR #358 の ExportSession ベース）での書き出し。
+    /// 段階導入中: 未対応の型（Add が NotSupported）や実行時の予期せぬ失敗時は false を返し、
+    /// 呼び出し元が旧パイプラインへフォールバックする。現状メッシュは USD 形式で書き出す。
+    /// </summary>
+    private bool TrySaveExportNewPipeline(UObject export, bool updateUi)
+    {
+        // 出力メッシュ形式を旧設定(Meshes.EMeshFormat)から新(Options.EMeshFormat)へマップ(序数一致)。
+        // 全メッシュ形式(ActorX/glTF/OBJ/UEFormat/USD)が新パイプラインに移植済みのため形式ゲートは不要。
+        var meshFormat = (CUE4Parse_Conversion.Options.EMeshFormat)(int)UserSettings.Default.MeshExportFormat;
+
+        CUE4Parse_Conversion.ExportSession session;
+        try
+        {
+            session = new CUE4Parse_Conversion.ExportSession();
+            session.Add(export); // 未対応の型はここで NotSupportedException
+        }
+        catch (NotSupportedException)
+        {
+            return false; // 未対応の型 → 旧パイプラインへフォールバック
+        }
+
+        try
+        {
+            var legacy = UserSettings.Default.ExportOptions;
+            var options = new CUE4Parse_Conversion.Options.ExportOptions(
+                meshFormat: meshFormat,
+                naniteMeshFormat: legacy.NaniteMeshFormat,
+                texturePlatform: legacy.Platform,
+                exportHdrTexturesAsHdr: legacy.ExportHdrTexturesAsHdr,
+                exportMaterials: legacy.ExportMaterials,
+                exportMorphTargets: legacy.ExportMorphTargets);
+
+            var results = session.RunAsync(UserSettings.Default.ModelDirectory, options).GetAwaiter().GetResult();
+
+            string savedPath = null;
+            Exception error = null;
+            foreach (var r in results)
+            {
+                if (r.Success) savedPath ??= r.DiskFilePath;
+                else error ??= r.Error;
+            }
+
+            if (savedPath != null)
+            {
+                Log.Information("Successfully saved {FilePath} (new pipeline)", savedPath);
+                if (updateUi)
+                {
+                    var link = savedPath;
+                    FLogger.Append(ELog.Information, () =>
+                    {
+                        FLogger.Text("Successfully saved (new pipeline) ", Constants.WHITE);
+                        FLogger.Link(export.Name, link, true);
+                    });
+                }
+            }
+            else
+            {
+                Log.Error(error, "{FileName} could not be saved (new pipeline)", export.Name);
+                if (updateUi)
+                    FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}' (new pipeline)", Constants.WHITE, true));
+            }
+
+            return true; // 型は対応済み → 新パイプラインで処理済み（旧へは回さない）
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "New export pipeline threw for {Name}; falling back to legacy", export.Name);
+            return false; // 実行時の予期せぬ失敗のみ旧パイプラインへフォールバック
         }
     }
 

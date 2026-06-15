@@ -529,4 +529,21 @@
     <system:String x:Key="ReplayAnalysis_Stat_KillsFormat">{0} ({1} kills)</system:String>
     <system:String x:Key="ReplayAnalysis_Stat_NoData">No data</system:String>
     <system:String x:Key="ReplayAnalysis_Detail_Title">Elimination Details</system:String>
+
+    <!-- Export pipeline (setting + first-run dialog) -->
+    <system:String x:Key="Settings_ExportPipeline">Export pipeline</system:String>
+    <system:String x:Key="Settings_ExportPipeline_Tooltip">Choose the pipeline used to export assets (meshes / animations / materials). The new pipeline (CUE4Parse #358) is being rolled out gradually.</system:String>
+    <system:String x:Key="ExportPipeline_DialogTitle">Choose Export Pipeline</system:String>
+    <system:String x:Key="ExportPipeline_Intro">Choose how assets (meshes, animations, materials, etc.) are exported. You can change this anytime in Settings &gt; General.</system:String>
+    <system:String x:Key="ExportPipeline_ProsLabel">Pros</system:String>
+    <system:String x:Key="ExportPipeline_ConsLabel">Cons</system:String>
+    <system:String x:Key="ExportPipeline_Legacy_Header">Legacy pipeline (stable)</system:String>
+    <system:String x:Key="ExportPipeline_Legacy_Pros">• Battle-tested and stable&#x0a;• Supports all existing formats (PSK/PSA, glTF, UEFormat, etc.)&#x0a;• Predictable, well-proven behavior</system:String>
+    <system:String x:Key="ExportPipeline_Legacy_Cons">• No full world / map export&#x0a;• No USD output&#x0a;• Slower for large batches (processes one asset at a time)</system:String>
+    <system:String x:Key="ExportPipeline_New_Header">New pipeline (experimental, rolling out)</system:String>
+    <system:String x:Key="ExportPipeline_New_Pros">• Faster bulk export via parallel processing&#x0a;• World / map export support (planned)&#x0a;• USD output, easy to import into Blender, etc. (planned)&#x0a;• Automatically collects &amp; de-duplicates dependent materials/textures</system:String>
+    <system:String x:Key="ExportPipeline_New_Cons">• Experimental; may have missing features or bugs&#x0a;• World export currently works only with USD output&#x0a;• Still rolling out, so some exports use the legacy pipeline for now</system:String>
+    <system:String x:Key="ExportPipeline_Button_UseLegacy">Use Legacy pipeline</system:String>
+    <system:String x:Key="ExportPipeline_Button_UseNew">Use New pipeline</system:String>
+    <system:String x:Key="ExportPipeline_FooterNote">You can change this later in Settings &gt; General. The new pipeline is being added gradually, so some exports may use the legacy pipeline for now.</system:String>
 </ResourceDictionary>

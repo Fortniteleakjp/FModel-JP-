@@ -70,6 +70,7 @@ public class SnimGui
     private bool _tiOpen;
     private bool _transformOpen;
     private bool _viewportFocus;
+    private bool _viewportPanning; // JP操作性: 中ボタンドラッグでのパン中フラグ
     private OPERATION _guizmoOperation;
 
     private readonly Vector4 _accentColor = new (0.125f, 0.42f, 0.831f, 1.0f);
@@ -270,8 +271,12 @@ public class SnimGui
 
 2. Viewport
     - WASD to move around
+    - E / Q to move up / down
     - Shift to move faster
-    - XC to zoom
+    - Mouse Wheel to zoom (dolly in / out)
+    - Middle Mouse Button + Drag to pan
+    - F to focus (frame) the selected model
+    - XC to change the field of view
     - Z to animate the selected model
     - Left Mouse Button pressed to look around
     - Right Click to select a model in the world
@@ -800,11 +805,27 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         ImGui.SetWindowFocus("Outliner");
                         ImGui.SetWindowFocus("Details");
                     }
+                    // JP操作性: マウスホイールでズーム/ドリー(ビューポート上にカーソルがある時のみ)
+                    var wheel = ImGui.GetIO().MouseWheel;
+                    if (wheel != 0f)
+                        s.Renderer.CameraOp.Dolly(wheel);
+                    // JP操作性: 中ボタンドラッグでパン開始
+                    if (ImGui.IsMouseDown(ImGuiMouseButton.Middle) && !_viewportPanning)
+                    {
+                        _viewportPanning = true;
+                        s.CursorState = CursorState.Grabbed;
+                    }
                 }
 
                 if (_viewportFocus && ImGui.IsMouseDragging(ImGuiMouseButton.Left))
                 {
                     s.Renderer.CameraOp.Modify(ImGui.GetIO().MouseDelta);
+                }
+
+                // JP操作性: 中ボタンドラッグでパン(開始後はビューポート外へ出ても継続)
+                if (_viewportPanning && ImGui.IsMouseDragging(ImGuiMouseButton.Middle))
+                {
+                    s.Renderer.CameraOp.Pan(ImGui.GetIO().MouseDelta);
                 }
 
                 // if left button up and mouse was in viewport
@@ -813,36 +834,69 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     _viewportFocus = false;
                     s.CursorState = CursorState.Normal;
                 }
+                // JP操作性: 中ボタンを離したらパン終了
+                if (_viewportPanning && ImGui.IsMouseReleased(ImGuiMouseButton.Middle))
+                {
+                    _viewportPanning = false;
+                    s.CursorState = CursorState.Normal;
+                }
             }
 
-            const float margin = 7.5f;
-            var buttonWidth = 14.0f * ImGui.GetWindowDpiScale();
-            var basePos = new Vector2( size.X - buttonWidth - margin * 2, fHeight + margin);
-            ImGui.SetCursorPos(basePos);
+            // ===== JP UI改善: ビューポート右上ツールバーを半透明角丸パネルにまとめる =====
+            var dpi = ImGui.GetWindowDpiScale();
+            var drawList = ImGui.GetWindowDrawList();
+            var panelBg = ImGui.GetColorU32(new Vector4(0.08f, 0.08f, 0.09f, 0.85f));
+            const float margin = 8f;
+            const float pad = 6f;
+            const float gap = 4f;
+            var iconSize = 16f * dpi;
+
+            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(5f)); // アイコンボタンはコンパクトに固定(全体のFramePaddingに影響されない)
             ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.2f));
-            ImGui.ImageButton("skybox_btn", s.Renderer.Options.Icons[s.Renderer.ShowSkybox ? "cube" : "cube_off"].GetPointer(), new Vector2(buttonWidth));
-            TooltipCheckbox("Skybox", ref s.Renderer.ShowSkybox);
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, _accentColor with { W = 0.55f });
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, _accentColor with { W = 0.80f });
 
-            basePos.X -= buttonWidth + margin;
-            ImGui.SetCursorPos(basePos);
-            ImGui.ImageButton("grid_btn", s.Renderer.Options.Icons[s.Renderer.ShowGrid ? "square" : "square_off"].GetPointer(), new Vector2(buttonWidth));
+            var btnFull = iconSize + 10f; // image + 2*FramePadding(5)
+            const int iconCount = 3;
+            var barW = iconCount * btnFull + (iconCount - 1) * gap + pad * 2;
+            var barH = btnFull + pad * 2;
+            var barPos = new Vector2(size.X - barW - margin, fHeight + margin);
+
+            ImGui.SetCursorPos(barPos);
+            var barScreen = ImGui.GetCursorScreenPos();
+            drawList.AddRectFilled(barScreen, barScreen + new Vector2(barW, barH), panelBg, 6f);
+
+            ImGui.SetCursorPos(barPos + new Vector2(pad, pad));
+            ImGui.ImageButton("grid_btn", s.Renderer.Options.Icons[s.Renderer.ShowGrid ? "square" : "square_off"].GetPointer(), new Vector2(iconSize));
             TooltipCheckbox("Grid", ref s.Renderer.ShowGrid);
-
-            basePos.X -= buttonWidth + margin;
-            ImGui.SetCursorPos(basePos);
-            ImGui.ImageButton("lights_btn", s.Renderer.Options.Icons[s.Renderer.ShowLights ? "light" : "light_off"].GetPointer(), new Vector2(buttonWidth));
+            ImGui.SameLine(0f, gap);
+            ImGui.ImageButton("skybox_btn", s.Renderer.Options.Icons[s.Renderer.ShowSkybox ? "cube" : "cube_off"].GetPointer(), new Vector2(iconSize));
+            TooltipCheckbox("Skybox", ref s.Renderer.ShowSkybox);
+            ImGui.SameLine(0f, gap);
+            ImGui.ImageButton("lights_btn", s.Renderer.Options.Icons[s.Renderer.ShowLights ? "light" : "light_off"].GetPointer(), new Vector2(iconSize));
             TooltipCheckbox("Lights", ref s.Renderer.ShowLights);
 
-            ImGui.PopStyleColor(2);
+            ImGui.PopStyleColor(3);
+            ImGui.PopStyleVar();
 
-            float framerate = ImGui.GetIO().Framerate;
-            ImGui.SetCursorPos(size with { X = margin });
-            ImGui.Text($"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)");
+            // ===== JP UI改善: 左下ステータス(FPS + 選択モデル名)を半透明帯で読みやすく =====
+            var framerate = ImGui.GetIO().Framerate;
+            var status = $"FPS: {framerate:0} ({1000.0f / framerate:0.##} ms)";
+            if (s.Renderer.Options.TryGetModel(out var statusModel))
+                status += $"   |   {statusModel.Name}";
+            var statusSize = ImGui.CalcTextSize(status);
+            var statusPos = new Vector2(margin, size.Y - statusSize.Y - margin);
+            ImGui.SetCursorPos(statusPos);
+            var statusScreen = ImGui.GetCursorScreenPos();
+            drawList.AddRectFilled(statusScreen - new Vector2(5f, 3f), statusScreen + statusSize + new Vector2(5f, 3f), panelBg, 4f);
+            ImGui.SetCursorPos(statusPos);
+            ImGui.Text(status);
 
             const string label = "Previewed content may differ from final version saved or used in-game.";
-            ImGui.SetCursorPos(size with { X = size.X - ImGui.CalcTextSize(label).X - margin });
-            ImGui.TextColored(new Vector4(0.50f, 0.50f, 0.50f, 1.00f), label);
+            var labelSize = ImGui.CalcTextSize(label);
+            var labelPos = new Vector2(size.X - labelSize.X - margin, size.Y - labelSize.Y - margin);
+            ImGui.SetCursorPos(labelPos);
+            ImGui.TextColored(new Vector4(0.60f, 0.60f, 0.62f, 1.00f), label);
 
         }, false);
         ImGui.PopStyleVar();
@@ -995,28 +1049,30 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     private void Theme()
     {
         var style = ImGui.GetStyle();
-        style.WindowPadding = new Vector2(4f);
-        style.FramePadding = new Vector2(3f);
-        style.CellPadding = new Vector2(3f, 2f);
-        style.ItemSpacing = new Vector2(6f, 3f);
-        style.ItemInnerSpacing = new Vector2(3f);
+        // JP UI改善: 余白/行間に少しゆとりを持たせ、詰まり感を解消(可読性・クリックしやすさ向上)
+        style.WindowPadding = new Vector2(6f);
+        style.FramePadding = new Vector2(6f, 4f);
+        style.CellPadding = new Vector2(4f, 3f);
+        style.ItemSpacing = new Vector2(7f, 5f);
+        style.ItemInnerSpacing = new Vector2(5f, 4f);
         style.TouchExtraPadding = new Vector2(0f);
-        style.IndentSpacing = 20f;
-        style.ScrollbarSize = 10f;
-        style.GrabMinSize = 8f;
+        style.IndentSpacing = 18f;
+        style.ScrollbarSize = 12f;
+        style.GrabMinSize = 10f;
         style.WindowBorderSize = 0f;
         style.ChildBorderSize = 0f;
-        style.PopupBorderSize = 0f;
+        style.PopupBorderSize = 1f;
         style.FrameBorderSize = 0f;
         style.TabBorderSize = 0f;
-        style.WindowRounding = 0f;
-        style.ChildRounding = 0f;
-        style.FrameRounding = 0f;
-        style.PopupRounding = 0f;
-        style.ScrollbarRounding = 0f;
-        style.GrabRounding = 0f;
+        // JP UI改善: 角を少し丸めて現代的な見た目に(ドッキング中の窓はImGui仕様で直角のまま)
+        style.WindowRounding = 5f;
+        style.ChildRounding = 5f;
+        style.FrameRounding = 4f;
+        style.PopupRounding = 5f;
+        style.ScrollbarRounding = 10f;
+        style.GrabRounding = 4f;
         style.LogSliderDeadzone = 0f;
-        style.TabRounding = 0f;
+        style.TabRounding = 5f;
         style.WindowTitleAlign = new Vector2(0.5f);
         style.WindowMenuButtonPosition = ImGuiDir.Right;
         style.ColorButtonPosition = ImGuiDir.Right;
@@ -1031,9 +1087,9 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         style.Colors[(int) ImGuiCol.PopupBg]                = new Vector4(0.08f, 0.08f, 0.08f, 0.94f);
         style.Colors[(int) ImGuiCol.Border]                 = new Vector4(0.25f, 0.26f, 0.33f, 1.00f);
         style.Colors[(int) ImGuiCol.BorderShadow]           = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
-        style.Colors[(int) ImGuiCol.FrameBg]                = new Vector4(0.05f, 0.05f, 0.05f, 0.54f);
-        style.Colors[(int) ImGuiCol.FrameBgHovered]         = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
-        style.Colors[(int) ImGuiCol.FrameBgActive]          = new Vector4(0.69f, 0.69f, 1.00f, 0.39f);
+        style.Colors[(int) ImGuiCol.FrameBg]                = new Vector4(0.17f, 0.17f, 0.21f, 0.60f); // JP UI改善: 入力欄を少し明るくして存在を分かりやすく
+        style.Colors[(int) ImGuiCol.FrameBgHovered]         = new Vector4(0.125f, 0.42f, 0.831f, 0.40f); // JP UI改善: ホバーをアクセント青で統一
+        style.Colors[(int) ImGuiCol.FrameBgActive]          = new Vector4(0.125f, 0.42f, 0.831f, 0.67f);
         style.Colors[(int) ImGuiCol.TitleBg]                = new Vector4(0.09f, 0.09f, 0.09f, 1.00f);
         style.Colors[(int) ImGuiCol.TitleBgActive]          = new Vector4(0.09f, 0.09f, 0.09f, 1.00f);
         style.Colors[(int) ImGuiCol.TitleBgCollapsed]       = new Vector4(0.05f, 0.05f, 0.05f, 0.51f);
@@ -1045,21 +1101,23 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         style.Colors[(int) ImGuiCol.CheckMark]              = new Vector4(0.13f, 0.42f, 0.83f, 1.00f);
         style.Colors[(int) ImGuiCol.SliderGrab]             = new Vector4(0.13f, 0.42f, 0.83f, 0.78f);
         style.Colors[(int) ImGuiCol.SliderGrabActive]       = new Vector4(0.13f, 0.42f, 0.83f, 1.00f);
-        style.Colors[(int) ImGuiCol.Button]                 = new Vector4(0.05f, 0.05f, 0.05f, 0.54f);
-        style.Colors[(int) ImGuiCol.ButtonHovered]          = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
-        style.Colors[(int) ImGuiCol.ButtonActive]           = new Vector4(0.69f, 0.69f, 1.00f, 0.39f);
-        style.Colors[(int) ImGuiCol.Header]                 = new Vector4(0.05f, 0.26f, 0.56f, 1.00f);
-        style.Colors[(int) ImGuiCol.HeaderHovered]          = new Vector4(0.05f, 0.26f, 0.56f, 0.39f);
-        style.Colors[(int) ImGuiCol.HeaderActive]           = new Vector4(0.04f, 0.23f, 0.52f, 1.00f);
+        style.Colors[(int) ImGuiCol.Button]                 = new Vector4(0.17f, 0.17f, 0.21f, 0.60f); // JP UI改善: ボタンを少し明るく
+        style.Colors[(int) ImGuiCol.ButtonHovered]          = new Vector4(0.125f, 0.42f, 0.831f, 0.55f); // JP UI改善: ホバーをアクセント青で統一
+        style.Colors[(int) ImGuiCol.ButtonActive]           = new Vector4(0.125f, 0.42f, 0.831f, 0.85f);
+        // JP UI改善: 選択/ヘッダーをアクセント色(青)で統一し、ホバー→選択→アクティブで明度が上がる自然な階調に
+        style.Colors[(int) ImGuiCol.Header]                 = new Vector4(0.125f, 0.42f, 0.831f, 0.55f);
+        style.Colors[(int) ImGuiCol.HeaderHovered]          = new Vector4(0.125f, 0.42f, 0.831f, 0.75f);
+        style.Colors[(int) ImGuiCol.HeaderActive]           = new Vector4(0.125f, 0.42f, 0.831f, 1.00f);
         style.Colors[(int) ImGuiCol.Separator]              = new Vector4(0.43f, 0.43f, 0.50f, 0.50f);
         style.Colors[(int) ImGuiCol.SeparatorHovered]       = new Vector4(0.10f, 0.40f, 0.75f, 0.78f);
         style.Colors[(int) ImGuiCol.SeparatorActive]        = new Vector4(0.10f, 0.40f, 0.75f, 1.00f);
         style.Colors[(int) ImGuiCol.ResizeGrip]             = new Vector4(0.13f, 0.42f, 0.83f, 0.39f);
         style.Colors[(int) ImGuiCol.ResizeGripHovered]      = new Vector4(0.12f, 0.41f, 0.81f, 0.78f);
         style.Colors[(int) ImGuiCol.ResizeGripActive]       = new Vector4(0.12f, 0.41f, 0.81f, 1.00f);
+        // JP UI改善: 選択中タブをアクセント寄りにして現在地を分かりやすく、ホバーは青系で統一
         style.Colors[(int) ImGuiCol.Tab]                    = new Vector4(0.15f, 0.15f, 0.19f, 1.00f);
-        style.Colors[(int) ImGuiCol.TabHovered]             = new Vector4(0.35f, 0.35f, 0.41f, 0.80f);
-        style.Colors[(int) ImGuiCol.TabSelected]            = new Vector4(0.23f, 0.24f, 0.29f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabHovered]             = new Vector4(0.125f, 0.42f, 0.831f, 0.55f);
+        style.Colors[(int) ImGuiCol.TabSelected]            = new Vector4(0.18f, 0.30f, 0.50f, 1.00f);
         style.Colors[(int) ImGuiCol.TabDimmed]              = new Vector4(0.15f, 0.15f, 0.15f, 1.00f);
         style.Colors[(int) ImGuiCol.TabDimmedSelected]      = new Vector4(0.23f, 0.24f, 0.29f, 1.00f);
         style.Colors[(int) ImGuiCol.DockingPreview]         = new Vector4(0.26f, 0.59f, 0.98f, 0.70f);
