@@ -1779,9 +1779,10 @@ public partial class CUE4ParseViewModel : ViewModel
     private void SaveExport(UObject export, bool updateUi = true)
     {
         // エクスポート方式の切替点（CUE4Parse PR #358 の新パイプライン段階導入）。
-        // 新パイプライン選択時はそちらを試み、未対応なら旧パイプラインへフォールバックする。
-        if (UserSettings.Default.ExportPipeline == EExportPipeline.New &&
-            TrySaveExportNewPipeline(export, updateUi))
+        // 新パイプライン選択時、または USD 形式(新パイプライン専用)選択時はそちらを試み、未対応なら旧へフォールバック。
+        var wantsNewPipeline = UserSettings.Default.ExportPipeline == EExportPipeline.New
+            || UserSettings.Default.MeshExportFormat == CUE4Parse_Conversion.Meshes.EMeshFormat.USD;
+        if (wantsNewPipeline && TrySaveExportNewPipeline(export, updateUi))
             return;
 
         var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
@@ -1807,15 +1808,74 @@ public partial class CUE4ParseViewModel : ViewModel
 
     /// <summary>
     /// 新エクスポートパイプライン（CUE4Parse PR #358 の ExportSession ベース）での書き出し。
-    /// 段階導入中: 本体移植が完了するまでは false を返し、呼び出し元が旧パイプラインへフォールバックする。
+    /// 段階導入中: 未対応の型（Add が NotSupported）や実行時の予期せぬ失敗時は false を返し、
+    /// 呼び出し元が旧パイプラインへフォールバックする。現状メッシュは USD 形式で書き出す。
     /// </summary>
     private bool TrySaveExportNewPipeline(UObject export, bool updateUi)
     {
-        // TODO(#358): ExportSession を用いた新パイプラインをここに実装する。
-        //   var session = new ExportSession();
-        //   session.Add(export);
-        //   session.RunAsync(new DirectoryInfo(UserSettings.Default.ModelDirectory), UserSettings.Default.ExportOptions, ...);
-        return false;
+        // 出力メッシュ形式を旧設定(Meshes.EMeshFormat)から新(Options.EMeshFormat)へマップ(序数一致)。
+        // 全メッシュ形式(ActorX/glTF/OBJ/UEFormat/USD)が新パイプラインに移植済みのため形式ゲートは不要。
+        var meshFormat = (CUE4Parse_Conversion.Options.EMeshFormat)(int)UserSettings.Default.MeshExportFormat;
+
+        CUE4Parse_Conversion.ExportSession session;
+        try
+        {
+            session = new CUE4Parse_Conversion.ExportSession();
+            session.Add(export); // 未対応の型はここで NotSupportedException
+        }
+        catch (NotSupportedException)
+        {
+            return false; // 未対応の型 → 旧パイプラインへフォールバック
+        }
+
+        try
+        {
+            var legacy = UserSettings.Default.ExportOptions;
+            var options = new CUE4Parse_Conversion.Options.ExportOptions(
+                meshFormat: meshFormat,
+                naniteMeshFormat: legacy.NaniteMeshFormat,
+                texturePlatform: legacy.Platform,
+                exportHdrTexturesAsHdr: legacy.ExportHdrTexturesAsHdr,
+                exportMaterials: legacy.ExportMaterials,
+                exportMorphTargets: legacy.ExportMorphTargets);
+
+            var results = session.RunAsync(UserSettings.Default.ModelDirectory, options).GetAwaiter().GetResult();
+
+            string savedPath = null;
+            Exception error = null;
+            foreach (var r in results)
+            {
+                if (r.Success) savedPath ??= r.DiskFilePath;
+                else error ??= r.Error;
+            }
+
+            if (savedPath != null)
+            {
+                Log.Information("Successfully saved {FilePath} (new pipeline)", savedPath);
+                if (updateUi)
+                {
+                    var link = savedPath;
+                    FLogger.Append(ELog.Information, () =>
+                    {
+                        FLogger.Text("Successfully saved (new pipeline) ", Constants.WHITE);
+                        FLogger.Link(export.Name, link, true);
+                    });
+                }
+            }
+            else
+            {
+                Log.Error(error, "{FileName} could not be saved (new pipeline)", export.Name);
+                if (updateUi)
+                    FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}' (new pipeline)", Constants.WHITE, true));
+            }
+
+            return true; // 型は対応済み → 新パイプラインで処理済み（旧へは回さない）
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "New export pipeline threw for {Name}; falling back to legacy", export.Name);
+            return false; // 実行時の予期せぬ失敗のみ旧パイプラインへフォールバック
+        }
     }
 
     private readonly object _rawData = new ();

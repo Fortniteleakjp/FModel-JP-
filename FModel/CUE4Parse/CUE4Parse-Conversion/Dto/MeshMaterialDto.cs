@@ -1,6 +1,7 @@
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Objects.UObject;
 
 namespace CUE4Parse_Conversion.Dto;
 
@@ -17,6 +18,11 @@ public readonly struct MeshMaterialDto
     {
         Material = material;
         SlotName = material?.Name.Text ?? slotName ?? "None";
+    }
+
+    // head の MeshMaterialDto(string?, FPackageIndex?) 相当（ランドスケープ等が FPackageIndex を直接渡す経路用）。
+    public MeshMaterialDto(string? slotName, FPackageIndex? material) : this(slotName, material?.ResolvedObject)
+    {
     }
 
     public MeshMaterialDto(FStaticMaterial material)

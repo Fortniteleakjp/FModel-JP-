@@ -113,6 +113,16 @@ public class FNaniteResources
         }
     }
 
+    // Back-ported from CUE4Parse PR #358 (new export pipeline): release loaded Nanite pages after export
+    // so the large per-asset cluster data can be garbage collected.
+    public void UnloadAllPages()
+    {
+        for (int i = 0; i < LoadedPages.Length; i++)
+        {
+            LoadedPages[i] = null;
+        }
+    }
+
     public FNaniteStreamableData? GetPage(uint pageIndex)
     {
         if (pageIndex >= PageStreamingStates.Length) return null;

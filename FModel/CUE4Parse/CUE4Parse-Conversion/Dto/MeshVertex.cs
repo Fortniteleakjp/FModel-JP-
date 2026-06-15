@@ -1,3 +1,4 @@
+using CUE4Parse.UE4.Assets.Exports.Nanite;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Meshes;
@@ -33,11 +34,10 @@ public readonly struct MeshVertex : IMeshVertex
 
     }
 
-    // TODO(#358): Nanite 用コンストラクタは FNaniteVertexAttributes の reconciliation(L3)後に有効化する。
-    // public MeshVertex(FVector position, FNaniteVertexAttributes attributes, bool hasTangents) : this(position, new FVector4(attributes.Normal), hasTangents ? attributes.TangentXAndSign : FVector4.ZeroVector, new FMeshUVFloat(attributes.UVs[0].X, attributes.UVs[0].Y))
-    // {
-    //
-    // }
+    public MeshVertex(FVector position, FNaniteVertexAttributes attributes, bool hasTangents) : this(position, new FVector4(attributes.Normal), hasTangents ? attributes.TangentXAndSign : FVector4.ZeroVector, new FMeshUVFloat(attributes.UVs[0].X, attributes.UVs[0].Y))
+    {
+
+    }
 
     public MeshVertex(FVector position, FVector normal, FVector4 tangent, FMeshUVFloat uv) : this(position, new FVector4(normal), tangent, uv)
     {

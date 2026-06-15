@@ -13,7 +13,8 @@ namespace CUE4Parse_Conversion.Landscape;
 
 internal class FLandscapeComponentDataInterface {
     // offset of this component's data into heightmap texture
-    private readonly ULandscapeComponent Component;
+    // NOTE: PR #358 back-port — 新パイプラインの FromLandscapeMesh が同アセンブリから参照するため internal に拡大。
+    internal readonly ULandscapeComponent Component;
     private readonly bool bWorkOnEditingLayer;
     private readonly int HeightmapStride;
     private readonly int HeightmapComponentOffsetX;
