@@ -145,10 +145,35 @@ public partial class MainWindow
         UserSettings.Save();
     }
 
+    // このバージョンの初回起動時のみ、エクスポート方式（旧/新パイプライン）を選択させる。
+    private void ShowExportPipelineFirstRunDialog()
+    {
+        if (UserSettings.Default.HasChosenExportPipeline) return;
+        try
+        {
+            var dialog = new ExportPipelineDialog { Owner = this };
+            dialog.ShowDialog();
+            UserSettings.Default.ExportPipeline = dialog.SelectedPipeline;
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to show export pipeline selection dialog; defaulting to Legacy.");
+            UserSettings.Default.ExportPipeline = EExportPipeline.Legacy;
+        }
+        finally
+        {
+            UserSettings.Default.HasChosenExportPipeline = true;
+            UserSettings.Save();
+        }
+    }
+
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         try
         {
+            // このバージョンの初回起動時のみ、エクスポート方式（旧/新パイプライン）の選択を促す。
+            ShowExportPipelineFirstRunDialog();
+
             var newOrUpdated = UserSettings.Default.ShowChangelog;
 #if !DEBUG
             ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(true);

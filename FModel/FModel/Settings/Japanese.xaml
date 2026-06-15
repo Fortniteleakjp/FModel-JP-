@@ -528,4 +528,21 @@
     <system:String x:Key="ReplayAnalysis_Stat_KillsFormat">{0} ({1} kills)</system:String>
     <system:String x:Key="ReplayAnalysis_Stat_NoData">データなし</system:String>
     <system:String x:Key="ReplayAnalysis_Detail_Title">撃破詳細</system:String>
+
+    <!-- エクスポート方式（設定 + 初回起動ダイアログ） -->
+    <system:String x:Key="Settings_ExportPipeline">エクスポート方式</system:String>
+    <system:String x:Key="Settings_ExportPipeline_Tooltip">アセット(メッシュ/アニメ/マテリアル)の書き出しに使う方式。新パイプライン(CUE4Parse #358)は段階的に導入中です。</system:String>
+    <system:String x:Key="ExportPipeline_DialogTitle">エクスポート方式の選択</system:String>
+    <system:String x:Key="ExportPipeline_Intro">アセット(メッシュ/アニメ/マテリアルなど)の書き出しに使う方式を選んでください。後から「設定 &gt; 一般」でいつでも変更できます。</system:String>
+    <system:String x:Key="ExportPipeline_ProsLabel">メリット</system:String>
+    <system:String x:Key="ExportPipeline_ConsLabel">デメリット</system:String>
+    <system:String x:Key="ExportPipeline_Legacy_Header">旧パイプライン（従来・安定）</system:String>
+    <system:String x:Key="ExportPipeline_Legacy_Pros">・長年使われており動作が安定&#x0a;・既存の全フォーマットに対応（PSK/PSA・glTF・UEFormat など）&#x0a;・実績が豊富で予期せぬ不具合が少ない</system:String>
+    <system:String x:Key="ExportPipeline_Legacy_Cons">・ワールド/マップ全体の書き出しに非対応&#x0a;・USD 出力に非対応&#x0a;・1アセットずつ処理のため大量書き出しはやや遅い</system:String>
+    <system:String x:Key="ExportPipeline_New_Header">新パイプライン（実験的・段階導入中）</system:String>
+    <system:String x:Key="ExportPipeline_New_Pros">・並列処理で大量の書き出しが高速&#x0a;・ワールド/マップ全体の書き出しに対応（予定）&#x0a;・USD 出力に対応し Blender 等で読み込みやすい（予定）&#x0a;・依存するマテリアル/テクスチャを自動収集・重複排除</system:String>
+    <system:String x:Key="ExportPipeline_New_Cons">・実験的で未対応の機能や不具合の可能性&#x0a;・ワールド書き出しは現状 USD 出力時のみ&#x0a;・段階導入中のため一部は当面これまでの方式で動作</system:String>
+    <system:String x:Key="ExportPipeline_Button_UseLegacy">旧パイプラインを使う</system:String>
+    <system:String x:Key="ExportPipeline_Button_UseNew">新パイプラインを使う</system:String>
+    <system:String x:Key="ExportPipeline_FooterNote">この選択は後から「設定 &gt; 一般」で変更できます。新パイプラインは段階的に追加中のため、一部の書き出しは当面これまでの方式で動作します。</system:String>
 </ResourceDictionary>

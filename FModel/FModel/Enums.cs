@@ -52,6 +52,14 @@ public enum EBruteForceAesMode
     Gpu
 }
 
+public enum EExportPipeline
+{
+    [Description("旧パイプライン (従来・安定)")]
+    Legacy,
+    [Description("新パイプライン (実験的)")]
+    New
+}
+
 public enum ETweetHashtagPosition
 {
     [Description("別パラメーター（既定）")]

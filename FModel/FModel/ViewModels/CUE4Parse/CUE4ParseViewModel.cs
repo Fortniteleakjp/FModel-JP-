@@ -1778,6 +1778,12 @@ public partial class CUE4ParseViewModel : ViewModel
 
     private void SaveExport(UObject export, bool updateUi = true)
     {
+        // エクスポート方式の切替点（CUE4Parse PR #358 の新パイプライン段階導入）。
+        // 新パイプライン選択時はそちらを試み、未対応なら旧パイプラインへフォールバックする。
+        if (UserSettings.Default.ExportPipeline == EExportPipeline.New &&
+            TrySaveExportNewPipeline(export, updateUi))
+            return;
+
         var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
         var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
         if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
@@ -1797,6 +1803,19 @@ public partial class CUE4ParseViewModel : ViewModel
             Log.Error("{FileName} could not be saved", export.Name);
             FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}'", Constants.WHITE, true));
         }
+    }
+
+    /// <summary>
+    /// 新エクスポートパイプライン（CUE4Parse PR #358 の ExportSession ベース）での書き出し。
+    /// 段階導入中: 本体移植が完了するまでは false を返し、呼び出し元が旧パイプラインへフォールバックする。
+    /// </summary>
+    private bool TrySaveExportNewPipeline(UObject export, bool updateUi)
+    {
+        // TODO(#358): ExportSession を用いた新パイプラインをここに実装する。
+        //   var session = new ExportSession();
+        //   session.Add(export);
+        //   session.RunAsync(new DirectoryInfo(UserSettings.Default.ModelDirectory), UserSettings.Default.ExportOptions, ...);
+        return false;
     }
 
     private readonly object _rawData = new ();
