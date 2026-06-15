@@ -23,3 +23,5 @@ ImageMergerApp.7z
 
 # --- CI secrets materialized into the workspace (run.yml: secrets.py) ---
 secrets.py
+
+MIGRATION_PR358.md
