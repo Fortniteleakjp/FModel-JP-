@@ -1258,7 +1258,8 @@ public partial class SettingsViewModel // partial 修飾子を追加
             if (!string.IsNullOrEmpty(accessToken))
             {
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                Log.Information("認証ヘッダーを設定: Bearer {Token}", accessToken.Substring(0, Math.Min(10, accessToken.Length)) + "...");
+                // NOTE: アクセストークンはログに出さない（機密情報のため有無のみ記録）。
+                Log.Information("認証ヘッダーを設定しました (Bearerトークンあり)");
             }
             
             // Fortnite User-Agentを設定

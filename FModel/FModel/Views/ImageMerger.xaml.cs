@@ -25,6 +25,8 @@ public partial class ImageMerger
 {
     private string FILENAME => $"{DateTime.Now:yyyyMMdd}.png";
     private byte[] _imageBuffer;
+    private bool _isDrawing;
+    private bool _redrawRequested;
     private Point _startPoint;
     private ListBoxItem _draggedItem;
     private readonly List<string> _tempFilePaths = new();
@@ -68,42 +70,104 @@ public partial class ImageMerger
             await DrawPreview().ConfigureAwait(false);
     }
 
+    private static string TryRes(string key, string fallback)
+        => Application.Current.TryFindResource(key) as string ?? fallback;
+
+    private void SetControlsEnabled(bool enabled)
+    {
+        AddButton.IsEnabled = enabled;
+        UpButton.IsEnabled = enabled;
+        DownButton.IsEnabled = enabled;
+        DeleteButton.IsEnabled = enabled;
+        ClearButton.IsEnabled = enabled;
+        SizeSlider.IsEnabled = enabled;
+        SpacingSlider.IsEnabled = enabled;
+        OpenImageButton.IsEnabled = enabled;
+        SaveImageButton.IsEnabled = enabled;
+        CopyImageButton.IsEnabled = enabled;
+    }
+
     private async Task DrawPreview()
     {
-        AddButton.IsEnabled = false;
-        UpButton.IsEnabled = false;
-        DownButton.IsEnabled = false;
-        DeleteButton.IsEnabled = false;
-        ClearButton.IsEnabled = false;
-        SizeSlider.IsEnabled = false;
-        SpacingSlider.IsEnabled = false;
-        OpenImageButton.IsEnabled = false;
-        SaveImageButton.IsEnabled = false;
-        CopyImageButton.IsEnabled = false;
+        // 再入ガード: 描画中に届いた要求は最後の1回だけ後追いで反映する（_imageBuffer/ImagePreview.Source の競合防止）。
+        if (_isDrawing)
+        {
+            _redrawRequested = true;
+            return;
+        }
 
+        _isDrawing = true;
+        SetControlsEnabled(false);
+        try
+        {
+            do
+            {
+                _redrawRequested = false;
+                await DrawPreviewCore();
+            } while (_redrawRequested);
+        }
+        finally
+        {
+            SetControlsEnabled(true);
+            _isDrawing = false;
+        }
+    }
+
+    private async Task DrawPreviewCore()
+    {
         var margin = Convert.ToInt32(SpacingSlider.Value);
-        int num = 1, curW = 0, curH = 0, maxWidth = 0, maxHeight = 0, lineMaxHeight = 0, imagesPerRow = Convert.ToInt32(SizeSlider.Value);
+        int num = 1, curW = 0, curH = 0, maxWidth = 0, maxHeight = 0, lineMaxHeight = 0, imagesPerRow = Math.Max(1, Convert.ToInt32(SizeSlider.Value));
         var positions = new Dictionary<int, SKPoint>();
         var images = new SKBitmap[ImagesListBox.Items.Count];
         for (var i = 0; i < images.Length; i++)
         {
             var item = (ListBoxItem) ImagesListBox.Items[i];
             if (item.Tag is false) continue;
-            var ms = new MemoryStream();
-            var stream = new FileStream(item.ContentStringFormat, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-            if (item.ContentStringFormat.EndsWith(".tif"))
+            SKBitmap image;
+            try
             {
-                await using var tmp = new MemoryStream();
-                await stream.CopyToAsync(tmp);
-                System.Drawing.Image.FromStream(tmp).Save(ms, ImageFormat.Png);
+                // 追加後にファイルが移動・削除されている可能性があるため存在確認する。
+                if (!File.Exists(item.ContentStringFormat))
+                {
+                    Log.Warning("Image file not found, skipping: {FilePath}", item.ContentStringFormat);
+                    var missing = item.ContentStringFormat;
+                    FLogger.Append(ELog.Warning, () => FLogger.Text(string.Format(TryRes("ImageMerger_Msg_FileNotFound", "画像ファイルが見つかりません: {0}"), missing), Constants.YELLOW, true));
+                    continue;
+                }
+
+                using var ms = new MemoryStream();
+                using var stream = new FileStream(item.ContentStringFormat, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+                if (item.ContentStringFormat.EndsWith(".tif"))
+                {
+                    await using var tmp = new MemoryStream();
+                    await stream.CopyToAsync(tmp);
+                    tmp.Position = 0;
+                    using var tifImage = System.Drawing.Image.FromStream(tmp);
+                    tifImage.Save(ms, ImageFormat.Png);
+                }
+                else
+                {
+                    await stream.CopyToAsync(ms);
+                }
+
+                image = SKBitmap.Decode(ms.ToArray());
             }
-            else
+            catch (Exception ex)
             {
-                await stream.CopyToAsync(ms);
+                Log.Warning(ex, "Failed to load image for preview: {FilePath}", item.ContentStringFormat);
+                var failed = item.ContentStringFormat;
+                FLogger.Append(ELog.Warning, () => FLogger.Text(string.Format(TryRes("ImageMerger_Msg_LoadFailed", "画像の読み込みに失敗しました: {0}"), failed), Constants.YELLOW, true));
+                continue;
             }
 
-            var image = SKBitmap.Decode(ms.ToArray());
+            if (image == null)
+            {
+                Log.Warning("Failed to decode image, skipping: {FilePath}", item.ContentStringFormat);
+                continue;
+            }
+
             positions[i] = new SKPoint(curW, curH);
             images[i] = image;
 
@@ -131,9 +195,20 @@ public partial class ImageMerger
             num++;
         }
 
+        // 表示対象が無い / サイズが不正(全レイヤー非表示など)の場合は、負サイズSKBitmap生成を避けて安全に終了。
+        var canvasWidth = maxWidth - margin;
+        var canvasHeight = maxHeight - margin;
+        if (positions.Count == 0 || canvasWidth <= 0 || canvasHeight <= 0)
+        {
+            foreach (var bmp in images)
+                bmp?.Dispose();
+            ImagePreview.Source = null;
+            return;
+        }
+
         await Task.Run(() =>
         {
-            using var bmp = new SKBitmap(maxWidth - margin, maxHeight - margin, SKColorType.Rgba8888, SKAlphaType.Premul);
+            using var bmp = new SKBitmap(canvasWidth, canvasHeight, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var canvas = new SKCanvas(bmp);
 
             for (var i = 0; i < images.Length; i++)
@@ -155,29 +230,17 @@ public partial class ImageMerger
             photo.Freeze();
 
             Application.Current.Dispatcher.Invoke(delegate { ImagePreview.Source = photo; });
-        }).ContinueWith(t =>
-        {
-            AddButton.IsEnabled = true;
-            UpButton.IsEnabled = true;
-            DownButton.IsEnabled = true;
-            DeleteButton.IsEnabled = true;
-            ClearButton.IsEnabled = true;
-            SizeSlider.IsEnabled = true;
-            SpacingSlider.IsEnabled = true;
-            OpenImageButton.IsEnabled = true;
-            SaveImageButton.IsEnabled = true;
-            CopyImageButton.IsEnabled = true;
-        }, TaskScheduler.FromCurrentSynchronizationContext());
+        });
     }
 
     private async void OnImageAdd(object sender, RoutedEventArgs e)
     {
         var fileBrowser = new OpenFileDialog
         {
-            Title = "画像を追加",
+            Title = TryRes("ImageMerger_Dialog_AddTitle", "画像を追加"),
             InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, "Exports"),
             Multiselect = true,
-            Filter = "画像ファイル (*.png,*.bmp,*.jpg,*.jpeg,*.jfif,*.jpe,*.tiff,*.tif)|*.png;*.bmp;*.jpg;*.jpeg;*.jfif;*.jpe;*.tiff;*.tif|すべてのファイル (*.*)|*.*"
+            Filter = TryRes("ImageMerger_Dialog_ImageFilter", "画像ファイル (*.png,*.bmp,*.jpg,*.jpeg,*.jfif,*.jpe,*.tiff,*.tif)|*.png;*.bmp;*.jpg;*.jpeg;*.jfif;*.jpe;*.tiff;*.tif|すべてのファイル (*.*)|*.*")
         };
         var result = fileBrowser.ShowDialog();
         if (!result.HasValue || !result.Value) return;
@@ -273,11 +336,12 @@ public partial class ImageMerger
     private void OnOpenImage(object sender, RoutedEventArgs e)
     {
         if (ImagePreview.Source == null) return;
-        Helper.OpenWindow<AdonisWindow>("結合後の画像", () =>
+        var popoutTitle = TryRes("ImageMerger_Popout_Title", "結合後の画像");
+        Helper.OpenWindow<AdonisWindow>(popoutTitle, () =>
         {
             new ImagePopout
             {
-                Title = "結合後の画像",
+                Title = popoutTitle,
                 Width = ImagePreview.Source.Width,
                 Height = ImagePreview.Source.Height,
                 WindowState = ImagePreview.Source.Height > 1000 ? WindowState.Maximized : WindowState.Normal,
@@ -293,10 +357,10 @@ public partial class ImageMerger
             if (ImagePreview.Source == null) return;
             var saveFileDialog = new SaveFileDialog
             {
-                Title = "画像を保存",
+                Title = TryRes("ImageMerger_Dialog_SaveTitle", "画像を保存"),
                 FileName = FILENAME,
                 InitialDirectory = UserSettings.Default.OutputDirectory,
-                Filter = "PNGファイル (*.png)|*.png|すべてのファイル (*.*)|*.*"
+                Filter = TryRes("ImageMerger_Dialog_PngFilter", "PNGファイル (*.png)|*.png|すべてのファイル (*.*)|*.*")
             };
             var result = saveFileDialog.ShowDialog();
             if (!result.HasValue || !result.Value) return;
@@ -317,14 +381,14 @@ public partial class ImageMerger
             Log.Information("{FileName} successfully saved", fileName);
             FLogger.Append(ELog.Information, () =>
             {
-                FLogger.Text("正常に保存しました ", Constants.WHITE);
+                FLogger.Text(TryRes("ImageMerger_Msg_Saved", "正常に保存しました "), Constants.WHITE);
                 FLogger.Link(fileName, path, true);
             });
         }
         else
         {
             Log.Error("{FileName} could not be saved", fileName);
-            FLogger.Append(ELog.Error, () => FLogger.Text($"'{fileName}' を保存できませんでした", Constants.WHITE, true));
+            FLogger.Append(ELog.Error, () => FLogger.Text(string.Format(TryRes("ImageMerger_Msg_SaveFailed", "'{0}' を保存できませんでした"), fileName), Constants.WHITE, true));
         }
     }
 
@@ -427,7 +491,7 @@ public partial class ImageMerger
                 catch (Exception ex)
                 {
                     Log.Error(ex, "Failed to paste image from clipboard.");
-                    FLogger.Append(ELog.Error, () => FLogger.Text("クリップボードからの画像の貼り付けに失敗しました。", Constants.RED));
+                    FLogger.Append(ELog.Error, () => FLogger.Text(TryRes("ImageMerger_Msg_PasteFailed", "クリップボードからの画像の貼り付けに失敗しました。"), Constants.RED));
                 }
             }
         }

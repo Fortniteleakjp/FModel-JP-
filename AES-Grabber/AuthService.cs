@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -10,10 +11,29 @@ public class AuthService
 {
     private const string ClientAuth = "Basic OThmN2U0MmMyZTNhNGY4NmE3NGViNDNmYmI0MWVkMzk6MGEyNDQ5YTItMDAxYS00NTFlLWFmZWMtM2U4MTI5MDFjNGQ3";
 
+    // 本体(FModel)と同じパス・同じDPAPIエントロピーを使い、ログイン情報を共有できるようにする。
     private static readonly string DeviceAuthPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "FModel",
+        "deviceAuth.json"
+    );
+
+    // 旧バージョンが LocalAppData 直下に平文保存していたファイル（移行・削除対象）。
+    private static readonly string LegacyDeviceAuthPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "deviceAuth.json"
     );
+
+    private static readonly byte[] DpapiEntropy = Encoding.UTF8.GetBytes("FModel.DeviceAuth.v1");
+
+    private static async Task SaveAuthDataAsync(AuthData authData)
+    {
+        // DeviceId/Secret は長期再認証に使える機密情報のため Windows DPAPI(CurrentUser) で暗号化して保存する。
+        Directory.CreateDirectory(Path.GetDirectoryName(DeviceAuthPath)!);
+        var json = JsonSerializer.Serialize(authData, new JsonSerializerOptions { WriteIndented = true });
+        var protectedBytes = ProtectedData.Protect(Encoding.UTF8.GetBytes(json), DpapiEntropy, DataProtectionScope.CurrentUser);
+        await File.WriteAllBytesAsync(DeviceAuthPath, protectedBytes);
+    }
 
     public static async Task<AuthData?> RefreshTokenAsync(AuthData savedAuth)
     {
@@ -114,7 +134,7 @@ public class AuthService
                     AccessToken = token.GetProperty("access_token").ToString()
                 };
 
-                await File.WriteAllTextAsync(DeviceAuthPath, JsonSerializer.Serialize(authData, new JsonSerializerOptions { WriteIndented = true }));
+                await SaveAuthDataAsync(authData);
                 return authData;
             }
             catch
@@ -128,12 +148,48 @@ public class AuthService
 
     public static async Task<AuthData?> LoadDeviceAuthAsync()
     {
+        // 旧バージョンが LocalAppData 直下に平文保存したファイルを暗号化形式へ移行する。
+        if (!File.Exists(DeviceAuthPath) && File.Exists(LegacyDeviceAuthPath))
+        {
+            try
+            {
+                var legacyJson = await File.ReadAllTextAsync(LegacyDeviceAuthPath);
+                var legacyAuth = JsonSerializer.Deserialize<AuthData>(legacyJson);
+                if (legacyAuth != null)
+                {
+                    await SaveAuthDataAsync(legacyAuth);
+                    File.Delete(LegacyDeviceAuthPath); // 平文ファイルを削除
+                }
+            }
+            catch
+            {
+                // 移行に失敗しても再ログインで回復するため無視。
+            }
+        }
+
         if (!File.Exists(DeviceAuthPath))
             return null;
 
         try
         {
-            var json = await File.ReadAllTextAsync(DeviceAuthPath);
+            var raw = await File.ReadAllBytesAsync(DeviceAuthPath);
+
+            string json;
+            try
+            {
+                // 通常は DPAPI で暗号化されている。
+                var unprotected = ProtectedData.Unprotect(raw, DpapiEntropy, DataProtectionScope.CurrentUser);
+                json = Encoding.UTF8.GetString(unprotected);
+            }
+            catch (CryptographicException)
+            {
+                // 平文JSONだった場合のフォールバック（暗号化形式へ移行）。
+                json = Encoding.UTF8.GetString(raw);
+                var migrated = JsonSerializer.Deserialize<AuthData>(json);
+                if (migrated != null)
+                    await SaveAuthDataAsync(migrated);
+            }
+
             var authData = JsonSerializer.Deserialize<AuthData>(json);
 
             if (authData == null)

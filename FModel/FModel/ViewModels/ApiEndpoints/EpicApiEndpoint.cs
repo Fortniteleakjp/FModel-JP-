@@ -29,7 +29,8 @@ public class EpicApiEndpoint : AbstractApiProvider
         authRequest.AddHeader("Content-Type", "application/x-www-form-urlencoded");
         authRequest.AddParameter("grant_type", "client_credentials");
         var authResponse = await _client.ExecuteAsync<AuthResponse>(authRequest, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}' Response: {Content}", authRequest.Method, authResponse.StatusDescription, (int) authResponse.StatusCode, authResponse.ResponseUri?.OriginalString, authResponse.Content);
+        // NOTE: レスポンス本文(Content)には access_token が含まれるためログに出力しない。
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", authRequest.Method, authResponse.StatusDescription, (int) authResponse.StatusCode, authResponse.ResponseUri?.OriginalString);
 
         if (!authResponse.IsSuccessful || string.IsNullOrEmpty(authResponse.Data?.AccessToken))
         {
@@ -42,10 +43,9 @@ public class EpicApiEndpoint : AbstractApiProvider
 
         var request = new FRestRequest(_APP_URL);
         request.AddHeader("Authorization", $"Bearer {accessToken}");
-        Log.Information("リクエストに使用するアクセストークン: {AccessToken}", accessToken);
 
         var response = await _client.ExecuteAsync(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}' Response: {Content}", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString, response.Content);
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         if (response.IsSuccessful)
         {
             Log.Information("Epic Games APIからマニフェストを正常に取得しました。");
@@ -80,11 +80,11 @@ public class EpicApiEndpoint : AbstractApiProvider
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
         request.AddParameter("grant_type", "client_credentials");
         var response = await _client.ExecuteAsync<AuthResponse>(request, token).ConfigureAwait(false);
-        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}' Response: {Content}", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString, response.Content);
+        // NOTE: レスポンス本文(Content)には access_token が含まれるためログに出力しない。
+        Log.Information("[{Method}] [{Status}({StatusCode})] '{Resource}'", request.Method, response.StatusDescription, (int) response.StatusCode, response.ResponseUri?.OriginalString);
         if (response.IsSuccessful && !string.IsNullOrEmpty(response.Data?.AccessToken))
         {
             Log.Information("新しいEpic Games APIアクセストークンが正常に発行されました。");
-            Log.Information("発行されたアクセストークン: {AccessToken}", response.Data.AccessToken);
         }
         else
         {

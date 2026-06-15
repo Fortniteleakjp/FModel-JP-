@@ -423,4 +423,110 @@
     <system:String x:Key="ReplayAnalysis_Label_Branch">Branch</system:String>
     <system:String x:Key="ReplayAnalysis_Label_LevelNamesAndTimes">Level Names and Times</system:String>
     <system:String x:Key="ReplayAnalysis_Footer_Attribution">Replay analysis uses FortniteReplayDecompressor.</system:String>
+
+    <!-- Settings (keys previously missing on the English side) -->
+    <system:String x:Key="Settings_PropertiesFilenameFormat">Filename format when saving properties</system:String>
+    <system:String x:Key="Settings_PropertiesFilenameFormat_Tooltip">Filename format used when saving properties (.json). Available values: {FileName}, {yyyy}, {yy}, {MM}, {dd}, {HH}, {mm}, {ss}</system:String>
+    <system:String x:Key="Settings_Models_PreviewTag">Preview Settings</system:String>
+    <system:String x:Key="Settings_Models_ExportTag">Export Settings</system:String>
+
+    <!-- Image Merger -->
+    <system:String x:Key="ImageMerger_Title">Image Merger</system:String>
+    <system:String x:Key="ImageMerger_Label_Properties">Properties</system:String>
+    <system:String x:Key="ImageMerger_Label_Columns">Columns</system:String>
+    <system:String x:Key="ImageMerger_Label_Spacing">Image Spacing</system:String>
+    <system:String x:Key="ImageMerger_Label_Actions">Actions</system:String>
+    <system:String x:Key="ImageMerger_Button_Popout">Pop Out</system:String>
+    <system:String x:Key="ImageMerger_Button_Save">Save</system:String>
+    <system:String x:Key="ImageMerger_Button_Copy">Copy</system:String>
+    <system:String x:Key="ImageMerger_Button_Clear">Clear</system:String>
+    <system:String x:Key="ImageMerger_Label_Layers">Layers</system:String>
+    <system:String x:Key="ImageMerger_Button_Paste">Paste</system:String>
+    <system:String x:Key="ImageMerger_Tooltip_Add">Add image</system:String>
+    <system:String x:Key="ImageMerger_Tooltip_Paste">Paste from clipboard (Ctrl+V)</system:String>
+    <system:String x:Key="ImageMerger_Tooltip_Delete">Delete layer</system:String>
+    <system:String x:Key="ImageMerger_Tooltip_MoveUp">Move up</system:String>
+    <system:String x:Key="ImageMerger_Tooltip_MoveDown">Move down</system:String>
+    <system:String x:Key="ImageMerger_Dialog_AddTitle">Add image</system:String>
+    <system:String x:Key="ImageMerger_Dialog_ImageFilter">Image files (*.png,*.bmp,*.jpg,*.jpeg,*.jfif,*.jpe,*.tiff,*.tif)|*.png;*.bmp;*.jpg;*.jpeg;*.jfif;*.jpe;*.tiff;*.tif|All files (*.*)|*.*</system:String>
+    <system:String x:Key="ImageMerger_Dialog_SaveTitle">Save image</system:String>
+    <system:String x:Key="ImageMerger_Dialog_PngFilter">PNG files (*.png)|*.png|All files (*.*)|*.*</system:String>
+    <system:String x:Key="ImageMerger_Popout_Title">Merged image</system:String>
+    <system:String x:Key="ImageMerger_Msg_Saved">Saved successfully </system:String>
+    <system:String x:Key="ImageMerger_Msg_SaveFailed">Could not save '{0}'</system:String>
+    <system:String x:Key="ImageMerger_Msg_PasteFailed">Failed to paste image from clipboard.</system:String>
+    <system:String x:Key="ImageMerger_Msg_FileNotFound">Image file not found: {0}</system:String>
+    <system:String x:Key="ImageMerger_Msg_LoadFailed">Failed to load image: {0}</system:String>
+
+    <!-- Icon Layout Editor -->
+    <system:String x:Key="IconLayout_Title">Icon Layout Editor</system:String>
+    <system:String x:Key="IconLayout_Header_Preview">Preview</system:String>
+    <system:String x:Key="IconLayout_Header_ImageType">Image Type (Preview = Generation Type)</system:String>
+    <system:String x:Key="IconLayout_BuiltinPreviewNote">This is the built-in preview for this type. To edit the items below and have them applied, select "Original".</system:String>
+    <system:String x:Key="IconLayout_OriginalNote">Original — you can edit your own layout using the items below and by dragging the frames in the preview, and it will be generated with these settings.</system:String>
+    <system:String x:Key="IconLayout_Header_Category">Category</system:String>
+    <system:String x:Key="IconLayout_CategoryNote">Drag a frame in the preview to move it; select an element and use the mouse wheel to resize it. The name field shows that item's name (the weapon name for weapons, the skin name for skins).</system:String>
+    <system:String x:Key="IconLayout_Header_CanvasSize">Canvas Size</system:String>
+    <system:String x:Key="IconLayout_Field_Width">Width</system:String>
+    <system:String x:Key="IconLayout_Field_Height">Height</system:String>
+    <system:String x:Key="IconLayout_Header_Background">Background</system:String>
+    <system:String x:Key="IconLayout_Field_BackgroundColor">Background Color</system:String>
+    <system:String x:Key="IconLayout_Field_BackgroundImage">Background Image</system:String>
+    <system:String x:Key="IconLayout_Button_Browse">Browse...</system:String>
+    <system:String x:Key="IconLayout_Check_ShowPreviewImage">Show Preview Image</system:String>
+    <system:String x:Key="IconLayout_Label_PreviewWidth">Width:</system:String>
+    <system:String x:Key="IconLayout_Label_PreviewHeight">Height:</system:String>
+    <system:String x:Key="IconLayout_Check_KeepAspect">Keep Aspect Ratio</system:String>
+    <system:String x:Key="IconLayout_Check_ShowName">Show Name</system:String>
+    <system:String x:Key="IconLayout_Label_NameWidth">Width (alignment range):</system:String>
+    <system:String x:Key="IconLayout_Label_FontSize">Font Size:</system:String>
+    <system:String x:Key="IconLayout_Field_Align">Alignment</system:String>
+    <system:String x:Key="IconLayout_Field_TextColor">Text Color</system:String>
+    <system:String x:Key="IconLayout_Field_OutlineColor">Outline Color</system:String>
+    <system:String x:Key="IconLayout_Label_OutlineThickness">Outline Thickness:</system:String>
+    <system:String x:Key="IconLayout_Check_ShowDescription">Show Description</system:String>
+    <system:String x:Key="IconLayout_Label_DescriptionWidth">Width (wrap):</system:String>
+    <system:String x:Key="IconLayout_Field_MaxLines">Max Lines</system:String>
+    <system:String x:Key="IconLayout_Hint">Tip: Drag a frame to move it, select and use the wheel to resize. Settings can be shared via export/import.</system:String>
+    <system:String x:Key="IconLayout_Button_Export">Export</system:String>
+    <system:String x:Key="IconLayout_Button_Import">Import</system:String>
+    <system:String x:Key="IconLayout_Button_Reset">Reset to Default</system:String>
+    <system:String x:Key="IconLayout_Button_Save">Save</system:String>
+    <system:String x:Key="IconLayout_Handle_Image">Image</system:String>
+    <system:String x:Key="IconLayout_Handle_Name">Name</system:String>
+    <system:String x:Key="IconLayout_Handle_Description">Description</system:String>
+    <system:String x:Key="IconLayout_Dialog_BrowseBackground_Title">Select Background Image</system:String>
+    <system:String x:Key="IconLayout_Dialog_BrowseBackground_Filter">Image Files|*.png;*.jpg;*.jpeg;*.bmp;*.webp|All Files|*.*</system:String>
+    <system:String x:Key="IconLayout_Msg_ResetConfirm">This will reset the layout for this category to its default values. Are you sure?</system:String>
+    <system:String x:Key="IconLayout_Caption_Confirm">Confirm</system:String>
+    <system:String x:Key="IconLayout_Msg_Saved">The layout has been saved.&#x0a;It will be applied the next time an icon is generated (open/reload an asset).</system:String>
+    <system:String x:Key="IconLayout_Caption_Save">Save</system:String>
+    <system:String x:Key="IconLayout_Dialog_Export_Title">Export Icon Layout Settings</system:String>
+    <system:String x:Key="IconLayout_Dialog_Json_Filter">JSON Files|*.json|All Files|*.*</system:String>
+    <system:String x:Key="IconLayout_Msg_Exported">Layout settings have been exported.&#x0a;{0}</system:String>
+    <system:String x:Key="IconLayout_Caption_Export">Export</system:String>
+    <system:String x:Key="IconLayout_Msg_ExportFailed">Export failed: {0}</system:String>
+    <system:String x:Key="IconLayout_Caption_Error">Error</system:String>
+    <system:String x:Key="IconLayout_Dialog_Import_Title">Import Icon Layout Settings</system:String>
+    <system:String x:Key="IconLayout_Msg_Imported">Layout settings have been imported.&#x0a;Press "Save" to confirm.</system:String>
+    <system:String x:Key="IconLayout_Caption_Import">Import</system:String>
+    <system:String x:Key="IconLayout_Msg_ImportInvalid">Import failed (invalid format).</system:String>
+    <system:String x:Key="IconLayout_Msg_ImportFailed">Import failed: {0}</system:String>
+
+    <!-- Replay Analysis (code-behind messages / dialogs) -->
+    <system:String x:Key="ReplayAnalysis_Dialog_SelectReplay">Select a Replay File</system:String>
+    <system:String x:Key="ReplayAnalysis_Dialog_SaveJson">Save Replay as JSON</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_SelectValidReplay">Please select a valid replay file.</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_ErrorCaption">Error</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_CompleteCaption">Complete</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_InfoCaption">Information</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_SaveCompleteCaption">Save Complete</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_AnalysisComplete">Analysis complete.&#x0a;{0} elimination records were retrieved.</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_AnalysisError">An error occurred during analysis: {0}</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_AnalyzeFirst">Please analyze a replay first.</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_JsonSaved">Saved as a JSON file.&#x0a;{0}</system:String>
+    <system:String x:Key="ReplayAnalysis_Msg_JsonSaveError">An error occurred while saving the JSON file: {0}</system:String>
+    <system:String x:Key="ReplayAnalysis_Stat_KillsFormat">{0} ({1} kills)</system:String>
+    <system:String x:Key="ReplayAnalysis_Stat_NoData">No data</system:String>
+    <system:String x:Key="ReplayAnalysis_Detail_Title">Elimination Details</system:String>
 </ResourceDictionary>

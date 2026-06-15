@@ -7,7 +7,7 @@
          xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
          xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
          xmlns:settings="clr-namespace:FModel.Settings"
-         Title="アイコンレイアウト編集" WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
+         Title="{DynamicResource IconLayout_Title}" WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
          Width="1180" Height="760" MinWidth="900" MinHeight="600">
     <adonisControls:AdonisWindow.Resources>
         <ResourceDictionary>
@@ -122,7 +122,7 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="2,0,2,8">
-                    <TextBlock Text="プレビュー" Style="{StaticResource SectionHeader}" Margin="0" />
+                    <TextBlock Text="{DynamicResource IconLayout_Header_Preview}" Style="{StaticResource SectionHeader}" Margin="0" />
                     <TextBlock Text="{Binding ContextInfo}" Opacity="0.7" Margin="12,0,0,0" VerticalAlignment="Center"
                                TextTrimming="CharacterEllipsis" />
                 </StackPanel>
@@ -145,7 +145,7 @@
                 <!-- 画像タイプ -->
                 <Border Style="{StaticResource FModelJP5Card}">
                     <StackPanel>
-                        <TextBlock Text="画像タイプ（プレビュー＝生成タイプ）" Style="{StaticResource SectionHeader}" />
+                        <TextBlock Text="{DynamicResource IconLayout_Header_ImageType}" Style="{StaticResource SectionHeader}" />
                         <ComboBox ItemsSource="{Binding Styles}" SelectedItem="{Binding SelectedStyle, Mode=TwoWay}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -169,10 +169,10 @@
                             <TextBlock TextWrapping="Wrap" Opacity="0.9">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Text" Value="このタイプの組み込みプレビューです。下の項目を編集・反映するには「オリジナル」を選んでください。" />
+                                        <Setter Property="Text" Value="{DynamicResource IconLayout_BuiltinPreviewNote}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsOriginal}" Value="True">
-                                                <Setter Property="Text" Value="オリジナル — 下の項目とプレビューの枠ドラッグで自作レイアウトを編集でき、この内容で生成されます。" />
+                                                <Setter Property="Text" Value="{DynamicResource IconLayout_OriginalNote}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -185,7 +185,7 @@
                 <!-- カテゴリ -->
                 <Border Style="{StaticResource FModelJP5Card}">
                     <StackPanel>
-                        <TextBlock Text="カテゴリ" Style="{StaticResource SectionHeader}" />
+                        <TextBlock Text="{DynamicResource IconLayout_Header_Category}" Style="{StaticResource SectionHeader}" />
                         <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -194,14 +194,14 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                         <TextBlock Margin="0,8,0,0" Opacity="0.65" TextWrapping="Wrap"
-                                   Text="プレビュー上の枠をドラッグで移動、要素を選択してマウスホイールでサイズ変更できます。名前欄にはそのアイテムの名前（武器なら武器名、スキンならスキン名）が入ります。" />
+                                   Text="{DynamicResource IconLayout_CategoryNote}" />
                     </StackPanel>
                 </Border>
 
                 <!-- キャンバス -->
                 <Border Style="{StaticResource FModelJP5Card}">
                     <StackPanel>
-                        <TextBlock Text="キャンバスサイズ" Style="{StaticResource SectionHeader}" />
+                        <TextBlock Text="{DynamicResource IconLayout_Header_CanvasSize}" Style="{StaticResource SectionHeader}" />
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -210,10 +210,10 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="幅" Style="{StaticResource FieldLabel}" />
+                            <TextBlock Grid.Column="0" Text="{DynamicResource IconLayout_Field_Width}" Style="{StaticResource FieldLabel}" />
                             <TextBox Grid.Column="1" Style="{StaticResource FModelJP5Input}"
                                      Text="{Binding CurrentTemplate.Width, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
-                            <TextBlock Grid.Column="3" Text="高さ" Style="{StaticResource FieldLabel}" />
+                            <TextBlock Grid.Column="3" Text="{DynamicResource IconLayout_Field_Height}" Style="{StaticResource FieldLabel}" />
                             <TextBox Grid.Column="4" Style="{StaticResource FModelJP5Input}"
                                      Text="{Binding CurrentTemplate.Height, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
                         </Grid>
@@ -223,7 +223,7 @@
                 <!-- 背景 -->
                 <Border Style="{StaticResource FModelJP5Card}">
                     <StackPanel>
-                        <TextBlock Text="背景" Style="{StaticResource SectionHeader}" />
+                        <TextBlock Text="{DynamicResource IconLayout_Header_Background}" Style="{StaticResource SectionHeader}" />
                         <ComboBox ItemsSource="{Binding BackgroundModes}" SelectedItem="{Binding CurrentTemplate.BackgroundMode, Mode=TwoWay}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -234,13 +234,13 @@
 
                         <StackPanel Margin="0,10,0,0"
                                     Visibility="{Binding CurrentTemplate.BackgroundMode, Converter={x:Static converters:EnumToVisibilityConverter.Instance}, ConverterParameter=SolidColor}">
-                            <TextBlock Text="背景色" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <TextBlock Text="{DynamicResource IconLayout_Field_BackgroundColor}" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
                             <controls:ColorPickerMini Hex="{Binding CurrentTemplate.BackgroundColor, Mode=TwoWay}" />
                         </StackPanel>
 
                         <StackPanel Margin="0,10,0,0"
                                     Visibility="{Binding CurrentTemplate.BackgroundMode, Converter={x:Static converters:EnumToVisibilityConverter.Instance}, ConverterParameter=Image}">
-                            <TextBlock Text="背景画像" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
+                            <TextBlock Text="{DynamicResource IconLayout_Field_BackgroundImage}" Style="{StaticResource FieldLabel}" Margin="0,0,0,4" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -248,7 +248,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBox Grid.Column="0" Style="{StaticResource FModelJP5Input}"
                                          Text="{Binding CurrentTemplate.BackgroundImagePath, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
-                                <Button Grid.Column="1" Margin="8,0,0,0" Content="参照..." Click="OnBrowseBackground"
+                                <Button Grid.Column="1" Margin="8,0,0,0" Content="{DynamicResource IconLayout_Button_Browse}" Click="OnBrowseBackground"
                                         Style="{StaticResource FModelJP5SecondaryButton}" />
                             </Grid>
                         </StackPanel>
@@ -259,7 +259,7 @@
                 <Border Style="{StaticResource FModelJP5Card}">
                     <StackPanel>
                         <CheckBox IsChecked="{Binding CurrentTemplate.Preview.Visible, Mode=TwoWay}"
-                                  Content="プレビュー画像を表示" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                  Content="{DynamicResource IconLayout_Check_ShowPreviewImage}" FontWeight="SemiBold" Margin="0,0,0,8" />
                         <Grid Margin="0,0,0,6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -275,12 +275,16 @@
                             <TextBox Grid.Column="4" Style="{StaticResource FModelJP5Input}"
                                      Text="{Binding CurrentTemplate.Preview.Y, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N0}" />
                         </Grid>
-                        <TextBlock Text="{Binding CurrentTemplate.Preview.Width, StringFormat='幅: {0:N0}'}" Opacity="0.85" />
+                        <TextBlock Opacity="0.85">
+                            <Run Text="{DynamicResource IconLayout_Label_PreviewWidth}" /><Run Text="{Binding CurrentTemplate.Preview.Width, StringFormat=' {0:N0}', Mode=OneWay}" />
+                        </TextBlock>
                         <Slider Minimum="1" Maximum="2048" Value="{Binding CurrentTemplate.Preview.Width, Mode=TwoWay}" />
-                        <TextBlock Text="{Binding CurrentTemplate.Preview.Height, StringFormat='高さ: {0:N0}'}" Opacity="0.85" Margin="0,4,0,0" />
+                        <TextBlock Opacity="0.85" Margin="0,4,0,0">
+                            <Run Text="{DynamicResource IconLayout_Label_PreviewHeight}" /><Run Text="{Binding CurrentTemplate.Preview.Height, StringFormat=' {0:N0}', Mode=OneWay}" />
+                        </TextBlock>
                         <Slider Minimum="1" Maximum="2048" Value="{Binding CurrentTemplate.Preview.Height, Mode=TwoWay}" />
                         <CheckBox Margin="0,8,0,0" IsChecked="{Binding CurrentTemplate.Preview.KeepAspect, Mode=TwoWay}"
-                                  Content="縦横比を維持" />
+                                  Content="{DynamicResource IconLayout_Check_KeepAspect}" />
                     </StackPanel>
                 </Border>
 
@@ -288,7 +292,7 @@
                 <Border Style="{StaticResource FModelJP5Card}">
                     <StackPanel>
                         <CheckBox IsChecked="{Binding CurrentTemplate.Name.Visible, Mode=TwoWay}"
-                                  Content="名前を表示" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                  Content="{DynamicResource IconLayout_Check_ShowName}" FontWeight="SemiBold" Margin="0,0,0,8" />
                         <Grid Margin="0,0,0,6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -304,11 +308,15 @@
                             <TextBox Grid.Column="4" Style="{StaticResource FModelJP5Input}"
                                      Text="{Binding CurrentTemplate.Name.Y, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N0}" />
                         </Grid>
-                        <TextBlock Text="{Binding CurrentTemplate.Name.Width, StringFormat='幅(整列範囲): {0:N0}'}" Opacity="0.85" />
+                        <TextBlock Opacity="0.85">
+                            <Run Text="{DynamicResource IconLayout_Label_NameWidth}" /><Run Text="{Binding CurrentTemplate.Name.Width, StringFormat=' {0:N0}', Mode=OneWay}" />
+                        </TextBlock>
                         <Slider Minimum="1" Maximum="2048" Value="{Binding CurrentTemplate.Name.Width, Mode=TwoWay}" />
-                        <TextBlock Text="{Binding CurrentTemplate.Name.FontSize, StringFormat='フォントサイズ: {0:N0}'}" Opacity="0.85" Margin="0,4,0,0" />
+                        <TextBlock Opacity="0.85" Margin="0,4,0,0">
+                            <Run Text="{DynamicResource IconLayout_Label_FontSize}" /><Run Text="{Binding CurrentTemplate.Name.FontSize, StringFormat=' {0:N0}', Mode=OneWay}" />
+                        </TextBlock>
                         <Slider Minimum="6" Maximum="300" Value="{Binding CurrentTemplate.Name.FontSize, Mode=TwoWay}" />
-                        <TextBlock Text="整列" Style="{StaticResource FieldLabel}" Margin="0,8,0,4" />
+                        <TextBlock Text="{DynamicResource IconLayout_Field_Align}" Style="{StaticResource FieldLabel}" Margin="0,8,0,4" />
                         <ComboBox ItemsSource="{Binding Aligns}" SelectedItem="{Binding CurrentTemplate.Name.Align, Mode=TwoWay}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -316,11 +324,13 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <TextBlock Text="文字色" Style="{StaticResource FieldLabel}" Margin="0,10,0,4" />
+                        <TextBlock Text="{DynamicResource IconLayout_Field_TextColor}" Style="{StaticResource FieldLabel}" Margin="0,10,0,4" />
                         <controls:ColorPickerMini Hex="{Binding CurrentTemplate.Name.Color, Mode=TwoWay}" />
-                        <TextBlock Text="縁取り色" Style="{StaticResource FieldLabel}" Margin="0,10,0,4" />
+                        <TextBlock Text="{DynamicResource IconLayout_Field_OutlineColor}" Style="{StaticResource FieldLabel}" Margin="0,10,0,4" />
                         <controls:ColorPickerMini Hex="{Binding CurrentTemplate.Name.OutlineColor, Mode=TwoWay}" />
-                        <TextBlock Text="{Binding CurrentTemplate.Name.OutlineThickness, StringFormat='縁取りの太さ: {0:N1}'}" Opacity="0.85" Margin="0,8,0,0" />
+                        <TextBlock Opacity="0.85" Margin="0,8,0,0">
+                            <Run Text="{DynamicResource IconLayout_Label_OutlineThickness}" /><Run Text="{Binding CurrentTemplate.Name.OutlineThickness, StringFormat=' {0:N1}', Mode=OneWay}" />
+                        </TextBlock>
                         <Slider Minimum="0" Maximum="30" Value="{Binding CurrentTemplate.Name.OutlineThickness, Mode=TwoWay}" />
                     </StackPanel>
                 </Border>
@@ -329,7 +339,7 @@
                 <Border Style="{StaticResource FModelJP5Card}">
                     <StackPanel>
                         <CheckBox IsChecked="{Binding CurrentTemplate.Description.Visible, Mode=TwoWay}"
-                                  Content="説明を表示" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                  Content="{DynamicResource IconLayout_Check_ShowDescription}" FontWeight="SemiBold" Margin="0,0,0,8" />
                         <Grid Margin="0,0,0,6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -345,20 +355,24 @@
                             <TextBox Grid.Column="4" Style="{StaticResource FModelJP5Input}"
                                      Text="{Binding CurrentTemplate.Description.Y, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat=N0}" />
                         </Grid>
-                        <TextBlock Text="{Binding CurrentTemplate.Description.Width, StringFormat='幅(折返し): {0:N0}'}" Opacity="0.85" />
+                        <TextBlock Opacity="0.85">
+                            <Run Text="{DynamicResource IconLayout_Label_DescriptionWidth}" /><Run Text="{Binding CurrentTemplate.Description.Width, StringFormat=' {0:N0}', Mode=OneWay}" />
+                        </TextBlock>
                         <Slider Minimum="1" Maximum="2048" Value="{Binding CurrentTemplate.Description.Width, Mode=TwoWay}" />
-                        <TextBlock Text="{Binding CurrentTemplate.Description.FontSize, StringFormat='フォントサイズ: {0:N0}'}" Opacity="0.85" Margin="0,4,0,0" />
+                        <TextBlock Opacity="0.85" Margin="0,4,0,0">
+                            <Run Text="{DynamicResource IconLayout_Label_FontSize}" /><Run Text="{Binding CurrentTemplate.Description.FontSize, StringFormat=' {0:N0}', Mode=OneWay}" />
+                        </TextBlock>
                         <Slider Minimum="6" Maximum="200" Value="{Binding CurrentTemplate.Description.FontSize, Mode=TwoWay}" />
                         <Grid Margin="0,8,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="最大行数" Style="{StaticResource FieldLabel}" />
+                            <TextBlock Grid.Column="0" Text="{DynamicResource IconLayout_Field_MaxLines}" Style="{StaticResource FieldLabel}" />
                             <TextBox Grid.Column="1" Style="{StaticResource FModelJP5Input}"
                                      Text="{Binding CurrentTemplate.Description.MaxLines, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
                         </Grid>
-                        <TextBlock Text="整列" Style="{StaticResource FieldLabel}" Margin="0,8,0,4" />
+                        <TextBlock Text="{DynamicResource IconLayout_Field_Align}" Style="{StaticResource FieldLabel}" Margin="0,8,0,4" />
                         <ComboBox ItemsSource="{Binding Aligns}" SelectedItem="{Binding CurrentTemplate.Description.Align, Mode=TwoWay}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -366,11 +380,13 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <TextBlock Text="文字色" Style="{StaticResource FieldLabel}" Margin="0,10,0,4" />
+                        <TextBlock Text="{DynamicResource IconLayout_Field_TextColor}" Style="{StaticResource FieldLabel}" Margin="0,10,0,4" />
                         <controls:ColorPickerMini Hex="{Binding CurrentTemplate.Description.Color, Mode=TwoWay}" />
-                        <TextBlock Text="縁取り色" Style="{StaticResource FieldLabel}" Margin="0,10,0,4" />
+                        <TextBlock Text="{DynamicResource IconLayout_Field_OutlineColor}" Style="{StaticResource FieldLabel}" Margin="0,10,0,4" />
                         <controls:ColorPickerMini Hex="{Binding CurrentTemplate.Description.OutlineColor, Mode=TwoWay}" />
-                        <TextBlock Text="{Binding CurrentTemplate.Description.OutlineThickness, StringFormat='縁取りの太さ: {0:N1}'}" Opacity="0.85" Margin="0,8,0,0" />
+                        <TextBlock Opacity="0.85" Margin="0,8,0,0">
+                            <Run Text="{DynamicResource IconLayout_Label_OutlineThickness}" /><Run Text="{Binding CurrentTemplate.Description.OutlineThickness, StringFormat=' {0:N1}', Mode=OneWay}" />
+                        </TextBlock>
                         <Slider Minimum="0" Maximum="30" Value="{Binding CurrentTemplate.Description.OutlineThickness, Mode=TwoWay}" />
                     </StackPanel>
                 </Border>
@@ -383,13 +399,13 @@
                 adonisExtensions:LayerExtension.IncreaseLayer="True">
             <Grid Margin="14,10">
                 <TextBlock VerticalAlignment="Center" Opacity="0.65"
-                           Text="ヒント: 枠をドラッグで移動、選択してホイールでサイズ変更。設定は書き出し/読み込みで共有できます。" />
+                           Text="{DynamicResource IconLayout_Hint}" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button MinWidth="96" Content="書き出し" Click="OnExport" Style="{StaticResource FModelJP5SecondaryButton}" />
-                    <Button MinWidth="96" Margin="8,0,0,0" Content="読み込み" Click="OnImport" Style="{StaticResource FModelJP5SecondaryButton}" />
-                    <Button MinWidth="110" Margin="8,0,0,0" Content="既定に戻す" Click="OnReset" Style="{StaticResource FModelJP5SecondaryButton}" />
-                    <Button MinWidth="90" Margin="8,0,0,0" Content="保存" Click="OnSave" Style="{StaticResource FModelJP5PrimaryButton}" />
-                    <Button MinWidth="90" Margin="8,0,0,0" Content="閉じる" Click="OnClose" Style="{StaticResource FModelJP5SecondaryButton}" />
+                    <Button MinWidth="96" Content="{DynamicResource IconLayout_Button_Export}" Click="OnExport" Style="{StaticResource FModelJP5SecondaryButton}" />
+                    <Button MinWidth="96" Margin="8,0,0,0" Content="{DynamicResource IconLayout_Button_Import}" Click="OnImport" Style="{StaticResource FModelJP5SecondaryButton}" />
+                    <Button MinWidth="110" Margin="8,0,0,0" Content="{DynamicResource IconLayout_Button_Reset}" Click="OnReset" Style="{StaticResource FModelJP5SecondaryButton}" />
+                    <Button MinWidth="90" Margin="8,0,0,0" Content="{DynamicResource IconLayout_Button_Save}" Click="OnSave" Style="{StaticResource FModelJP5PrimaryButton}" />
+                    <Button MinWidth="90" Margin="8,0,0,0" Content="{DynamicResource Cart_Window_Close}" Click="OnClose" Style="{StaticResource FModelJP5SecondaryButton}" />
                 </StackPanel>
             </Grid>
         </Border>

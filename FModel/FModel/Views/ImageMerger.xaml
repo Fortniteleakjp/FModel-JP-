@@ -6,7 +6,7 @@
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                              mc:Ignorable="d"
-                             Title="画像マージャー" Height="720" Width="1280"
+                             Title="{DynamicResource ImageMerger_Title}" Height="720" Width="1280"
                              Icon="/Resources/FModel.ico"
                              WindowStartupLocation="CenterScreen">
 
@@ -67,32 +67,32 @@
 
             <!-- Properties & Actions -->
             <StackPanel Grid.Row="0" Margin="15">
-                <TextBlock Text="プロパティ" Foreground="#AAAAAA" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
-                
-                <TextBlock Text="列数" Foreground="White" Margin="0,0,0,5"/>
+                <TextBlock Text="{DynamicResource ImageMerger_Label_Properties}" Foreground="#AAAAAA" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <TextBlock Text="{DynamicResource ImageMerger_Label_Columns}" Foreground="White" Margin="0,0,0,5"/>
                 <Slider x:Name="SizeSlider" Minimum="1" Maximum="20" Value="1" 
                         TickFrequency="1" IsSnapToTickEnabled="True" 
                         AutoToolTipPlacement="TopLeft" 
                         Thumb.DragCompleted="DrawPreview" Margin="0,0,0,10"/>
 
-                <TextBlock Text="画像間隔" Foreground="White" Margin="0,0,0,5"/>
+                <TextBlock Text="{DynamicResource ImageMerger_Label_Spacing}" Foreground="White" Margin="0,0,0,5"/>
                 <Slider x:Name="SpacingSlider" Minimum="0" Maximum="100" Value="10" 
                         TickFrequency="5" IsSnapToTickEnabled="True" 
                         AutoToolTipPlacement="TopLeft" 
                         ValueChanged="SpacingSlider_ValueChanged" Margin="0,0,0,20"/>
 
-                <TextBlock Text="アクション" Foreground="#AAAAAA" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock Text="{DynamicResource ImageMerger_Label_Actions}" Foreground="#AAAAAA" FontSize="11" FontWeight="Bold" Margin="0,0,0,10"/>
                 <UniformGrid Columns="2" Rows="2">
-                    <Button x:Name="OpenImageButton" Content="ポップアウト" Click="OnOpenImage" Margin="2" Height="30"/>
-                    <Button x:Name="SaveImageButton" Content="保存" Click="OnSaveImage" Margin="2" Height="30"/>
-                    <Button x:Name="CopyImageButton" Content="コピー" Click="OnCopyImage" Margin="2" Height="30"/>
-                    <Button x:Name="ClearButton" Content="クリア" Click="OnClear" Margin="2" Height="30"/>
+                    <Button x:Name="OpenImageButton" Content="{DynamicResource ImageMerger_Button_Popout}" Click="OnOpenImage" Margin="2" Height="30"/>
+                    <Button x:Name="SaveImageButton" Content="{DynamicResource ImageMerger_Button_Save}" Click="OnSaveImage" Margin="2" Height="30"/>
+                    <Button x:Name="CopyImageButton" Content="{DynamicResource ImageMerger_Button_Copy}" Click="OnCopyImage" Margin="2" Height="30"/>
+                    <Button x:Name="ClearButton" Content="{DynamicResource ImageMerger_Button_Clear}" Click="OnClear" Margin="2" Height="30"/>
                 </UniformGrid>
             </StackPanel>
 
             <!-- Layers List -->
             <DockPanel Grid.Row="1" Margin="15,0,15,0">
-                <TextBlock DockPanel.Dock="Top" Text="レイヤー" Foreground="#AAAAAA" FontSize="11" FontWeight="Bold" Margin="0,0,0,5"/>
+                <TextBlock DockPanel.Dock="Top" Text="{DynamicResource ImageMerger_Label_Layers}" Foreground="#AAAAAA" FontSize="11" FontWeight="Bold" Margin="0,0,0,5"/>
                 <ListBox x:Name="ImagesListBox" 
                          Background="#252525" 
                          BorderThickness="0"
@@ -162,11 +162,11 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" x:Name="AddButton" Content="+" Click="OnImageAdd" ToolTip="画像を追加" Margin="2" Height="30" FontWeight="Bold"/>
-                <Button Grid.Column="1" x:Name="PasteButton" Content="貼付" Click="OnPasteImage" ToolTip="クリップボードから貼り付け (Ctrl+V)" Margin="2" Height="30"/>
-                <Button Grid.Column="2" x:Name="DeleteButton" Content="-" Click="ModifyItemInList" ToolTip="レイヤーを削除" Margin="2" Height="30" FontWeight="Bold"/>
-                <Button Grid.Column="3" x:Name="UpButton" Content="▲" Click="ModifyItemInList" ToolTip="上へ移動" Margin="2" Height="30"/>
-                <Button Grid.Column="4" x:Name="DownButton" Content="▼" Click="ModifyItemInList" ToolTip="下へ移動" Margin="2" Height="30"/>
+                <Button Grid.Column="0" x:Name="AddButton" Content="+" Click="OnImageAdd" ToolTip="{DynamicResource ImageMerger_Tooltip_Add}" Margin="2" Height="30" FontWeight="Bold"/>
+                <Button Grid.Column="1" x:Name="PasteButton" Content="{DynamicResource ImageMerger_Button_Paste}" Click="OnPasteImage" ToolTip="{DynamicResource ImageMerger_Tooltip_Paste}" Margin="2" Height="30"/>
+                <Button Grid.Column="2" x:Name="DeleteButton" Content="-" Click="ModifyItemInList" ToolTip="{DynamicResource ImageMerger_Tooltip_Delete}" Margin="2" Height="30" FontWeight="Bold"/>
+                <Button Grid.Column="3" x:Name="UpButton" Content="▲" Click="ModifyItemInList" ToolTip="{DynamicResource ImageMerger_Tooltip_MoveUp}" Margin="2" Height="30"/>
+                <Button Grid.Column="4" x:Name="DownButton" Content="▼" Click="ModifyItemInList" ToolTip="{DynamicResource ImageMerger_Tooltip_MoveDown}" Margin="2" Height="30"/>
             </Grid>
         </Grid>
     </Grid>

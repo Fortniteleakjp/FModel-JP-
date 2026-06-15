@@ -5,10 +5,11 @@ FModelJP をご利用いただきありがとうございます！
 
 ## {version} 主な変更点
 
-- Fortnite LIVE でUEFNの読み込みを追加
-- 設定で、読み込むかを設定可能
-
-不具合の修正
-- Fortnite LIVEの読み込みを出来るように修正
+- 内部の修正
+- セキュリティーの修正
+- ビルド成果物が追加されないように変更
+- リプレイ解析の英語対応
+- ログの修正
+- ImageMergerのバグ修正
 
 すべての変更履歴については、[GitHub のリリース](https://github.com/Fortniteleakjp/FModel-JP-/releases) をご確認ください。

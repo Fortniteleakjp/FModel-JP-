@@ -37,7 +37,7 @@ namespace FModel.Views
             var openFileDialog = new OpenFileDialog
             {
                 Filter = "Replay Files (*.replay)|*.replay|All files (*.*)|*.*",
-                Title = "Select a Replay File"
+                Title = Application.Current.TryFindResource("ReplayAnalysis_Dialog_SelectReplay") as string ?? "リプレイファイルを選択"
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -51,7 +51,10 @@ namespace FModel.Views
             var replayPath = ReplayFilePathTextBox.Text;
             if (string.IsNullOrEmpty(replayPath) || !System.IO.File.Exists(replayPath))
             {
-                MessageBox.Show("有効なリプレイファイルを選択してください。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    Application.Current.TryFindResource("ReplayAnalysis_Msg_SelectValidReplay") as string ?? "有効なリプレイファイルを選択してください。",
+                    Application.Current.TryFindResource("ReplayAnalysis_Msg_ErrorCaption") as string ?? "エラー",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -78,7 +81,9 @@ namespace FModel.Views
                         .Select(g => new { Player = g.Key, Count = g.Count() })
                         .OrderByDescending(x => x.Count)
                         .FirstOrDefault();
-                    MostKillsTextBlock.Text = killsPerPlayer != null ? $"{killsPerPlayer.Player} ({killsPerPlayer.Count} kills)" : "データなし";
+                    MostKillsTextBlock.Text = killsPerPlayer != null
+                        ? string.Format(Application.Current.TryFindResource("ReplayAnalysis_Stat_KillsFormat") as string ?? "{0} ({1} kills)", killsPerPlayer.Player, killsPerPlayer.Count)
+                        : Application.Current.TryFindResource("ReplayAnalysis_Stat_NoData") as string ?? "データなし";
 
                     var weaponStats = _replay.Eliminations
                         .GroupBy(e => e.GunType)
@@ -95,11 +100,17 @@ namespace FModel.Views
                     LevelNamesListBox.ItemsSource = _replay.Header.LevelNamesAndTimes.Select(x => $"{x.Item1} ({x.Item2})");
                 }
 
-                MessageBox.Show($"解析が完了しました。\n{_replay.Eliminations.Count} 件の撃破データを取得しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(
+                    string.Format(Application.Current.TryFindResource("ReplayAnalysis_Msg_AnalysisComplete") as string ?? "解析が完了しました。\n{0} 件の撃破データを取得しました。", _replay.Eliminations.Count),
+                    Application.Current.TryFindResource("ReplayAnalysis_Msg_CompleteCaption") as string ?? "完了",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show($"解析中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    string.Format(Application.Current.TryFindResource("ReplayAnalysis_Msg_AnalysisError") as string ?? "解析中にエラーが発生しました: {0}", ex.Message),
+                    Application.Current.TryFindResource("ReplayAnalysis_Msg_ErrorCaption") as string ?? "エラー",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 _replay = null;
             }
             finally
@@ -113,14 +124,17 @@ namespace FModel.Views
         {
             if (_replay == null)
             {
-                MessageBox.Show("先にリプレイを解析してください。", "情報", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(
+                    Application.Current.TryFindResource("ReplayAnalysis_Msg_AnalyzeFirst") as string ?? "先にリプレイを解析してください。",
+                    Application.Current.TryFindResource("ReplayAnalysis_Msg_InfoCaption") as string ?? "情報",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             var saveFileDialog = new SaveFileDialog
             {
                 Filter = "JSON File (*.json)|*.json",
-                Title = "Save Replay as JSON",
+                Title = Application.Current.TryFindResource("ReplayAnalysis_Dialog_SaveJson") as string ?? "リプレイをJSONとして保存",
                 FileName = $"{Path.GetFileNameWithoutExtension(ReplayFilePathTextBox.Text)}.json"
             };
 
@@ -130,11 +144,17 @@ namespace FModel.Views
                 {
                     var json = JsonConvert.SerializeObject(_replay, Formatting.Indented);
                     File.WriteAllText(saveFileDialog.FileName, json);
-                    MessageBox.Show($"JSONファイルとして保存しました。\n{saveFileDialog.FileName}", "保存完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(
+                        string.Format(Application.Current.TryFindResource("ReplayAnalysis_Msg_JsonSaved") as string ?? "JSONファイルとして保存しました。\n{0}", saveFileDialog.FileName),
+                        Application.Current.TryFindResource("ReplayAnalysis_Msg_SaveCompleteCaption") as string ?? "保存完了",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (System.Exception ex)
                 {
-                    MessageBox.Show($"JSONファイルの保存中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(
+                        string.Format(Application.Current.TryFindResource("ReplayAnalysis_Msg_JsonSaveError") as string ?? "JSONファイルの保存中にエラーが発生しました: {0}", ex.Message),
+                        Application.Current.TryFindResource("ReplayAnalysis_Msg_ErrorCaption") as string ?? "エラー",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
