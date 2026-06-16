@@ -390,7 +390,9 @@ public class Renderer : IDisposable
         {
             CameraOp.Modify(wnd.KeyboardState, deltaSeconds);
 
-            if (wnd.KeyboardState.IsKeyPressed(Keys.Z) &&
+            // JP: Ctrl+Z は取り消し(SnimGui側で処理)。Z単体のみアニメ化トリガーにする。
+            var ctrlDown = wnd.KeyboardState.IsKeyDown(Keys.LeftControl) || wnd.KeyboardState.IsKeyDown(Keys.RightControl);
+            if (!ctrlDown && wnd.KeyboardState.IsKeyPressed(Keys.Z) &&
                 Options.TryGetModel(out var selectedModel) &&
                 selectedModel is SkeletalModel)
             {
