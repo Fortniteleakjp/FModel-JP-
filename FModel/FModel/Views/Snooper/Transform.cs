@@ -53,7 +53,7 @@ public class Transform
     {
         const float width = 100f;
 
-        if (ImGui.TreeNode("Position"))
+        if (ImGui.TreeNode("位置"))
         {
             ImGui.SetNextItemWidth(width);
             ImGui.DragFloat("X", ref Position.X, speed, 0f, 0f, "%.2f m");
@@ -67,7 +67,7 @@ public class Transform
             ImGui.TreePop();
         }
 
-        if (ImGui.TreeNode("Rotation"))
+        if (ImGui.TreeNode("回転"))
         {
             ImGui.SetNextItemWidth(width);
             ImGui.DragFloat("W", ref Rotation.W, .005f, 0f, 0f, "%.3f rad");
@@ -84,7 +84,7 @@ public class Transform
             ImGui.TreePop();
         }
 
-        if (ImGui.TreeNode("Scale"))
+        if (ImGui.TreeNode("スケール"))
         {
             ImGui.SetNextItemWidth(width);
             ImGui.DragFloat("X", ref Scale.X, speed, 0f, 0f, "%.3f");

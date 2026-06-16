@@ -117,7 +117,7 @@ public class Animation : IDisposable
         SnimGui.Popup(() =>
         {
             s.Renderer.Options.SelectAnimation(i);
-            if (ImGui.BeginMenu("Animate"))
+            if (ImGui.BeginMenu("アニメーション"))
             {
                 foreach ((var guid, var model) in s.Renderer.Options.Models)
                 {
@@ -131,14 +131,14 @@ public class Animation : IDisposable
                 }
                 ImGui.EndMenu();
             }
-            if (ImGui.MenuItem("Save"))
+            if (ImGui.MenuItem("保存"))
             {
                 s.WindowShouldFreeze(true);
                 saver.Value = new Exporter(_export, UserSettings.Default.ExportOptions).TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out saver.Label, out saver.Path);
                 s.WindowShouldFreeze(false);
             }
             ImGui.Separator();
-            if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(Path);
+            if (ImGui.MenuItem("パスをコピー")) ImGui.SetClipboardText(Path);
         });
     }
 }

@@ -107,6 +107,9 @@ public class Texture : IDisposable
         GL.TexImage2D(_target, 0, internalFormat, Width, Height, 0, pixelFormat, PixelType.UnsignedByte, bitmap.Bytes);
         GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.LinearMipmapLinear);
         GL.TexParameter(_target, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Linear);
+        // JP鮮明化: 異方性フィルタリングで斜めから見た床/壁テクスチャのボケを大幅軽減(GL4.6コア機能)
+        var maxAniso = GL.GetFloat((GetPName) All.MaxTextureMaxAnisotropy);
+        GL.TexParameter(_target, (TextureParameterName) All.TextureMaxAnisotropy, MathF.Min(16f, maxAniso));
         GL.TexParameter(_target, TextureParameterName.TextureBaseLevel, 0);
         GL.TexParameter(_target, TextureParameterName.TextureMaxLevel, 8);
 
@@ -235,13 +238,13 @@ public class Texture : IDisposable
         {
             SnimGui.NoFramePaddingOnY(() =>
             {
-                SnimGui.Layout("Type");ImGui.Text($" :  ({Format}) {Name}");
-                SnimGui.TooltipCopy("(?) Click to Copy Path", Path);
-                SnimGui.Layout("Guid");ImGui.Text($" :  {Guid.ToString(EGuidFormats.UniqueObjectGuid)}");
-                SnimGui.Layout("Size");
+                SnimGui.Layout("種類");ImGui.Text($" :  ({Format}) {Name}");
+                SnimGui.TooltipCopy("(?) クリックでパスをコピー", Path);
+                SnimGui.Layout("GUID");ImGui.Text($" :  {Guid.ToString(EGuidFormats.UniqueObjectGuid)}");
+                SnimGui.Layout("サイズ");
                 ImGui.Text($" :  {Width}x{Height}");
 
-                SnimGui.Layout("Swizzle");
+                SnimGui.Layout("スウィズル");
                 for (int c = 0; c < SwizzleMask.Length; c++)
                 {
                     if (ImGui.Checkbox(_labels[c], ref _values[c]))

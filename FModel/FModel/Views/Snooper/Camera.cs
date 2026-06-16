@@ -47,7 +47,9 @@ public class Camera
         if (updateAll)
         {
             Far = Math.Max(Far, box.Max.AbsMax() * 50f);
-            Speed = Math.Max(Speed, distance);
+            // JP: 自動設定される移動速度を控えめに(対象サイズの0.35倍)。大きいレベルでも速すぎず、細かく見て回れる。
+            // さらに速くしたい場合はカメラUIのSpeedスライダー or Shiftで調整可能。
+            Speed = Math.Max(Speed, distance * 0.35f);
         }
     }
 
@@ -230,14 +232,14 @@ public class Camera
         ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(0, 1));
         if (ImGui.BeginTable("camera_editor", 2))
         {
-            SnimGui.Layout("Mode");
+            SnimGui.Layout("モード");
             ImGui.PushID(1);var m = (int) Mode;
-            ImGui.Combo("world_mode", ref m, "Fly Cam\0Arcball\0");
+            ImGui.Combo("world_mode", ref m, "フライ\0アークボール\0");
             Mode = (WorldMode) m;ImGui.PopID();
 
-            SnimGui.Layout("Speed");ImGui.PushID(2);
+            SnimGui.Layout("速度");ImGui.PushID(2);
             ImGui.DragFloat("", ref Speed, _step, _zero, _infinite, "%.2f m/s", _clamp);
-            ImGui.PopID();SnimGui.Layout("Far Plane");ImGui.PushID(3);
+            ImGui.PopID();SnimGui.Layout("遠クリップ");ImGui.PushID(3);
             ImGui.DragFloat("", ref Far, 0.1f, 0.1f, Far * 2f, "%.2f m", _clamp);
             ImGui.PopID();
 

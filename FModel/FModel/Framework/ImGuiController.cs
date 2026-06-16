@@ -47,6 +47,15 @@ public class ImGuiController : IDisposable
 
     private static bool KHRDebugAvailable = false;
 
+    // JP: OSクリップボード連携(コピー/ペースト)。ImGui既定は内部バッファのみでOSと繋がらないため自前で配線する。
+    // 1.91+ ではクリップボード関数は io ではなく PlatformIO 側にある。デリゲートはGC回避のためフィールド保持。
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate IntPtr GetClipboardTextFnDelegate(IntPtr ctx);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] private delegate void SetClipboardTextFnDelegate(IntPtr ctx, IntPtr text);
+    private GetClipboardTextFnDelegate _getClipboardFn;
+    private SetClipboardTextFnDelegate _setClipboardFn;
+    private IntPtr _clipboardTextPtr = IntPtr.Zero;
+    private unsafe OpenTK.Windowing.GraphicsLibraryFramework.Window* _windowPtr = null; // GLFWクリップボード用
+
     public ImGuiController(int width, int height)
     {
         _windowWidth = width;
@@ -66,16 +75,20 @@ public class ImGuiController : IDisposable
             var iniFileNamePtr = Marshal.StringToCoTaskMemUTF8(Path.Combine(UserSettings.Default.OutputDirectory, ".data", "imgui.ini"));
             io.NativePtr->IniFilename = (byte*)iniFileNamePtr;
         }
-        // If not found, Fallback to default ImGui Font
-        var normalPath   = @"C:\Windows\Fonts\segoeui.ttf";
-        var boldPath     = @"C:\Windows\Fonts\segoeuib.ttf";
-        var semiBoldPath = @"C:\Windows\Fonts\seguisb.ttf";
-        if (File.Exists(normalPath))
-            FontNormal = io.Fonts.AddFontFromFileTTF(normalPath, 16 * DpiScale);
-        if (File.Exists(boldPath))
-            FontBold = io.Fonts.AddFontFromFileTTF(boldPath, 16 * DpiScale);
-        if (File.Exists(semiBoldPath))
-            FontSemiBold = io.Fonts.AddFontFromFileTTF(semiBoldPath, 16 * DpiScale);
+        // JP: 日本語UIを表示するため、日本語グリフを含むフォント + 日本語グリフ範囲で読み込む。
+        // (Segoe UI など日本語非対応フォント/ラテン範囲のみだと日本語が □(豆腐) になる)
+        // 優先: 游ゴシック(Win10/11標準) → メイリオ → MSゴシック → Segoe UI(ラテンのみのフォールバック)
+        var jpRanges = io.Fonts.GetGlyphRangesJapanese();
+        ImFontPtr LoadJpFont(string[] candidates)
+        {
+            foreach (var p in candidates)
+                if (File.Exists(p))
+                    return io.Fonts.AddFontFromFileTTF(p, 16 * DpiScale, (ImFontConfigPtr) IntPtr.Zero, jpRanges);
+            return io.Fonts.AddFontDefault();
+        }
+        FontNormal   = LoadJpFont([@"C:\Windows\Fonts\YuGothR.ttc", @"C:\Windows\Fonts\meiryo.ttc",  @"C:\Windows\Fonts\msgothic.ttc", @"C:\Windows\Fonts\segoeui.ttf"]);
+        FontBold     = LoadJpFont([@"C:\Windows\Fonts\YuGothB.ttc", @"C:\Windows\Fonts\meiryob.ttc", @"C:\Windows\Fonts\msgothic.ttc", @"C:\Windows\Fonts\segoeuib.ttf"]);
+        FontSemiBold = LoadJpFont([@"C:\Windows\Fonts\YuGothM.ttc", @"C:\Windows\Fonts\YuGothR.ttc", @"C:\Windows\Fonts\meiryo.ttc",   @"C:\Windows\Fonts\seguisb.ttf"]);
 
         io.Fonts.AddFontDefault();
         io.Fonts.Build();          // Build font atlas
@@ -87,6 +100,13 @@ public class ImGuiController : IDisposable
         io.ConfigDockingWithShift = true;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         io.BackendRendererUserData = 0;
+
+        // JP: クリップボードをOSに接続(ペースト Ctrl+V / コピー Ctrl+C・「パスをコピー」が機能するようになる)
+        _getClipboardFn = GetClipboardTextImpl;
+        _setClipboardFn = SetClipboardTextImpl;
+        var platformIo = ImGui.GetPlatformIO();
+        platformIo.Platform_GetClipboardTextFn = Marshal.GetFunctionPointerForDelegate(_getClipboardFn);
+        platformIo.Platform_SetClipboardTextFn = Marshal.GetFunctionPointerForDelegate(_setClipboardFn);
 
         CreateDeviceResources();
     }
@@ -245,6 +265,8 @@ void main()
             ImGui.Render();
         }
 
+        unsafe { _windowPtr = wnd.WindowPtr; } // GLFWクリップボード用にウィンドウハンドルを保持
+
         SetPerFrameImGuiData(deltaSeconds);
         UpdateImGuiInput(wnd);
 
@@ -296,15 +318,68 @@ void main()
         }
         PressedChars.Clear();
 
-        io.KeyShift = kState.IsKeyDown(Keys.LeftShift) || kState.IsKeyDown(Keys.RightShift);
-        io.KeyCtrl = kState.IsKeyDown(Keys.LeftControl) || kState.IsKeyDown(Keys.RightControl);
-        io.KeyAlt = kState.IsKeyDown(Keys.LeftAlt) || kState.IsKeyDown(Keys.RightAlt);
-        io.KeySuper = kState.IsKeyDown(Keys.LeftSuper) || kState.IsKeyDown(Keys.RightSuper);
+        // JP修正(Ctrl+V等のショートカット対応): ImGui 1.91 では修飾キーを AddKeyEvent(ImGuiKey.Mod*) で
+        // 明示的に送る必要がある。legacy の io.KeyCtrl= 代入だけだと Ctrl+V のコードが成立せず貼り付けが効かない。
+        io.AddKeyEvent(ImGuiKey.ModShift, kState.IsKeyDown(Keys.LeftShift) || kState.IsKeyDown(Keys.RightShift));
+        io.AddKeyEvent(ImGuiKey.ModCtrl, kState.IsKeyDown(Keys.LeftControl) || kState.IsKeyDown(Keys.RightControl));
+        io.AddKeyEvent(ImGuiKey.ModAlt, kState.IsKeyDown(Keys.LeftAlt) || kState.IsKeyDown(Keys.RightAlt));
+        io.AddKeyEvent(ImGuiKey.ModSuper, kState.IsKeyDown(Keys.LeftSuper) || kState.IsKeyDown(Keys.RightSuper));
     }
 
     internal void PressChar(char keyChar)
     {
         PressedChars.Add(keyChar);
+    }
+
+    // JP: ImGui がペースト時に呼ぶ。GLFW 経由で OS クリップボードのテキストを取得し UTF8 ポインタで返す(次回呼び出しまで保持)。
+    // WPF の Clipboard は OpenTK の描画ループ中(WPFメッセージポンプ非稼働)だと失敗しやすいため、GLFW を使う。
+    private IntPtr GetClipboardTextImpl(IntPtr ctx)
+    {
+        var text = string.Empty;
+        try
+        {
+            unsafe
+            {
+                if (_windowPtr != null)
+                    text = GLFW.GetClipboardString(_windowPtr) ?? string.Empty;
+            }
+        }
+        catch { /* クリップボード取得失敗時は空文字 */ }
+
+        if (_clipboardTextPtr != IntPtr.Zero)
+            Marshal.FreeCoTaskMem(_clipboardTextPtr);
+        _clipboardTextPtr = Marshal.StringToCoTaskMemUTF8(text);
+        return _clipboardTextPtr;
+    }
+
+    // JP: 「貝り付け」ボタン等から OS クリップボードのテキストを取得する公開ヘルパ(GLFW経由・確実)。
+    public string GetClipboardText()
+    {
+        try
+        {
+            unsafe
+            {
+                if (_windowPtr != null)
+                    return GLFW.GetClipboardString(_windowPtr) ?? string.Empty;
+            }
+        }
+        catch { /* 失敗時は空文字 */ }
+        return string.Empty;
+    }
+
+    // JP: ImGui がコピー時に呼ぶ。受け取った UTF8 文字列を GLFW 経由で OS クリップボードへ書き込む。
+    private void SetClipboardTextImpl(IntPtr ctx, IntPtr text)
+    {
+        try
+        {
+            var s = Marshal.PtrToStringUTF8(text);
+            unsafe
+            {
+                if (_windowPtr != null && s != null)
+                    GLFW.SetClipboardString(_windowPtr, s);
+            }
+        }
+        catch { /* クリップボード書き込み失敗は無視 */ }
     }
 
     private void RenderImDrawData(ImDrawDataPtr draw_data)
@@ -468,6 +543,12 @@ void main()
 
         GL.DeleteTexture(_fontTexture);
         GL.DeleteProgram(_shader);
+
+        if (_clipboardTextPtr != IntPtr.Zero)
+        {
+            Marshal.FreeCoTaskMem(_clipboardTextPtr);
+            _clipboardTextPtr = IntPtr.Zero;
+        }
     }
 
     public static void LabelObject(ObjectLabelIdentifier objLabelIdent, int glObject, string name)
@@ -562,7 +643,7 @@ void main()
             return key - Keys.KeyPad0 + ImGuiKey.Keypad0;
 
         if (key >= Keys.F1 && key <= Keys.F24)
-            return key - Keys.F1 + ImGuiKey.F24;
+            return key - Keys.F1 + ImGuiKey.F1; // JP修正: 元コードは ImGuiKey.F24 で誤り(F1がF24扱いになっていた)
 
         return key switch
         {
@@ -604,7 +685,7 @@ void main()
             Keys.KeyPadAdd => ImGuiKey.KeypadAdd,
             Keys.KeyPadEnter => ImGuiKey.KeypadEnter,
             Keys.KeyPadEqual => ImGuiKey.KeypadEqual,
-            Keys.LeftShift => ImGuiKey.ModShift,
+            Keys.LeftShift => ImGuiKey.LeftShift, // JP修正: 元コードは ImGuiKey.ModShift で誤り
             Keys.LeftControl => ImGuiKey.LeftCtrl,
             Keys.LeftAlt => ImGuiKey.LeftAlt,
             Keys.LeftSuper => ImGuiKey.LeftSuper,

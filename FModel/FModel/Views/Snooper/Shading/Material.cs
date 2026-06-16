@@ -271,19 +271,19 @@ public class Material : IDisposable
         if (ImGui.BeginTable("parameters", 2))
         {
             var id = 1;
-            SnimGui.Layout("Roughness Min");ImGui.PushID(id++);
+            SnimGui.Layout("粗さ 最小");ImGui.PushID(id++);
             ImGui.DragFloat("", ref RoughnessMin, _step, _zero, 1.0f, _mult, _clamp);
-            ImGui.PopID();SnimGui.Layout("Roughness Max");ImGui.PushID(id++);
+            ImGui.PopID();SnimGui.Layout("粗さ 最大");ImGui.PushID(id++);
             ImGui.DragFloat("", ref RoughnessMax, _step, _zero, 1.0f, _mult, _clamp);
-            ImGui.PopID();SnimGui.Layout("Emissive Multiplier");ImGui.PushID(id++);
+            ImGui.PopID();SnimGui.Layout("発光倍率");ImGui.PushID(id++);
             ImGui.DragFloat("", ref EmissiveMult, _step, _zero, _infinite, _mult, _clamp);
             ImGui.PopID();
 
             if (HasAo && Ao.HasColorBoost)
             {
-                SnimGui.Layout("Color Boost");ImGui.PushID(id++);
+                SnimGui.Layout("カラーブースト");ImGui.PushID(id++);
                 ImGui.ColorEdit3("", ref Ao.ColorBoost.Color);ImGui.PopID();
-                SnimGui.Layout("Color Boost Exponent");ImGui.PushID(id++);
+                SnimGui.Layout("カラーブースト指数");ImGui.PushID(id++);
                 ImGui.DragFloat("", ref Ao.ColorBoost.Exponent, _step, _zero, _infinite, _mult, _clamp);
                 ImGui.PopID();
             }
@@ -295,8 +295,8 @@ public class Material : IDisposable
     {
         if (ImGui.BeginTable(id, 2, ImGuiTableFlags.SizingStretchProp))
         {
-            Layout("Blend", Parameters.BlendMode.GetDescription(), true, true);
-            Layout("Shading", Parameters.ShadingModel.GetDescription(), true, true);
+            Layout("ブレンド", Parameters.BlendMode.GetDescription(), true, true);
+            Layout("シェーディング", Parameters.ShadingModel.GetDescription(), true, true);
             ImGui.EndTable();
         }
     }
@@ -326,23 +326,23 @@ public class Material : IDisposable
     {
         if (ImGui.BeginTable("material_textures", 2))
         {
-            SnimGui.Layout("Channel");ImGui.PushID(1); ImGui.BeginDisabled(model.UvCount < 2);
+            SnimGui.Layout("チャンネル");ImGui.PushID(1); ImGui.BeginDisabled(model.UvCount < 2);
             ImGui.DragInt("", ref SelectedChannel, _step, 0, model.UvCount - 1, "UV %i", ImGuiSliderFlags.AlwaysClamp);
-            ImGui.EndDisabled();ImGui.PopID();SnimGui.Layout("Type");ImGui.PushID(2);
-            ImGui.Combo("texture_type", ref SelectedTexture, "Diffuse\0Normals\0Specular\0Ambient Occlusion\0Emissive\0");
+            ImGui.EndDisabled();ImGui.PopID();SnimGui.Layout("種類");ImGui.PushID(2);
+            ImGui.Combo("texture_type", ref SelectedTexture, "ディフューズ\0法線\0スペキュラ\0アンビエントオクルージョン\0発光\0");
             ImGui.PopID();
 
             switch (SelectedTexture)
             {
                 case 0 when DiffuseColor.Length > 0:
-                    SnimGui.Layout("Color");ImGui.PushID(3);
+                    SnimGui.Layout("カラー");ImGui.PushID(3);
                     ImGui.ColorEdit4("", ref DiffuseColor[SelectedChannel], ImGuiColorEditFlags.NoAlpha);
                     ImGui.PopID();
                     break;
                 case 4 when EmissiveColor.Length > 0:
-                    SnimGui.Layout("Color");ImGui.PushID(3);
+                    SnimGui.Layout("カラー");ImGui.PushID(3);
                     ImGui.ColorEdit4("", ref EmissiveColor[SelectedChannel], ImGuiColorEditFlags.NoAlpha);
-                    ImGui.PopID();SnimGui.Layout("Region");ImGui.PushID(4);
+                    ImGui.PopID();SnimGui.Layout("領域");ImGui.PushID(4);
                     ImGui.DragFloat4("", ref EmissiveRegion, _step, _zero, 1.0f, "%.2f", _clamp);
                     ImGui.PopID();
                     break;

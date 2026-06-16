@@ -113,6 +113,59 @@ public class Renderer : IDisposable
         SetupCamera();
     }
 
+    /// JP機能: フルパス(複数可・1行に1つ)で指定したアセットを、現在のシーンを消さずに追加読み込みする。
+    /// 戻り値: (追加成功数, 失敗したパス一覧)。Snooper は GL コンテキストを持つUIスレッドで動くため直接読み込み可能。
+    public (int added, System.Collections.Generic.List<string> failed) LoadModelsByPaths(string multiline)
+    {
+        var failed = new System.Collections.Generic.List<string>();
+        var added = 0;
+        if (string.IsNullOrWhiteSpace(multiline))
+            return (0, failed);
+
+        foreach (var raw in multiline.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            var path = raw.Trim().Trim('"');
+            if (path.Length == 0) continue;
+            try
+            {
+                if (TryLoadModelByPath(path)) added++;
+                else failed.Add(path);
+            }
+            catch
+            {
+                failed.Add(path);
+            }
+        }
+
+        // 新規追加分のみ GL セットアップ(IsSetup済みはスキップされる冪等処理)。カメラは動かさず現在の視点を維持。
+        if (added > 0) Options.SetupModelsAndLights();
+        return (added, failed);
+    }
+
+    private bool TryLoadModelByPath(string path)
+    {
+        // FModelの「パスをコピー」は .umap/.uasset 付き。これはパッケージ拡張子で、TryLoadPackageObject は
+        // ドット以降をオブジェクト名と解釈する(".umap" → "umap" という名のオブジェクトを探して失敗)ため、
+        // パッケージ拡張子を除去してから読み込む。除去後はパッケージ名=主オブジェクト名として解決される。
+        if (path.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
+            path = path[..^5];
+        else if (path.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase))
+            path = path[..^7];
+
+        if (!Utils.TryLoadObject(path, out UObject obj) || obj == null)
+            return false;
+
+        switch (obj)
+        {
+            case UStaticMesh st:        LoadStaticMesh(st, UserSettings.Default.NaniteMeshExportFormat); return true;
+            case USkeletalMesh sk:      LoadSkeletalMesh(sk); return true;
+            case USkeleton skel:        LoadSkeleton(skel); return true;
+            case UMaterialInstance mi:  LoadMaterialInstance(mi); return true;
+            case UWorld w:              LoadWorld(CancellationToken.None, w, Transform.Identity); return true; // .umap(レベル)対応
+            default:                    return false;
+        }
+    }
+
     public void Swap(UMaterialInstance unrealMaterial)
     {
         if (!Options.TryGetModel(out var model) || !Options.TryGetSection(model, out var section)) return;
@@ -330,26 +383,34 @@ public class Renderer : IDisposable
             }
         }
 
-        CameraOp.Modify(wnd.KeyboardState, deltaSeconds);
-
-        if (wnd.KeyboardState.IsKeyPressed(Keys.Z) &&
-            Options.TryGetModel(out var selectedModel) &&
-            selectedModel is SkeletalModel)
+        // JP修正: テキスト入力欄にフォーカスがある時だけカメラ移動/ショートカットを抑止する。
+        // WantCaptureKeyboard は NavEnableKeyboard の影響で未入力時も true になりWASDが効かなくなるため、
+        // 「テキスト入力中だけ true」になる WantTextInput を使う。
+        if (!ImGuiNET.ImGui.GetIO().WantTextInput)
         {
-            Options.RemoveAnimations();
-            Options.AnimateMesh(true);
-            wnd.WindowShouldClose(true, false);
+            CameraOp.Modify(wnd.KeyboardState, deltaSeconds);
+
+            // JP: Ctrl+Z は取り消し(SnimGui側で処理)。Z単体のみアニメ化トリガーにする。
+            var ctrlDown = wnd.KeyboardState.IsKeyDown(Keys.LeftControl) || wnd.KeyboardState.IsKeyDown(Keys.RightControl);
+            if (!ctrlDown && wnd.KeyboardState.IsKeyPressed(Keys.Z) &&
+                Options.TryGetModel(out var selectedModel) &&
+                selectedModel is SkeletalModel)
+            {
+                Options.RemoveAnimations();
+                Options.AnimateMesh(true);
+                wnd.WindowShouldClose(true, false);
+            }
+            if (wnd.KeyboardState.IsKeyPressed(Keys.Space))
+                Options.Tracker.IsPaused = !Options.Tracker.IsPaused;
+            if (wnd.KeyboardState.IsKeyPressed(Keys.F) && Options.TryGetModel(out var focusModel)) // JP操作性: 選択モデルにフォーカス(フレーミング)
+                CameraOp.Setup(focusModel.Box);
+            if (wnd.KeyboardState.IsKeyPressed(Keys.Delete))
+                Options.RemoveModel(Options.SelectedModel);
+            if (wnd.KeyboardState.IsKeyPressed(Keys.H))
+                wnd.WindowShouldClose(true, false);
+            if (wnd.KeyboardState.IsKeyPressed(Keys.Escape))
+                wnd.WindowShouldClose(true, true);
         }
-        if (wnd.KeyboardState.IsKeyPressed(Keys.Space))
-            Options.Tracker.IsPaused = !Options.Tracker.IsPaused;
-        if (wnd.KeyboardState.IsKeyPressed(Keys.F) && Options.TryGetModel(out var focusModel)) // JP操作性: 選択モデルにフォーカス(フレーミング)
-            CameraOp.Setup(focusModel.Box);
-        if (wnd.KeyboardState.IsKeyPressed(Keys.Delete))
-            Options.RemoveModel(Options.SelectedModel);
-        if (wnd.KeyboardState.IsKeyPressed(Keys.H))
-            wnd.WindowShouldClose(true, false);
-        if (wnd.KeyboardState.IsKeyPressed(Keys.Escape))
-            wnd.WindowShouldClose(true, true);
     }
 
     private void LoadStaticMesh(UStaticMesh original, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.OnlyNormalLODs)
