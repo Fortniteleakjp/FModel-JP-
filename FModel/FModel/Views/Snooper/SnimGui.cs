@@ -95,11 +95,11 @@ public class SnimGui
     {
         ImGui.DockSpaceOverViewport(_dockspaceId, ImGui.GetMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
 
-        SectionWindow("Material Inspector", s.Renderer, DrawMaterialInspector, false);
-        AnimationWindow("Timeline", s.Renderer, (icons, tracker, animations) =>
+        SectionWindow("マテリアル###Material Inspector", s.Renderer, DrawMaterialInspector, false);
+        AnimationWindow("タイムライン###Timeline", s.Renderer, (icons, tracker, animations) =>
             tracker.ImGuiTimeline(s, _saver, icons, animations, _outlinerSize, Controller.FontSemiBold));
 
-        Window("World", () => DrawWorld(s), false);
+        Window("ワールド###World", () => DrawWorld(s), false);
 
         DrawSockets(s);
         DrawOuliner(s);
@@ -123,7 +123,7 @@ public class SnimGui
             ImGui.Separator();
 
             ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.Zero);
-            ImGui.Checkbox("Got it! Don't show me again", ref _swapper.IsAware);
+            ImGui.Checkbox("了解！次回から表示しない", ref _swapper.IsAware);
             ImGui.PopStyleVar();
 
             var size = new Vector2(120, 0);
@@ -138,16 +138,16 @@ public class SnimGui
             ImGui.SetItemDefaultFocus();
             ImGui.SameLine();
 
-            if (ImGui.Button("Cancel", size))
+            if (ImGui.Button("キャンセル", size))
             {
                 _swapper.Reset();
                 ImGui.CloseCurrentPopup();
             }
         });
 
-        Modal("Saved", _saver.Value, () =>
+        Modal("保存しました",_saver.Value, () =>
         {
-            ImGui.TextWrapped($"Successfully saved {_saver.Label}");
+            ImGui.TextWrapped($"{_saver.Label} を保存しました");
             ImGui.Separator();
 
             var size = new Vector2(120, 0);
@@ -160,7 +160,7 @@ public class SnimGui
             ImGui.SetItemDefaultFocus();
             ImGui.SameLine();
 
-            if (ImGui.Button("Show In Explorer", size))
+            if (ImGui.Button("エクスプローラーで表示", size))
             {
                 Process.Start("explorer.exe", $"/select, \"{_saver.Path.Replace('/', '\\')}\"");
 
@@ -179,11 +179,11 @@ public class SnimGui
 
             NoFramePaddingOnY(() =>
             {
-                Layout("Renderer");ImGui.Text($" :  {_renderer}");
-                Layout("Version");ImGui.Text($" :  {_version}");
-                Layout("Loaded Models");ImGui.Text($" :  x{length}");ImGui.SameLine();
+                Layout("レンダラー");ImGui.Text($" :  {_renderer}");
+                Layout("バージョン");ImGui.Text($" :  {_version}");
+                Layout("読み込み済みモデル");ImGui.Text($" :  x{length}");ImGui.SameLine();
 
-                if (ImGui.SmallButton("Save All"))
+                if (ImGui.SmallButton("すべて保存"))
                 {
                     foreach (var model in s.Renderer.Options.Models.Values)
                     {
@@ -192,9 +192,9 @@ public class SnimGui
                 }
             });
 
-            Modal("Saved", b, () =>
+            Modal("保存しました",b, () =>
             {
-                ImGui.TextWrapped($"Successfully saved {length} models");
+                ImGui.TextWrapped($"{length} 個のモデルを保存しました");
                 ImGui.Separator();
 
                 var size = new Vector2(120, 0);
@@ -206,7 +206,7 @@ public class SnimGui
                 ImGui.SetItemDefaultFocus();
                 ImGui.SameLine();
 
-                if (ImGui.Button("Show In Explorer", size))
+                if (ImGui.Button("エクスプローラーで表示", size))
                 {
                     Process.Start("explorer.exe", $"/select, \"{UserSettings.Default.ModelDirectory.Replace('/', '\\')}\"");
                     ImGui.CloseCurrentPopup();
@@ -216,31 +216,31 @@ public class SnimGui
             ImGui.EndTable();
         }
 
-        ImGui.SeparatorText("Editor");
+        ImGui.SeparatorText("エディタ");
         if (ImGui.BeginTable("world_editor", 2))
         {
-            Layout("Animate With Rotation Only");ImGui.PushID(1);
+            Layout("回転のみでアニメ");ImGui.PushID(1);
             ImGui.Checkbox("", ref s.Renderer.AnimateWithRotationOnly);
-            ImGui.PopID();Layout("Time Multiplier");ImGui.PushID(2);
+            ImGui.PopID();Layout("再生速度");ImGui.PushID(2);
             ImGui.DragFloat("", ref s.Renderer.Options.Tracker.TimeMultiplier, 0.01f, 0.25f, 8f, "x%.2f", ImGuiSliderFlags.NoInput);
-            ImGui.PopID();Layout("Vertex Colors");ImGui.PushID(3);
+            ImGui.PopID();Layout("頂点カラー");ImGui.PushID(3);
             var c = (int) s.Renderer.Color;
             ImGui.Combo("vertex_colors", ref c,
-                "Default\0Sections\0Colors\0Normals\0Texture Coordinates\0");
+                "デフォルト\0セクション\0カラー\0法線\0UV座標\0");
             s.Renderer.Color = (VertexColor) c;
             ImGui.PopID();
 
             ImGui.EndTable();
         }
 
-        ImGui.SeparatorText("Camera");
+        ImGui.SeparatorText("カメラ");
         s.Renderer.CameraOp.ImGuiCamera();
 
-        ImGui.SeparatorText("Lights");
+        ImGui.SeparatorText("ライト");
         for (int i = 0; i < s.Renderer.Options.Lights.Count; i++)
         {
             var light = s.Renderer.Options.Lights[i];
-            var id = s.Renderer.Options.TryGetModel(light.Model, out var lightModel) ? lightModel.Name : "None";
+            var id = s.Renderer.Options.TryGetModel(light.Model, out var lightModel) ? lightModel.Name : "なし";
 
             id += $"##{i}";
             if (ImGui.TreeNode(id) && ImGui.BeginTable(id, 2))
@@ -258,61 +258,61 @@ public class SnimGui
         if (!ImGui.BeginMainMenuBar()) return;
 
         const int cursorX = 360;
-        Modal("Commands", ImGui.MenuItem("Commands"), () =>
+        Modal("操作ガイド", ImGui.MenuItem("操作ガイド"), () =>
         {
             ImGui.TextWrapped(
-                @"Most commands should be pretty straightforward but just in case here is a non-exhaustive list of things you can do in this 3D viewer:
+                @"この3Dビューアでできる主な操作の一覧です（すべてではありません）:
 
-1. UI / UX
-    - Press Shift while moving a window to dock it
-    - Double Click in a box to input a new value
-    - Mouse Click + Drag in a box to modify the value without having to type
-    - Press H to hide the window and append the next mesh you extract
+1. UI / 操作
+    - ウィンドウ移動中に Shift を押すとドッキング
+    - 入力欄をダブルクリックで数値を直接入力
+    - 入力欄をクリック＋ドラッグで（入力せずに）数値を増減
+    - H でウィンドウを隠し、次に抽出したメッシュを追加表示
 
-2. Viewport
-    - WASD to move around
-    - E / Q to move up / down
-    - Shift to move faster
-    - Mouse Wheel to zoom (dolly in / out)
-    - Middle Mouse Button + Drag to pan
-    - F to focus (frame) the selected model
-    - XC to change the field of view
-    - Z to animate the selected model
-    - Left Mouse Button pressed to look around
-    - Right Click to select a model in the world
+2. ビューポート
+    - WASD で移動
+    - E / Q で上下移動
+    - Shift で高速移動
+    - マウスホイールでズーム（前後ドリー）
+    - 中ボタン＋ドラッグでパン
+    - F で選択モデルにフォーカス（フレーミング）
+    - X / C で視野角（FOV）を変更
+    - Z で選択モデルをアニメーション
+    - 左ボタン押下で視点回転（見回す）
+    - 右クリックでワールド内のモデルを選択
 
-3. Outliner
-    3.1. Right Click Model
-        - Show / Hide the model
-        - Show a skeletal representation of the model
-        - Save to save the model as .psk / .pskx
-        - Animate to load an animation on the model
-        - Teleport to quickly move the camera to the position of the model
-        - Delete
-        - Deselect
-        - Copy Path to Clipboard
+3. アウトライナー
+    3.1. モデルを右クリック
+        - 表示 / 非表示
+        - スケルタル（骨格）表示
+        - .psk / .pskx で保存
+        - アニメーションを読み込む
+        - そのモデルの位置へカメラを移動
+        - 削除
+        - 選択解除
+        - パスをコピー
 
-4. World
-    - Save All to save all loaded models at once
-      (no it's not dying it's just freezing while saving them all)
+4. ワールド
+    - すべて保存：読み込み済みモデルを一括保存
+      （フリーズしても故障ではありません。保存中なだけです）
 
-5. Details
-    5.1. Right Click Section
-        - Show / Hide the section
-        - Swap to change the material used by this section
-        - Copy Path to Clipboard
-    5.2. Transform
-        - Move / Rotate / Scale the model in the world
-    5.3. Morph Targets
-        - Modify the vertices position by a given amount to change the shape of the model
+5. 詳細
+    5.1. セクションを右クリック
+        - セクションの表示 / 非表示
+        - 入れ替え：このセクションのマテリアルを変更
+        - パスをコピー
+    5.2. トランスフォーム
+        - ワールド内でモデルを 移動 / 回転 / 拡大縮小
+    5.3. モーフターゲット
+        - 頂点位置を指定量だけ変化させてモデルの形状を変える
 
-6. Timeline
-    - Press Space to play/pause
-    - Control the time with your mouse
-    6.1 Right Click Section
-        - Animate another loaded model
-        - Save
-        - Copy Path to Clipboard
+6. タイムライン
+    - Space で再生 / 一時停止
+    - マウスで時間を操作
+    6.1 右クリック
+        - 別の読み込み済みモデルにアニメーションを適用
+        - 保存
+        - パスをコピー
 ");
             ImGui.Separator();
 
@@ -324,7 +324,7 @@ public class SnimGui
             }
         });
 
-        Modal("GPU OpenGL Info", ImGui.MenuItem("GPU Info"), () =>
+        Modal("GPU / OpenGL 情報", ImGui.MenuItem("GPU情報"), () =>
         {
             var s = new StringBuilder();
             s.AppendLine($"MaxTextureImageUnits: {GL.GetInteger(GetPName.MaxTextureImageUnits)}");
@@ -346,12 +346,12 @@ public class SnimGui
             }
         });
 
-        Modal("About Snooper", ImGui.MenuItem("About"), () =>
+        Modal("Snooper について", ImGui.MenuItem("情報"), () =>
         {
             ImGui.TextWrapped(
-                @"Snooper, an ""OpenGL x ImGui"" based 3D viewer, is the result of months of work in order to improve our last one and open up the capabilities data-mining offers. For too long, softwares including FModel were only focused on a bare minimum level of detail showed to the end-user. This is the first step of a long and painful transition to make FModel a viable open-source tool to deep dive into Unreal Engine, its structure, and show how things work internally.
+                @"Snooper は ""OpenGL x ImGui"" ベースの3Dビューアで、前世代を改善しデータマイニングの可能性を広げるために数か月をかけて作られました。これまで FModel を含む多くのソフトはエンドユーザーに最小限の情報しか見せてきませんでした。これは FModel を、Unreal Engine とその構造を深く掘り下げ、内部の仕組みを示せる実用的なオープンソースツールにするための、長く険しい移行の第一歩です。
 
-Snooper aims to give an accurate preview of models, materials, skeletal animations, particles, levels, and level animations (oof) while keeping it compatible with most UE games. This is not an easy task AT ALL, in fact, I don't really know if everything will make out, but what I can say is that we have ideas and a vision for the future of FModel.
+Snooper は、ほとんどの UE 製ゲームと互換性を保ちつつ、モデル・マテリアル・スケルタルアニメーション・パーティクル・レベル・レベルアニメーションを正確にプレビューすることを目指しています。決して簡単な仕事ではなく、すべてが実現できるか分かりませんが、FModel の未来に向けたアイデアとビジョンを我々は持っています。
 ");
             ImGui.Separator();
 
@@ -363,7 +363,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             }
         });
 
-        const string text = "Press H to Hide or ESC to Exit...";
+        const string text = "H で隠す / ESC で終了...";
         ImGui.SetCursorPosX(ImGui.GetWindowViewport().WorkSize.X - ImGui.CalcTextSize(text).X - 5);
         ImGui.TextColored(new Vector4(0.36f, 0.42f, 0.47f, 1.00f), text);
 
@@ -373,14 +373,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     private void DrawOuliner(Snooper s)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        Window("Outliner", () =>
+        Window("アウトライナー###Outliner", () =>
         {
             _outlinerSize = ImGui.GetWindowSize();
             if (ImGui.BeginTable("Items", 4, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV | ImGuiTableFlags.NoSavedSettings, ImGui.GetContentRegionAvail()))
             {
-                ImGui.TableSetupColumn("Instance", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
-                ImGui.TableSetupColumn("Channels", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
-                ImGui.TableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
+                ImGui.TableSetupColumn("数", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
+                ImGui.TableSetupColumn("UV", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
+                ImGui.TableSetupColumn("名前", ImGuiTableColumnFlags.WidthStretch);
                 ImGui.TableSetupColumn("", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
                 ImGui.TableHeadersRow();
 
@@ -410,17 +410,17 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     Popup(() =>
                     {
                         s.Renderer.Options.SelectModel(guid);
-                        if (ImGui.MenuItem("Show", null, model.IsVisible)) model.IsVisible = !model.IsVisible;
-                        if (ImGui.MenuItem("Wireframe", null, model.ShowWireframe)) model.ShowWireframe = !model.ShowWireframe;
-                        if (ImGui.MenuItem("Collisions", null, model.ShowCollisions, model.HasCollisions)) model.ShowCollisions = !model.ShowCollisions;
+                        if (ImGui.MenuItem("表示", null, model.IsVisible)) model.IsVisible = !model.IsVisible;
+                        if (ImGui.MenuItem("ワイヤーフレーム", null, model.ShowWireframe)) model.ShowWireframe = !model.ShowWireframe;
+                        if (ImGui.MenuItem("コリジョン", null, model.ShowCollisions, model.HasCollisions)) model.ShowCollisions = !model.ShowCollisions;
                         ImGui.Separator();
-                        if (ImGui.MenuItem("Save"))
+                        if (ImGui.MenuItem("保存"))
                         {
                             s.WindowShouldFreeze(true);
                             _saver.Value = model.Save(out _saver.Label, out _saver.Path);
                             s.WindowShouldFreeze(false);
                         }
-                        if (ImGui.MenuItem("Animate", model is SkeletalModel))
+                        if (ImGui.MenuItem("アニメーション", model is SkeletalModel))
                         {
                             if (_swapper.IsAware)
                             {
@@ -430,8 +430,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             }
                             else
                             {
-                                _swapper.Title = "Skeletal Animation";
-                                _swapper.Description = "You're about to animate a model.\nThe window will close for you to extract an animation!\n\n";
+                                _swapper.Title = "スケルタルアニメーション";
+                                _swapper.Description = "モデルにアニメーションを適用します。\nアニメーションを抽出できるよう、このウィンドウは一度閉じます！\n\n";
                                 _swapper.Content = () =>
                                 {
                                     s.Renderer.Options.RemoveAnimations();
@@ -440,17 +440,17 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                                 _swapper.Value = true;
                             }
                         }
-                        if (ImGui.MenuItem("Skeleton Tree", model is SkeletalModel))
+                        if (ImGui.MenuItem("スケルトンツリー", model is SkeletalModel))
                         {
                             s.Renderer.IsSkeletonTreeOpen = true;
                             ImGui.SetWindowFocus("Skeleton Tree");
                         }
-                        doubleClick = ImGui.MenuItem("Teleport To");
+                        doubleClick = ImGui.MenuItem("ここへ移動");
 
-                        if (ImGui.MenuItem("Delete")) s.Renderer.Options.RemoveModel(guid);
-                        if (ImGui.MenuItem("Deselect")) s.Renderer.Options.SelectModel(Guid.Empty);
+                        if (ImGui.MenuItem("削除")) s.Renderer.Options.RemoveModel(guid);
+                        if (ImGui.MenuItem("選択解除")) s.Renderer.Options.SelectModel(Guid.Empty);
                         ImGui.Separator();
-                        if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(model.Path);
+                        if (ImGui.MenuItem("パスをコピー")) ImGui.SetClipboardText(model.Path);
                     });
                     if (doubleClick)
                     {
@@ -473,7 +473,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
     private void DrawSockets(Snooper s)
     {
-        MeshWindow("Sockets", s.Renderer, (icons, selectedModel) =>
+        MeshWindow("ソケット###Sockets", s.Renderer, (icons, selectedModel) =>
         {
             var info = new SocketAttachementInfo { Guid = s.Renderer.Options.SelectedModel, Instance = selectedModel.SelectedInstance };
             foreach (var model in s.Renderer.Options.Models.Values)
@@ -509,34 +509,34 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     private void DrawDetails(Snooper s)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        MeshWindow("Details", s.Renderer, (icons, model) =>
+        MeshWindow("詳細###Details", s.Renderer, (icons, model) =>
         {
             if (ImGui.BeginTable("model_details", 2, ImGuiTableFlags.SizingStretchProp))
             {
                 NoFramePaddingOnY(() =>
                 {
-                    Layout("Entity");ImGui.Text($"  :  ({model.Type}) {model.Name}");
-                    Layout("Guid");ImGui.Text($"  :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
+                    Layout("エンティティ");ImGui.Text($"  :  ({model.Type}) {model.Name}");
+                    Layout("GUID");ImGui.Text($"  :  {s.Renderer.Options.SelectedModel.ToString(EGuidFormats.UniqueObjectGuid)}");
                     if (model is SkeletalModel skeletalModel)
                     {
-                        Layout("Skeleton");ImGui.Text($"  :  {skeletalModel.Skeleton.Name}");
-                        Layout("Bones");ImGui.Text($"  :  x{skeletalModel.Skeleton.BoneCount}");
+                        Layout("スケルトン");ImGui.Text($"  :  {skeletalModel.Skeleton.Name}");
+                        Layout("ボーン");ImGui.Text($"  :  x{skeletalModel.Skeleton.BoneCount}");
                     }
                     else
                     {
-                        Layout("Two Sided");ImGui.Text($"  :  {model.IsTwoSided}");
+                        Layout("両面");ImGui.Text($"  :  {model.IsTwoSided}");
                     }
-                    Layout("Sockets");ImGui.Text($"  :  x{model.Sockets.Count}");
+                    Layout("ソケット");ImGui.Text($"  :  x{model.Sockets.Count}");
 
                     ImGui.EndTable();
                 });
             }
             if (ImGui.BeginTabBar("tabbar_details", ImGuiTabBarFlags.None))
             {
-                if (ImGui.BeginTabItem("Sections") && ImGui.BeginTable("table_sections", 2, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV | ImGuiTableFlags.NoSavedSettings, ImGui.GetContentRegionAvail()))
+                if (ImGui.BeginTabItem("セクション###Sections") && ImGui.BeginTable("table_sections", 2, ImGuiTableFlags.Resizable | ImGuiTableFlags.BordersOuterV | ImGuiTableFlags.NoSavedSettings, ImGui.GetContentRegionAvail()))
                 {
-                    ImGui.TableSetupColumn("Index", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
-                    ImGui.TableSetupColumn("Material");
+                    ImGui.TableSetupColumn("番号", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
+                    ImGui.TableSetupColumn("マテリアル");
                     ImGui.TableHeadersRow();
 
                     for (var i = 0; i < model.Sections.Length; i++)
@@ -565,8 +565,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         Popup(() =>
                         {
                             s.Renderer.Options.SelectSection(i);
-                            if (ImGui.MenuItem("Show", null, section.Show)) section.Show = !section.Show;
-                            if (ImGui.MenuItem("Swap"))
+                            if (ImGui.MenuItem("表示", null, section.Show)) section.Show = !section.Show;
+                            if (ImGui.MenuItem("入れ替え"))
                             {
                                 if (_swapper.IsAware)
                                 {
@@ -575,14 +575,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                                 }
                                 else
                                 {
-                                    _swapper.Title = "Material Swap";
-                                    _swapper.Description = "You're about to swap a material.\nThe window will close for you to extract a material!\n\n";
+                                    _swapper.Title = "マテリアル入れ替え";
+                                    _swapper.Description = "マテリアルを入れ替えます。\nマテリアルを抽出できるよう、このウィンドウは一度閉じます！\n\n";
                                     _swapper.Content = () => s.Renderer.Options.SwapMaterial(true);
                                     _swapper.Value = true;
                                 }
                             }
                             ImGui.Separator();
-                            if (ImGui.MenuItem("Copy Path to Clipboard")) ImGui.SetClipboardText(material.Path);
+                            if (ImGui.MenuItem("パスをコピー")) ImGui.SetClipboardText(material.Path);
                         });
                         ImGui.PopID();
                     }
@@ -591,12 +591,12 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                     ImGui.EndTabItem();
                 }
 
-                _transformOpen = ImGui.BeginTabItem("Transform");
+                _transformOpen = ImGui.BeginTabItem("トランスフォーム###Transform");
                 if (_transformOpen)
                 {
                     ImGui.PushID(0); ImGui.BeginDisabled(model.TransformsCount < 2);
                     ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-                    ImGui.SliderInt("", ref model.SelectedInstance, 0, model.TransformsCount - 1, "Instance %i", ImGuiSliderFlags.AlwaysClamp);
+                    ImGui.SliderInt("", ref model.SelectedInstance, 0, model.TransformsCount - 1, "インスタンス %i", ImGuiSliderFlags.AlwaysClamp);
                     ImGui.EndDisabled(); ImGui.PopID();
 
                     if (ImGui.BeginTable("guizmo_controls", 2, ImGuiTableFlags.SizingStretchProp))
@@ -610,13 +610,13 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             _ => 3
                         };
 
-                        Layout("Operation          ");
+                        Layout("操作          ");
                         ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X * 0.6f);
-                        ImGui.PushID(1);ImGui.Combo("", ref c, "Translate\0Rotate\0Scale\0");
-                        ImGui.PopID();ImGui.SameLine();if (ImGui.Button("Reset All")) t.Reset();
-                        Layout("Position");ImGui.Text(t.Position.ToString());
-                        Layout("Rotation");ImGui.Text(t.Rotation.ToString());
-                        Layout("Scale");ImGui.Text(t.Scale.ToString());
+                        ImGui.PushID(1);ImGui.Combo("", ref c, "移動\0回転\0拡大縮小\0");
+                        ImGui.PopID();ImGui.SameLine();if (ImGui.Button("リセット")) t.Reset();
+                        Layout("位置");ImGui.Text(t.Position.ToString());
+                        Layout("回転");ImGui.Text(t.Rotation.ToString());
+                        Layout("スケール");ImGui.Text(t.Scale.ToString());
 
                         _guizmoOperation = c switch
                         {
@@ -629,13 +629,13 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                         ImGui.EndTable();
                     }
 
-                    ImGui.SeparatorText("Manual Inputs");
+                    ImGui.SeparatorText("手動入力");
                     model.Transforms[model.SelectedInstance].ImGuiTransform(s.Renderer.CameraOp.Speed / 100f);
 
                     ImGui.EndTabItem();
                 }
 
-                if (ImGui.BeginTabItem("Morph Targets"))
+                if (ImGui.BeginTabItem("モーフターゲット###Morph Targets"))
                 {
                     if (model is SkeletalModel { HasMorphTargets: true } skeletalModel)
                     {
@@ -661,10 +661,10 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
                             ImGui.VSliderFloat("", box with { X = width }, ref skeletalModel.MorphTime, 0.0f, 1.0f, "", ImGuiSliderFlags.AlwaysClamp);
                             ImGui.PopID(); ImGui.PopStyleVar();
                             ImGui.Spacing();
-                            ImGui.Text($"Time: {skeletalModel.MorphTime:P}%");
+                            ImGui.Text($"時間: {skeletalModel.MorphTime:P}%");
                         }
                     }
-                    else CenteredTextColored(_errorColor, "Selected Mesh Has No Morph Targets");
+                    else CenteredTextColored(_errorColor, "選択メッシュにモーフターゲットがありません");
                     ImGui.EndTabItem();
                 }
 
@@ -683,45 +683,45 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.SameLine(); ImGui.AlignTextToFramePadding(); ImGui.Text(material.Name);
         ImGui.Spacing();
 
-        ImGui.SeparatorText("Parameters");
+        ImGui.SeparatorText("パラメータ");
         material.ImGuiParameters();
 
-        ImGui.SeparatorText("Textures");
+        ImGui.SeparatorText("テクスチャ");
         if (material.ImGuiTextures(icons, model))
         {
             _tiOpen = true;
             ImGui.SetWindowFocus("Texture Inspector");
         }
 
-        ImGui.SeparatorText("Properties");
+        ImGui.SeparatorText("プロパティ");
         NoFramePaddingOnY(() =>
         {
             ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("Base"))
+            if (ImGui.TreeNode("基本"))
             {
                 material.ImGuiBaseProperties("base");
                 ImGui.TreePop();
             }
 
             ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("Scalars"))
+            if (ImGui.TreeNode("スカラー"))
             {
                 material.ImGuiDictionaries("scalars", material.Parameters.Scalars, true);
                 ImGui.TreePop();
             }
             ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("Switches"))
+            if (ImGui.TreeNode("スイッチ"))
             {
                 material.ImGuiDictionaries("switches", material.Parameters.Switches, true);
                 ImGui.TreePop();
             }
             ImGui.SetNextItemOpen(true, ImGuiCond.Appearing);
-            if (ImGui.TreeNode("Colors"))
+            if (ImGui.TreeNode("カラー"))
             {
                 material.ImGuiColors(material.Parameters.Colors);
                 ImGui.TreePop();
             }
-            if (ImGui.TreeNode("All Textures"))
+            if (ImGui.TreeNode("全テクスチャ"))
             {
                 material.ImGuiDictionaries("textures", material.Parameters.Textures);
                 ImGui.TreePop();
@@ -732,7 +732,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     private void DrawTextureInspector(Snooper s)
     {
         if (!_tiOpen) return;
-        if (ImGui.Begin("Texture Inspector", ref _tiOpen, ImGuiWindowFlags.NoScrollbar))
+        if (ImGui.Begin("テクスチャ###Texture Inspector", ref _tiOpen, ImGuiWindowFlags.NoScrollbar))
         {
             if (s.Renderer.Options.TryGetModel(out var model) && s.Renderer.Options.TryGetSection(model, out var section))
             {
@@ -747,14 +747,14 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         if (!s.Renderer.IsSkeletonTreeOpen) return;
 
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        if (ImGui.Begin("Skeleton Tree", ref s.Renderer.IsSkeletonTreeOpen, ImGuiWindowFlags.NoScrollbar))
+        if (ImGui.Begin("スケルトン###Skeleton Tree", ref s.Renderer.IsSkeletonTreeOpen, ImGuiWindowFlags.NoScrollbar))
         {
             if (s.Renderer.Options.TryGetModel(out var model) && model is SkeletalModel skeletalModel)
             {
                 skeletalModel.Skeleton.ImGuiBoneBreadcrumb();
                 if (ImGui.BeginTable("skeleton_tree", 2, ImGuiTableFlags.NoSavedSettings | ImGuiTableFlags.RowBg, ImGui.GetContentRegionAvail(), ImGui.GetWindowWidth()))
                 {
-                    ImGui.TableSetupColumn("Bone", ImGuiTableColumnFlags.WidthStretch);
+                    ImGui.TableSetupColumn("ボーン", ImGuiTableColumnFlags.WidthStretch);
                     ImGui.TableSetupColumn("", ImGuiTableColumnFlags.NoHeaderWidth | ImGuiTableColumnFlags.WidthFixed, _tableWidth);
                     skeletalModel.Skeleton.ImGuiBoneHierarchy();
                     ImGui.EndTable();
@@ -768,7 +768,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
     private void Draw3DViewport(Snooper s)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-        Window("3D Viewport", () =>
+        Window("3Dビューポート###3D Viewport", () =>
         {
             var largest = ImGui.GetContentRegionAvail();
             largest.X -= ImGui.GetScrollX();
@@ -868,13 +868,13 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
             ImGui.SetCursorPos(barPos + new Vector2(pad, pad));
             ImGui.ImageButton("grid_btn", s.Renderer.Options.Icons[s.Renderer.ShowGrid ? "square" : "square_off"].GetPointer(), new Vector2(iconSize));
-            TooltipCheckbox("Grid", ref s.Renderer.ShowGrid);
+            TooltipCheckbox("グリッド", ref s.Renderer.ShowGrid);
             ImGui.SameLine(0f, gap);
             ImGui.ImageButton("skybox_btn", s.Renderer.Options.Icons[s.Renderer.ShowSkybox ? "cube" : "cube_off"].GetPointer(), new Vector2(iconSize));
-            TooltipCheckbox("Skybox", ref s.Renderer.ShowSkybox);
+            TooltipCheckbox("スカイボックス", ref s.Renderer.ShowSkybox);
             ImGui.SameLine(0f, gap);
             ImGui.ImageButton("lights_btn", s.Renderer.Options.Icons[s.Renderer.ShowLights ? "light" : "light_off"].GetPointer(), new Vector2(iconSize));
-            TooltipCheckbox("Lights", ref s.Renderer.ShowLights);
+            TooltipCheckbox("ライト", ref s.Renderer.ShowLights);
 
             ImGui.PopStyleColor(3);
             ImGui.PopStyleVar();
@@ -892,7 +892,7 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
             ImGui.SetCursorPos(statusPos);
             ImGui.Text(status);
 
-            const string label = "Previewed content may differ from final version saved or used in-game.";
+            const string label = "プレビューは保存後/ゲーム内の最終結果と異なる場合があります。";
             var labelSize = ImGui.CalcTextSize(label);
             var labelPos = new Vector2(size.X - labelSize.X - margin, size.Y - labelSize.Y - margin);
             ImGui.SetCursorPos(labelPos);
@@ -999,8 +999,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         ImGui.PopStyleVar();
     }
 
-    private void NoMeshSelected() => CenteredTextColored(_errorColor, "No Mesh Selected");
-    private void NoSectionSelected() => CenteredTextColored(_errorColor, "No Section Selected");
+    private void NoMeshSelected() => CenteredTextColored(_errorColor, "メッシュが選択されていません");
+    private void NoSectionSelected() => CenteredTextColored(_errorColor, "セクションが選択されていません");
     private void CenteredTextColored(Vector4 color, string text)
     {
         var region = ImGui.GetContentRegionAvail();

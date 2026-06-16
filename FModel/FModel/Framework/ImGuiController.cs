@@ -66,16 +66,20 @@ public class ImGuiController : IDisposable
             var iniFileNamePtr = Marshal.StringToCoTaskMemUTF8(Path.Combine(UserSettings.Default.OutputDirectory, ".data", "imgui.ini"));
             io.NativePtr->IniFilename = (byte*)iniFileNamePtr;
         }
-        // If not found, Fallback to default ImGui Font
-        var normalPath   = @"C:\Windows\Fonts\segoeui.ttf";
-        var boldPath     = @"C:\Windows\Fonts\segoeuib.ttf";
-        var semiBoldPath = @"C:\Windows\Fonts\seguisb.ttf";
-        if (File.Exists(normalPath))
-            FontNormal = io.Fonts.AddFontFromFileTTF(normalPath, 16 * DpiScale);
-        if (File.Exists(boldPath))
-            FontBold = io.Fonts.AddFontFromFileTTF(boldPath, 16 * DpiScale);
-        if (File.Exists(semiBoldPath))
-            FontSemiBold = io.Fonts.AddFontFromFileTTF(semiBoldPath, 16 * DpiScale);
+        // JP: 日本語UIを表示するため、日本語グリフを含むフォント + 日本語グリフ範囲で読み込む。
+        // (Segoe UI など日本語非対応フォント/ラテン範囲のみだと日本語が □(豆腐) になる)
+        // 優先: 游ゴシック(Win10/11標準) → メイリオ → MSゴシック → Segoe UI(ラテンのみのフォールバック)
+        var jpRanges = io.Fonts.GetGlyphRangesJapanese();
+        ImFontPtr LoadJpFont(string[] candidates)
+        {
+            foreach (var p in candidates)
+                if (File.Exists(p))
+                    return io.Fonts.AddFontFromFileTTF(p, 16 * DpiScale, (ImFontConfigPtr) IntPtr.Zero, jpRanges);
+            return io.Fonts.AddFontDefault();
+        }
+        FontNormal   = LoadJpFont([@"C:\Windows\Fonts\YuGothR.ttc", @"C:\Windows\Fonts\meiryo.ttc",  @"C:\Windows\Fonts\msgothic.ttc", @"C:\Windows\Fonts\segoeui.ttf"]);
+        FontBold     = LoadJpFont([@"C:\Windows\Fonts\YuGothB.ttc", @"C:\Windows\Fonts\meiryob.ttc", @"C:\Windows\Fonts\msgothic.ttc", @"C:\Windows\Fonts\segoeuib.ttf"]);
+        FontSemiBold = LoadJpFont([@"C:\Windows\Fonts\YuGothM.ttc", @"C:\Windows\Fonts\YuGothR.ttc", @"C:\Windows\Fonts\meiryo.ttc",   @"C:\Windows\Fonts\seguisb.ttf"]);
 
         io.Fonts.AddFontDefault();
         io.Fonts.Build();          // Build font atlas

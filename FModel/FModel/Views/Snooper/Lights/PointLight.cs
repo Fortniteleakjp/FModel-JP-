@@ -43,9 +43,9 @@ public class PointLight : Light
     public override void ImGuiLight()
     {
         base.ImGuiLight();
-        SnimGui.Layout("Linear");ImGui.PushID(3);
+        SnimGui.Layout("線形減衰");ImGui.PushID(3);
         ImGui.DragFloat("", ref Linear, 0.1f);
-        ImGui.PopID();SnimGui.Layout("Quadratic");ImGui.PushID(4);
+        ImGui.PopID();SnimGui.Layout("二次減衰");ImGui.PushID(4);
         ImGui.DragFloat("", ref Quadratic, 0.1f);ImGui.PopID();
     }
 }

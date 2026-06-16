@@ -48,11 +48,11 @@ public class SpotLight : Light
     public override void ImGuiLight()
     {
         base.ImGuiLight();
-        SnimGui.Layout("Attenuation");ImGui.PushID(3);
+        SnimGui.Layout("減衰");ImGui.PushID(3);
         ImGui.DragFloat("", ref Attenuation, 0.1f);ImGui.PopID();
-        SnimGui.Layout("Inner Cone Angle");ImGui.PushID(4);
+        SnimGui.Layout("内側コーン角");ImGui.PushID(4);
         ImGui.DragFloat("", ref InnerConeAngle, 0.1f, 0.0f, 90.0f, "%.1f°");ImGui.PopID();
-        SnimGui.Layout("Outer Cone Angle");ImGui.PushID(5);
+        SnimGui.Layout("外側コーン角");ImGui.PushID(5);
         ImGui.DragFloat("", ref OuterConeAngle, 0.1f, 0.0f, 90.0f, "%.1f°");ImGui.PopID();
     }
 }
