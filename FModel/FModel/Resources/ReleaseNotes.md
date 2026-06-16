@@ -5,6 +5,7 @@ FModelJP をご利用いただきありがとうございます！
 
 ## {version} 主な変更点
 
+- 3D Viewer の翻訳
 - CUE4Parse コア同期
 - (フォートナイトの最新バージョンにCUE4Parseを対応)
 - 3D Viewer の改善
