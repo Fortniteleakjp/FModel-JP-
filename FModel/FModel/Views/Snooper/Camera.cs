@@ -47,7 +47,9 @@ public class Camera
         if (updateAll)
         {
             Far = Math.Max(Far, box.Max.AbsMax() * 50f);
-            Speed = Math.Max(Speed, distance);
+            // JP: 自動設定される移動速度を控えめに(対象サイズの0.35倍)。大きいレベルでも速すぎず、細かく見て回れる。
+            // さらに速くしたい場合はカメラUIのSpeedスライダー or Shiftで調整可能。
+            Speed = Math.Max(Speed, distance * 0.35f);
         }
     }
 

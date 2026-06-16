@@ -107,6 +107,9 @@ public class Texture : IDisposable
         GL.TexImage2D(_target, 0, internalFormat, Width, Height, 0, pixelFormat, PixelType.UnsignedByte, bitmap.Bytes);
         GL.TexParameter(_target, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.LinearMipmapLinear);
         GL.TexParameter(_target, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Linear);
+        // JP鮮明化: 異方性フィルタリングで斜めから見た床/壁テクスチャのボケを大幅軽減(GL4.6コア機能)
+        var maxAniso = GL.GetFloat((GetPName) All.MaxTextureMaxAnisotropy);
+        GL.TexParameter(_target, (TextureParameterName) All.TextureMaxAnisotropy, MathF.Min(16f, maxAniso));
         GL.TexParameter(_target, TextureParameterName.TextureBaseLevel, 0);
         GL.TexParameter(_target, TextureParameterName.TextureMaxLevel, 8);
 

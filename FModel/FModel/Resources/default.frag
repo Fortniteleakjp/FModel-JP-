@@ -285,7 +285,10 @@ void main()
                     lights += CalcSpotLight(layer, normals, uLights[i]);
                 }
             }
-            result *= lights; // use * to darken the scene, + to lighten it
+            // JP clarity fix: for levels (uNumLights > 0) add an ambient term so areas not reached by
+            // scene lights are lifted out of black, giving a brighter UEFN-like, clearer look.
+            // Single models (no lights) keep the original look (x1.0).
+            result *= (lights + (uNumLights > 0 ? vec3(0.45) : vec3(0.0)));
         }
 
         result = result / (result + vec3(1.0));

@@ -1064,15 +1064,15 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         style.PopupBorderSize = 1f;
         style.FrameBorderSize = 0f;
         style.TabBorderSize = 0f;
-        // JP UI改善: 角を少し丸めて現代的な見た目に(ドッキング中の窓はImGui仕様で直角のまま)
-        style.WindowRounding = 5f;
-        style.ChildRounding = 5f;
-        style.FrameRounding = 4f;
-        style.PopupRounding = 5f;
-        style.ScrollbarRounding = 10f;
-        style.GrabRounding = 4f;
+        // JP UI改善(UEFN風): UE5エディタに寄せて角丸は控えめのフラット寄りに
+        style.WindowRounding = 4f;
+        style.ChildRounding = 3f;
+        style.FrameRounding = 3f;
+        style.PopupRounding = 4f;
+        style.ScrollbarRounding = 6f;
+        style.GrabRounding = 2f;
         style.LogSliderDeadzone = 0f;
-        style.TabRounding = 5f;
+        style.TabRounding = 3f;
         style.WindowTitleAlign = new Vector2(0.5f);
         style.WindowMenuButtonPosition = ImGuiDir.Right;
         style.ColorButtonPosition = ImGuiDir.Right;
@@ -1082,18 +1082,19 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
 
         style.Colors[(int) ImGuiCol.Text]                   = new Vector4(1.00f, 1.00f, 1.00f, 1.00f);
         style.Colors[(int) ImGuiCol.TextDisabled]           = new Vector4(0.50f, 0.50f, 0.50f, 1.00f);
-        style.Colors[(int) ImGuiCol.WindowBg]               = new Vector4(0.11f, 0.11f, 0.12f, 1.00f);
-        style.Colors[(int) ImGuiCol.ChildBg]                = new Vector4(0.15f, 0.15f, 0.19f, 1.00f);
-        style.Colors[(int) ImGuiCol.PopupBg]                = new Vector4(0.08f, 0.08f, 0.08f, 0.94f);
-        style.Colors[(int) ImGuiCol.Border]                 = new Vector4(0.25f, 0.26f, 0.33f, 1.00f);
+        // JP UI改善(UEFN風): 青みを抜いたニュートラルなダークグレー基調(UE5エディタ準拠)
+        style.Colors[(int) ImGuiCol.WindowBg]               = new Vector4(0.10f, 0.10f, 0.10f, 1.00f);
+        style.Colors[(int) ImGuiCol.ChildBg]                = new Vector4(0.13f, 0.13f, 0.13f, 1.00f);
+        style.Colors[(int) ImGuiCol.PopupBg]                = new Vector4(0.08f, 0.08f, 0.08f, 0.98f);
+        style.Colors[(int) ImGuiCol.Border]                 = new Vector4(0.26f, 0.26f, 0.26f, 0.80f);
         style.Colors[(int) ImGuiCol.BorderShadow]           = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
-        style.Colors[(int) ImGuiCol.FrameBg]                = new Vector4(0.17f, 0.17f, 0.21f, 0.60f); // JP UI改善: 入力欄を少し明るくして存在を分かりやすく
-        style.Colors[(int) ImGuiCol.FrameBgHovered]         = new Vector4(0.125f, 0.42f, 0.831f, 0.40f); // JP UI改善: ホバーをアクセント青で統一
-        style.Colors[(int) ImGuiCol.FrameBgActive]          = new Vector4(0.125f, 0.42f, 0.831f, 0.67f);
+        style.Colors[(int) ImGuiCol.FrameBg]                = new Vector4(0.16f, 0.16f, 0.16f, 1.00f); // 入力欄: ニュートラルグレー
+        style.Colors[(int) ImGuiCol.FrameBgHovered]         = new Vector4(0.24f, 0.24f, 0.24f, 1.00f); // ホバーはグレー(UE風)
+        style.Colors[(int) ImGuiCol.FrameBgActive]          = new Vector4(0.13f, 0.45f, 0.85f, 0.55f); // 編集中のみ青アクセント
         style.Colors[(int) ImGuiCol.TitleBg]                = new Vector4(0.09f, 0.09f, 0.09f, 1.00f);
         style.Colors[(int) ImGuiCol.TitleBgActive]          = new Vector4(0.09f, 0.09f, 0.09f, 1.00f);
         style.Colors[(int) ImGuiCol.TitleBgCollapsed]       = new Vector4(0.05f, 0.05f, 0.05f, 0.51f);
-        style.Colors[(int) ImGuiCol.MenuBarBg]              = new Vector4(0.14f, 0.14f, 0.14f, 1.00f);
+        style.Colors[(int) ImGuiCol.MenuBarBg]              = new Vector4(0.11f, 0.11f, 0.11f, 1.00f);
         style.Colors[(int) ImGuiCol.ScrollbarBg]            = new Vector4(0.02f, 0.02f, 0.02f, 0.53f);
         style.Colors[(int) ImGuiCol.ScrollbarGrab]          = new Vector4(0.31f, 0.31f, 0.31f, 1.00f);
         style.Colors[(int) ImGuiCol.ScrollbarGrabHovered]   = new Vector4(0.41f, 0.41f, 0.41f, 1.00f);
@@ -1101,25 +1102,26 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         style.Colors[(int) ImGuiCol.CheckMark]              = new Vector4(0.13f, 0.42f, 0.83f, 1.00f);
         style.Colors[(int) ImGuiCol.SliderGrab]             = new Vector4(0.13f, 0.42f, 0.83f, 0.78f);
         style.Colors[(int) ImGuiCol.SliderGrabActive]       = new Vector4(0.13f, 0.42f, 0.83f, 1.00f);
-        style.Colors[(int) ImGuiCol.Button]                 = new Vector4(0.17f, 0.17f, 0.21f, 0.60f); // JP UI改善: ボタンを少し明るく
-        style.Colors[(int) ImGuiCol.ButtonHovered]          = new Vector4(0.125f, 0.42f, 0.831f, 0.55f); // JP UI改善: ホバーをアクセント青で統一
-        style.Colors[(int) ImGuiCol.ButtonActive]           = new Vector4(0.125f, 0.42f, 0.831f, 0.85f);
-        // JP UI改善: 選択/ヘッダーをアクセント色(青)で統一し、ホバー→選択→アクティブで明度が上がる自然な階調に
-        style.Colors[(int) ImGuiCol.Header]                 = new Vector4(0.125f, 0.42f, 0.831f, 0.55f);
-        style.Colors[(int) ImGuiCol.HeaderHovered]          = new Vector4(0.125f, 0.42f, 0.831f, 0.75f);
-        style.Colors[(int) ImGuiCol.HeaderActive]           = new Vector4(0.125f, 0.42f, 0.831f, 1.00f);
+        // JP UI改善(UEFN風): ボタン=ニュートラルグレー、ホバーもグレー、押下のみ青
+        style.Colors[(int) ImGuiCol.Button]                 = new Vector4(0.20f, 0.20f, 0.20f, 1.00f);
+        style.Colors[(int) ImGuiCol.ButtonHovered]          = new Vector4(0.28f, 0.28f, 0.28f, 1.00f);
+        style.Colors[(int) ImGuiCol.ButtonActive]           = new Vector4(0.13f, 0.45f, 0.85f, 0.85f);
+        // JP UI改善(UEFN風): 選択行は青、ホバー(未選択)はグレー(UEのアウトライナ準拠)
+        style.Colors[(int) ImGuiCol.Header]                 = new Vector4(0.13f, 0.45f, 0.85f, 0.70f);
+        style.Colors[(int) ImGuiCol.HeaderHovered]          = new Vector4(0.26f, 0.26f, 0.26f, 1.00f);
+        style.Colors[(int) ImGuiCol.HeaderActive]           = new Vector4(0.13f, 0.45f, 0.85f, 0.90f);
         style.Colors[(int) ImGuiCol.Separator]              = new Vector4(0.43f, 0.43f, 0.50f, 0.50f);
         style.Colors[(int) ImGuiCol.SeparatorHovered]       = new Vector4(0.10f, 0.40f, 0.75f, 0.78f);
         style.Colors[(int) ImGuiCol.SeparatorActive]        = new Vector4(0.10f, 0.40f, 0.75f, 1.00f);
         style.Colors[(int) ImGuiCol.ResizeGrip]             = new Vector4(0.13f, 0.42f, 0.83f, 0.39f);
         style.Colors[(int) ImGuiCol.ResizeGripHovered]      = new Vector4(0.12f, 0.41f, 0.81f, 0.78f);
         style.Colors[(int) ImGuiCol.ResizeGripActive]       = new Vector4(0.12f, 0.41f, 0.81f, 1.00f);
-        // JP UI改善: 選択中タブをアクセント寄りにして現在地を分かりやすく、ホバーは青系で統一
-        style.Colors[(int) ImGuiCol.Tab]                    = new Vector4(0.15f, 0.15f, 0.19f, 1.00f);
-        style.Colors[(int) ImGuiCol.TabHovered]             = new Vector4(0.125f, 0.42f, 0.831f, 0.55f);
-        style.Colors[(int) ImGuiCol.TabSelected]            = new Vector4(0.18f, 0.30f, 0.50f, 1.00f);
-        style.Colors[(int) ImGuiCol.TabDimmed]              = new Vector4(0.15f, 0.15f, 0.15f, 1.00f);
-        style.Colors[(int) ImGuiCol.TabDimmedSelected]      = new Vector4(0.23f, 0.24f, 0.29f, 1.00f);
+        // JP UI改善(UEFN風): タブはニュートラルグレー。選択タブは一段明るいグレー、ホバーもグレー
+        style.Colors[(int) ImGuiCol.Tab]                    = new Vector4(0.11f, 0.11f, 0.11f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabHovered]             = new Vector4(0.26f, 0.26f, 0.26f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabSelected]            = new Vector4(0.18f, 0.18f, 0.18f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabDimmed]              = new Vector4(0.10f, 0.10f, 0.10f, 1.00f);
+        style.Colors[(int) ImGuiCol.TabDimmedSelected]      = new Vector4(0.15f, 0.15f, 0.15f, 1.00f);
         style.Colors[(int) ImGuiCol.DockingPreview]         = new Vector4(0.26f, 0.59f, 0.98f, 0.70f);
         style.Colors[(int) ImGuiCol.DockingEmptyBg]         = new Vector4(0.20f, 0.20f, 0.20f, 1.00f);
         style.Colors[(int) ImGuiCol.PlotLines]              = new Vector4(0.61f, 0.61f, 0.61f, 1.00f);
@@ -1127,8 +1129,8 @@ Snooper aims to give an accurate preview of models, materials, skeletal animatio
         style.Colors[(int) ImGuiCol.PlotHistogram]          = new Vector4(0.90f, 0.70f, 0.00f, 1.00f);
         style.Colors[(int) ImGuiCol.PlotHistogramHovered]   = new Vector4(1.00f, 0.60f, 0.00f, 1.00f);
         style.Colors[(int) ImGuiCol.TableHeaderBg]          = new Vector4(0.09f, 0.09f, 0.09f, 1.00f);
-        style.Colors[(int) ImGuiCol.TableBorderStrong]      = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
-        style.Colors[(int) ImGuiCol.TableBorderLight]       = new Vector4(0.69f, 0.69f, 1.00f, 0.20f);
+        style.Colors[(int) ImGuiCol.TableBorderStrong]      = new Vector4(0.28f, 0.28f, 0.28f, 0.60f);
+        style.Colors[(int) ImGuiCol.TableBorderLight]       = new Vector4(0.28f, 0.28f, 0.28f, 0.60f);
         style.Colors[(int) ImGuiCol.TableRowBg]             = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
         style.Colors[(int) ImGuiCol.TableRowBgAlt]          = new Vector4(1.00f, 1.00f, 1.00f, 0.06f);
         style.Colors[(int) ImGuiCol.TextSelectedBg]         = new Vector4(0.26f, 0.59f, 0.98f, 0.35f);
