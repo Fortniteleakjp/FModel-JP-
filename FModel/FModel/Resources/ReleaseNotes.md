@@ -6,6 +6,8 @@ FModelJP をご利用いただきありがとうございます！
 ## {version} 主な変更点
 
 - 3D Viewer の翻訳
+- 3D Viewer でアセットの位置を変更できるように更新
+- 3D Viewer で複数のアセットを追加できるように更新
 - CUE4Parse コア同期
 - (フォートナイトの最新バージョンにCUE4Parseを対応)
 - 3D Viewer の改善
