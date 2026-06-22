@@ -229,6 +229,7 @@ public partial class CUE4ParseViewModel
             return false; // 未対応の型 → 旧パイプラインへフォールバック
         }
 
+        ExportSessionViewModel.Instance.BeginExport(export.Name);
         try
         {
             var legacy = UserSettings.Default.ExportOptions;
@@ -240,7 +241,8 @@ public partial class CUE4ParseViewModel
                 exportMaterials: legacy.ExportMaterials,
                 exportMorphTargets: legacy.ExportMorphTargets);
 
-            var results = session.RunAsync(UserSettings.Default.ModelDirectory, options).GetAwaiter().GetResult();
+            // Export Session ウインドウへ進捗を報告
+            var results = session.RunAsync(UserSettings.Default.ModelDirectory, options, ExportSessionViewModel.Instance).GetAwaiter().GetResult();
 
             string savedPath = null;
             Exception error = null;
@@ -276,6 +278,10 @@ public partial class CUE4ParseViewModel
         {
             Log.Error(ex, "New export pipeline threw for {Name}; falling back to legacy", export.Name);
             return false; // 実行時の予期せぬ失敗のみ旧パイプラインへフォールバック
+        }
+        finally
+        {
+            ExportSessionViewModel.Instance.EndExport(export.Name);
         }
     }
 
