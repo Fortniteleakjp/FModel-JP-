@@ -4,6 +4,7 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Versions;
+using FModel.Settings;
 using FModel.Views.Resources.Controls;
 using Serilog;
 
@@ -75,4 +76,40 @@ public partial class CUE4ParseViewModel
     {
         _virtualPathCounts.Clear();
     }
+
+    /// <summary>
+    /// load virtual files system from GameDirectory
+    /// </summary>
+    /// <returns></returns>
+    public void LoadVfs(IEnumerable<KeyValuePair<FGuid, FAesKey>> aesKeys)
+    {
+        Provider.SubmitKeys(aesKeys);
+        Provider.PostMount();
+
+        var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;
+        var archiveMax = Provider.UnloadedVfs.Count + Provider.MountedVfs.Count;
+        Log.Information($"Project: {Provider.ProjectName} | Mounted: {Provider.MountedVfs.Count}/{archiveMax} | AES: {Provider.Keys.Count}/{aesMax} | Files: x{Provider.Files.Count}");
+    }
+
+    private int _virtualPathCount { get; set; }
+
+    public Task LoadVirtualPaths()
+    {
+        if (_virtualPathCount > 0) return Task.CompletedTask;
+        return Task.Run(() =>
+        {
+            _virtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.CurrentDir.UeVersion.GetVersion());
+            if (_virtualPathCount > 0)
+            {
+                FLogger.Append(ELog.Information, () =>
+                    FLogger.Text($"{_virtualPathCount} virtual paths loaded", Constants.WHITE, true));
+            }
+            else
+            {
+                FLogger.Append(ELog.Warning, () =>
+                    FLogger.Text("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true));
+            }
+        });
+    }
+
 }

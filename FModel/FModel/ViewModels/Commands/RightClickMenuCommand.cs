@@ -94,6 +94,14 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         contextViewModel.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Animations | updateUi);
                     }
                     break;
+                case "Assets_Save_Worlds":
+                    foreach (var entry in entries)
+                    {
+                        Thread.Yield();
+                        cancellationToken.ThrowIfCancellationRequested();
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Worlds | updateUi);
+                    }
+                    break;
                 case "Assets_Save_Audio":
                     foreach (var entry in entries)
                     {

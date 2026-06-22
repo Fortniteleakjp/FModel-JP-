@@ -147,7 +147,8 @@ public enum EBulkType
     Skeletons =     1 << 4,
     Animations =    1 << 5,
     Audio =         1 << 6,
-    Code =           1 << 7
+    Code =           1 << 7,
+    Worlds =        1 << 8
 }
 
 public enum EAssetCategory : uint

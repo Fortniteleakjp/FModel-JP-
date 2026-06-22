@@ -58,6 +58,12 @@ public class TabCommand : ViewModelCommand<TabItem>
                     _applicationView.CUE4Parse.Extract(cancellationToken, tabViewModel.Entry, false, EBulkType.Animations);
                 });
                 break;
+            case "Asset_Save_Worlds":
+                await _threadWorkerView.Begin(cancellationToken =>
+                {
+                    _applicationView.CUE4Parse.Extract(cancellationToken, tabViewModel.Entry, false, EBulkType.Worlds);
+                });
+                break;
             case "Asset_Save_Audio":
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
