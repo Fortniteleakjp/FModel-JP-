@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using CUE4Parse_Conversion;
 using FModel.Framework;
+using FModel.Settings;
 
 namespace FModel.ViewModels;
 
@@ -41,6 +42,27 @@ public sealed class ExportSessionViewModel : ViewModel, IProgress<ExportProgress
 
     private string _elapsedTime = "00:00";
     public string ElapsedTime { get => _elapsedTime; private set => SetProperty(ref _elapsedTime, value); }
+
+    // ===== 上書き可能なエクスポート設定（このセッション専用・グローバル設定は変更しない / PR #684）=====
+    private bool _overrideEnabled;
+    public bool OverrideEnabled
+    {
+        get => _overrideEnabled;
+        set { if (SetProperty(ref _overrideEnabled, value)) RaisePropertyChanged(nameof(EffectiveModelDirectory)); }
+    }
+
+    private string _overrideOutputDirectory = string.Empty;
+    public string OverrideOutputDirectory
+    {
+        get => _overrideOutputDirectory;
+        set { if (SetProperty(ref _overrideOutputDirectory, value)) RaisePropertyChanged(nameof(EffectiveModelDirectory)); }
+    }
+
+    /// <summary>実際に使用する出力先（上書きが有効ならそちら、無効ならグローバル設定）。</summary>
+    public string EffectiveModelDirectory =>
+        OverrideEnabled && !string.IsNullOrWhiteSpace(OverrideOutputDirectory)
+            ? OverrideOutputDirectory
+            : UserSettings.Default.ModelDirectory;
 
     /// <summary>アクティビティログ（新しいものが先頭）。</summary>
     public ObservableCollection<string> Log { get; } = new();

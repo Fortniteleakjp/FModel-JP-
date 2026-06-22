@@ -89,6 +89,20 @@
                 <ProgressBar Height="10" Margin="0,10,0,0" Minimum="0" Maximum="100"
                              Value="{Binding ProgressPercent}"
                              IsIndeterminate="{Binding IsRunning}" />
+
+                <CheckBox Margin="0,12,0,0" IsChecked="{Binding OverrideEnabled, Mode=TwoWay}"
+                          Content="このセッションだけ出力先を上書きする（グローバル設定は変更しません）" />
+                <Grid Margin="0,8,0,0" IsEnabled="{Binding OverrideEnabled}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" VerticalAlignment="Center"
+                             Text="{Binding OverrideOutputDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="出力先フォルダ（未指定の場合はグローバルのモデル出力先を使用）" />
+                    <Button Grid.Column="1" Margin="8,0,0,0" Content="参照..." Click="OnBrowseOverrideDir"
+                            Style="{StaticResource ExpSecondaryButton}" />
+                </Grid>
             </StackPanel>
         </Border>
 

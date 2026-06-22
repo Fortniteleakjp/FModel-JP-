@@ -241,8 +241,8 @@ public partial class CUE4ParseViewModel
                 exportMaterials: legacy.ExportMaterials,
                 exportMorphTargets: legacy.ExportMorphTargets);
 
-            // Export Session ウインドウへ進捗を報告
-            var results = session.RunAsync(UserSettings.Default.ModelDirectory, options, ExportSessionViewModel.Instance).GetAwaiter().GetResult();
+            // Export Session ウインドウへ進捗を報告（出力先はセッション上書き設定があればそちらを使用）
+            var results = session.RunAsync(ExportSessionViewModel.Instance.EffectiveModelDirectory, options, ExportSessionViewModel.Instance).GetAwaiter().GetResult();
 
             string savedPath = null;
             Exception error = null;
