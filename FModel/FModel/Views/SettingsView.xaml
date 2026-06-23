@@ -207,6 +207,48 @@
                     </controls:FilterableComboBox>
                     </Grid>
 
+                    <!-- JSON 配色 (シンタックスハイライト) -->
+                    <Separator Style="{StaticResource SettingsJP5Separator}" Tag="JSON 配色 🎨" Margin="0 8 0 4" />
+                    <Grid Margin="0 0 0 4"
+                          DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:SettingsView}}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="JSON 配色プリセット" VerticalAlignment="Center" Margin="0 0 0 5"
+                                   ToolTip="JSONの色分け(キー名/文字列/数値/真偽値/null/記号)の配色を選びます。保存すると開いているJSONタブにも即反映されます。" />
+                        <ComboBox Grid.Row="0" Grid.Column="2" Margin="0 0 0 5"
+                                  ItemsSource="{Binding SettingsView.JsonColorSchemes}"
+                                  SelectedItem="{Binding SettingsView.SelectedJsonColorScheme, Mode=TwoWay}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={x:Static converters:EnumToStringConverter.Instance}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <ItemsControl Grid.Row="1" Grid.Column="2" Margin="0 2 0 0" ItemsSource="{Binding SettingsView.JsonPreviewSwatches}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Width="36" Height="18" CornerRadius="4" Margin="0 0 5 0"
+                                            Background="{Binding Brush}" ToolTip="{Binding Label}"
+                                            BorderBrush="#40000000" BorderThickness="1" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+
                     <!-- Diff Config -->
                     <Expander Grid.Row="1"
                               Margin="0,4,0,0"

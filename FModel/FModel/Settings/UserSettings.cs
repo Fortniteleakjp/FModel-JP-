@@ -372,6 +372,15 @@ namespace FModel.Settings
             set => SetProperty(ref _cosmeticStyle, value);
         }
 
+        // JSON シンタックスハイライトの配色プリセット
+        private EJsonColorScheme _jsonColorScheme = EJsonColorScheme.Default;
+        [JsonProperty]
+        public EJsonColorScheme JsonColorScheme
+        {
+            get => _jsonColorScheme;
+            set => SetProperty(ref _jsonColorScheme, value);
+        }
+
         private IconLayoutSettings _iconLayout = new();
         [JsonProperty]
         public IconLayoutSettings IconLayout

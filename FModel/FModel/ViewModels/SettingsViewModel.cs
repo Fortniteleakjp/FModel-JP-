@@ -33,6 +33,7 @@ using EpicManifestParser.UE;
 using EpicManifestParser.ZlibngDotNetDecompressor;
 using CUE4Parse.Compression;
 using FModel.Framework;
+using FModel.Extensions;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Services;
 using FModel.Settings;
@@ -206,6 +207,33 @@ public partial class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedCosmeticStyle, value);
     }
 
+    private EJsonColorScheme _selectedJsonColorScheme;
+    public EJsonColorScheme SelectedJsonColorScheme
+    {
+        get => _selectedJsonColorScheme;
+        set { if (SetProperty(ref _selectedJsonColorScheme, value)) RaisePropertyChanged(nameof(JsonPreviewSwatches)); }
+    }
+
+    /// <summary>選択中の JSON 配色プリセットのプレビュー用カラー一覧。</summary>
+    public IReadOnlyList<JsonSwatch> JsonPreviewSwatches
+    {
+        get
+        {
+            var palette = JsonColorPalettes.Get(SelectedJsonColorScheme);
+            var list = new List<JsonSwatch>();
+            foreach (var role in JsonColorPalettes.Roles)
+            {
+                if (!palette.TryGetValue(role, out var hex)) continue;
+                list.Add(new JsonSwatch
+                {
+                    Label = JsonColorPalettes.RoleLabels.TryGetValue(role, out var l) ? l : role,
+                    Brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex)),
+                });
+            }
+            return list;
+        }
+    }
+
     private EMeshFormat _selectedMeshExportFormat;
     public EMeshFormat SelectedMeshExportFormat
     {
@@ -287,6 +315,7 @@ public partial class SettingsViewModel : ViewModel
     public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
     public ReadOnlyObservableCollection<ECompressedAudio> CompressedAudios { get; private set; }
     public ReadOnlyObservableCollection<EIconStyle> CosmeticStyles { get; private set; }
+    public ReadOnlyObservableCollection<EJsonColorScheme> JsonColorSchemes { get; private set; }
     public ReadOnlyObservableCollection<EMeshFormat> MeshExportFormats { get; private set; }
     public ReadOnlyObservableCollection<ESocketFormat> SocketExportFormats { get; private set; }
     public ReadOnlyObservableCollection<EFileCompressionFormat> CompressionFormats { get; private set; }
@@ -427,6 +456,7 @@ public partial class SettingsViewModel : ViewModel
         SelectedAssetLanguage = _assetLanguageSnapshot;
         SelectedCompressedAudio = _compressedAudioSnapshot;
         SelectedCosmeticStyle = _cosmeticStyleSnapshot;
+        SelectedJsonColorScheme = UserSettings.Default.JsonColorScheme;
         SelectedMeshExportFormat = _meshExportFormatSnapshot;
         SelectedSocketExportFormat = _socketExportFormatSnapshot;
         SelectedCompressionFormat = _selectedCompressionFormat;
@@ -452,6 +482,7 @@ public partial class SettingsViewModel : ViewModel
         DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
         CompressedAudios = new ReadOnlyObservableCollection<ECompressedAudio>(new ObservableCollection<ECompressedAudio>(EnumerateCompressedAudios()));
         CosmeticStyles = new ReadOnlyObservableCollection<EIconStyle>(new ObservableCollection<EIconStyle>(EnumerateCosmeticStyles()));
+        JsonColorSchemes = new ReadOnlyObservableCollection<EJsonColorScheme>(new ObservableCollection<EJsonColorScheme>(Enum.GetValues<EJsonColorScheme>()));
         MeshExportFormats = new ReadOnlyObservableCollection<EMeshFormat>(new ObservableCollection<EMeshFormat>(EnumerateMeshExportFormat()));
         SocketExportFormats = new ReadOnlyObservableCollection<ESocketFormat>(new ObservableCollection<ESocketFormat>(EnumerateSocketExportFormat()));
         CompressionFormats = new ReadOnlyObservableCollection<EFileCompressionFormat>(new ObservableCollection<EFileCompressionFormat>(EnumerateCompressionFormat()));
@@ -527,6 +558,7 @@ public partial class SettingsViewModel : ViewModel
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
         UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;
+        UserSettings.Default.JsonColorScheme = SelectedJsonColorScheme;
         UserSettings.Default.MeshExportFormat = SelectedMeshExportFormat;
         UserSettings.Default.SocketExportFormat = SelectedSocketExportFormat;
         UserSettings.Default.CompressionFormat = SelectedCompressionFormat;
@@ -544,7 +576,23 @@ public partial class SettingsViewModel : ViewModel
         if (SelectedDiscordRpc == EDiscordRpc.Never)
             _discordHandler.Shutdown();
 
+        ApplyJsonColorSchemeToOpenTabs();
+
         return restart;
+    }
+
+    /// <summary>開いている JSON タブのハイライタを新しい配色プリセットへ即時貼り替える。</summary>
+    private static void ApplyJsonColorSchemeToOpenTabs()
+    {
+        var tabControl = ApplicationService.ApplicationView?.CUE4Parse?.TabControl;
+        if (tabControl == null) return;
+
+        var jsonHighlighter = AvalonExtensions.HighlighterSelector("json");
+        foreach (var tab in tabControl.TabsItems)
+        {
+            if (tab.Highlighter?.Name == "Json")
+                tab.Highlighter = jsonHighlighter;
+        }
     }
 
     private IEnumerable<EGame> EnumerateUeGames()
@@ -567,4 +615,11 @@ public partial class SettingsViewModel : ViewModel
     private IEnumerable<EMaterialFormat> EnumerateMaterialExportFormat() => Enum.GetValues<EMaterialFormat>();
     private IEnumerable<ETextureFormat> EnumerateTextureExportFormat() => Enum.GetValues<ETextureFormat>();
     private IEnumerable<ETexturePlatform> EnumerateUePlatforms() => Enum.GetValues<ETexturePlatform>();
+}
+
+/// <summary>JSON 配色プレビューの1色（役割名＋ブラシ）。</summary>
+public sealed class JsonSwatch
+{
+    public string Label { get; init; }
+    public Brush Brush { get; init; }
 }
