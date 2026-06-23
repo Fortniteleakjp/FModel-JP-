@@ -473,6 +473,7 @@ public class TabItem : ViewModel
 
         Application.Current.Dispatcher.Invoke(() =>
         {
+            doc.SetOwnerThread(System.Threading.Thread.CurrentThread); // UIスレッドが所有権を取得（以後UIから安全に使用）
             if (_isHugeDocument) Highlighter = null; // 巨大時は強調表示を無効化（深い位置へのジャンプ時のカクつき回避）
             Document = doc;                          // O(1) の参照差し替え
             RaisePropertyChanged(nameof(IsHugeDocument));
@@ -483,7 +484,9 @@ public class TabItem : ViewModel
     public void ApplyJsonFilter()
     {
         if (_isHugeDocument || _originalDocumentText == null) return; // 巨大時はフィルタしない（バナーで通知）
-        Document = BuildFrozenDocument(BuildDisplayText());
+        var doc = BuildFrozenDocument(BuildDisplayText());
+        doc.SetOwnerThread(System.Threading.Thread.CurrentThread); // 呼び出し元(UI)が所有権を取得
+        Document = doc;
     }
 
     /// <summary>表示用テキストを生成（巨大でなければフィルタ適用、Rope上限超は先頭のみに切り詰め）。</summary>
@@ -495,12 +498,13 @@ public class TabItem : ViewModel
         return ClampForDisplay(display);
     }
 
-    /// <summary>Undo を溜めない TextDocument を構築。所有スレッドを外し、UIスレッドへ安全に引き渡す。</summary>
-    private static TextDocument BuildFrozenDocument(string display)
+    /// <summary>Undo を溜めない TextDocument を構築。所有スレッドを解除し、使用側スレッドで取得させる。</summary>
+    private TextDocument BuildFrozenDocument(string display)
     {
         var doc = new TextDocument(new StringTextSource(display ?? string.Empty));
         doc.UndoStack.SizeLimit = 0;
-        doc.SetOwnerThread(null); // 別スレッドで構築→UIスレッドで使用できるよう所有権を解除
+        doc.FileName = Entry?.PathWithoutExtension ?? string.Empty; // FileName=null による GetOrAdd(null) クラッシュ防止
+        doc.SetOwnerThread(null); // 構築スレッドの所有権を解除（次に使うスレッドが SetOwnerThread で取得する）
         return doc;
     }
 
