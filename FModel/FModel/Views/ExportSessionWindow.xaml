@@ -87,7 +87,7 @@
                     <TextBlock Text="{Binding ProgressText}" Opacity="0.8" Margin="14,0,0,0" />
                 </StackPanel>
                 <ProgressBar Height="10" Margin="0,10,0,0" Minimum="0" Maximum="100"
-                             Value="{Binding ProgressPercent}"
+                             Value="{Binding ProgressPercent, Mode=OneWay}"
                              IsIndeterminate="{Binding IsRunning}" />
 
                 <CheckBox Margin="0,12,0,0" IsChecked="{Binding OverrideEnabled, Mode=TwoWay}"
