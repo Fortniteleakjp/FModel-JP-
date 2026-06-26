@@ -20,6 +20,14 @@
                                   Visibility="{Binding HasSearchOpen, Converter={StaticResource BoolToVisibilityConverter}}"
                                   DockPanel.Dock="Bottom"/>
 
+        <!-- 巨大ファイル時の注意バナー（強調表示/フィルタを自動無効化） -->
+        <Border DockPanel.Dock="Top" Margin="0,0,0,4" Padding="8,5" CornerRadius="10"
+                Background="#33E0A030" BorderBrush="#80E0A030" BorderThickness="1"
+                Visibility="{Binding IsHugeDocument, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock TextWrapping="Wrap" Opacity="0.95"
+                       Text="ファイルが非常に大きいため、表示を高速化する目的で強調表示・フィルタを一時的に無効化しています。全文はエクスポートで取得できます。" />
+        </Border>
+
         <Border DockPanel.Dock="Top"
             Margin="0,0,0,4"
             Padding="8,4"

@@ -130,6 +130,29 @@ public enum EIconStyle
     // CommunityMade
 }
 
+/// <summary>JSON シンタックスハイライトの配色プリセット（暗背景での可読性を検証済み）。</summary>
+public enum EJsonColorScheme
+{
+    [Description("デフォルト (Tokyo Night)")]
+    Default,
+    [Description("紫 & シアン (Purple & Cyan)")]
+    PurpleCyan,
+    [Description("ドラキュラ (Dracula)")]
+    Dracula,
+    [Description("ノルド (Nord)")]
+    Nord,
+    [Description("ワン・ダーク (One Dark)")]
+    OneDark,
+    [Description("色覚配慮 (Colorblind Safe)")]
+    ColorblindSafe,
+    [Description("海のティール (Ocean Teal)")]
+    OceanTeal,
+    [Description("夕焼け & ティール (Sunset & Teal)")]
+    SunsetTeal,
+    [Description("藍 & 金 (Indigo & Gold)")]
+    IndigoGold,
+}
+
 public enum EEndpointType
 {
     Aes,
@@ -147,7 +170,8 @@ public enum EBulkType
     Skeletons =     1 << 4,
     Animations =    1 << 5,
     Audio =         1 << 6,
-    Code =           1 << 7
+    Code =           1 << 7,
+    Worlds =        1 << 8
 }
 
 public enum EAssetCategory : uint

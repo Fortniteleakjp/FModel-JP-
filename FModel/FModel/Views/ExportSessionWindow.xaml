@@ -1,0 +1,169 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.ExportSessionWindow"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+         xmlns:settings="clr-namespace:FModel.Settings"
+         Title="エクスポートセッション" WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
+         Width="640" Height="560" MinWidth="480" MinHeight="380">
+    <adonisControls:AdonisWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Resources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <LinearGradientBrush x:Key="ExpJP5BgDark" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#111827" Offset="0" />
+                <GradientStop Color="#1F2937" Offset="0.5" />
+                <GradientStop Color="#0B1220" Offset="1" />
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ExpJP5BgLight" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F4F7FB" Offset="0" />
+                <GradientStop Color="#EAF0F8" Offset="0.5" />
+                <GradientStop Color="#DEE7F2" Offset="1" />
+            </LinearGradientBrush>
+            <Style x:Key="ExpCard" TargetType="Border">
+                <Setter Property="CornerRadius" Value="14" />
+                <Setter Property="Padding" Value="14" />
+                <Setter Property="Margin" Value="0,0,0,10" />
+                <Setter Property="Background" Value="#2B111827" />
+                <Setter Property="BorderBrush" Value="#33000000" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="#EFFFFFFF" />
+                        <Setter Property="BorderBrush" Value="#22111C2E" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ExpSecondaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Padding" Value="14,8" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Background" Value="#99213357" />
+                <Setter Property="BorderBrush" Value="#664A90E2" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="adonisExtensions:CornerRadiusExtension.CornerRadius" Value="12" />
+            </Style>
+        </ResourceDictionary>
+    </adonisControls:AdonisWindow.Resources>
+
+    <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Background" Value="{StaticResource ExpJP5BgDark}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UseDarkTheme, Source={x:Static settings:UserSettings.Default}}" Value="False">
+                        <Setter Property="Background" Value="{StaticResource ExpJP5BgLight}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- 状態・進捗 -->
+        <Border Grid.Row="0" Style="{StaticResource ExpCard}" Margin="12,12,12,8">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="状態:" FontWeight="SemiBold" Margin="0,0,8,0" />
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="待機中" />
+                                <Setter Property="Foreground" Value="#9AA7B8" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                        <Setter Property="Text" Value="エクスポート中..." />
+                                        <Setter Property="Foreground" Value="#7CD992" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Text="{Binding ProgressText}" Opacity="0.8" Margin="14,0,0,0" />
+                </StackPanel>
+                <ProgressBar Height="10" Margin="0,10,0,0" Minimum="0" Maximum="100"
+                             Value="{Binding ProgressPercent, Mode=OneWay}"
+                             IsIndeterminate="{Binding IsRunning}" />
+
+                <CheckBox Margin="0,12,0,0" IsChecked="{Binding OverrideEnabled, Mode=TwoWay}"
+                          Content="このセッションだけ出力先を上書きする（グローバル設定は変更しません）" />
+                <Grid Margin="0,8,0,0" IsEnabled="{Binding OverrideEnabled}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" VerticalAlignment="Center"
+                             Text="{Binding OverrideOutputDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="出力先フォルダ（未指定の場合はグローバルのモデル出力先を使用）" />
+                    <Button Grid.Column="1" Margin="8,0,0,0" Content="参照..." Click="OnBrowseOverrideDir"
+                            Style="{StaticResource ExpSecondaryButton}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- 統計 -->
+        <Border Grid.Row="1" Style="{StaticResource ExpCard}" Margin="12,0,12,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock Text="成功" HorizontalAlignment="Center" Opacity="0.7" />
+                    <TextBlock Text="{Binding Completed}" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Foreground="#7CD992" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="失敗" HorizontalAlignment="Center" Opacity="0.7" />
+                    <TextBlock Text="{Binding Failed}" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Foreground="#E0736B" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="実行中" HorizontalAlignment="Center" Opacity="0.7" />
+                    <TextBlock Text="{Binding TotalQueued}" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
+                </StackPanel>
+                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                    <TextBlock Text="経過時間" HorizontalAlignment="Center" Opacity="0.7" />
+                    <TextBlock Text="{Binding ElapsedTime}" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ログ -->
+        <Border Grid.Row="2" Style="{StaticResource ExpCard}" Margin="12,0,12,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="アクティビティログ" FontWeight="SemiBold" Margin="0,0,0,8" />
+                <ListBox Grid.Row="1" ItemsSource="{Binding Log}" FontFamily="Consolas" FontSize="12"
+                         Background="Transparent" BorderThickness="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Padding" Value="2,1" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+        </Border>
+
+        <!-- ボタン -->
+        <Border Grid.Row="3"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
+                adonisExtensions:LayerExtension.IncreaseLayer="True">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="12">
+                <Button MinWidth="120" Content="ログをクリア" Click="OnClearLog" Style="{StaticResource ExpSecondaryButton}" />
+                <Button MinWidth="100" Margin="8,0,0,0" Content="閉じる" Click="OnClose" Style="{StaticResource ExpSecondaryButton}" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</adonisControls:AdonisWindow>

@@ -55,6 +55,9 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Views_IconLayoutEditor":
                 Helper.OpenWindow<AdonisWindow>("アイコンレイアウト編集", () => new IconLayoutEditor().Show());
                 break;
+            case "Views_ExportSession":
+                Helper.OpenWindow<AdonisWindow>("エクスポートセッション", () => new ExportSessionWindow().Show());
+                break;
             case "Settings":
                 Helper.OpenWindow<AdonisWindow>("Settings", () => new SettingsView().Show());
                 break;

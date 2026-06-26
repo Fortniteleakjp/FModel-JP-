@@ -26,10 +26,15 @@ public partial class AvalonEditor
     private readonly Dictionary<string, NavigationList<int>> _savedCarets = new();
     private NavigationList<int> _caretsOffsets
     {
-        get => MyAvalonEditor.Document != null
-            ? _savedCarets.GetOrAdd(MyAvalonEditor.Document.FileName, () => new NavigationList<int>())
-            : new NavigationList<int>();
+        get
+        {
+            var fileName = MyAvalonEditor.Document?.FileName;
+            return string.IsNullOrEmpty(fileName)
+                ? new NavigationList<int>()
+                : _savedCarets.GetOrAdd(fileName, () => new NavigationList<int>());
+        }
     }
+
     private bool _ignoreCaret = true;
 
     public AvalonEditor()
@@ -41,6 +46,12 @@ public partial class AvalonEditor
         MyAvalonEditor.TextArea.TextView.LinkTextForegroundBrush = Brushes.Cornsilk;
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new GamePathElementGenerator());
         MyAvalonEditor.TextArea.TextView.ElementGenerators.Add(new HexColorElementGenerator());
+
+        // 巨大ファイルでも軽快に表示するため、可視行ごとに全文正規表現走査を行う重いオプションを無効化
+        // （独自の GamePath/HexColor ジェネレーターは維持）
+        MyAvalonEditor.Options.EnableHyperlinks = false;
+        MyAvalonEditor.Options.EnableEmailHyperlinks = false;
+        MyAvalonEditor.Options.HighlightCurrentLine = false;
 
         ApplicationService.ApplicationView.CUE4Parse.TabControl.OnTabRemove += OnTabClose;
     }
@@ -79,14 +90,15 @@ public partial class AvalonEditor
     private void OnTextChanged(object sender, EventArgs e)
     {
         if (sender is not TextEditor avalonEditor || DataContext is not TabItem tabItem ||
-            avalonEditor.Document == null || string.IsNullOrEmpty(avalonEditor.Document.Text))
+            avalonEditor.Document == null || avalonEditor.Document.TextLength == 0)
             return;
         avalonEditor.Document.FileName = tabItem.Entry.PathWithoutExtension;
 
         if (!_savedCarets.ContainsKey(avalonEditor.Document.FileName))
             _ignoreCaret = true;
 
-        if (!tabItem.ShouldScroll) return;
+        // 巨大文書では全文を string 化しての行検索を避ける（UIが固まるため自動スクロールしない）
+        if (!tabItem.ShouldScroll || tabItem.IsHugeDocument) return;
 
         var lineNumber = avalonEditor.Document.Text.GetNameLineNumber(tabItem.ScrollTrigger);
         if (lineNumber == -1) lineNumber = 1;

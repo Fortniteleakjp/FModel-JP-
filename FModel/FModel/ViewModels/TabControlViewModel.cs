@@ -260,6 +260,21 @@ public class TabItem : ViewModel
     }
     private string _originalDocumentText;
 
+    // ===== 巨大ドキュメント(数百万行)対策 =====
+    // この閾値を超えたら、強調表示/フィルタを無効化し、表示用を切り詰めて即時表示する。
+    public const int HugeLineThreshold = 2_000_000;          // 約200万行以上で「巨大」
+    public const int HugeCharThreshold = 50 * 1024 * 1024;   // 約50M文字以上で「巨大」
+    // AvalonEdit(Rope) の上限(約2^27=134M文字)未満に抑えて OOM クラッシュを防ぐ表示上限。
+    private const int MaxDisplayChars = 64 * 1024 * 1024;
+
+    private bool _isHugeDocument;
+    /// <summary>巨大ドキュメント（強調表示/フィルタを自動無効化中）かどうか。</summary>
+    public bool IsHugeDocument
+    {
+        get => _isHugeDocument;
+        set => SetProperty(ref _isHugeDocument, value);
+    }
+
     private TextDocument _document;
     public TextDocument Document
     {
@@ -449,25 +464,68 @@ public class TabItem : ViewModel
 
     public void SetDocumentText(string text, bool save, bool updateUi)
     {
+        _originalDocumentText = SanitizeDisplayText(text);
+        _isHugeDocument = DecideHuge(_originalDocumentText);
+
+        // 行ツリー(Rope)の構築は呼び出し元スレッド(アセット抽出はワーカースレッド)で行い、
+        // UIスレッドを固めない。完成した不変ドキュメントを差し替えるだけにする。
+        var doc = BuildFrozenDocument(BuildDisplayText());
+
         Application.Current.Dispatcher.Invoke(() =>
         {
-            _originalDocumentText = SanitizeDisplayText(text);
-            Document ??= new TextDocument();
-            Document.Text = string.IsNullOrEmpty(JsonFilterText)
-                ? _originalDocumentText
-                : FilterJsonText(_originalDocumentText, JsonFilterText);
-            Document.UndoStack.ClearAll();
-
+            doc.SetOwnerThread(System.Threading.Thread.CurrentThread); // UIスレッドが所有権を取得（以後UIから安全に使用）
+            if (_isHugeDocument) Highlighter = null; // 巨大時は強調表示を無効化（深い位置へのジャンプ時のカクつき回避）
+            Document = doc;                          // O(1) の参照差し替え
+            RaisePropertyChanged(nameof(IsHugeDocument));
             if (save) SaveProperty(updateUi);
         });
     }
 
     public void ApplyJsonFilter()
     {
-        if (Document != null && _originalDocumentText != null)
-        {
-            Document.Text = string.IsNullOrEmpty(JsonFilterText) ? _originalDocumentText : FilterJsonText(_originalDocumentText, JsonFilterText);
-        }
+        if (_isHugeDocument || _originalDocumentText == null) return; // 巨大時はフィルタしない（バナーで通知）
+        var doc = BuildFrozenDocument(BuildDisplayText());
+        doc.SetOwnerThread(System.Threading.Thread.CurrentThread); // 呼び出し元(UI)が所有権を取得
+        Document = doc;
+    }
+
+    /// <summary>表示用テキストを生成（巨大でなければフィルタ適用、Rope上限超は先頭のみに切り詰め）。</summary>
+    private string BuildDisplayText()
+    {
+        var display = _originalDocumentText ?? string.Empty;
+        if (!_isHugeDocument && !string.IsNullOrEmpty(JsonFilterText))
+            display = FilterJsonText(display, JsonFilterText);
+        return ClampForDisplay(display);
+    }
+
+    /// <summary>Undo を溜めない TextDocument を構築。所有スレッドを解除し、使用側スレッドで取得させる。</summary>
+    private TextDocument BuildFrozenDocument(string display)
+    {
+        var doc = new TextDocument(new StringTextSource(display ?? string.Empty));
+        doc.UndoStack.SizeLimit = 0;
+        doc.FileName = Entry?.PathWithoutExtension ?? string.Empty; // FileName=null による GetOrAdd(null) クラッシュ防止
+        doc.SetOwnerThread(null); // 構築スレッドの所有権を解除（次に使うスレッドが SetOwnerThread で取得する）
+        return doc;
+    }
+
+    private static bool DecideHuge(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return false;
+        if (text.Length >= HugeCharThreshold) return true;
+        var lines = 1;
+        for (var i = 0; i < text.Length; i++)
+            if (text[i] == '\n' && ++lines >= HugeLineThreshold) return true;
+        return false;
+    }
+
+    /// <summary>AvalonEdit(Rope) の上限を超えないよう、必要なら行境界で先頭のみに切り詰める（OOM防止）。</summary>
+    private static string ClampForDisplay(string text)
+    {
+        if (string.IsNullOrEmpty(text) || text.Length <= MaxDisplayChars) return text;
+        var cut = text.LastIndexOf('\n', Math.Min(MaxDisplayChars, text.Length - 1));
+        if (cut <= 0) cut = MaxDisplayChars;
+        return text.Substring(0, cut) +
+               "\n\n…（ファイルが大きすぎるため先頭のみ表示しています。全文はエクスポートしてご確認ください）…\n";
     }
 
     private static string FilterJsonText(string originalText, string filter)
@@ -523,7 +581,7 @@ public class TabItem : ViewModel
 
         Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
 
-        Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
+        File.WriteAllText(directory, _originalDocumentText ?? Application.Current.Dispatcher.Invoke(() => Document?.Text ?? string.Empty));
         SaveCheck(directory, fileName, updateUi);
     }
 
@@ -537,7 +595,7 @@ public class TabItem : ViewModel
 
         Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
 
-        Application.Current.Dispatcher.Invoke(() => File.WriteAllText(directory, Document.Text));
+        File.WriteAllText(directory, _originalDocumentText ?? Application.Current.Dispatcher.Invoke(() => Document?.Text ?? string.Empty));
         SaveCheck(directory, fileName, updateUi);
     }
     private void SaveCheck(string path, string fileName, bool updateUi)
