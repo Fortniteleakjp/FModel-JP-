@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.UObject;
@@ -9,7 +7,7 @@ namespace CUE4Parse.UE4.Objects.Engine;
 
 public abstract class TPerPlatformProperty<T> : IUStruct where T : notnull
 {
-    public bool bCooked;
+    public readonly bool bCooked;
     public T Default;
     public Dictionary<FName, T>? PerPlatform;
     public T Value => Default;
@@ -20,7 +18,7 @@ public abstract class TPerPlatformProperty<T> : IUStruct where T : notnull
     {
         bCooked = Ar.ReadBoolean();
         Default = getValue();
-        if (Ar.Game >= EGame.GAME_UE5_8 || (!Ar.IsFilterEditorOnly && !bCooked))
+        if (!bCooked && (Ar.Game is >= EGame.GAME_UE5_8 || Ar.IsFilterEditorOnly))
         {
             PerPlatform = Ar.ReadMap(Ar.ReadFName, getValue);
         }

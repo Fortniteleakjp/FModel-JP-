@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using CUE4Parse_Conversion.Materials;
 using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse.UE4.Assets.Exports.Animation;
@@ -54,7 +51,7 @@ namespace CUE4Parse_Conversion.Meshes.glTF
                 for (var i = 0; i < morphTargets.Length; i++)
                 {
                     var morphTarget = morphTargets[i].Load<UMorphTarget>();
-                    if (morphTarget?.MorphLODModels is null || morphTarget.MorphLODModels.Length < lodIndex || lodIndex == -1)
+                    if (morphTarget?.MorphLODModels is null || morphTarget.MorphLODModels.Length < lodIndex || lodIndex == -1 || morphTarget.MorphLODModels[lodIndex].Vertices.Length == 0)
                         continue;
                     var morphBuilder = mesh.UseMorphTarget(i);
                     var morphModel = morphTarget.MorphLODModels[lodIndex];

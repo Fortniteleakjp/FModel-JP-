@@ -115,7 +115,7 @@ public partial class CUE4ParseViewModel
             if (dummy is not UClass || pointer.Object.Value is not UClass blueprint)
                 continue;
 
-            cppList.Add(blueprint.DecompileBlueprintToPseudo(pkg.Mappings, cookedMetaData));
+            cppList.Add(blueprint.DecompileBlueprintToPseudo(cookedMetaData));
         }
 
         var cpp = cppList.Count > 1 ? string.Join("\n\n", cppList) : cppList.FirstOrDefault() ?? string.Empty;

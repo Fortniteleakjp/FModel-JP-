@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using CUE4Parse.UE4.Assets.Exports.Niagara.NiagaraShader;
 using CUE4Parse.UE4.Objects.Core.Compression;
@@ -139,7 +137,7 @@ public class FShaderMapContent
             var shaderPlatform = Ar.ReadFName();
             Enum.TryParse("SP_" + shaderPlatform.PlainText, out ShaderPlatform);
 
-            if (Ar.Game is EGame.GAME_MarvelRivals or EGame.GAME_Valorant or EGame.GAME_DeadByDaylight) Ar.Position += 8;
+            if (Ar.Game is EGame.GAME_MarvelRivals or EGame.GAME_Valorant or EGame.GAME_DeadByDaylight or EGame.GAME_Enginefall) Ar.Position += 8;
         }
         else
         {
@@ -727,7 +725,7 @@ public class FUniformExpressionSet
             using var dv = new FByteArchive("DefaultValues", DefaultValues, Ar.Versions);
             foreach (var parameter in UniformNumericParameters)
             {
-                dv.Seek(parameter.DefaultValueOffset, System.IO.SeekOrigin.Begin);
+                dv.Seek(parameter.DefaultValueOffset, SeekOrigin.Begin);
                 parameter.Value = parameter.ParameterType switch
                 {
                     EMaterialParameterType.Scalar => dv.Read<float>(),
@@ -1162,7 +1160,7 @@ public class FRHIUniformBufferLayoutInitializer
 
     public FRHIUniformBufferLayoutInitializer(FMemoryImageArchive Ar)
     {
-        if (Ar.Game >= EGame.GAME_UE5_0)
+        if (Ar.Game is >= EGame.GAME_UE5_0 or EGame.GAME_NeedForSpeedMobile)
         {
             Name = Ar.ReadFString();
             Resources = Ar.ReadArray<FRHIUniformBufferResource>();
@@ -1497,7 +1495,7 @@ public class FMaterialShaderMapId
                 Ar.Position += 16;
             }
         }
-        else
+        else if (Ar.Ver > EUnrealEngineObjectUE4Version.MATERIAL_QUALITY_LEVEL_SWITCH)
         {
             var legacyQualityLevel = (EMaterialQualityLevel) Ar.Read<byte>(); // Is it enum?
         }

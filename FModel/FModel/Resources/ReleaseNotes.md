@@ -19,6 +19,6 @@ FModelJP をご利用いただきありがとうございます！
 - World（.umap）の出力が「形式が非対応」で失敗していた不具合を修正（USD 形式へ自動切り替え）。
 - 大容量アセット表示時に発生していたクラッシュ 2 件を修正（描画スレッド/キャレット履歴）。
 - エクスポートセッション ウインドウ起動時のクラッシュ（XamlParseException）を修正。
-- **CUE4Parse コアを同期**（[FabianFG/CUE4Parse "FN fixes"](https://github.com/FabianFG/CUE4Parse/commit/0701aced39488f53c5443ff8c724465900da0a98)）— 最新フォートナイトのテキスト（開発メモ付き）・Verse・RigLogic などの解析に対応。
+- **CUE4Parse コアを最新へ同期**（[FabianFG/CUE4Parse](https://github.com/FabianFG/CUE4Parse) HEAD まで）— 最新フォートナイトのテキスト（開発メモ付き）・Verse・RigLogic ほか、多数のゲーム/フォーマットの解析に対応。
 
 すべての変更履歴については、[GitHub のリリース](https://github.com/Fortniteleakjp/FModel-JP-/releases) をご確認ください。

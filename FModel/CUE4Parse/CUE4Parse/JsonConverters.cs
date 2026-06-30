@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using CUE4Parse.GameTypes.FF7.Objects;
 using CUE4Parse.GameTypes.FN.Objects;
 using CUE4Parse.UE4.AssetRegistry;
@@ -45,6 +42,7 @@ using CUE4Parse.UE4.Wwise.Objects.HIRC;
 using CUE4Parse.Utils;
 using Fmod5Sharp.FmodTypes;
 using Newtonsoft.Json;
+
 #pragma warning disable CS8765
 
 namespace CUE4Parse;
@@ -686,33 +684,6 @@ public class StrPropertyConverter : JsonConverter<StrProperty>
     }
 
     public override StrProperty ReadJson(JsonReader reader, Type objectType, StrProperty existingValue, bool hasExistingValue,
-        JsonSerializer serializer)
-    {
-        throw new NotImplementedException();
-    }
-}
-public class Utf8StrPropertyConverter : JsonConverter<Utf8StrProperty>
-{
-    public override void WriteJson(JsonWriter writer, Utf8StrProperty value, JsonSerializer serializer)
-    {
-        writer.WriteValue(value.Value);
-    }
-
-    public override Utf8StrProperty ReadJson(JsonReader reader, Type objectType, Utf8StrProperty existingValue, bool hasExistingValue,
-        JsonSerializer serializer)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public class VerseStringPropertyConverter : JsonConverter<VerseStringProperty>
-{
-    public override void WriteJson(JsonWriter writer, VerseStringProperty value, JsonSerializer serializer)
-    {
-        writer.WriteValue(value.Value);
-    }
-
-    public override VerseStringProperty ReadJson(JsonReader reader, Type objectType, VerseStringProperty existingValue, bool hasExistingValue,
         JsonSerializer serializer)
     {
         throw new NotImplementedException();
@@ -3466,7 +3437,7 @@ public class FModConverter : JsonConverter<FModReader>
         writer.WriteEndObject();
     }
 
-    public override FModReader ReadJson(JsonReader reader, System.Type objectType, FModReader existingValue, bool hasExistingValue, JsonSerializer serializer)
+    public override FModReader ReadJson(JsonReader reader, Type objectType, FModReader existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
         throw new NotImplementedException();
     }
