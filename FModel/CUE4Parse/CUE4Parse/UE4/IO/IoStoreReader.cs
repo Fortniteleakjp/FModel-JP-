@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.GameTypes.ProSpi.Encryption.Aes;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.IO.Objects;
@@ -23,7 +24,8 @@ public partial class IoStoreReader : AbstractAesVfsReader
 
     public readonly FIoStoreTocResource TocResource;
     public readonly Dictionary<FIoChunkId, FIoOffsetAndLength>? TocImperfectHashMapFallback;
-    public FIoContainerHeader? ContainerHeader { get; private set; }
+    private Lazy<FIoContainerHeader?> _containerHeader;
+    public FIoContainerHeader? ContainerHeader => _containerHeader.Value;
     public Dictionary<FPackageId, GameFile> PackageIdIndex { get; private set; } = [];
 
     public override string MountPoint { get; protected set; }
@@ -242,6 +244,11 @@ public partial class IoStoreReader : AbstractAesVfsReader
             ref var compressionBlock = ref TocResource.CompressionBlocks[blockIndex];
 
             var rawSize = compressionBlock.CompressedSize.Align(Aes.ALIGN);
+            if (Game is EGame.GAME_eBaseballProSpirit)
+            {
+                rawSize = (compressionBlock.CompressedSize + ProSpiEncryption.EncryptionDataTrailerSize).Align(Aes.ALIGN);
+            }
+
             size += rawSize;
             if (compressedBuffer.Length < rawSize)
             {
@@ -403,7 +410,7 @@ public partial class IoStoreReader : AbstractAesVfsReader
         watch.Start();
 
         ProcessIndex(pathComparer);
-        ContainerHeader = ReadContainerHeader();
+        _containerHeader = new Lazy<FIoContainerHeader?>(ReadContainerHeader);
 
         if (Globals.LogVfsMounts)
         {

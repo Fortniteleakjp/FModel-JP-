@@ -3,6 +3,7 @@
   <PropertyGroup>
     <RootNamespace>CUE4Parse_Conversion</RootNamespace>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings> <!-- 上流同期: upstream(Directory.Build.props)が有効化済み。新ソースが共通usingを省略するため必須 -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFramework>net10.0</TargetFramework>
     <IsPublishable>false</IsPublishable>
@@ -18,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AssetRipper.TextureDecoder" Version="2.2.1" />
+    <PackageReference Include="AssetRipper.TextureDecoder" Version="2.6.2" />
     <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
     <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />

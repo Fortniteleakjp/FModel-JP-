@@ -1,12 +1,6 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.GameTypes.ABI.Encryption.Aes;
@@ -15,6 +9,7 @@ using CUE4Parse.GameTypes.ArcRaiders.Encryption.Aes;
 using CUE4Parse.GameTypes.BB3.Encryption.Aes;
 using CUE4Parse.GameTypes.DBD.Encryption.Aes;
 using CUE4Parse.GameTypes.DeltaForce.Encryption.Aes;
+using CUE4Parse.GameTypes.DragonSword.Encryption.Aes;
 using CUE4Parse.GameTypes.DreamStar.Encryption.Aes;
 using CUE4Parse.GameTypes.FSR.Encryption.Aes;
 using CUE4Parse.GameTypes.FunkoFusion.Encryption.Aes;
@@ -26,8 +21,9 @@ using CUE4Parse.GameTypes.NMZ.Encryption.Aes;
 using CUE4Parse.GameTypes.OPA.Encryption.Aes;
 using CUE4Parse.GameTypes.PAXDEI.Encryption.Aes;
 using CUE4Parse.GameTypes.PMA.Encryption.Aes;
-using CUE4Parse.GameTypes.RocoKingdomWorld.Encryption.Aes;
+using CUE4Parse.GameTypes.ProSpi.Encryption.Aes;
 using CUE4Parse.GameTypes.Rennsport.Encryption.Aes;
+using CUE4Parse.GameTypes.RocoKingdomWorld.Encryption.Aes;
 using CUE4Parse.GameTypes.SD.Encryption.Aes;
 using CUE4Parse.GameTypes.Snowbreak.Encryption.Aes;
 using CUE4Parse.GameTypes.Splitgate2.Encryption.Aes;
@@ -66,6 +62,8 @@ namespace CUE4Parse.FileProvider.Vfs
 
         public IReadOnlyDictionary<FPackageId, GameFile> FilesById => Files.ById;
 
+        public int LooseFileCount { get; protected set; }
+
         public IAesVfsReader.CustomEncryptionDelegate? CustomEncryption { get; set; }
         public event EventHandler<int>? VfsRegistered;
         public event EventHandler<int>? VfsMounted;
@@ -90,8 +88,7 @@ namespace CUE4Parse.FileProvider.Vfs
                 EGame.GAME_TonyHawkProSkater12 or EGame.GAME_TonyHawkProSkater34 => THPS12Aes.THPS12Decrypt,
                 EGame.GAME_InfinityNikki => InfinityNikkiAes.InfinityNikkiDecrypt,
                 EGame.GAME_Spectre => SpectreDivideAes.SpectreDecrypt,
-                EGame.GAME_Splitgate2 => Aes1047Games.Decrypt1047Games,
-                EGame.GAME_Empulse => Aes1047Games.Decrypt1047Games,
+                EGame.GAME_Splitgate2 or EGame.GAME_Empulse => Aes1047Games.Decrypt1047Games,
                 EGame.GAME_MindsEye => MindsEyeAes.MindsEyeDecrypt,
                 EGame.GAME_NeedForSpeedMobile => NFSMobileAes.NFSMobileDecrypt,
                 EGame.GAME_OnePieceAmbition => OnePieceAmbitionEncryption.OnePieceAmbitionDecrypt,
@@ -102,6 +99,7 @@ namespace CUE4Parse.FileProvider.Vfs
                 EGame.GAME_ArcRaiders => ArcRaidersAes.ArcRaidersDecrypt,
                 EGame.GAME_RocoKingdomWorld => RocoKingdomWorldAes.RocoKingdomWorldDecrypt,
                 EGame.GAME_DragonSwordAwakening => DragonSwordAes.DragonSwordDecrypt,
+                EGame.GAME_eBaseballProSpirit => ProSpiEncryption.ProSpiDecrypt,
                 _ => null
             };
         }
