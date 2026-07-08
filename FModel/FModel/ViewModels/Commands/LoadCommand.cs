@@ -110,17 +110,34 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 
     private void FilterDirectoryFilesToDisplay(CancellationToken cancellationToken, IEnumerable<FileItem> directoryFiles)
     {
-        var filter = directoryFiles != null
-            ? new HashSet<string>(directoryFiles.Where(x => x.IsEnabled).Select(x => x.Name))
-            : null;
+        var includeLooseFiles = false;
+        HashSet<string> filter = null;
+        if (directoryFiles != null)
+        {
+            filter = new HashSet<string>();
+            foreach (var directoryFile in directoryFiles)
+            {
+                if (!directoryFile.IsEnabled) continue;
+                if (directoryFile.IsLooseFilesContainer)
+                {
+                    includeLooseFiles = true;
+                    continue;
+                }
+
+                filter.Add(directoryFile.Name);
+            }
+        }
 
         var hasFilter = filter != null && filter.Count > 0;
+        var hasSelection = hasFilter || includeLooseFiles;
 
         var entries = _applicationView.CUE4Parse.Provider.Files.Values
             .AsParallel()
             .WithCancellation(cancellationToken)
             .Where(asset => !asset.IsUePackagePayload)
-            .Where(asset => !hasFilter || (asset is VfsEntry entry && filter.Contains(entry.Vfs.Name)))
+            .Where(asset => !hasSelection ||
+                            asset is VfsEntry entry && filter.Contains(entry.Vfs.Name) ||
+                            includeLooseFiles && asset is OsGameFile)
             .ToList();
 
         _applicationView.Status.UpdateStatusLabel($"{entries.Count:### ### ###} Packages");

@@ -59,7 +59,7 @@ public static class MeshConverter
         return true;
     }
 
-    public static bool TryConvert(this USplineMeshComponent? spline, out CStaticMesh convertedMesh, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.OnlyNormalLODs)
+    public static bool TryConvert(this USplineMeshComponent? spline, out CStaticMesh convertedMesh, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.OnlyNormalLODs,  ELodFormat lodFormat = ELodFormat.AllLods)
     {
         var originalMesh = spline?.GetStaticMesh().Load<UStaticMesh>();
         if (originalMesh == null)
@@ -67,29 +67,31 @@ public static class MeshConverter
             convertedMesh = new CStaticMesh();
             return false;
         }
-        return TryConvert(originalMesh, spline, out convertedMesh, naniteFormat);
+        return TryConvert(originalMesh, spline, out convertedMesh, naniteFormat, lodFormat);
     }
 
-    public static bool TryConvert(this UStaticMesh originalMesh, out CStaticMesh convertedMesh, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.OnlyNormalLODs)
+    public static bool TryConvert(this UStaticMesh originalMesh, out CStaticMesh convertedMesh, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.OnlyNormalLODs, ELodFormat lodFormat = ELodFormat.AllLods)
     {
-        return TryConvert(originalMesh, null, out convertedMesh, naniteFormat);
+        return TryConvert(originalMesh, null, out convertedMesh, naniteFormat, lodFormat);
     }
 
     public static bool TryConvert(this UStaticMesh originalMesh, USplineMeshComponent? spline,
-        out CStaticMesh convertedMesh, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.OnlyNormalLODs)
+        out CStaticMesh convertedMesh, ENaniteMeshFormat naniteFormat = ENaniteMeshFormat.OnlyNormalLODs, ELodFormat lodFormat = ELodFormat.AllLods)
     {
         convertedMesh = new CStaticMesh();
-        if (originalMesh.RenderData?.Bounds == null || originalMesh.RenderData?.LODs is null)
+        var renderData = originalMesh.RenderData;
+        if (renderData == null || originalMesh.RenderData?.Bounds == null || originalMesh.RenderData?.LODs is null)
             return false;
 
-        convertedMesh.BoundingSphere = new FSphere(0f, 0f, 0f, originalMesh.RenderData.Bounds.SphereRadius / 2);
+        convertedMesh.BoundingSphere = new FSphere(0f, 0f, 0f, renderData.Bounds!.SphereRadius / 2);
         convertedMesh.BoundingBox = new FBox(
-            originalMesh.RenderData.Bounds.Origin - originalMesh.RenderData.Bounds.BoxExtent,
-            originalMesh.RenderData.Bounds.Origin + originalMesh.RenderData.Bounds.BoxExtent);
+            renderData.Bounds.Origin - renderData.Bounds.BoxExtent,
+            renderData.Bounds.Origin + renderData.Bounds.BoxExtent);
 
-        for (var i = 0; i < originalMesh.RenderData.LODs.Length; i++)
+        var lods = renderData.LODs!;
+        for (var i = 0; i < lods.Length; i++)
         {
-            var srcLod = originalMesh.RenderData.LODs[i];
+            var srcLod = lods[i];
             if (srcLod.SkipLod) continue;
 
             var numTexCoords = srcLod.VertexBuffer!.NumTexCoords;
@@ -180,6 +182,8 @@ public static class MeshConverter
             }
 
             convertedMesh.LODs.Add(staticMeshLod);
+
+            if (lodFormat == ELodFormat.FirstLod) break;
         }
 
         var lodsCount = convertedMesh.LODs.Count;
@@ -204,6 +208,9 @@ public static class MeshConverter
                     break;
             }
         }
+
+        // if (lodFormat == ELodFormat.FirstLod && convertedMesh.LODs.Count > 1)
+        //     convertedMesh.LODs.RemoveRange(1, convertedMesh.LODs.Count - 1);
 
         convertedMesh.FinalizeMesh();
         return true;

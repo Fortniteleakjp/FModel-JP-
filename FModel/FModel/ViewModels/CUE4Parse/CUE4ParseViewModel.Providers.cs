@@ -19,7 +19,6 @@ using CUE4Parse.Utils;
 using FModel.Extensions;
 using EpicManifestParser;
 using EpicManifestParser.UE;
-using EpicManifestParser.ZlibngDotNetDecompressor;
 using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views;
@@ -55,8 +54,8 @@ public partial class CUE4ParseViewModel
                                 ChunkCacheDirectory = cacheDir,
                                 ManifestCacheDirectory = cacheDir,
                                 ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
-                                Decompressor = ManifestZlibngDotNetDecompressor.Decompress,
-                                DecompressorState = ZlibHelper.Instance,
+                                Decompressor = Compression.Decompressor,
+                                Client = _chunkClient,
                                 CacheChunksAsIs = false
                             };
 
@@ -121,7 +120,7 @@ public partial class CUE4ParseViewModel
                                 loadingVm.DownloadSize = "0 B";
                                 (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
                                     cancellationToken: cancellationToken,
-                                    elementManifestPredicate: static x => x.Uri.Host is "egdownload.fastly-edge.com" or "epicgames-download1.akamaized.net" or "download.epicgames.com"
+                                    elementDownloadPredicate: static x => x.Uri.Host is "egdownload.fastly-edge.com" or "epicgames-download1.akamaized.net" or "download.epicgames.com"
                                 ).GetAwaiter().GetResult();
 
                                 loadingVm.StatusText = "マニフェストを解析中...";
@@ -221,6 +220,8 @@ public partial class CUE4ParseViewModel
                 }
         }
         provider.Initialize();
+        if (ReferenceEquals(provider, Provider))
+            GameDirectory.AddLooseFiles(provider.LooseFileCount);
     }
 
     // Providerを作成する

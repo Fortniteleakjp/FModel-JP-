@@ -229,7 +229,7 @@ public class ApplicationViewModel : ViewModel
         public event EventHandler CanExecuteChanged { add { } remove { } }
     }
 
-    public string InitialWindowTitle => $"FModelJP5.4 ({Constants.APP_SHORT_COMMIT_ID})";
+    public string InitialWindowTitle => $"FModelJP5.5 ({Constants.APP_SHORT_COMMIT_ID})";
     public string GameDisplayName => CUE4Parse.Provider.GameDisplayName ?? "Unknown";
     public string TitleExtra => $"({UserSettings.Default.CurrentDir.UeVersion}){(Build != EBuildKind.Release ? $" ({Build})" : "")}";
 
@@ -457,15 +457,8 @@ public class ApplicationViewModel : ViewModel
         {
             var zipDir = Path.GetDirectoryName(vgmZipFilePath)!;
             await using var zipFs = File.OpenRead(vgmZipFilePath);
-            using var zip = new ZipArchive(zipFs, ZipArchiveMode.Read);
-
-            foreach (var entry in zip.Entries)
-            {
-                var entryPath = Path.Combine(zipDir, entry.FullName);
-                await using var entryFs = File.Create(entryPath);
-                await using var entryStream = entry.Open();
-                await entryStream.CopyToAsync(entryFs);
-            }
+            await using var zip = await ZipArchive.CreateAsync(zipFs, ZipArchiveMode.Read, true, null);
+            await zip.ExtractToDirectoryAsync(zipDir, true);
         }
         else
         {
@@ -749,12 +742,7 @@ public class ApplicationViewModel : ViewModel
 
         var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
 
-        if (!File.Exists(oodlePath))
-        {
-            await OodleHelper.DownloadOodleDllAsync(oodlePath);
-        }
-
-        OodleHelper.Initialize(oodlePath);
+        await OodleHelper.InitializeAsync(oodlePath);
     }
 
     public static async ValueTask InitZlib()
@@ -763,10 +751,14 @@ public class ApplicationViewModel : ViewModel
         var zlibFileInfo = new FileInfo(zlibPath);
         if (!zlibFileInfo.Exists || zlibFileInfo.LastWriteTimeUtc < DateTime.UtcNow.AddMonths(-4))
         {
-            await ZlibHelper.DownloadDllAsync(zlibPath);
+            if (!await ZlibHelper.DownloadDllAsync(zlibPath))
+            {
+                zlibFileInfo.Refresh();
+                if (!zlibFileInfo.Exists) return;
+            }
         }
 
-        ZlibHelper.Initialize(zlibPath);
+        await ZlibHelper.InitializeAsync(zlibPath);
     }
 
     public static async Task InitDetex()

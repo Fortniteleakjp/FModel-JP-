@@ -15,14 +15,14 @@ public class Morph : IDisposable
     public readonly string Name;
     public readonly float[] Vertices;
 
-    public Morph(float[] vertices, int vertexSize, UMorphTarget morphTarget)
+    public Morph(float[] vertices, int vertexSize, UMorphTarget morphTarget, int lodIndex = 0)
     {
         Name = morphTarget.Name;
         Vertices = new float[vertices.Length / vertexSize * VertexSize];
 
         bool TryFindVertex(uint index, out FVector positionDelta, out FVector tangentDelta)
         {
-            foreach (var vertex in morphTarget.MorphLODModels[0].Vertices)
+            foreach (var vertex in morphTarget.MorphLODModels[lodIndex].Vertices)
             {
                 if (vertex.SourceIdx == index)
                 {
@@ -61,13 +61,13 @@ public class Morph : IDisposable
         }
     }
 
-    public Morph(float[] vertices, Dictionary<uint, int> dict, UMorphTarget morphTarget)
+    public Morph(float[] vertices, Dictionary<uint, int> dict, UMorphTarget morphTarget, int lodIndex = 0)
     {
         Name = morphTarget.Name;
         Vertices = new float[vertices.Length];
         Array.Copy(vertices, Vertices, vertices.Length);
 
-        foreach (var vert in morphTarget.MorphLODModels[0].Vertices)
+        foreach (var vert in morphTarget.MorphLODModels[lodIndex].Vertices)
         {
             var count = 0;
             if (dict.TryGetValue(vert.SourceIdx, out var baseIndex))

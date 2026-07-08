@@ -30,7 +30,6 @@ using CUE4Parse.UE4.Assets.Exports.Nanite;
 using EpicManifestParser;
 using EpicManifestParser.Api;
 using EpicManifestParser.UE;
-using EpicManifestParser.ZlibngDotNetDecompressor;
 using CUE4Parse.Compression;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
