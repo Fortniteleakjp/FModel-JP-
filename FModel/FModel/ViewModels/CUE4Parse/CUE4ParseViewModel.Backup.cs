@@ -56,7 +56,6 @@ using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using EpicManifestParser;
 using EpicManifestParser.UE;
-using EpicManifestParser.ZlibngDotNetDecompressor;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;

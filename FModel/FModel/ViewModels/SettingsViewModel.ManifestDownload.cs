@@ -30,7 +30,6 @@ using CUE4Parse.UE4.Assets.Exports.Nanite;
 using EpicManifestParser;
 using EpicManifestParser.Api;
 using EpicManifestParser.UE;
-using EpicManifestParser.ZlibngDotNetDecompressor;
 using CUE4Parse.Compression;
 using FModel.Framework;
 using FModel.ViewModels.ApiEndpoints.Models;
@@ -193,8 +192,8 @@ public partial class SettingsViewModel
                 ChunkCacheDirectory = cacheDir,
                 ManifestCacheDirectory = cacheDir,
                 ChunkBaseUrl = chunkBaseUrl,
-                Decompressor = ManifestZlibngDotNetDecompressor.Decompress,
-                DecompressorState = ZlibHelper.Instance,
+                Decompressor = Compression.Decompressor,
+                Client = httpClient,
                 CacheChunksAsIs = false
             };
             
@@ -228,8 +227,8 @@ public partial class SettingsViewModel
                         {
                             ChunkCacheDirectory = cacheDir,
                             ChunkBaseUrl = chunkBaseUrl,
-                            Decompressor = ManifestZlibngDotNetDecompressor.Decompress,
-                            DecompressorState = ZlibHelper.Instance,
+                            Decompressor = Compression.Decompressor,
+                            Client = httpClient,
                             CacheChunksAsIs = false
                         };
                         
@@ -251,8 +250,8 @@ public partial class SettingsViewModel
                         {
                             ChunkCacheDirectory = cacheDir,
                             ChunkBaseUrl = chunkBaseUrl,
-                            Decompressor = ManifestZlibngDotNetDecompressor.Decompress,
-                            DecompressorState = ZlibHelper.Instance,
+                            Decompressor = Compression.Decompressor,
+                            Client = httpClient,
                             CacheChunksAsIs = false
                         };
                         

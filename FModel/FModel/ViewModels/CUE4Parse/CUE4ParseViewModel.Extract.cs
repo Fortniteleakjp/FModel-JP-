@@ -39,6 +39,7 @@ using CUE4Parse.UE4.BinaryConfig;
 using CUE4Parse.UE4.CriWare;
 using CUE4Parse.UE4.CriWare.Readers;
 using CUE4Parse.UE4.FMod;
+using CUE4Parse.UE4.GameFeatures;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Objects.Core.Serialization;
@@ -56,7 +57,6 @@ using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using EpicManifestParser;
 using EpicManifestParser.UE;
-using EpicManifestParser.ZlibngDotNetDecompressor;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -308,6 +308,14 @@ public partial class CUE4ParseViewModel
 
                 break;
             }
+            case "bin" when entry.Name.Contains("GameFeatureVersePaths", StringComparison.OrdinalIgnoreCase):
+            {
+                var archive = entry.CreateReader();
+                var versePathLookup = new FGameFeatureVersePathLookup(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(versePathLookup, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
             case "bank":
             {
                 var archive = entry.CreateReader();
@@ -539,7 +547,7 @@ public partial class CUE4ParseViewModel
             {
                 if (!TabControl.CanAddTabs) return false;
 
-                TabControl.AddTab($"{verseDigest.ProjectName}.verse");
+                TabControl.AddTab($"{verseDigest.Name}.verse");
                 TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
                 TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
                 return true;

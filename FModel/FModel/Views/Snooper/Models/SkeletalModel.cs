@@ -104,13 +104,14 @@ public class SkeletalModel : UModel
             }
         }
 
+        var morphLodIndex = skeletalMesh.LODs[LodLevel].LODIndex;
         foreach (var morph in export.MorphTargets)
         {
-            if (!morph.TryLoad(out UMorphTarget morphTarget) || morphTarget.MorphLODModels.Length < 1 ||
-                morphTarget.MorphLODModels[0].Vertices.Length < 1)
+            if (!morph.TryLoad(out UMorphTarget morphTarget) || morphTarget.MorphLODModels.Length <= morphLodIndex ||
+                morphTarget.MorphLODModels[morphLodIndex].Vertices.Length < 1)
                 continue;
 
-            Morphs.Add(new Morph(cachedVertices, vertexLookup, morphTarget));
+            Morphs.Add(new Morph(cachedVertices, vertexLookup, morphTarget, morphLodIndex));
         }
     }
 

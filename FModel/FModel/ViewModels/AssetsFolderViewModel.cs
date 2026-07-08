@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Data;
@@ -105,14 +106,36 @@ public class AssetsFolderViewModel
             var rootChildren = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
             var childLookup = new Dictionary<TreeItem, Dictionary<string, TreeItem>>();
             var builder = new StringBuilder(128);
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                .Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
             foreach (var entry in entries)
             {
-                var folders = entry.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                var path = entry.Path;
+                if (path.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase))
+                    path = path[localAppData.Length..].TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+                var folders = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
                 var parentNode = treeItems;
                 var parentChildren = rootChildren;
                 TreeItem lastNode = null;
                 builder.Clear();
+
+                if (folders.Length <= 1)
+                {
+                    if (!rootChildren.TryGetValue("Content", out var rootNode))
+                    {
+                        rootNode = new TreeItem("Content", entry, "Content");
+                        rootNode.Folders.SetSuppressionState(true);
+                        rootNode.AssetsList.Assets.SetSuppressionState(true);
+                        treeItems.Add(rootNode);
+                        rootChildren["Content"] = rootNode;
+                        childLookup[rootNode] = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
+                    }
+
+                    rootNode.AssetsList.Assets.Add(entry);
+                    continue;
+                }
 
                 for (var i = 0; i < folders.Length - 1; i++)
                 {

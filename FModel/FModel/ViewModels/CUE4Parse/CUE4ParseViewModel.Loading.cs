@@ -56,7 +56,6 @@ using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Sounds;
 using EpicManifestParser;
 using EpicManifestParser.UE;
-using EpicManifestParser.ZlibngDotNetDecompressor;
 using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
@@ -93,10 +92,10 @@ public partial class CUE4ParseViewModel
         {
             Provider.OnDemandOptions = new IoStoreOnDemandOptions
             {
-                ChunkHostUri = new Uri("https://download.epicgames.com/", UriKind.Absolute),
+                ChunkHostUri = new Uri("https://egdownload.fastly-edge.com/", UriKind.Absolute),
                 ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
                 Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse?.AccessToken),
-                Timeout = TimeSpan.FromSeconds(30)
+                DownloaderClient = _chunkClient
             };
             switch (Provider)
             {
@@ -117,8 +116,8 @@ public partial class CUE4ParseViewModel
                                 ChunkCacheDirectory = cacheDir,
                                 ManifestCacheDirectory = cacheDir,
                                 ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
-                                Decompressor = ManifestZlibngDotNetDecompressor.Decompress,
-                                DecompressorState = ZlibHelper.Instance,
+                                Decompressor = Compression.Decompressor,
+                                Client = _chunkClient,
                                 CacheChunksAsIs = false
                             };
 
@@ -129,7 +128,7 @@ public partial class CUE4ParseViewModel
                             {
                                 (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
                                     cancellationToken: cancellationToken,
-                                    elementManifestPredicate: static x => x.Uri.Host is "egdownload.fastly-edge.com" or "epicgames-download1.akamaized.net" or "download.epicgames.com"
+                                    elementDownloadPredicate: static x => x.Uri.Host is "egdownload.fastly-edge.com" or "epicgames-download1.akamaized.net" or "download.epicgames.com"
                                 ).GetAwaiter().GetResult();
                             }
                             catch (HttpRequestException ex)
@@ -215,6 +214,8 @@ public partial class CUE4ParseViewModel
             if (Provider != null) tasks.Add(Task.Run(() => Provider.Initialize()));
             if (DiffProvider != null) tasks.Add(Task.Run(() => DiffProvider.Initialize()));
             Task.WaitAll(tasks.ToArray());
+            if (Provider != null)
+                GameDirectory.AddLooseFiles(Provider.LooseFileCount);
             _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.GameDirectory));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
             _criWareProviderLazy = new Lazy<CriWareProvider>(() => new CriWareProvider(Provider, UserSettings.Default.GameDirectory));

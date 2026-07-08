@@ -256,14 +256,17 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="25" />
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="95" />
+                                <ColumnDefinition Width="85" />
                             </Grid.ColumnDefinitions>
 
                             <Image x:Name="ListImage" Source="/FModel;component/Resources/archive.png"
-                                Width="18" Height="18" HorizontalAlignment="Center" Margin="0 0 5 0" />
-                            <TextBlock Grid.Column="1" HorizontalAlignment="Left" FontSize="13" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                            <TextBlock Grid.Column="3" HorizontalAlignment="Right" FontSize="13" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
+                                Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 5 0"
+                                RenderOptions.BitmapScalingMode="HighQuality" />
+                            <TextBlock Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="13" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="2" Margin="12 0 8 0" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12"
+                                       Opacity="0.75" Text="{Binding FileCount, StringFormat={}{0:N0} files}" />
+                            <TextBlock x:Name="LengthText" Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="13" Text="{Binding Length, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
                         </Grid>
                     </Border>
                     <DataTemplate.Triggers>
@@ -272,6 +275,10 @@
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsEnabled}" Value="False">
                             <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/archive_disabled.png" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsLooseFilesContainer}" Value="True">
+                            <Setter TargetName="LengthText" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ListImage" Property="Source" Value="/FModel;component/Resources/asset.png" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>
