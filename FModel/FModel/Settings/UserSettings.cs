@@ -213,6 +213,14 @@ namespace FModel.Settings
             set => SetProperty(ref _modelDirectory, value);
         }
 
+        private string _blenderExecutablePath;
+        [JsonProperty]
+        public string BlenderExecutablePath
+        {
+            get => _blenderExecutablePath;
+            set => SetProperty(ref _blenderExecutablePath, value);
+        }
+
         private string _gameDirectory = string.Empty;
         [JsonProperty]
         public string GameDirectory

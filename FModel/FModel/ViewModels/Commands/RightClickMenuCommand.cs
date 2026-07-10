@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,6 +7,7 @@ using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
 using FModel.Services;
 using FModel.ViewModels;
+using FModel.Views.Resources.Controls;
 using Serilog;
 
 namespace FModel.ViewModels.Commands;
@@ -93,6 +95,34 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, entry, false, EBulkType.Animations | updateUi);
                     }
+                    break;
+                case "Assets_Port_Animations_To_Blender":
+                    var exportedAnimations = new List<string>();
+                    foreach (var entry in entries)
+                    {
+                        Thread.Yield();
+                        cancellationToken.ThrowIfCancellationRequested();
+                        try
+                        {
+                            exportedAnimations.AddRange(
+                                contextViewModel.CUE4Parse.ExportAnimationsForBlender(cancellationToken, entry));
+                        }
+                        catch (Exception exception)
+                        {
+                            Log.Error(exception, "Could not export UEFormat animation from {Path} for Blender", entry.Path);
+                            FLogger.Append(ELog.Error, () =>
+                                FLogger.Text($"'{entry.Name}' をBlender用に書き出せませんでした: {exception.Message}", Constants.WHITE, true));
+                        }
+                    }
+
+                    if (exportedAnimations.Count == 0)
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text("選択したファイルに移植可能なアニメーションがありません。", Constants.WHITE, true));
+                        break;
+                    }
+
+                    BlenderIntegrationService.ImportAnimations(exportedAnimations);
                     break;
                 case "Assets_Save_Worlds":
                     foreach (var entry in entries)

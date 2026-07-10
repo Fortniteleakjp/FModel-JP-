@@ -144,6 +144,7 @@
     <system:String x:Key="Ctx_SaveTexture">テクスチャを保存</system:String>
     <system:String x:Key="Ctx_SaveModel">モデルを保存</system:String>
     <system:String x:Key="Ctx_SaveAnim">アニメーションを保存</system:String>
+    <system:String x:Key="Ctx_PortToBlender">Blenderに移植</system:String>
     <system:String x:Key="Ctx_SaveSound">サウンドを保存</system:String>
     <system:String x:Key="Ctx_Copy">コピー</system:String>
     <system:String x:Key="Ctx_CopyPath">パス</system:String>

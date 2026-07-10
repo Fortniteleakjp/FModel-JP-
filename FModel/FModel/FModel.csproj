@@ -5,9 +5,9 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
-    <Version>5.5.0.0</Version>
-    <AssemblyVersion>5.5.0.0</AssemblyVersion>
-    <FileVersion>5.5.0.0</FileVersion>
+    <Version>5.6.0.0</Version>
+    <AssemblyVersion>5.6.0.0</AssemblyVersion>
+    <FileVersion>5.6.0.0</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -70,6 +70,7 @@
     <None Remove="Resources\engine.png" />
     <None Remove="Resources\fallenorder.png" />
     <None Remove="Resources\FModel.ico" />
+    <None Remove="Resources\FModelBlenderBridge.py" />
     <None Remove="Resources\folder.png" />
     <None Remove="Resources\label.png" />
     <None Remove="Resources\fortnite.png" />
@@ -161,6 +162,7 @@
     <EmbeddedResource Include="Resources\Xml.xshd" />
     <EmbeddedResource Include="Resources\Cpp.xshd" />
     <EmbeddedResource Include="Resources\Changelog.xshd" />
+    <EmbeddedResource Include="Resources\FModelBlenderBridge.py" />
     <EmbeddedResource Include="Resources\default.frag" />
     <EmbeddedResource Include="Resources\default.vert" />
     <EmbeddedResource Include="Resources\grid.frag" />
