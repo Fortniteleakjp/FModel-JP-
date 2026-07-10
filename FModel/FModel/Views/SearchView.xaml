@@ -470,6 +470,21 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <MenuItem Header="{DynamicResource Ctx_PortToBlender}" Command="{Binding DataContext.RightClickMenuCommand}">
+                                <MenuItem.CommandParameter>
+                                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                        <Binding Source="Assets_Port_Animations_To_Blender" />
+                                        <Binding Path="SelectedItems" />
+                                    </MultiBinding>
+                                </MenuItem.CommandParameter>
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource AnimationIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
                                     <MenuItem Header="{DynamicResource Ctx_SaveSound}" Command="{Binding DataContext.RightClickMenuCommand}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
