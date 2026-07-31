@@ -78,11 +78,12 @@ namespace FModel.Views.Resources.Controls
                     try
                     {
                         if (!provider.TryLoadPackage(file.Path, out var package)) return null;
-                        var obj = package.GetExports().FirstOrDefault();
+                        var exports = package.GetExports().ToList();
+                        var obj = exports.FirstOrDefault();
                         if (obj == null) return null;
 
-                        // Case 1: Type is Texture2D
-                        if (obj is UTexture2D texture)
+                        // Texture2D can be a secondary export in a package. Search every export.
+                        if (exports.OfType<UTexture2D>().FirstOrDefault() is { } texture)
                         {
                             return DecodeTexture(texture);
                         }

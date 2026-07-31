@@ -44,7 +44,7 @@ public sealed class TreeItem : ViewModel
     private CompositeCollection _combinedEntries;
     public CompositeCollection CombinedEntries => _combinedEntries ??= new CompositeCollection
     {
-        new CollectionContainer { Collection = FilteredFoldersView },
+        new CollectionContainer { Collection = FoldersView },
         new CollectionContainer { Collection = AssetsList.AssetsView }
     };
 
@@ -116,6 +116,12 @@ public sealed class AssetsFolderViewModel
     private Dictionary<string, TreeItem> _foldersByPath = new(StringComparer.Ordinal);
     public RangeObservableCollection<TreeItem> Folders { get; } = [];
     public ICollectionView FoldersView { get; }
+
+    private CompositeCollection _combinedEntries;
+    public CompositeCollection CombinedEntries => _combinedEntries ??= new CompositeCollection
+    {
+        new CollectionContainer { Collection = FoldersView }
+    };
 
     public AssetsFolderViewModel() => FoldersView = new ListCollectionView(Folders)
     {

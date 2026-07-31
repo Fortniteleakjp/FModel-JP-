@@ -11,6 +11,7 @@
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         xmlns:vm="clr-namespace:FModel.ViewModels"
+        xmlns:vwp="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:document="clr-namespace:ICSharpCode.AvalonEdit.Document;assembly=ICSharpCode.AvalonEdit"
         WindowStartupLocation="CenterScreen" Closing="OnClosing" Loaded="OnLoaded" PreviewKeyDown="OnWindowKeyDown"
@@ -1137,8 +1138,8 @@
                                     <Button Content="{DynamicResource Button_Load}" Margin="0,8,0,0"
                                         Style="{StaticResource FModelJP5PrimaryButton}"
                                         MinHeight="38"
-                                        Command="{Binding LoadingModes.LoadCommand}" IsEnabled="{Binding Status.IsReady}"
-                                        CommandParameter="{Binding SelectedItems, ElementName=DirectoryFilesListBox}" />
+                                        IsEnabled="{Binding Status.IsReady}"
+                                        Click="OnLoadArchivesClick" />
                                 </StackPanel>
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -2033,11 +2034,12 @@
                             </Grid.Resources>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <DockPanel Grid.Row="0" LastChildFill="True" Margin="4,8,4,12">
-                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <DockPanel Grid.Row="0" LastChildFill="True" Margin="4,4,4,6">
+                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                                     <Grid Margin="12,0,0,0">
                                         <TextBox x:Name="NewExplorerSearchBox" Style="{StaticResource FModelJP5SearchTextBox}" AcceptsTab="False" AcceptsReturn="False"
                                              Padding="28,4,28,4" MinWidth="220" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
@@ -2083,19 +2085,19 @@
                                     </Button>
                                 </StackPanel>
 
-                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,12,0">
-                                        <Button x:Name="NewExplorerUpButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoUp}" Padding="8,4" Margin="0,0,2,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoParentFolderClick">
-                                            <TextBlock Text="↑" FontSize="14" FontWeight="SemiBold" />
-                                        </Button>
+                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,12,0" Visibility="Collapsed">
                                         <Button x:Name="NewExplorerBackButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoBack}" Padding="8,4" Margin="0,0,2,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoPreviousFileClick">
                                             <TextBlock Text="←" FontSize="14" FontWeight="SemiBold" />
                                         </Button>
-                                        <Button x:Name="NewExplorerForwardButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoForward}" Padding="8,4" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoNextFileClick">
+                                        <Button x:Name="NewExplorerForwardButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoForward}" Padding="8,4" Margin="0,0,2,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoNextFileClick">
                                             <TextBlock Text="→" FontSize="14" FontWeight="SemiBold" />
+                                        </Button>
+                                        <Button x:Name="NewExplorerUpButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoUp}" Padding="8,4" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoParentFolderClick">
+                                            <TextBlock Text="↑" FontSize="14" FontWeight="SemiBold" />
                                         </Button>
                                 </StackPanel>
 
-                                <Border Style="{StaticResource FModelJP5InputHostBorder}">
+                                <Border Style="{StaticResource FModelJP5InputHostBorder}" Visibility="Collapsed">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -2107,14 +2109,18 @@
                                 </Border>
                             </DockPanel>
 
-                            <Grid Grid.Row="1" Margin="4,0,4,4">
+                            <controls:Breadcrumb Grid.Row="1" Margin="4,0,4,4"
+                                                  HorizontalAlignment="Left"
+                                                  DataContext="{Binding Text, ElementName=NewExplorerPathBox}" />
+
+                            <Grid Grid.Row="2" Margin="4,0,4,4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*" MinWidth="250"/>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="3*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Border Grid.Column="0" Style="{StaticResource FModelJP5InputHostBorder}" Padding="0" ClipToBounds="True">
+                                <Border Grid.Column="0" Style="{StaticResource FModelJP5InputHostBorder}" Padding="0" ClipToBounds="True" Visibility="Collapsed">
                                     <ListBox x:Name="NewExplorerListBox"
                                          ItemsSource="{Binding FoldersView, IsAsync=True}"
                                          MouseDoubleClick="OnNewExplorerListMouseDoubleClick"
@@ -2207,83 +2213,46 @@
                                         </ListBox.Style>
                                         <ListBox.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <WrapPanel IsItemsHost="True" />
+                                                <StackPanel IsItemsHost="True" />
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Width="152" Height="178" Margin="5" CornerRadius="10"                                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}"
-                                                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
-                                                        BorderThickness="1"
-                                                        RenderTransformOrigin="0.5,0.5">
-                                                    <Border.RenderTransform>
-                                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                                    </Border.RenderTransform>
-                                                    <Border.Effect>
-                                                        <DropShadowEffect ShadowDepth="0" BlurRadius="6" Opacity="0.08" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
-                                                    </Border.Effect>
+                                                <Border Margin="2,1" Padding="8,6" Background="Transparent" CornerRadius="3">
                                                     <Border.Style>
                                                         <Style TargetType="Border">
                                                             <Style.Triggers>
                                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
-                                                                    <Trigger.EnterActions>
-                                                                        <BeginStoryboard>
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.01" Duration="0:0:0.12" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.01" Duration="0:0:0.12" />
-                                                                            </Storyboard>
-                                                                        </BeginStoryboard>
-                                                                    </Trigger.EnterActions>
-                                                                    <Trigger.ExitActions>
-                                                                        <BeginStoryboard>
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.1" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.1" />
-                                                                            </Storyboard>
-                                                                        </BeginStoryboard>
-                                                                    </Trigger.ExitActions>
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
                                                                 </Trigger>
                                                                 <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
-                                                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
-                                                                    <Setter Property="BorderThickness" Value="2" />
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </Border.Style>
                                                     <Grid>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="*" />
-                                                            <RowDefinition Height="Auto" />
-                                                        </Grid.RowDefinitions>
-
-                                                        <Viewbox Grid.Row="0" Margin="24">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="24" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Viewbox Grid.Column="0" Width="18" Height="18" HorizontalAlignment="Left">
                                                             <Canvas Width="24" Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" Data="M3,7.2C3,5.98 3.98,5 5.2,5H9.5L11.1,6.8H18.8C20.02,6.8 21,7.78 21,9V17.8C21,19.02 20.02,20 18.8,20H5.2C3.98,20 3,19.02 3,17.8V7.2ZM5.2,8.2V17.8H18.8V9.2H10.4L8.8,7.4H5.2ZM7.1,11.5H12.4V13H7.1V11.5ZM7.1,14.4H16V15.9H7.1V14.4Z" />
+                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" Data="M3,7.2C3,5.98 3.98,5 5.2,5H9.5L11.1,6.8H18.8C20.02,6.8 21,7.78 21,9V17.8C21,19.02 20.02,20 18.8,20H5.2C3.98,20 3,19.02 3,17.8V7.2ZM5.2,8.2V17.8H18.8V9.2H10.4L8.8,7.4H5.2Z" />
                                                             </Canvas>
                                                         </Viewbox>
-
-                                                        <Border Grid.Row="1" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
-                                                            CornerRadius="0,0,10,10" Padding="10,8">
-                                                            <StackPanel>
-                                                                <TextBlock Text="{Binding Header}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
-                                                                       ToolTip="{Binding Header}" HorizontalAlignment="Left" Margin="0,0,0,3" FontSize="12"/>
-                                                                <Grid>
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
-                                                                    <TextBlock Grid.Column="0" FontSize="10" Opacity="0.6">
-                                                                    <Run Text="{Binding AssetsList.Count, Mode=OneWay}" />
-                                                                    <Run Text="{DynamicResource NewExplorer_Label_ItemsSuffix}" />
-                                                                    </TextBlock>
-                                                                    <TextBlock Grid.Column="1" FontSize="10" Opacity="0.6" HorizontalAlignment="Right">
-                                                                    <Run Text="{Binding FoldersView.Count, Mode=OneWay}" />
-                                                                    <Run Text="{DynamicResource NewExplorer_Label_FoldersSuffix}" />
-                                                                    </TextBlock>
-                                                                </Grid>
-                                                            </StackPanel>
-                                                        </Border>
+                                                        <StackPanel Grid.Column="1" Margin="8,0,8,0">
+                                                            <TextBlock Text="{Binding Header, Mode=OneWay}" FontSize="13" TextTrimming="CharacterEllipsis" ToolTip="{Binding Header, Mode=OneWay}" />
+                                                            <TextBlock FontSize="11" Opacity="0.62">
+                                                                <Run Text="{Binding FoldersView.Count, Mode=OneWay}" />
+                                                                <Run Text="{DynamicResource NewExplorer_Label_FoldersSuffix}" />
+                                                                <Run Text="  ・  " />
+                                                                <Run Text="{Binding AssetsList.Count, Mode=OneWay}" />
+                                                                <Run Text="{DynamicResource NewExplorer_Label_ItemsSuffix}" />
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="2" Text="›" FontSize="20" Opacity="0.45" VerticalAlignment="Center" />
                                                     </Grid>
                                                 </Border>
                                             </DataTemplate>
@@ -2291,18 +2260,46 @@
                                     </ListBox>
                                 </Border>
 
-                                <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" ResizeBehavior="PreviousAndNext"/>
+                                <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center" VerticalAlignment="Stretch" Background="Transparent" ResizeBehavior="PreviousAndNext" Visibility="Collapsed"/>
 
-                                <Border Grid.Column="2" Style="{StaticResource FModelJP5InputHostBorder}" Padding="0" ClipToBounds="True">
-                                    <ListBox x:Name="NewExplorerFilesListBox"
-                                         ItemsSource="{Binding AssetsList.AssetsView, IsAsync=True}"
+                                <Border Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource FModelJP5InputHostBorder}" Padding="0" ClipToBounds="True">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="0" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                <Border Grid.Row="0" Visibility="Collapsed" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" BorderThickness="0,0,0,1" Padding="8,0">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="30" />
+                                                    <ColumnDefinition Width="2.5*" MinWidth="180" />
+                                                    <ColumnDefinition Width="1.2*" MinWidth="100" />
+                                                    <ColumnDefinition Width="100" />
+                                                    <ColumnDefinition Width="90" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="1" Text="名前" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.78" />
+                                                <TextBlock Grid.Column="2" Text="パス" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.78" />
+                                                <TextBlock Grid.Column="3" Text="サイズ" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.78" />
+                                                <TextBlock Grid.Column="4" Text="種類" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.78" />
+                                            </Grid>
+                                        </Border>
+                                    <ListBox Grid.Row="1" x:Name="NewExplorerFilesListBox"
+                                         ItemsSource="{Binding CombinedEntries}"
+                                         SelectionMode="Extended"
+                                         VirtualizingPanel.IsVirtualizing="True"
+                                         VirtualizingPanel.VirtualizationMode="Recycling"
                                          MouseDoubleClick="OnNewExplorerFileMouseDoubleClick"
+                                         PreviewMouseRightButtonDown="OnNewExplorerPreviewMouseRightButtonDown"
                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
                                          PreviewMouseWheel="OnNewExplorerListPreviewMouseWheel"
-                                         ScrollViewer.CanContentScroll="False"
+                                         ScrollViewer.CanContentScroll="True"
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
+                                        <ListBox.ItemTemplateSelector>
+                                            <controls:NewExplorerEntryTemplateSelector />
+                                        </ListBox.ItemTemplateSelector>
                                         <ListBox.ContextMenu>
                                             <ContextMenu Style="{StaticResource FModelJP5ContextMenu}" DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                                                 <ContextMenu.Resources>
@@ -2614,120 +2611,118 @@
                                         </ListBox.Style>
                                         <ListBox.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <WrapPanel IsItemsHost="True" />
+                                                <vwp:VirtualizingWrapPanel IsItemsHost="True" Orientation="Horizontal" SpacingMode="Uniform" ScrollUnit="Pixel" />
                                             </ItemsPanelTemplate>
                                         </ListBox.ItemsPanel>
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border Width="152" Height="178" Margin="5" CornerRadius="10"
-                                                        Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBackground}"
-                                                        BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardBorder}"
-                                                        BorderThickness="1"
-                                                        RenderTransformOrigin="0.5,0.5">
-                                                    <Border.RenderTransform>
-                                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                                    </Border.RenderTransform>
-                                                    <Border.Effect>
-                                                        <DropShadowEffect ShadowDepth="0" BlurRadius="6" Opacity="0.08" Color="{DynamicResource {x:Static adonisUi:Colors.ForegroundColor}}"/>
-                                                    </Border.Effect>
+                                        <ListBox.Resources>
+                                            <DataTemplate x:Key="NewExplorerFolderTemplate">
+                                                <Border Width="128" Height="192" Margin="8" Padding="8" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8">
                                                     <Border.Style>
                                                         <Style TargetType="Border">
                                                             <Style.Triggers>
                                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"/>
-                                                                    <Trigger.EnterActions>
-                                                                        <BeginStoryboard>
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.01" Duration="0:0:0.12" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.01" Duration="0:0:0.12" />
-                                                                            </Storyboard>
-                                                                        </BeginStoryboard>
-                                                                    </Trigger.EnterActions>
-                                                                    <Trigger.ExitActions>
-                                                                        <BeginStoryboard>
-                                                                            <Storyboard>
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.1" />
-                                                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.1" />
-                                                                            </Storyboard>
-                                                                        </BeginStoryboard>
-                                                                    </Trigger.ExitActions>
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
                                                                 </Trigger>
                                                                 <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
                                                                     <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
-                                                                    <Setter Property="BorderThickness" Value="2" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </Border.Style>
-                                                    <Grid>
+                                                    <Grid MinHeight="174">
+                                                        <Grid.Resources>
+                                                            <Style TargetType="TextBlock">
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="Grid.Column" Value="4">
+                                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Grid.Resources>
                                                         <Grid.RowDefinitions>
+                                                            <RowDefinition Height="84" />
                                                             <RowDefinition Height="*" />
                                                             <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
                                                         </Grid.RowDefinitions>
-
-                                                        <Image x:Name="ThumbnailImage" Grid.Row="0" Margin="10" Stretch="Uniform"
-                                                           controls:FileIconLoader.GameFile="{Binding}"
-                                                           Visibility="Collapsed"/>
-
-                                                        <Viewbox Grid.Row="0" Margin="24">
-                                                            <Viewbox.Style>
-                                                                <Style TargetType="Viewbox">
-                                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding Visibility, ElementName=ThumbnailImage}" Value="Visible">
-                                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </Viewbox.Style>
+                                                        <Viewbox Grid.Row="0" Width="80" Height="80" HorizontalAlignment="Center">
                                                             <Canvas Width="24" Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource NoteIcon}" />
+                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" Data="M3,7.2C3,5.98 3.98,5 5.2,5H9.5L11.1,6.8H18.8C20.02,6.8 21,7.78 21,9V17.8C21,19.02 20.02,20 18.8,20H5.2C3.98,20 3,19.02 3,17.8V7.2ZM5.2,8.2V17.8H18.8V9.2H10.4L8.8,7.4H5.2Z" />
                                                             </Canvas>
                                                         </Viewbox>
-
-                                                        <Border Grid.Row="1" Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=CardSectionBackground}"
-                                                            CornerRadius="0,0,10,10" Padding="10,8">
-                                                            <StackPanel>
-                                                                 <TextBlock controls:WeaponCardNameLoader.GameFile="{Binding}"
-                                                                     controls:HighlightText.Text="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}"
-                                                                       controls:HighlightText.Highlight="{Binding Text, ElementName=NewExplorerSearchBox}"
-                                                                       controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
-                                                                       FontWeight="SemiBold" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"
-                                                                     ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}" Margin="0,0,0,4" FontSize="12"/>
-                                                                <Border Background="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Background}"
-                                                                    BorderBrush="{Binding Text, ElementName=AssetClassBadgeText, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Border}"
-                                                                    BorderThickness="1"
-                                                                    CornerRadius="10"
-                                                                    HorizontalAlignment="Center"
-                                                                    Margin="0,0,0,4"
-                                                                    Padding="7,2">
-                                                                    <TextBlock x:Name="AssetClassBadgeText"
-                                                                           controls:GameFileClassLoader.GameFile="{Binding}"
-                                                                           Text="{Binding RelativeSource={RelativeSource Self}, Path=(controls:GameFileClassLoader.ClassName)}"
-                                                                           FontSize="10"
-                                                                           FontWeight="SemiBold"
-                                                                           Opacity="0.95"
-                                                                           TextAlignment="Center"
-                                                                           HorizontalAlignment="Center"
-                                                                           Foreground="{Binding Text, RelativeSource={RelativeSource Self}, Converter={x:Static converters:AssetClassBadgeBrushConverter.Instance}, ConverterParameter=Foreground}"
-                                                                           TextTrimming="CharacterEllipsis"
-                                                                           ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Text}" />
-                                                                </Border>
-                                                                <Grid>
-                                                                    <Grid.ColumnDefinitions>
-                                                                        <ColumnDefinition Width="*" />
-                                                                        <ColumnDefinition Width="Auto" />
-                                                                    </Grid.ColumnDefinitions>
-                                                                    <TextBlock Grid.Column="0" Text="{Binding Size, Converter={x:Static converters:SizeToStringConverter.Instance}}" FontSize="11" Opacity="0.75" />
-                                                                    <TextBlock Grid.Column="1" Text="{Binding Extension}" FontSize="11" Opacity="0.75" HorizontalAlignment="Right" />
-                                                                </Grid>
-                                                            </StackPanel>
-                                                        </Border>
+                                                        <TextBlock Grid.Row="1" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                                                   Text="{Binding Header, Mode=OneWay}" ToolTip="{Binding PathAtThisPoint, Mode=OneWay}" />
+                                                        <TextBlock Grid.Row="2" Margin="0,4,0,0" FontSize="11" Opacity="0.68" TextTrimming="CharacterEllipsis" Text="{Binding PathAtThisPoint, Mode=OneWay}" />
+                                                        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,5,0,0" Opacity="0.75">
+                                                            <TextBlock FontSize="11" Text="{Binding FoldersView.Count, Mode=OneWay, StringFormat={}{0} フォルダー}" />
+                                                            <TextBlock FontSize="11" Margin="8,0,0,0" Text="{Binding AssetsList.Count, Mode=OneWay, StringFormat={}{0} ファイル}" />
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="4" VerticalAlignment="Center" Opacity="0.72" Text="フォルダー" />
                                                     </Grid>
                                                 </Border>
                                             </DataTemplate>
-                                        </ListBox.ItemTemplate>
+                                            <DataTemplate x:Key="NewExplorerFileTemplate">
+                                                <Border Width="128" Height="192" Margin="8" Padding="8" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                                                                </Trigger>
+                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+                                                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <Grid MinHeight="174">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="110" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid Grid.Row="0" Width="108" Height="104" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <Image x:Name="ThumbnailImage" Width="108" Height="104" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" controls:FileIconLoader.GameFile="{Binding}" Visibility="Collapsed" />
+                                                            <Viewbox Width="52" Height="52" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                <Viewbox.Style>
+                                                                    <Style TargetType="Viewbox">
+                                                                        <Setter Property="Visibility" Value="Visible" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding Visibility, ElementName=ThumbnailImage}" Value="Visible">
+                                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Viewbox.Style>
+                                                                <Canvas Width="24" Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource NoteIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </Grid>
+                                                        <TextBlock Grid.Row="1" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                                                   controls:WeaponCardNameLoader.GameFile="{Binding}"
+                                                                   controls:HighlightText.Text="{Binding RelativeSource={RelativeSource Self}, Path=(controls:WeaponCardNameLoader.DisplayName)}"
+                                                                   controls:HighlightText.Highlight="{Binding Text, ElementName=NewExplorerSearchBox}"
+                                                                   controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
+                                                                   ToolTip="{Binding Path, Mode=OneWay}" />
+                                                        <Grid Grid.Row="2" Margin="0,4,0,0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Grid.Column="0" FontSize="11" Opacity="0.68" TextTrimming="CharacterEllipsis" Text="{Binding Extension, Mode=OneWay, StringFormat={}.{0}}" />
+                                                            <TextBlock Grid.Column="1" FontSize="11" Opacity="0.68" Text="{Binding Size, Mode=OneWay, Converter={x:Static converters:SizeToStringConverter.Instance}}" />
+                                                        </Grid>
+                                                        <TextBlock Grid.Row="3" FontSize="10" Opacity="0.58" TextTrimming="CharacterEllipsis" Text="{Binding Path, Mode=OneWay}" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ListBox.Resources>
                                     </ListBox>
+                                    </Grid>
                                 </Border>
                             </Grid>
                         </Grid>
