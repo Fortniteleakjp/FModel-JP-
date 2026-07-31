@@ -47,7 +47,7 @@ public partial class SearchView
 
         MainWindow.YesWeCats.Activate();
 
-        do { await Task.Delay(100); } while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Assets.Count);
+        do { await Task.Delay(100); } while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Count);
 
         MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 2; // assets tab
         do

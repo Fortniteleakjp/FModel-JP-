@@ -17,7 +17,7 @@ namespace CUE4Parse.UE4.Objects.UObject
             base.Deserialize(Ar, validPos);
             ArrayDim = Ar.Read<int>();
             PropertyFlags = Ar.Ver >= EUnrealEngineObjectUE3Version.PropertyFlagsSizeExpandedTo64Bits ? Ar.Read<EPropertyFlags>() : (EPropertyFlags)Ar.Read<uint>();
-            if (Ar.Game >= EGame.GAME_UE4_0)
+            if (Ar.Game >= GAME_UE4_0)
             {
                 RepNotifyFunc = Ar.ReadFName();
             }
@@ -322,9 +322,16 @@ namespace CUE4Parse.UE4.Objects.UObject
             base.Deserialize(Ar, validPos);
             SignatureFunction = new FPackageIndex(Ar);
 
-            if (Ar.Ver > EUnrealEngineObjectUE3Version.AddedDelegateSourceToUDelegateProperty && Ar.Game < EGame.GAME_UE4_0)
+            if (Ar.Ver > EUnrealEngineObjectUE3Version.AddedDelegateSourceToUDelegateProperty && Ar.Game < GAME_UE4_0)
             {
-                SourceDelegate = new FPackageIndex(Ar);
+                if (Ar.Ver < EUnrealEngineObjectUE3Version.ADDED_UExPORTER_PREFFERED_FORMAT)
+                {
+                    Ar.ReadFName(); // SourceDelegate
+                }
+                else
+                {
+                    SourceDelegate = new FPackageIndex(Ar);
+                }
             }
         }
 
@@ -334,6 +341,12 @@ namespace CUE4Parse.UE4.Objects.UObject
 
             writer.WritePropertyName("SignatureFunction");
             serializer.Serialize(writer, SignatureFunction);
+            
+            if (SourceDelegate is { IsNull: false })
+            {
+                writer.WritePropertyName("SourceDelegate");
+                serializer.Serialize(writer, SourceDelegate);
+            }
         }
     }
 

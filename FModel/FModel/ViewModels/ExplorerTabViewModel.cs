@@ -96,7 +96,7 @@ namespace FModel.ViewModels
             OpenCommand = new RelayCommand(obj => { IsExpanded = !IsExpanded; });
 
             // 子要素がある場合はダミーを追加して展開可能にする
-            if (treeItem.Folders.Count > 0 || treeItem.AssetsList.Assets.Count > 0)
+            if (treeItem.Folders.Count > 0 || treeItem.AssetsList.Count > 0)
             {
                 Children.Add(null);
             }

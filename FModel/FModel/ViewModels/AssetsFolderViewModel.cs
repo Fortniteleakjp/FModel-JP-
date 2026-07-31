@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
@@ -13,54 +13,67 @@ using FModel.Services;
 
 namespace FModel.ViewModels;
 
-public class TreeItem : ViewModel
+public sealed class TreeItem : ViewModel
 {
-    private string _header;
-    public string Header
-    {
-        get => _header;
-        private set => SetProperty(ref _header, value);
-    }
-
+    public string Header { get; }
     private bool _isExpanded;
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set => SetProperty(ref _isExpanded, value);
-    }
-
+    public bool IsExpanded { get => _isExpanded; set => SetProperty(ref _isExpanded, value); }
     private bool _isSelected;
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set => SetProperty(ref _isSelected, value);
-    }
+    public bool IsSelected { get => _isSelected; set => SetProperty(ref _isSelected, value); }
 
-    private string _archive;
-    public string Archive
-    {
-        get => _archive;
-        private set => SetProperty(ref _archive, value);
-    }
-
-    private string _mountPoint;
-    public string MountPoint
-    {
-        get => _mountPoint;
-        private set => SetProperty(ref _mountPoint, value);
-    }
-
-    private FPackageFileVersion _version;
-    public FPackageFileVersion Version
-    {
-        get => _version;
-        private set => SetProperty(ref _version, value);
-    }
-
+    public string Archive { get; }
+    public string MountPoint { get; }
+    public FPackageFileVersion Version { get; }
     public string PathAtThisPoint { get; }
-    public AssetsListViewModel AssetsList { get; }
-    public RangeObservableCollection<TreeItem> Folders { get; }
-    public ICollectionView FoldersView { get; }
+    public AssetsListViewModel AssetsList { get; } = new();
+    public RangeObservableCollection<TreeItem> Folders { get; } = [];
+
+    private ICollectionView _foldersView;
+    public ICollectionView FoldersView => _foldersView ??= new ListCollectionView(Folders)
+    {
+        SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) }
+    };
+
+    private ICollectionView _filteredFoldersView;
+    public ICollectionView FilteredFoldersView => _filteredFoldersView ??= new ListCollectionView(Folders)
+    {
+        SortDescriptions = { new SortDescription(nameof(Header), ListSortDirection.Ascending) },
+        Filter = x => ItemFilter(x, SearchText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries))
+    };
+
+    private CompositeCollection _combinedEntries;
+    public CompositeCollection CombinedEntries => _combinedEntries ??= new CompositeCollection
+    {
+        new CollectionContainer { Collection = FilteredFoldersView },
+        new CollectionContainer { Collection = AssetsList.AssetsView }
+    };
+
+    public TreeItem Parent { get; init; }
+    private string _searchText = string.Empty;
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            if (SetProperty(ref _searchText, value))
+            {
+                AssetsList.SetFilter(x => ItemFilter(x, SearchText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)));
+                AssetsList.RefreshView();
+                FilteredFoldersView.Refresh();
+            }
+        }
+    }
+
+    private EAssetCategory _selectedCategory = EAssetCategory.All;
+    public EAssetCategory SelectedCategory
+    {
+        get => _selectedCategory;
+        set
+        {
+            if (SetProperty(ref _selectedCategory, value))
+                _ = OnSelectedCategoryChanged();
+        }
+    }
 
     public TreeItem(string header, GameFile entry, string pathHere)
     {
@@ -71,24 +84,67 @@ public class TreeItem : ViewModel
             MountPoint = vfsEntry.Vfs.MountPoint;
             Version = vfsEntry.Vfs.Ver;
         }
+
         PathAtThisPoint = pathHere;
-        AssetsList = new AssetsListViewModel();
-        Folders = new RangeObservableCollection<TreeItem>();
-        FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription("Header", ListSortDirection.Ascending) } };
+        AssetsList.SetFilter(x => ItemFilter(x, SearchText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries)));
     }
 
-    public override string ToString() => $"{Header} | {Folders.Count} Folders | {AssetsList.Assets.Count} Files";
+    private System.Threading.Tasks.Task OnSelectedCategoryChanged()
+    {
+        AssetsList.RefreshView();
+        FilteredFoldersView.Refresh();
+        return System.Threading.Tasks.Task.CompletedTask;
+    }
+
+    private bool ItemFilter(object item, IEnumerable<string> filters)
+    {
+        var f = filters as string[] ?? filters.ToArray();
+        return item switch
+        {
+            GameFile entry => f.Length == 0 || f.All(x => entry.Name.Contains(x, StringComparison.OrdinalIgnoreCase)),
+            TreeItem folder => (f.Length == 0 || f.All(x => folder.Header.Contains(x, StringComparison.OrdinalIgnoreCase))) &&
+                               SelectedCategory == EAssetCategory.All,
+            _ => false
+        };
+    }
+
+    public override string ToString() => $"{Header} | {Folders.Count} Folders | {AssetsList.Count} Files";
 }
 
-public class AssetsFolderViewModel
+public sealed class AssetsFolderViewModel
 {
-    public RangeObservableCollection<TreeItem> Folders { get; }
+    private Dictionary<string, TreeItem> _foldersByPath = new(StringComparer.Ordinal);
+    public RangeObservableCollection<TreeItem> Folders { get; } = [];
     public ICollectionView FoldersView { get; }
 
-    public AssetsFolderViewModel()
+    public AssetsFolderViewModel() => FoldersView = new ListCollectionView(Folders)
     {
-        Folders = new RangeObservableCollection<TreeItem>();
-        FoldersView = new ListCollectionView(Folders) { SortDescriptions = { new SortDescription("Header", ListSortDirection.Ascending) } };
+        SortDescriptions = { new SortDescription(nameof(TreeItem.Header), ListSortDirection.Ascending) }
+    };
+
+    public void Clear()
+    {
+        Folders.Clear();
+        _foldersByPath = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
+    }
+
+    public bool TryGetFolder(string directory, out TreeItem folder)
+    {
+        folder = null;
+        if (string.IsNullOrWhiteSpace(directory))
+            return false;
+
+        directory = directory.Replace('\\', '/').Trim('/');
+        if (_foldersByPath.TryGetValue(directory, out folder))
+            return true;
+
+        var separator = directory.IndexOf('/');
+        var rootName = separator < 0 ? directory : directory[..separator];
+        var root = Folders.FirstOrDefault(x => x.Header.Equals(rootName, StringComparison.OrdinalIgnoreCase));
+        if (root == null)
+            return false;
+
+        return separator < 0 || _foldersByPath.TryGetValue(string.Concat(root.Header, directory[separator..]), out folder);
     }
 
     public void BulkPopulate(IReadOnlyCollection<GameFile> entries)
@@ -96,92 +152,94 @@ public class AssetsFolderViewModel
         if (entries == null || entries.Count == 0)
             return;
 
-        Application.Current.Dispatcher.Invoke(() =>
+        var roots = new List<TreeItem>();
+        var foldersByPath = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
+        TreeItem previousFolder = null;
+        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+            .Replace(Path.DirectorySeparatorChar, '/');
+
+        foreach (var entry in entries)
         {
-            var treeItems = new RangeObservableCollection<TreeItem>();
-            treeItems.SetSuppressionState(true);
+            var path = entry.Path.Replace('\\', '/');
+            if (path.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase))
+                path = path[localAppData.Length..].Trim('/');
 
-            // O(1) child lookup per node (replaces the previous per-sibling linear scan,
-            // which made large ALL / ALL NEW loads scale ~quadratically with file count).
-            var rootChildren = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
-            var childLookup = new Dictionary<TreeItem, Dictionary<string, TreeItem>>();
-            var builder = new StringBuilder(128);
-            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-                .Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-
-            foreach (var entry in entries)
+            var lastSeparator = path.LastIndexOf('/');
+            if (lastSeparator < 0)
             {
-                var path = entry.Path;
-                if (path.StartsWith(localAppData, StringComparison.OrdinalIgnoreCase))
-                    path = path[localAppData.Length..].TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-
-                var folders = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                var parentNode = treeItems;
-                var parentChildren = rootChildren;
-                TreeItem lastNode = null;
-                builder.Clear();
-
-                if (folders.Length <= 1)
-                {
-                    if (!rootChildren.TryGetValue("Content", out var rootNode))
-                    {
-                        rootNode = new TreeItem("Content", entry, "Content");
-                        rootNode.Folders.SetSuppressionState(true);
-                        rootNode.AssetsList.Assets.SetSuppressionState(true);
-                        treeItems.Add(rootNode);
-                        rootChildren["Content"] = rootNode;
-                        childLookup[rootNode] = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
-                    }
-
-                    rootNode.AssetsList.Assets.Add(entry);
-                    continue;
-                }
-
-                for (var i = 0; i < folders.Length - 1; i++)
-                {
-                    var folder = folders[i];
-                    if (i > 0) builder.Append('/');
-                    builder.Append(folder);
-
-                    if (!parentChildren.TryGetValue(folder, out lastNode))
-                    {
-                        lastNode = new TreeItem(folder, entry, builder.ToString());
-                        lastNode.Folders.SetSuppressionState(true);
-                        lastNode.AssetsList.Assets.SetSuppressionState(true);
-                        parentNode.Add(lastNode);
-                        parentChildren[folder] = lastNode;
-                        childLookup[lastNode] = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
-                    }
-
-                    parentNode = lastNode.Folders;
-                    parentChildren = childLookup[lastNode];
-                }
-
-                lastNode?.AssetsList.Assets.Add(entry);
+                previousFolder = GetOrAddContentFolder(foldersByPath, entry, roots);
+                previousFolder.AssetsList.Add(entry);
+                continue;
             }
 
-            Folders.AddRange(treeItems);
-            ApplicationService.ApplicationView.CUE4Parse.SearchVm.SearchResults.AddRange(entries);
-
-            foreach (var folder in Folders)
-                InvokeOnCollectionChanged(folder);
-
-            static void InvokeOnCollectionChanged(TreeItem item)
+            var directory = path[..lastSeparator];
+            if (previousFolder != null && directory.Equals(previousFolder.PathAtThisPoint, StringComparison.Ordinal))
             {
-                item.Folders.SetSuppressionState(false);
-                item.AssetsList.Assets.SetSuppressionState(false);
+                previousFolder.AssetsList.Add(entry);
+                continue;
+            }
 
-                if (item.Folders.Count != 0)
+            if (foldersByPath.TryGetValue(directory, out var leafFolder))
+            {
+                leafFolder.AssetsList.Add(entry);
+                previousFolder = leafFolder;
+                continue;
+            }
+
+            TreeItem parent = null;
+            var start = 0;
+            while (start < directory.Length)
+            {
+                var end = directory.IndexOf('/', start);
+                if (end < 0) end = directory.Length;
+                var pathHere = directory[..end];
+                if (!foldersByPath.TryGetValue(pathHere, out var node))
                 {
-                    item.Folders.InvokeOnCollectionChanged();
-
-                    foreach (var folderItem in item.Folders)
-                        InvokeOnCollectionChanged(folderItem);
+                    var header = directory[start..end];
+                    node = new TreeItem(header, entry, pathHere) { Parent = parent };
+                    foldersByPath.Add(pathHere, node);
+                    if (parent == null) roots.Add(node);
+                    else parent.Folders.AddWithoutNotification(node);
                 }
 
-                if (item.AssetsList.Assets.Count != 0)
-                    item.AssetsList.Assets.InvokeOnCollectionChanged();
+                parent = node;
+                start = end + 1;
             }
-        });
+
+            if (parent == null)
+                parent = GetOrAddContentFolder(foldersByPath, entry, roots);
+
+            parent.AssetsList.Add(entry);
+            previousFolder = parent;
+        }
+
+        void Publish()
+        {
+            _foldersByPath = foldersByPath;
+            Folders.AddRange(roots);
+            if (roots.Count > 0)
+            {
+                var projectName = ApplicationService.ApplicationView.CUE4Parse.Provider.ProjectName;
+                (roots.FirstOrDefault(x => x.Header.Equals(projectName, StringComparison.OrdinalIgnoreCase)) ?? roots[0]).IsSelected = true;
+            }
+
+            ApplicationService.ApplicationView.CUE4Parse.SearchVm.ChangeCollection(entries);
+        }
+
+        if (Application.Current?.Dispatcher.CheckAccess() == true)
+            Publish();
+        else
+            Application.Current?.Dispatcher.Invoke(Publish);
+    }
+
+    private static TreeItem GetOrAddContentFolder(Dictionary<string, TreeItem> foldersByPath, GameFile entry, List<TreeItem> roots)
+    {
+        if (foldersByPath.TryGetValue("Content", out var node))
+            return node;
+
+        node = new TreeItem("Content", entry, "Content");
+        foldersByPath.Add("Content", node);
+        roots.Add(node);
+        return node;
     }
 }

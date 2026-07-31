@@ -25,8 +25,8 @@ public class UActorComponent : UObject
         if (Ar.Position == validPos) // I think after validpos all read default to dummy data 000000s
             return;
 
-        if (Ar.Game is EGame.GAME_SuicideSquad) Ar.Position += 4;
-        if (Ar.Game == EGame.GAME_WorldofJadeDynasty) Ar.Position += 16;
+        if (Ar.Game is GAME_SuicideSquad) Ar.Position += 4;
+        if (Ar.Game == GAME_WorldofJadeDynasty) Ar.Position += 16;
 
         if (FFortniteReleaseBranchCustomObjectVersion.Get(Ar) >= FFortniteReleaseBranchCustomObjectVersion.Type.ActorComponentUCSModifiedPropertiesSparseStorage)
         {
@@ -115,6 +115,7 @@ public class UBoxComponent : UShapeComponent;
 public class UBoxFalloff : UFieldNodeFloat;
 public class UBoxReflectionCaptureComponent : UReflectionCaptureComponent;
 public class UBrainComponent : UActorComponent;
+
 public class UBrushComponent : UPrimitiveComponent
 {
     public FPackageIndex? Brush { get; protected set; }
@@ -126,11 +127,17 @@ public class UBrushComponent : UPrimitiveComponent
 
         Brush = GetOrDefault(nameof(Brush), new FPackageIndex());
         BrushBodySetup = GetOrDefault(nameof(BrushBodySetup), new FPackageIndex());
+
+        if (Ar.Game < EGame.GAME_UE4_0)
+        {
+            Ar.ReadArray(() => Ar.ReadBulkArray<byte>()); // CachedPhysBrushData
+        }
     }
 
     public UModel? GetBrush() => Brush?.Load<UModel>();
     public override UBodySetup? GetBodySetup() => BrushBodySetup?.Load<UBodySetup>();
 }
+
 public class UCableComponent : UMeshComponent;
 public class UCameraComponent : USceneComponent;
 public class UCameraShakeSourceComponent : USceneComponent;
@@ -209,7 +216,6 @@ public class UGameplayCameraSystemComponent : USceneComponent;
 public class UGameplayDebuggerRenderingComponent : UDebugDrawComponent;
 public class UGameplayTasksComponent : UActorComponent;
 public class UGeometryCacheComponent : UMeshComponent;
-public class UGeometryCollectionComponent : UMeshComponent;
 public class UGeometryCollectionDebugDrawComponent : UActorComponent;
 public class UGeometryCollectionISMPoolComponent : USceneComponent;
 public class UGeometryCollectionISMPoolDebugDrawComponent : UDebugDrawComponent;
@@ -299,7 +305,7 @@ public class UParticleSystemComponent : UFXSystemComponent
 {
     public override void Deserialize(FAssetArchive Ar, long validPos)
     {
-        if (Ar.Game == EGame.GAME_WorldofJadeDynasty) Ar.Position += 16;
+        if (Ar.Game == GAME_WorldofJadeDynasty) Ar.Position += 16;
         base.Deserialize(Ar, validPos);
     }
 }
@@ -308,7 +314,7 @@ public class UParticleSystem : UObject
 {
     public override void Deserialize(FAssetArchive Ar, long validPos)
     {
-        if(Ar.Game == EGame.GAME_WorldofJadeDynasty) Ar.Position += 8;
+        if(Ar.Game == GAME_WorldofJadeDynasty) Ar.Position += 8;
         base.Deserialize(Ar, validPos);
     }
 }
@@ -395,6 +401,7 @@ public class UWaveScalar : UFieldNodeFloat;
 public class UWidgetComponent : UMeshComponent;
 public class UWidgetInteractionComponent : USceneComponent;
 public class UWindDirectionalSourceComponent : USceneComponent;
+public class UWindPointSourceComponent : UWindDirectionalSourceComponent;
 public class UWorldPartitionDestructibleHLODComponent : USceneComponent;
 public class UWorldPartitionDestructibleHLODMeshComponent : UWorldPartitionDestructibleHLODComponent;
 public class UWorldPartitionStreamingSourceComponent : UActorComponent;

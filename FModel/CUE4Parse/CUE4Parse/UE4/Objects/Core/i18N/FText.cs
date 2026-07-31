@@ -121,7 +121,7 @@ public class FText : IUStruct
     {
         if (Ar.Ver < EUnrealEngineObjectUE4Version.FTEXT_HISTORY)
         {
-            var SourceStringToImplantIntoHistory = Ar.ReadFString(); // 
+            var SourceStringToImplantIntoHistory = Ar.ReadFString();
             if (Ar.Ver >= EUnrealEngineObjectUE4Version.ADDED_NAMESPACE_AND_KEY_DATA_TO_FTEXT)
             {
                 var @namespace = Ar.ReadFString();
@@ -152,7 +152,7 @@ public class FText : IUStruct
                 ETextHistoryType.TextGenerator => new FTextHistory.TextGenerator(Ar),
                 _ => new FTextHistory.None(Ar)
             };
-            if (Ar.Game == EGame.GAME_Splitgate2) Ar.Position += 4;
+            if (Ar.Game == GAME_Splitgate2) Ar.Position += 4;
         }
     }
 
@@ -218,10 +218,10 @@ public abstract class FTextHistory : IUStruct
 
             switch (Ar.Game)
             {
-                case EGame.GAME_HonorofKingsWorld:
+                case GAME_HonorofKingsWorld:
                     strNamespace = "";
                     break;
-                case EGame.GAME_EmbersofTheUncrowned:
+                case GAME_EmbersofTheUncrowned:
                     SourceString = EOTUStringEncryption.DecryptString(SourceString);
                     break;
                 default:
@@ -396,15 +396,23 @@ public abstract class FTextHistory : IUStruct
             TableId = Ar.ReadFName();
             Key = Ar.ReadFString();
 
-            if (Ar.Owner?.Provider is not null &&
-                Ar.Owner.Provider.TryLoadPackageObject<UStringTable>(TableId.Text, out var table) &&
-                table.StringTable.KeysToEntries.TryGetValue(Key, out var t))
+            if (Ar.Owner?.Provider is { } provider)
             {
-                SourceString = t;
-                LocalizedString = Ar.Owner.Provider.Internationalization.SafeGet(table.StringTable.TableNamespace, Key, t);
+                if (UStringTable.TryGet(provider, TableId.Text, out var table) &&
+                    table.StringTable.KeysToEntries.TryGetValue(Key, out var t))
+                {
+                    SourceString = t;
+                    LocalizedString = provider.Internationalization.SafeGet(table.StringTable.TableNamespace, Key, t);
+                }
+                else
+                {
+                    // some games incorrectly utilize StringTableEntry for generated locres.
+                    // fallback to loading from loaded internationalization where TableId isn't a filepath.
+                    LocalizedString = provider.Internationalization.SafeGet(TableId.Text, Key);
+                }
             }
-            
-            if (Ar.Game is EGame.GAME_DeltaForce) Ar.Position += 4;
+
+            if (Ar.Game is GAME_DeltaForce) Ar.Position += 4;
         }
     }
 
@@ -488,7 +496,7 @@ public class FNumberFormattingOptions : IUStruct
 
     public FNumberFormattingOptions(FAssetArchive Ar)
     {
-        AlwaysSign = FEditorObjectVersion.Get(Ar) > FEditorObjectVersion.Type.AddedAlwaysSignNumberFormattingOption && Ar.ReadBoolean();
+        AlwaysSign = FEditorObjectVersion.Get(Ar) >= FEditorObjectVersion.Type.AddedAlwaysSignNumberFormattingOption && Ar.ReadBoolean();
         UseGrouping = Ar.ReadBoolean();
         RoundingMode = Ar.Read<ERoundingMode>();
         MinimumIntegralDigits = Ar.Read<int>();

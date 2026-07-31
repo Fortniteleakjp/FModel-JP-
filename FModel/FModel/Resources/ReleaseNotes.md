@@ -1,17 +1,36 @@
-# FModelJP リリースノート
+﻿# FModel-JP リリースノート
 
-FModelJP をご利用いただきありがとうございます！
-このページは、アップデート後に一度だけ表示されます。
+FModel-JP をご利用いただきありがとうございます。このページには、主な機能追加と処理変更を記録します。
 
 ## {version} 主な変更点
 
 ### 新機能
 
-- **本家 FModel の最新差分を反映** — [4sval/FModel](https://github.com/4sval/FModel) の dev ブランチ最新状態に合わせて、依存関係・設定画面・解析まわりを更新しました。
-- **GameFeatureVersePaths の表示に対応** — Verse 関連の Game Feature パス情報を JSON として確認できるようになりました。
-- **Blender へのアニメーション移植に対応** — ファイルを右クリックして「Blenderに移植」を選ぶと、アニメーションを [UEFormat](https://github.com/h4lfheart/UEFormat) の `.ueanim` として出力し、Blender の選択中リグへ読み込めるようになりました。
-- **Blender 連携のセットアップ案内を追加** — 起動済み Blender の受信ブリッジ `FModelBlenderBridge.py`、または UEFormat アドオンが見つからない・有効でない場合に、必要な配置先や導入手順を表示するようになりました。
+- Animation Blueprint グラフビューアを更新しました。
+  - AnimGraph の出力層、Function 層、統合グラフを表示できます。
+  - StateMachine の State / Conduit / 遷移と State サブグラフを確認できます。
+  - ノードの接続、ピン、コメント、プロパティを表示できます。
+- 新エクスプローラーを起動時の標準表示に変更しました。検索、クラス絞り込み、パス移動、戻る・進む、グリッド表示を利用できます。
+- CUE4Parse を [`a098f0b6`](https://github.com/FabianFG/CUE4Parse/tree/a098f0b6f87372e95d42701216159961eb691948) に更新し、AnimBlueprint の新 API を使用するようにしました。
+- Fortnite Cloud Archives と On-Demand アーカイブの読み込みに対応しました。
+- チャンク、マニフェスト、マッピングを専用キャッシュディレクトリへ整理し、旧配置から自動移行します。
 
-### 改善・修正
+### 大規模データ向けの改善
 
-すべての変更履歴については、[GitHub のリリース](https://github.com/Fortniteleakjp/FModel-JP-/releases) をご確認ください。
+- 大量のパッケージを含むマニフェストのフォルダツリー構築をバックグラウンド化しました。
+- フォルダのパス検索と Go To をインデックス化し、深い階層への移動を高速化しました。
+- パッケージ一覧とアーカイブ一覧の UI 更新をバッチ化しました。
+- アセットプレビューとパッケージ解決の同時実行数を制限し、読み込み中の UI 応答性を改善しました。
+
+### 参照 PR
+
+- [PR #693](https://github.com/4sval/FModel/pull/693)
+- [PR #689](https://github.com/4sval/FModel/pull/689)
+- [PR #656](https://github.com/4sval/FModel/pull/656)
+
+### その他
+
+- 本家 FModel の dev ブランチおよび CUE4Parse の更新を取り込みました。
+- 既存の日本語 UI、比較機能、詳細検索、履歴、AES 取得機能との互換性を維持しています。
+
+詳細な変更履歴は [GitHub Releases](https://github.com/Fortniteleakjp/FModel-JP-/releases) をご確認ください。

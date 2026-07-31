@@ -1,9 +1,7 @@
 using System.Runtime.InteropServices;
-using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.IO.Objects;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Readers;
-using CUE4Parse.UE4.Versions;
 using Newtonsoft.Json;
 
 namespace CUE4Parse.UE4.Shaders;
@@ -30,8 +28,8 @@ public class FIoStoreShaderCodeArchive : FRHIShaderLibrary
 
     public FIoStoreShaderCodeArchive(FArchive Ar)
     {
-        ShaderMapHashes = Ar.Game >= EGame.GAME_UE5_8 ? Ar.ReadArray(() => new FSHAHash(Ar, 8)) : Ar.ReadArray(() => new FSHAHash(Ar));
-        ShaderHashes = Ar.Game >= EGame.GAME_UE5_8 ? Ar.ReadArray(() => new FSHAHash(Ar, 8)) : Ar.ReadArray(() => new FSHAHash(Ar));
+        ShaderMapHashes = Ar.Game >= GAME_UE5_8 ? Ar.ReadArray(() => new FSHAHash(Ar, 8)) : Ar.ReadArray(() => new FSHAHash(Ar));
+        ShaderHashes = Ar.Game >= GAME_UE5_8 ? Ar.ReadArray(() => new FSHAHash(Ar, 8)) : Ar.ReadArray(() => new FSHAHash(Ar));
         ShaderGroupIoHashes = Ar.ReadArray<FIoChunkId>();
         ShaderMapEntries = Ar.ReadArray<FIoStoreShaderMapEntry>();
         ShaderEntries = Ar.ReadArray<FIoStoreShaderCodeEntry>();

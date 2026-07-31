@@ -10,8 +10,7 @@ namespace CUE4Parse_Conversion.Landscape;
 
 internal class FLandscapeComponentDataInterface {
     // offset of this component's data into heightmap texture
-    // NOTE: PR #358 back-port — 新パイプラインの FromLandscapeMesh が同アセンブリから参照するため internal に拡大。
-    internal readonly ULandscapeComponent Component;
+    private readonly ULandscapeComponent Component;
     private readonly bool bWorkOnEditingLayer;
     private readonly int HeightmapStride;
     private readonly int HeightmapComponentOffsetX;
@@ -45,8 +44,7 @@ internal class FLandscapeComponentDataInterface {
         var format = heightMapTexture.Format;
         Debug.Assert(heightMapTexture.Format == EPixelFormat.PF_B8G8R8A8);
 
-        if (PixelFormatUtils.PixelFormats.ElementAtOrDefault((int)format) is not { Supported: true } formatInfo ||
-            formatInfo.BlockBytes == 0)
+        if (!PixelFormatUtils.PixelFormats.TryGetValue(format, out var formatInfo) || !formatInfo.Supported || formatInfo.BlockBytes == 0)
             throw new NotImplementedException($"The supplied pixel format {format} is not supported!");
 
         HeightmapStride = heightMapTexture.PlatformData.SizeX >> MipLevel;
@@ -177,8 +175,7 @@ internal class FLandscapeComponentDataInterface {
         var weightTexture =
             componentWeightmapTextures[componentWeightmapLayerAllocations[layerIdx].WeightmapTextureIndex];
         var format = weightTexture.Format;
-        if (PixelFormatUtils.PixelFormats.ElementAtOrDefault((int)format) is not { Supported: true } formatInfo ||
-            formatInfo.BlockBytes == 0)
+        if (!PixelFormatUtils.PixelFormats.TryGetValue(format, out var formatInfo) || !formatInfo.Supported || formatInfo.BlockBytes == 0)
             throw new NotImplementedException($"The supplied pixel format {format} is not supported!");
 
         var platform = weightTexture.Owner!.Provider!.Versions.Platform;

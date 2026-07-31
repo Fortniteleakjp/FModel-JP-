@@ -1082,7 +1082,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="{DynamicResource Menu_NewExplorer}" IsCheckable="True" x:Name="NewExplorerMenuItem" />
+                    <MenuItem Header="{DynamicResource Menu_NewExplorer}" IsCheckable="True" IsChecked="True" x:Name="NewExplorerMenuItem" />
                 </Menu>
             </DockPanel>
         </Border>
@@ -1208,7 +1208,7 @@
                                     <StackPanel Grid.Column="0" Orientation="Horizontal">
                                         <Image Source="/FModel;component/Resources/label.png"
                                            Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
-                                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"><Run Text="'" /><Run Text="{Binding SelectedItem.Header, ElementName=AssetsFolderName, FallbackValue='None', Mode=OneWay}" /><Run Text="'" /><Run Text="{DynamicResource Label_FolderContentInfo_Contains}" /><Run Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue='0', Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_FoldersAnd}" /><Run Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue='0', Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_Files}" /></TextBlock>
+                                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"><Run Text="'" /><Run Text="{Binding SelectedItem.Header, ElementName=AssetsFolderName, FallbackValue='None', Mode=OneWay}" /><Run Text="'" /><Run Text="{DynamicResource Label_FolderContentInfo_Contains}" /><Run Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue='0', Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_FoldersAnd}" /><Run Text="{Binding SelectedItem.AssetsList.Count, ElementName=AssetsFolderName, FallbackValue='0', Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_Files}" /></TextBlock>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="Bring Selected Folder To View" Padding="4"
@@ -1328,7 +1328,7 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding SelectedItem.AssetsList.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="0" Grid.Column="1" Text="{DynamicResource Label_FolderFileCount}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding SelectedItem.FoldersView.Count, ElementName=AssetsFolderName, FallbackValue=0}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                         <TextBlock Grid.Row="1" Grid.Column="1" Text="{DynamicResource Label_FolderFolderCount}" VerticalAlignment="Center" HorizontalAlignment="Right" />
@@ -1342,7 +1342,7 @@
                                 </Border>
                             </Grid>
                         </TabItem>
-                            <TabItem Header="{Binding SelectedItem.AssetsList.Assets.Count, FallbackValue=0, ElementName=AssetsFolderName, StringFormat='ファイル ({0})'}" Margin="63,0,-79,0">
+                            <TabItem Header="{Binding SelectedItem.AssetsList.Count, FallbackValue=0, ElementName=AssetsFolderName, StringFormat='ファイル ({0})'}" Margin="63,0,-79,0">
                             <DockPanel LastChildFill="True">
                                 <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
@@ -2274,7 +2274,7 @@
                                                                         <ColumnDefinition Width="Auto" />
                                                                     </Grid.ColumnDefinitions>
                                                                     <TextBlock Grid.Column="0" FontSize="10" Opacity="0.6">
-                                                                    <Run Text="{Binding AssetsList.Assets.Count, Mode=OneWay}" />
+                                                                    <Run Text="{Binding AssetsList.Count, Mode=OneWay}" />
                                                                     <Run Text="{DynamicResource NewExplorer_Label_ItemsSuffix}" />
                                                                     </TextBlock>
                                                                     <TextBlock Grid.Column="1" FontSize="10" Opacity="0.6" HorizontalAlignment="Right">

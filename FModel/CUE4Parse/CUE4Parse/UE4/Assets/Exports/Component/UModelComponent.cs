@@ -23,7 +23,7 @@ public class UModelComponent : UPrimitiveComponent
         if (Ar.Ver <= EUnrealEngineObjectUE4Version.REMOVE_ZONES_FROM_MODEL)
             Ar.Position += 4; // DummyZoneIndex
         Elements = Ar.ReadArray(() => new FModelElement(Ar));
-        ComponentIndex = Ar.Game < EGame.GAME_UE4_0 ? Ar.Read<ushort>() : Ar.Read<int>();
+        ComponentIndex = Ar.Game < GAME_UE4_0 ? Ar.Read<ushort>() : Ar.Read<int>();
         Nodes = Ar.ReadArray<ushort>();
     }
 }
@@ -66,6 +66,11 @@ public class FModelElement
         Component = new FPackageIndex(Ar);
         Material = new FPackageIndex(Ar);
         Nodes = Ar.ReadArray<ushort>();
+
+        if (Ar.Game < EGame.GAME_UE4_0)
+        {
+            Ar.ReadArray(() => new FPackageIndex(Ar)); // ShadowMaps
+        }
 
         if (FRenderingObjectVersion.Get(Ar) < FRenderingObjectVersion.Type.MapBuildDataSeparatePackage)
         {

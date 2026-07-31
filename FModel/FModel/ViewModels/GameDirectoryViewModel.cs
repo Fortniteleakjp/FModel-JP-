@@ -1,10 +1,14 @@
 using FModel.Framework;
-using System.Collections.ObjectModel;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Threading;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.VirtualFileSystem;
@@ -14,114 +18,56 @@ namespace FModel.ViewModels;
 public class FileItem : ViewModel
 {
     private string _name;
-    public string Name
-    {
-        get => _name;
-        private set => SetProperty(ref _name, value);
-    }
-
+    public string Name { get => _name; private set => SetProperty(ref _name, value); }
     private long _length;
-    public long Length
-    {
-        get => _length;
-        private set => SetProperty(ref _length, value);
-    }
-
+    public long Length { get => _length; private set => SetProperty(ref _length, value); }
     private int _fileCount;
-    public int FileCount
-    {
-        get => _fileCount;
-        set => SetProperty(ref _fileCount, value);
-    }
-
+    public int FileCount { get => _fileCount; set => SetProperty(ref _fileCount, value); }
     private string _mountPoint;
-    public string MountPoint
-    {
-        get => _mountPoint;
-        set => SetProperty(ref _mountPoint, value);
-    }
-
+    public string MountPoint { get => _mountPoint; set => SetProperty(ref _mountPoint, value); }
     private bool _isEncrypted;
-    public bool IsEncrypted
-    {
-        get => _isEncrypted;
-        set => SetProperty(ref _isEncrypted, value);
-    }
-
+    public bool IsEncrypted { get => _isEncrypted; set => SetProperty(ref _isEncrypted, value); }
     private bool _isEnabled;
-    public bool IsEnabled
-    {
-        get => _isEnabled;
-        set => SetProperty(ref _isEnabled, value);
-    }
-
+    public bool IsEnabled { get => _isEnabled; set => SetProperty(ref _isEnabled, value); }
     private bool _isLooseFilesContainer;
-    public bool IsLooseFilesContainer
-    {
-        get => _isLooseFilesContainer;
-        set => SetProperty(ref _isLooseFilesContainer, value);
-    }
-
+    public bool IsLooseFilesContainer { get => _isLooseFilesContainer; set => SetProperty(ref _isLooseFilesContainer, value); }
     private string _key;
-    public string Key
-    {
-        get => _key;
-        set => SetProperty(ref _key, value);
-    }
-
+    public string Key { get => _key; set => SetProperty(ref _key, value); }
     private FGuid _guid;
-    public FGuid Guid
-    {
-        get => _guid;
-        set => SetProperty(ref _guid, value);
-    }
+    public FGuid Guid { get => _guid; set => SetProperty(ref _guid, value); }
 
-    public FileItem(string name, long length)
-    {
-        Name = name;
-        Length = length;
-    }
-
+    public FileItem(string name, long length) { Name = name; Length = length; }
     public FileItem(string name, int fileCount, long length, bool isLooseFile)
     {
-        Name = name;
-        Length = length;
-        FileCount = fileCount;
-        IsLooseFilesContainer = isLooseFile;
-        IsEnabled = true;
-        Key = string.Empty;
-        MountPoint = string.Empty;
+        Name = name; Length = length; FileCount = fileCount; IsLooseFilesContainer = isLooseFile;
+        IsEnabled = true; Key = string.Empty; MountPoint = string.Empty;
     }
-
     public FileItem(IAesVfsReader reader)
     {
-        Name = reader.Name;
-        Length = reader.Length;
-        Guid = reader.EncryptionKeyGuid;
-        IsEncrypted = reader.IsEncrypted;
-        IsEnabled = false;
-        IsLooseFilesContainer = false;
+        Name = reader.Name; Length = reader.Length; Guid = reader.EncryptionKeyGuid;
+        IsEncrypted = reader.IsEncrypted; IsEnabled = false; IsLooseFilesContainer = false;
         Key = string.Empty;
-        FileCount = reader is IoStoreReader storeReader ? (int) storeReader.TocResource.Header.TocEntryCount - 1 : 0;
+        FileCount = reader is IoStoreReader storeReader ? (int)storeReader.TocResource.Header.TocEntryCount - 1 : 0;
     }
-
-    public override string ToString()
-    {
-        return $"{Name} | {Key}";
-    }
+    public override string ToString() => $"{Name} | {Key}";
 }
 
 public partial class GameDirectoryViewModel : ViewModel
 {
     public bool HasNoFile => DirectoryFiles.Count < 1;
-    public readonly ObservableCollection<FileItem> DirectoryFiles;
+    public readonly RangeObservableCollection<FileItem> DirectoryFiles;
     public ICollectionView DirectoryFilesView { get; }
-
     private readonly Regex _hiddenArchives = ArchivesRegex();
+    private readonly ConcurrentDictionary<IAesVfsReader, FileItem> _filesByReader = new(ReferenceEqualityComparer.Instance);
+    private readonly ConcurrentQueue<FileItem> _pendingAdditions = new();
+    private readonly ConcurrentQueue<(FileItem File, bool IsEnabled, string MountPoint, int FileCount, bool HasMountInfo)> _pendingUpdates = new();
+    private FileItem _looseFilesContainer;
+    private int _pendingLooseFileCount;
+    private int _publishScheduled;
 
     public GameDirectoryViewModel()
     {
-        DirectoryFiles = new ObservableCollection<FileItem>();
+        DirectoryFiles = [];
         DirectoryFilesView = new ListCollectionView(DirectoryFiles)
         {
             SortDescriptions =
@@ -130,86 +76,81 @@ public partial class GameDirectoryViewModel : ViewModel
                 new SortDescription(nameof(FileItem.Name), ListSortDirection.Ascending)
             }
         };
-
-        // CollectionView の同期を有効にする
-        BindingOperations.EnableCollectionSynchronization(DirectoryFiles, _lock);
     }
-
-    private readonly object _lock = new object(); // 同期オブジェクト
-
-    // O(1) name -> FileItem lookup (replaces per-archive linear scans that made
-    // loading many archives scale ~quadratically).
-    private readonly System.Collections.Generic.Dictionary<string, FileItem> _byName =
-        new(System.StringComparer.OrdinalIgnoreCase);
 
     public void Add(IAesVfsReader reader)
     {
         if (!_hiddenArchives.IsMatch(reader.Name)) return;
-
-        var fileItem = new FileItem(reader);
-
-        // O(1) de-dup (the hot path when there are many archives) under the lock.
-        lock (_lock)
-        {
-            if (!_byName.TryAdd(reader.Name, fileItem)) return;
-        }
-
-        // DirectoryFilesView is a manually-created ListCollectionView with UI-thread
-        // affinity, so the bound collection itself must be modified on the UI thread.
-        Application.Current.Dispatcher.Invoke(() => DirectoryFiles.Add(fileItem));
+        if (!_filesByReader.TryAdd(reader, new FileItem(reader))) return;
+        _pendingAdditions.Enqueue(_filesByReader[reader]);
+        SchedulePublish();
     }
 
     public void AddLooseFiles(int fileCount)
     {
-        if (fileCount < 1)
-            return;
-
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            var looseFilesContainer = DirectoryFiles.FirstOrDefault(x => x.IsLooseFilesContainer);
-            if (looseFilesContainer is not null)
-            {
-                looseFilesContainer.FileCount += fileCount;
-            }
-            else
-            {
-                DirectoryFiles.Add(new FileItem("Loose Files", fileCount, 0, true));
-            }
-        });
+        if (fileCount < 1) return;
+        Interlocked.Add(ref _pendingLooseFileCount, fileCount);
+        SchedulePublish();
     }
 
     public void Verify(IAesVfsReader reader)
     {
-        FileItem file;
-        lock (_lock)
-        {
-            if (!_byName.TryGetValue(reader.Name, out file)) return;
-        }
-
-        file.IsEnabled = true;
-        file.MountPoint = reader.MountPoint;
-        file.FileCount = reader.FileCount;
+        if (!_filesByReader.TryGetValue(reader, out var file)) return;
+        _pendingUpdates.Enqueue((file, true, reader.MountPoint, reader.FileCount, true));
+        SchedulePublish();
     }
 
     public void Disable(IAesVfsReader reader)
     {
-        FileItem file;
-        lock (_lock)
-        {
-            if (!_byName.TryGetValue(reader.Name, out file)) return;
-        }
-
-        file.IsEnabled = false;
+        if (!_filesByReader.TryGetValue(reader, out var file)) return;
+        _pendingUpdates.Enqueue((file, false, string.Empty, 0, false));
+        SchedulePublish();
     }
 
-    /// <summary>Thread-safe snapshot of the current archive list (for serialization, etc.).</summary>
-    public FileItem[] SnapshotDirectoryFiles()
+    public void FlushPendingChanges()
     {
-        lock (_lock)
-        {
-            return DirectoryFiles.ToArray();
-        }
+        if (Application.Current.Dispatcher.CheckAccess()) PublishPendingChanges();
+        else Application.Current.Dispatcher.Invoke(PublishPendingChanges);
     }
+
+    private void SchedulePublish()
+    {
+        if (Interlocked.CompareExchange(ref _publishScheduled, 1, 0) != 0) return;
+        _ = Application.Current.Dispatcher.BeginInvoke(PublishPendingChanges, DispatcherPriority.Background);
+    }
+
+    private void PublishPendingChanges()
+    {
+        var additions = new List<FileItem>();
+        while (_pendingAdditions.TryDequeue(out var file)) additions.Add(file);
+        var looseFileCount = Interlocked.Exchange(ref _pendingLooseFileCount, 0);
+        if (looseFileCount > 0)
+        {
+            if (_looseFilesContainer == null)
+            {
+                _looseFilesContainer = new FileItem("Loose Files", looseFileCount, 0, true);
+                additions.Add(_looseFilesContainer);
+            }
+            else _looseFilesContainer.FileCount += looseFileCount;
+        }
+
+        if (additions.Count > 0) DirectoryFiles.AddRange(additions);
+        while (_pendingUpdates.TryDequeue(out var update))
+        {
+            update.File.IsEnabled = update.IsEnabled;
+            if (update.HasMountInfo)
+            {
+                update.File.MountPoint = update.MountPoint;
+                update.File.FileCount = update.FileCount;
+            }
+        }
+
+        Interlocked.Exchange(ref _publishScheduled, 0);
+        if (!_pendingAdditions.IsEmpty || !_pendingUpdates.IsEmpty || Volatile.Read(ref _pendingLooseFileCount) > 0)
+            SchedulePublish();
+    }
+
+    public FileItem[] SnapshotDirectoryFiles() => DirectoryFiles.ToArray();
 
     [GeneratedRegex(@"^(?!global|pakchunk.+(optional|ondemand)\-).+(pak|utoc)$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant)]
     private static partial Regex ArchivesRegex();

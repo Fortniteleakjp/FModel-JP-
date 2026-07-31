@@ -241,8 +241,12 @@ namespace CUE4Parse.UE4.Objects.UObject
             ClassIndex = new FPackageIndex(Ar);
             SuperIndex = new FPackageIndex(Ar);
             TemplateIndex = Ar.Ver >= EUnrealEngineObjectUE4Version.TemplateIndex_IN_COOKED_EXPORTS ? new FPackageIndex(Ar) : new FPackageIndex();
-            OuterIndex = new FPackageIndex(Ar);
+            OuterIndex = Ar.Ver >= EUnrealEngineObjectUE3Version.Release50 ? new FPackageIndex(Ar) : new FPackageIndex();
             ObjectName = Ar.ReadFName();
+            if (Ar.Ver >= EUnrealEngineObjectUE3Version.AddedArcheType && Ar.Ver < EUnrealEngineObjectUE4Version.REMOVE_ARCHETYPE_INDEX_FROM_LINKER_TABLES)
+            {
+                new FPackageIndex(Ar); // Archetype
+            }
             ObjectFlags = Ar.Read<uint>();
 
             if (Ar.Ver < EUnrealEngineObjectUE4Version.e64BIT_EXPORTMAP_SERIALSIZES)
@@ -256,7 +260,7 @@ namespace CUE4Parse.UE4.Objects.UObject
                 SerialOffset = Ar.Read<long>();
             }
 
-            if (Ar.Game >= EGame.GAME_UE4_0)
+            if (Ar.Game >= GAME_UE4_0)
             {
                 ForcedExport = Ar.ReadBoolean();
                 NotForClient = Ar.ReadBoolean();
@@ -265,7 +269,28 @@ namespace CUE4Parse.UE4.Objects.UObject
 
             PackageGuid = Ar.Ver < EUnrealEngineObjectUE5Version.REMOVE_OBJECT_EXPORT_PACKAGE_GUID ? Ar.Read<FGuid>() : default;
             IsInheritedInstance = Ar.Ver >= EUnrealEngineObjectUE5Version.TRACK_OBJECT_EXPORT_IS_INHERITED && Ar.ReadBoolean();
-            PackageFlags = Ar.Read<uint>();
+            if (Ar.Ver >= EUnrealEngineObjectUE3Version.AddedComponentMapToExports && Ar.Ver < EUnrealEngineObjectUE3Version.REMOVED_COMPONENT_MAP)
+            {
+                Ar.ReadMap(() => Ar.ReadFName(), () => new FPackageIndex(Ar)); // LegacyComponentMap
+            }
+
+            if (Ar.Ver >= EUnrealEngineObjectUE3Version.FOBJECTEXPORT_EXPORTFLAGS && Ar.Game < GAME_UE4_0)
+            {
+                Ar.Read<int>(); // ExportFlags
+            }
+
+            if (Ar.Ver >= EUnrealEngineObjectUE3Version.LINKERFREE_PACKAGEMAP)
+            {
+                if (Ar.Ver < EUnrealEngineObjectUE4Version.REMOVE_NET_INDEX)
+                {
+                    Ar.ReadArray<int>(); // NetObjectCount
+                }
+
+                if (Ar.Ver >= EUnrealEngineObjectUE3Version.AddedPackageFlags)
+                {
+                    PackageFlags = Ar.Read<uint>();
+                }
+            }
             NotAlwaysLoadedForEditorGame = Ar.Ver >= EUnrealEngineObjectUE4Version.LOAD_FOR_EDITOR_GAME && Ar.ReadBoolean();
             IsAsset = Ar.Ver >= EUnrealEngineObjectUE4Version.COOKED_ASSETS_IN_EDITOR_SUPPORT && Ar.ReadBoolean();
             GeneratePublicHash = Ar.Ver >= EUnrealEngineObjectUE5Version.OPTIONAL_RESOURCES && Ar.ReadBoolean();
@@ -364,12 +389,12 @@ namespace CUE4Parse.UE4.Objects.UObject
             OuterIndex = new FPackageIndex(Ar);
             ObjectName = Ar.ReadFName();
 
-            if (Ar.Ver >= EUnrealEngineObjectUE4Version.NON_OUTER_PACKAGE_IMPORT && !Ar.IsFilterEditorOnly)
+            if (Ar.Game >=  GAME_UE5_8 || Ar.Ver >= EUnrealEngineObjectUE4Version.NON_OUTER_PACKAGE_IMPORT && !Ar.IsFilterEditorOnly)
             {
                 PackageName = Ar.ReadFName();
             }
 
-            if (Ar.Game == EGame.GAME_RacingMaster) Ar.Position += 1;
+            if (Ar.Game == GAME_RacingMaster) Ar.Position += 1;
 
             ImportOptional = Ar.Ver >= EUnrealEngineObjectUE5Version.OPTIONAL_RESOURCES && Ar.ReadBoolean();
         }

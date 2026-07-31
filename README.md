@@ -20,6 +20,11 @@ FModel-JPは、オリジナルのFModelに日本語化と独自の機能を追�
 - **ダメージ値の表示** (ユーザーが追加)
 - **クリエイティブマップのAES取得機能**
 - **参照ビューア**
+- **Animation Blueprint グラフビューア**（AnimGraph / Function / StateMachine のレイヤー、ノード接続、プロパティ確認）
+- **新エクスプローラーを標準 UI に変更**（検索、クラス絞り込み、パス移動、履歴、グリッド表示）
+- **大規模マニフェスト向け高速表示**（フォルダツリーの遅延構築、検索・Go To の高速化、プレビュー負荷の制御）
+- **アーカイブ読み込みの応答性改善**（一覧更新のバッチ化、同一 Reader 単位の状態管理）
+- **キャッシュ整理**（チャンク、マニフェスト、マッピングを専用ディレクトリへ整理し、旧配置から自動移行）
 
 ---
 
@@ -78,6 +83,21 @@ UAssetAPI は、Unreal Engine アセットを解析・編集できる高機能�
 Fortnite等のクリエイティブマップコードを入力するだけで、必要なAESキーを自動取得・適用します。
 - 手動でのキー検索・入力の手間を省略
 - ツールメニュー > 「マップキー取得」から利用可能
+
+#### 🎞 Animation Blueprint グラフビューア
+Animation Blueprint の `UAnimBlueprintGeneratedClass` を解析し、AnimGraph の出力層、Function 層、統合グラフ、StateMachine の概要と各 State のサブグラフを確認できます。
+
+- ノードの接続、入力ピン、コメント、主要プロパティを表示
+- StateMachine の State / Conduit / 遷移をグラフとして確認
+- ノードを選択してプロパティを確認し、グラフをズーム・移動
+
+#### ⚡ 大規模ゲームデータの閲覧
+大量のパッケージを含むゲームでは、ファイル一覧をバックグラウンドで構築し、UI にはまとまった単位で公開します。フォルダ検索と Go To は構築済みパスのインデックスを利用し、アーカイブ登録・マウント状態の更新も UI スレッドへ集約します。
+
+#### 🗂 新エクスプローラー
+起動時から新エクスプローラーを表示します。ファイル名検索、アセットクラス絞り込み、アドレスバーによるパス移動、戻る・進む・親フォルダ移動、グリッド表示に対応しています。
+
+解析・アニメーション表示に使用する CUE4Parse は、[指定コミット `a098f0b6`](https://github.com/FabianFG/CUE4Parse/tree/a098f0b6f87372e95d42701216159961eb691948) に固定しています。これに合わせて PR #656 の AnimBlueprint 新 API を利用しています。
 
 ### ファイル名形式のカスタマイズ
 
@@ -153,6 +173,9 @@ Fortnite等のクリエイティブマップコードを入力するだけで、
 - [PR #623](https://github.com/4sval/FModel/pull/623)
 - [PR #617](https://github.com/4sval/FModel/pull/617)
 - [PR #580](https://github.com/4sval/FModel/pull/580)
+- [PR #693](https://github.com/4sval/FModel/pull/693)
+- [PR #689](https://github.com/4sval/FModel/pull/689)
+- [PR #656](https://github.com/4sval/FModel/pull/656)
 
 ---
 

@@ -81,12 +81,21 @@ public partial class AnimGraphViewer
         if (_viewModel.Layers.Count == 0)
             return;
 
-        // Show only the AnimGraph layer initially
+        // 出力グラフを最初に表示し、PR #656 で追加された統合グラフと Function 層も
+        // 初期タブとして公開します。StateMachine の詳細層はノードクリックで開きます。
         var outputLayer = _viewModel.Layers.FirstOrDefault(l =>
             l.Name.Equals("AnimGraph", StringComparison.OrdinalIgnoreCase))
             ?? _viewModel.Layers[0];
 
         AddLayerTab(outputLayer, closable: false);
+        if (_viewModel.FullGraphLayer is { } fullGraph && !ReferenceEquals(fullGraph, outputLayer))
+            AddLayerTab(fullGraph, closable: false);
+
+        foreach (var functionLayer in _viewModel.FunctionLayers)
+        {
+            if (!ReferenceEquals(functionLayer, outputLayer) && !ReferenceEquals(functionLayer, _viewModel.FullGraphLayer))
+                AddLayerTab(functionLayer, closable: false);
+        }
 
         if (LayerTabControl.Items.Count > 0)
             LayerTabControl.SelectedIndex = 0;

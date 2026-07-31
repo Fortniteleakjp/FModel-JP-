@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using CUE4Parse_Conversion.Textures.BC;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
@@ -34,6 +35,9 @@ namespace FModel.ViewModels;
 
 public class ApplicationViewModel : ViewModel
 {
+    private readonly object _providerStatusLock = new();
+    private (string Label, string Prefix)? _pendingProviderStatus;
+    private bool _providerStatusScheduled;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate bool IsFeatureAvailableDelegate(IntPtr feature);
 
@@ -69,6 +73,9 @@ public class ApplicationViewModel : ViewModel
             }
         }
     }
+
+    /// <summary>検索中のアーカイブイベントがプレビュー読み込みを開始しないようにします。</summary>
+    public bool IsAssetPreviewLoadingSuspended { get; set; }
 
     private int _selectedLeftTabIndex;
     public int SelectedLeftTabIndex
@@ -268,13 +275,13 @@ public class ApplicationViewModel : ViewModel
             CUE4Parse.Provider.VfsRegistered += (sender, count) =>
             {
                 if (sender is not IAesVfsReader reader) return;
-                Status.UpdateStatusLabel($"{count} Archives ({reader.Name})", "Registered");
+                QueueProviderStatus($"{count} Archives ({reader.Name})", "Registered");
                 CUE4Parse.GameDirectory.Add(reader);
             };
             CUE4Parse.Provider.VfsMounted += (sender, count) =>
             {
                 if (sender is not IAesVfsReader reader) return;
-                Status.UpdateStatusLabel($"{count:N0} Packages ({reader.Name})", "Mounted");
+                QueueProviderStatus($"{count:N0} Packages ({reader.Name})", "Mounted");
                 CUE4Parse.GameDirectory.Verify(reader);
             };
             CUE4Parse.Provider.VfsUnmounted += (sender, _) =>
@@ -301,6 +308,31 @@ public class ApplicationViewModel : ViewModel
         AudioPlayer = new AudioPlayerViewModel();
 
         Status.SetStatus(EStatusKind.Ready);
+    }
+
+    private void QueueProviderStatus(string label, string prefix)
+    {
+        lock (_providerStatusLock)
+        {
+            _pendingProviderStatus = (label, prefix);
+            if (_providerStatusScheduled)
+                return;
+            _providerStatusScheduled = true;
+        }
+
+        Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+        {
+            (string Label, string Prefix)? status;
+            lock (_providerStatusLock)
+            {
+                status = _pendingProviderStatus;
+                _pendingProviderStatus = null;
+                _providerStatusScheduled = false;
+            }
+
+            if (status.HasValue)
+                Status.UpdateStatusLabel(status.Value.Label, status.Value.Prefix);
+        }));
     }
     public static DirectorySettings ResolveDiffDirectory()
     {
@@ -731,16 +763,16 @@ public class ApplicationViewModel : ViewModel
 
     public static async ValueTask InitOodle()
     {
-        if (File.Exists(OodleHelper.OODLE_DLL_NAME_OLD))
+        if (File.Exists(OodleHelper.OODLE_NAME_OLD))
         {
             try
             {
-                File.Delete(OodleHelper.OODLE_DLL_NAME_OLD);
+                File.Delete(OodleHelper.OODLE_NAME_OLD);
             }
             catch { /* ignored */}
         }
 
-        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OODLE_DLL_NAME);
+        var oodlePath = Path.Combine(UserSettings.Default.OutputDirectory, ".data", OodleHelper.OodleFileName);
 
         await OodleHelper.InitializeAsync(oodlePath);
     }

@@ -144,6 +144,19 @@ public class SearchViewModel : ViewModel
         SortMode = ESortMode.Asc;
     }
 
+    public void Clear()
+    {
+        SearchResults.Clear();
+        ContentSearchResults.Clear();
+    }
+
+    public void ChangeCollection(IEnumerable<GameFile> entries)
+    {
+        SearchResults.Clear();
+        SearchResults.AddRange(entries);
+        RefreshFilter();
+    }
+
     private void Sort(object? mode)
     {
         var modeStr = mode?.ToString();

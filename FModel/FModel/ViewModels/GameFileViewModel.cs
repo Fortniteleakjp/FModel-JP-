@@ -32,6 +32,7 @@ namespace FModel.ViewModels;
 
 public class GameFileViewModel : ViewModel
 {
+    private static readonly SemaphoreSlim PreviewConcurrency = new(4, 4);
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
     private static readonly Geometry _defaultIcon = (Geometry) Application.Current.FindResource("AssetIcon");
@@ -92,6 +93,9 @@ public class GameFileViewModel : ViewModel
     {
         try
         {
+            if (_applicationView?.IsAssetPreviewLoadingSuspended == true)
+                return;
+
             if (await LoadPreviewByExtension(Asset.Extension))
                 return;
 
@@ -99,9 +103,12 @@ public class GameFileViewModel : ViewModel
 
             if (canLoadPackage)
             {
-                await Task.Run(() =>
+                await PreviewConcurrency.WaitAsync().ConfigureAwait(false);
+                try
                 {
-                    var result = _applicationView.CUE4Parse.Provider.GetLoadPackageResult(Asset);
+                    await Task.Run(() =>
+                    {
+                        var result = _applicationView.CUE4Parse.Provider.GetLoadPackageResult(Asset);
                     var package = result?.Package;
 
                     if (package == null)
@@ -228,7 +235,12 @@ public class GameFileViewModel : ViewModel
                                 break;
                         }
                     }
-                });
+                    }).ConfigureAwait(false);
+                }
+                finally
+                {
+                    PreviewConcurrency.Release();
+                }
             }
         }
         catch (Exception e)

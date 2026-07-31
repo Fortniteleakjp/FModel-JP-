@@ -382,13 +382,13 @@
                                Width="16" Height="16" HorizontalAlignment="Center" Margin="0 0 3.5 0" />
                         <Border x:Name="TreeBadge" CornerRadius="5" Height="10" MinWidth="10" Background="#705542"
                                 Margin="-10.5 0 4.5 0" VerticalAlignment="Bottom">
-                            <TextBlock Text="{Binding AssetsList.Assets.Count}" Margin="2.5 0 2.5 0" Padding="1 0 0 0"
+                            <TextBlock Text="{Binding AssetsList.Count}" Margin="2.5 0 2.5 0" Padding="1 0 0 0"
                                        FontSize="7" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
                         </Border>
                         <TextBlock Text="{Binding Header}" HorizontalAlignment="Left">
                             <TextBlock.ToolTip>
                                 <ToolTip>
-                                    <TextBlock><Run Text="'" /><Run Text="{Binding Header, Mode=OneWay}" /><Run Text="'" /><Run Text="{DynamicResource Label_FolderContentInfo_Contains}" /><Run Text="{Binding FoldersView.Count, Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_FoldersAnd}" /><Run Text="{Binding AssetsList.Assets.Count, Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_Files}" /></TextBlock>
+                                    <TextBlock><Run Text="'" /><Run Text="{Binding Header, Mode=OneWay}" /><Run Text="'" /><Run Text="{DynamicResource Label_FolderContentInfo_Contains}" /><Run Text="{Binding FoldersView.Count, Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_FoldersAnd}" /><Run Text="{Binding AssetsList.Count, Mode=OneWay}" /><Run Text="{DynamicResource Label_FolderContentInfo_Files}" /></TextBlock>
                                 </ToolTip>
                             </TextBlock.ToolTip>
                         </TextBlock>
@@ -397,7 +397,7 @@
                         <DataTrigger Binding="{Binding FoldersView.Count}" Value="0">
                             <Setter TargetName="TreeImage" Property="Source" Value="/FModel;component/Resources/empty_folder.png" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding AssetsList.Assets.Count}" Value="0">
+                        <DataTrigger Binding="{Binding AssetsList.Count}" Value="0">
                             <Setter TargetName="TreeBadge" Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Header}" Value="Config">
@@ -736,7 +736,7 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding SelectedItem.AssetsList.Assets.Count, ElementName=AssetsFolderName, FallbackValue=0}" Value="0">
+            <DataTrigger Binding="{Binding SelectedItem.AssetsList.Count, ElementName=AssetsFolderName, FallbackValue=0}" Value="0">
                 <Setter Property="Template">
                     <Setter.Value>                        <ControlTemplate>
                             <Grid>
