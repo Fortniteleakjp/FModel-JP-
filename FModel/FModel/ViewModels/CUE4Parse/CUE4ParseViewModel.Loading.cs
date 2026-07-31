@@ -96,7 +96,7 @@ public partial class CUE4ParseViewModel
             Provider.OnDemandOptions = new IoStoreOnDemandOptions
             {
                 ChunkHostUri = new Uri("https://egdownload.fastly-edge.com/", UriKind.Absolute),
-                ChunkCacheDirectory = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")),
+                ChunkCacheDirectory = new DirectoryInfo(CacheManager.ChunksDirectory),
                 Authorization = new AuthenticationHeaderValue("Bearer", UserSettings.Default.LastAuthResponse?.AccessToken),
                 DownloaderClient = _chunkClient
             };
@@ -113,11 +113,10 @@ public partial class CUE4ParseViewModel
                                 throw new FileLoadException("Could not load latest Fortnite manifest, you may have to switch to your local installation.");
                             }
 
-                            var cacheDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")).FullName;
                             var manifestOptions = new ManifestParseOptions
                             {
-                                ChunkCacheDirectory = cacheDir,
-                                ManifestCacheDirectory = cacheDir,
+                                ChunkCacheDirectory = CacheManager.ChunksDirectory,
+                                ManifestCacheDirectory = CacheManager.ManifestsDirectory,
                                 ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
                                 Decompressor = Compression.Decompressor,
                                 Client = _chunkClient,
@@ -145,11 +144,7 @@ public partial class CUE4ParseViewModel
                                 IoStoreOnDemand.Read(new StreamReader(ioStoreOnDemandFile.GetStream()));
                             }
 
-                            Parallel.ForEach(manifest.Files.Where(x => _fnLiveRegex.IsMatch(x.FileName)), fileManifest =>
-                            {
-                                p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
-                                    it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), p.Versions));
-                            });
+                            RegisterFortniteLiveArchives(p, manifest, cancellationToken);
 
                             // UEFN（Fortnite Studio）も Fortnite [LIVE] に含める（設定で切替可・4sval/FModel PR #663）
                             if (UserSettings.Default.LoadUefnWithLive)
@@ -162,11 +157,7 @@ public partial class CUE4ParseViewModel
                                     using var uefnClient = new HttpClient();
                                     var uefnBytes = uefnClient.GetByteArrayAsync(uefn.DownloadUrl, cancellationToken).GetAwaiter().GetResult();
                                     var uefnManifest = FBuildPatchAppManifest.Deserialize(uefnBytes, manifestOptions);
-                                    Parallel.ForEach(uefnManifest.Files.Where(x => _fnLiveRegex.IsMatch(x.FileName)), fileManifest =>
-                                    {
-                                        p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
-                                            it => new FRandomAccessStreamArchive(it, uefnManifest.FindFile(it)!.GetStream(), p.Versions));
-                                    });
+                                        RegisterFortniteLiveArchives(p, uefnManifest, cancellationToken);
                                     FLogger.Append(ELog.Information, () =>
                                         FLogger.Text("UEFN (Fortnite Studio) も Fortnite [LIVE] に読み込みました", Constants.WHITE, true));
                                 }
@@ -323,6 +314,34 @@ public partial class CUE4ParseViewModel
         });
     }
 
+    private void RegisterFortniteLiveArchives(StreamedFileProvider provider, FBuildPatchAppManifest manifest,
+        CancellationToken cancellationToken)
+    {
+        var archiveFiles = manifest.Files.Where(x =>
+            _fnLiveRegex.IsMatch(x.FileName) &&
+            (x.FileName.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) ||
+             x.FileName.EndsWith(".utoc", StringComparison.OrdinalIgnoreCase) ||
+             x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase))).ToList();
+        var parallelOptions = new ParallelOptions { CancellationToken = cancellationToken };
+
+        Parallel.ForEach(archiveFiles.Where(x => !x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase)),
+            parallelOptions, fileManifest =>
+            {
+                provider.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
+                    it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), provider.Versions));
+            });
+
+        foreach (var fileManifest in archiveFiles.Where(x => x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase)))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            using var stream = fileManifest.GetStream();
+            using var memory = new MemoryStream();
+            stream.CopyToAsync(memory, cancellationToken).GetAwaiter().GetResult();
+            using var archive = new FByteArchive(fileManifest.FileName, memory.ToArray(), provider.Versions);
+            provider.RegisterVfs(new IoChunkToc(archive));
+        }
+    }
+
     public Task VerifyCloudArchives()
     {
         if (Provider is not DefaultFileProvider provider ||
@@ -346,11 +365,10 @@ public partial class CUE4ParseViewModel
                 var manifestBytes = await _chunkClient.GetByteArrayAsync(
                     "https://egdownload.fastly-edge.com/" + cloudContent.ManifestPath.TrimStart('/'));
 
-                var cacheDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")).FullName;
                 var manifestOptions = new ManifestParseOptions
                 {
-                    ChunkCacheDirectory = cacheDir,
-                    ManifestCacheDirectory = cacheDir,
+                    ChunkCacheDirectory = CacheManager.ChunksDirectory,
+                    ManifestCacheDirectory = CacheManager.ManifestsDirectory,
                     ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
                     Decompressor = Compression.Decompressor,
                     Client = _chunkClient,

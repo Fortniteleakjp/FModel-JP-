@@ -17,6 +17,7 @@ using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
 using FModel.Extensions;
+using FModel.Framework;
 using EpicManifestParser;
 using EpicManifestParser.UE;
 using FModel.Settings;
@@ -48,11 +49,10 @@ public partial class CUE4ParseViewModel
                             }
 
                             // キャッシュディレクトリを準備
-                            var cacheDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")).FullName;
                             var manifestOptions = new ManifestParseOptions
                             {
-                                ChunkCacheDirectory = cacheDir,
-                                ManifestCacheDirectory = cacheDir,
+                                ChunkCacheDirectory = CacheManager.ChunksDirectory,
+                                ManifestCacheDirectory = CacheManager.ManifestsDirectory,
                                 ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
                                 Decompressor = Compression.Decompressor,
                                 Client = _chunkClient,
@@ -83,6 +83,7 @@ public partial class CUE4ParseViewModel
                             timer.Start();
 
                             var monitorCts = new CancellationTokenSource();
+                            var cacheDir = CacheManager.ChunksDirectory;
                             var cacheDirInfo = new DirectoryInfo(cacheDir);
                             long initialSize = cacheDirInfo.Exists ? cacheDirInfo.GetFiles("*", SearchOption.AllDirectories).Sum(f => f.Length) : 0;
                             var monitorTask = Task.Run(async () =>
@@ -137,11 +138,7 @@ public partial class CUE4ParseViewModel
                                 }
 
                                 // Fortnite用のファイルを登録
-                                Parallel.ForEach(manifest.Files.Where(x => _fnLiveRegex.IsMatch(x.FileName)), fileManifest =>
-                                {
-                                    p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
-                                        it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), p.Versions));
-                                });
+                                RegisterFortniteLiveArchives(p, manifest, cancellationToken);
 
                                 // UEFN（Fortnite Studio）も Fortnite [LIVE] に含める（設定で切替可・4sval/FModel PR #663）
                                 if (UserSettings.Default.LoadUefnWithLive)
@@ -154,11 +151,7 @@ public partial class CUE4ParseViewModel
                                         using var uefnClient = new HttpClient();
                                         var uefnBytes = uefnClient.GetByteArrayAsync(uefn.DownloadUrl, cancellationToken).GetAwaiter().GetResult();
                                         var uefnManifest = FBuildPatchAppManifest.Deserialize(uefnBytes, manifestOptions);
-                                        Parallel.ForEach(uefnManifest.Files.Where(x => _fnLiveRegex.IsMatch(x.FileName)), fileManifest =>
-                                        {
-                                            p.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
-                                                it => new FRandomAccessStreamArchive(it, uefnManifest.FindFile(it)!.GetStream(), p.Versions));
-                                        });
+                                        RegisterFortniteLiveArchives(p, uefnManifest, cancellationToken);
                                         FLogger.Append(ELog.Information, () =>
                                             FLogger.Text("UEFN (Fortnite Studio) も Fortnite [LIVE] に読み込みました", Constants.WHITE, true));
                                     }

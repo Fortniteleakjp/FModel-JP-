@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.MappingsProvider.Usmap; // 上流同期: FileUsmapTypeMappingsProvider が Usmap/ サブ名前空間へ移動
+using FModel.Framework;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
 using Serilog;
@@ -44,7 +45,7 @@ public partial class CUE4ParseViewModel
             }
             else if (endpoint.IsValid)
             {
-                var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                    var mappingsFolder = CacheManager.MappingsDirectory;
                 NormalizeMappingsEndpoint(endpoint);
                 var mappings = _apiEndpointView.DynamicApi.GetMappings(CancellationToken.None, endpoint.Url, endpoint.Path);
                 if (mappings is { Length: > 0 })
@@ -123,7 +124,7 @@ public partial class CUE4ParseViewModel
             {
                 NormalizeMappingsEndpoint(endpoint);
 
-                var mappingsFolder = Path.Combine(UserSettings.Default.OutputDirectory, ".data");
+                var mappingsFolder = CacheManager.MappingsDirectory;
                 var mappings = _apiEndpointView.DynamicApi.GetMappings(CancellationToken.None, endpoint.Url, endpoint.Path);
                 if (mappings is { Length: > 0 })
                 {
