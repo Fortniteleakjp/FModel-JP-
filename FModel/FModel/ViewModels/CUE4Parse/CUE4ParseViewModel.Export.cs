@@ -182,6 +182,7 @@ public partial class CUE4ParseViewModel
         // 新パイプライン選択時、または USD 形式(新パイプライン専用)選択時はそちらを試み、未対応なら旧へフォールバック。
         var wantsNewPipeline = UserSettings.Default.ExportPipeline == EExportPipeline.New
             || UserSettings.Default.MeshExportFormat == CUE4Parse_Conversion.Meshes.EMeshFormat.USD
+            || UserSettings.Default.MeshExportFormat == CUE4Parse_Conversion.Meshes.EMeshFormat.Fbx
             || export is UWorld; // World は新パイプライン(USD)のみ対応のため必ず新パイプラインで処理
         if (wantsNewPipeline && TrySaveExportNewPipeline(export, updateUi))
             return;

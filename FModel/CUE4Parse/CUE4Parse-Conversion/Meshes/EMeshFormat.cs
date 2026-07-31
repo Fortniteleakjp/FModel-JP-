@@ -8,6 +8,8 @@ namespace CUE4Parse_Conversion.Meshes
         ActorX,
         [Description("glTF 2.0 (binary)")]
         Gltf2,
+        [Description("Autodesk FBX")]
+        Fbx,
         [Description("Wavefront OBJ (Not Implemented)")]
         OBJ,
         [Description("UEFormat (uemodel)")]

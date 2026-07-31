@@ -49,6 +49,7 @@ public abstract class MeshExporter<T>(T mesh) : ExporterBase(mesh) where T : UOb
     {
         EMeshFormat.ActorX => new ActorXMeshFormat(),
         EMeshFormat.Gltf2 => new GltfMeshFormat(isObj: false),
+        EMeshFormat.Fbx => new FbxMeshFormat(),
         EMeshFormat.OBJ => new GltfMeshFormat(isObj: true),
         EMeshFormat.UEFormat => new UEFormatMeshFormat(),
         EMeshFormat.USD => new UsdMeshFormat(),
