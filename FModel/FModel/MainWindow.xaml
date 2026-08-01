@@ -2016,7 +2016,11 @@
                                     </Style.Triggers>
                                 </Style>
                             </Grid.Style>
-                            <Grid.Resources>
+            <Grid.Resources>
+                                <LinearGradientBrush x:Key="NewExplorerFolderBrush" StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#FFE6B260" Offset="0" />
+                                    <GradientStop Color="#FFD18D3E" Offset="1" />
+                                </LinearGradientBrush>
                                 <!-- Card-style item containers: transparent + no default chrome so the rounded
                                      cards show their own hover / selection visuals instead of a square highlight. -->
                                 <Style TargetType="ListBoxItem">
@@ -2620,11 +2624,19 @@
                                                             <RowDefinition Height="Auto" />
                                                             <RowDefinition Height="Auto" />
                                                         </Grid.RowDefinitions>
-                                                        <Viewbox Grid.Row="0" Width="80" Height="80" HorizontalAlignment="Center">
-                                                            <Canvas Width="24" Height="24">
-                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" Data="M3,7.2C3,5.98 3.98,5 5.2,5H9.5L11.1,6.8H18.8C20.02,6.8 21,7.78 21,9V17.8C21,19.02 20.02,20 18.8,20H5.2C3.98,20 3,19.02 3,17.8V7.2ZM5.2,8.2V17.8H18.8V9.2H10.4L8.8,7.4H5.2Z" />
-                                                            </Canvas>
-                                                        </Viewbox>
+                                                        <Grid Grid.Row="0" Width="86" Height="82" HorizontalAlignment="Center">
+                                                            <Viewbox x:Name="FolderIcon" Width="80" Height="80" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                <Canvas Width="24" Height="24">
+                                                                    <Path Fill="{StaticResource NewExplorerFolderBrush}" Stroke="#FFE7B76D" StrokeThickness="0.35"
+                                                                          Data="M3,7.2C3,5.98 3.98,5 5.2,5H9.5L11.1,6.8H18.8C20.02,6.8 21,7.78 21,9V17.8C21,19.02 20.02,20 18.8,20H5.2C3.98,20 3,19.02 3,17.8V7.2ZM5.2,8.2V17.8H18.8V9.2H10.4L8.8,7.4H5.2Z" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                            <Border x:Name="FolderBadgeHost" Width="25" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                                                    Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}"
+                                                                    BorderBrush="#FFDFAC57" BorderThickness="1" CornerRadius="13" Padding="3" Visibility="Collapsed">
+                                                                <Image x:Name="FolderBadge" Stretch="Uniform" Visibility="Collapsed" />
+                                                            </Border>
+                                                        </Grid>
                                                         <TextBlock Grid.Row="1" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                                                    Text="{Binding Header, Mode=OneWay}" ToolTip="{Binding PathAtThisPoint, Mode=OneWay}" />
                                                         <TextBlock Grid.Row="2" Margin="0,4,0,0" FontSize="11" Opacity="0.68" TextTrimming="CharacterEllipsis" Text="{Binding PathAtThisPoint, Mode=OneWay}" />
@@ -2635,6 +2647,21 @@
                                                         <TextBlock Grid.Column="4" VerticalAlignment="Center" Opacity="0.72" Text="フォルダー" />
                                                     </Grid>
                                                 </Border>
+                                                <DataTemplate.Triggers>
+                                                    <DataTrigger Binding="{Binding Header}" Value="Config">
+                                                        <Setter TargetName="FolderBadge" Property="Source" Value="/FModel;component/Resources/gear.png" />
+                                                        <Setter TargetName="FolderBadge" Property="Visibility" Value="Visible" />
+                                                        <Setter TargetName="FolderBadgeHost" Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Header}" Value="Plugins">
+                                                        <Setter TargetName="FolderBadge" Property="Source" Value="/FModel;component/Resources/puzzle.png" />
+                                                        <Setter TargetName="FolderBadge" Property="Visibility" Value="Visible" />
+                                                        <Setter TargetName="FolderBadgeHost" Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding FoldersView.Count}" Value="0">
+                                                        <Setter TargetName="FolderIcon" Property="Opacity" Value="0.82" />
+                                                    </DataTrigger>
+                                                </DataTemplate.Triggers>
                                             </DataTemplate>
                                             <DataTemplate x:Key="NewExplorerFileTemplate">
                                                 <Border Width="128" Height="192" Margin="8" Padding="8" Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8">
