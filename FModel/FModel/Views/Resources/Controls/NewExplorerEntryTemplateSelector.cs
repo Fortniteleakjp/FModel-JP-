@@ -16,10 +16,19 @@ public sealed class NewExplorerEntryTemplateSelector : DataTemplateSelector
             _ => null
         };
 
-        if (resourceKey != null && container is FrameworkElement element &&
-            element.TryFindResource(resourceKey) is DataTemplate template)
+        if (resourceKey != null && container is FrameworkElement element)
         {
-            return template;
+            // During item generation the ListBoxItem may not yet be connected to
+            // the visual tree, so TryFindResource alone can miss ListBox.Resources.
+            if (element.TryFindResource(resourceKey) is DataTemplate template)
+                return template;
+
+            if (element is ItemsControl itemsControl && itemsControl.Resources[resourceKey] is DataTemplate localTemplate)
+                return localTemplate;
+
+            if (ItemsControl.ItemsControlFromItemContainer(element) is ItemsControl owner &&
+                owner.Resources[resourceKey] is DataTemplate ownerTemplate)
+                return ownerTemplate;
         }
 
         return base.SelectTemplate(item, container);

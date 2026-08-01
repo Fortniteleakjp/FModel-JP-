@@ -123,13 +123,20 @@ public class AesManagerViewModel(CUE4Parse.CUE4ParseViewModel cue4Parse) : ViewM
         output.Add(mainKey);
 
         var hasDynamicKeys = settings.HasDynamicKeys;
-        foreach (var file in files)
+        var dynamicKeys = hasDynamicKeys
+            ? settings.DynamicKeys?.ToArray() ?? []
+            : Array.Empty<DynamicKey>();
+
+        // DirectoryFiles and DynamicKeys can be refreshed by the provider/UI while
+        // AES initialization runs on the worker thread. Enumerate snapshots so a
+        // concurrent refresh cannot invalidate either enumerator.
+        foreach (var file in files.ToArray())
         {
             if (file.Guid == Constants.ZERO_GUID || !uniqueGuids.Add(file.Guid))
                 continue;
 
             var k = string.Empty;
-            if (hasDynamicKeys && settings.DynamicKeys.FirstOrDefault(x => x.Guid == file.Guid.ToString()) is { } dynamicKey)
+            if (hasDynamicKeys && dynamicKeys.FirstOrDefault(x => x.Guid == file.Guid.ToString()) is { } dynamicKey)
             {
                 k = dynamicKey.Key;
             }

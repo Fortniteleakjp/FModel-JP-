@@ -1,6 +1,7 @@
 <adonisControls:AdonisWindow x:Class="FModel.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:gameFile="clr-namespace:CUE4Parse.FileProvider.Objects;assembly=CUE4Parse"
         xmlns:local="clr-namespace:FModel"
         xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
         xmlns:views="clr-namespace:FModel.Views"
@@ -2026,7 +2027,8 @@
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListBoxItem">
-                                                <ContentPresenter />
+                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>
@@ -2038,75 +2040,45 @@
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <DockPanel Grid.Row="0" LastChildFill="True" Margin="4,4,4,6">
-                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                                    <Grid Margin="12,0,0,0">
-                                        <TextBox x:Name="NewExplorerSearchBox" Style="{StaticResource FModelJP5SearchTextBox}" AcceptsTab="False" AcceptsReturn="False"
-                                             Padding="28,4,28,4" MinWidth="220" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
-                                             adonisExtensions:WatermarkExtension.Watermark="{DynamicResource Search_Watermark}"
-                                             VerticalContentAlignment="Center"
-                                             ToolTip="{DynamicResource NewExplorer_Search_Tooltip}" />
-                                        <Viewbox Width="14" Height="14" HorizontalAlignment="Left" Margin="8,0,0,0" IsHitTestVisible="False" Opacity="0.6">
+                            <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,6">
+                                <TextBox x:Name="NewExplorerPathBox" Visibility="Collapsed" KeyDown="OnNewExplorerPathBoxKeyDown" />
+                                <StackPanel Visibility="Collapsed">
+                                    <Button x:Name="NewExplorerBackButton" Click="OnNewExplorerGoPreviousFileClick" />
+                                    <Button x:Name="NewExplorerForwardButton" Click="OnNewExplorerGoNextFileClick" />
+                                    <Button x:Name="NewExplorerUpButton" Click="OnNewExplorerGoParentFolderClick" />
+                                </StackPanel>
+                                <Border DockPanel.Dock="Right" Style="{StaticResource FModelJP5InputHostBorder}" Margin="8,0,0,0" Width="150">
+                                    <ComboBox x:Name="NewExplorerClassFilter" Style="{StaticResource FModelJP5ClassFilterCombo}" VerticalContentAlignment="Center" SelectionChanged="OnNewExplorerClassFilterChanged" SelectedIndex="0">
+                                        <ComboBoxItem Content="All" />
+                                        <ComboBoxItem Content="Texture2D" />
+                                        <ComboBoxItem Content="StaticMesh" />
+                                        <ComboBoxItem Content="SkeletalMesh" />
+                                        <ComboBoxItem Content="Material" />
+                                        <ComboBoxItem Content="MaterialInstance" />
+                                        <ComboBoxItem Content="SoundWave" />
+                                        <ComboBoxItem Content="Blueprint" />
+                                        <ComboBoxItem Content="DataTable" />
+                                        <ComboBoxItem Content="StringTable" />
+                                    </ComboBox>
+                                </Border>
+                                <Grid>
+                                    <TextBox x:Name="NewExplorerSearchBox" Style="{StaticResource FModelJP5SearchTextBox}" AcceptsTab="False" AcceptsReturn="False"
+                                             Padding="28,4,28,4" HorizontalAlignment="Stretch" TextChanged="OnNewExplorerFilterTextChanged"
+                                             adonisExtensions:WatermarkExtension.Watermark="Search by name..."
+                                             VerticalContentAlignment="Center" ToolTip="{DynamicResource NewExplorer_Search_Tooltip}" />
+                                    <Viewbox Width="14" Height="14" HorizontalAlignment="Left" Margin="8,0,0,0" IsHitTestVisible="False" Opacity="0.6">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                    <Button ToolTip="{DynamicResource Search_Tooltip_Clear}" Padding="6,4" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnNewExplorerDeleteSearchClick" HorizontalAlignment="Right" Margin="0,0,4,0" Background="Transparent" BorderThickness="0">
+                                        <Viewbox Width="14" Height="14" HorizontalAlignment="Center">
                                             <Canvas Width="24" Height="24">
-                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
-                                            </Canvas>
-                                        </Viewbox>
-                                        <Button ToolTip="{DynamicResource Search_Tooltip_Clear}" Padding="6,4" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnNewExplorerDeleteSearchClick" HorizontalAlignment="Right" Margin="0,0,4,0" Background="Transparent" BorderThickness="0">
-                                            <Viewbox Width="14" Height="14" HorizontalAlignment="Center">
-                                                <Canvas Width="24" Height="24">
-                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
-                                                </Canvas>
-                                            </Viewbox>
-                                        </Button>
-                                    </Grid>
-
-                                    <Border Margin="6,0,0,0" Style="{StaticResource FModelJP5InputHostBorder}">
-                                        <ComboBox x:Name="NewExplorerClassFilter" Style="{StaticResource FModelJP5ClassFilterCombo}" MinWidth="140" VerticalContentAlignment="Center" SelectionChanged="OnNewExplorerClassFilterChanged" SelectedIndex="0">
-                                            <ComboBoxItem Content="{DynamicResource NewExplorer_ClassFilter_All}" />
-                                            <ComboBoxItem Content="Texture2D" />
-                                            <ComboBoxItem Content="StaticMesh" />
-                                            <ComboBoxItem Content="SkeletalMesh" />
-                                            <ComboBoxItem Content="Material" />
-                                            <ComboBoxItem Content="MaterialInstance" />
-                                            <ComboBoxItem Content="SoundWave" />
-                                            <ComboBoxItem Content="Blueprint" />
-                                            <ComboBoxItem Content="DataTable" />
-                                            <ComboBoxItem Content="StringTable" />
-                                        </ComboBox>
-                                    </Border>
-
-                                    <!-- 旧システムに戻すボタン -->
-                                    <Button ToolTip="従来のエクスプローラーに戻る" Margin="8,0,0,0" Padding="8,6" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnCloseNewExplorerClick">
-                                        <Viewbox Width="12" Height="12">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}" Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource BackspaceIcon}"/>
                                             </Canvas>
                                         </Viewbox>
                                     </Button>
-                                </StackPanel>
-
-                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Margin="0,0,12,0" Visibility="Collapsed">
-                                        <Button x:Name="NewExplorerBackButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoBack}" Padding="8,4" Margin="0,0,2,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoPreviousFileClick">
-                                            <TextBlock Text="←" FontSize="14" FontWeight="SemiBold" />
-                                        </Button>
-                                        <Button x:Name="NewExplorerForwardButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoForward}" Padding="8,4" Margin="0,0,2,0" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoNextFileClick">
-                                            <TextBlock Text="→" FontSize="14" FontWeight="SemiBold" />
-                                        </Button>
-                                        <Button x:Name="NewExplorerUpButton" ToolTip="{DynamicResource NewExplorer_Tooltip_GoUp}" Padding="8,4" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" Click="OnNewExplorerGoParentFolderClick">
-                                            <TextBlock Text="↑" FontSize="14" FontWeight="SemiBold" />
-                                        </Button>
-                                </StackPanel>
-
-                                <Border Style="{StaticResource FModelJP5InputHostBorder}" Visibility="Collapsed">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBox Grid.Column="0" x:Name="NewExplorerPathBox" Style="{StaticResource FModelJP5SearchTextBox}" VerticalContentAlignment="Center" ToolTip="{DynamicResource NewExplorer_Path_Tooltip}" KeyDown="OnNewExplorerPathBoxKeyDown" Padding="6,4" BorderThickness="0" Background="Transparent" />
-                                        <Button Grid.Column="1" Content="{DynamicResource NewExplorer_Button_Go}" Padding="12,4" Margin="0,0,4,0" Style="{StaticResource FModelJP5SearchActionButton}" Click="OnNewExplorerGoPathClick" Background="Transparent" BorderThickness="0" />
-                                    </Grid>
-                                </Border>
+                                </Grid>
                             </DockPanel>
 
                             <controls:Breadcrumb Grid.Row="1" Margin="4,0,4,4"
@@ -2272,11 +2244,11 @@
                                         BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" BorderThickness="0,0,0,1" Padding="8,0">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="30" />
-                                                    <ColumnDefinition Width="2.5*" MinWidth="180" />
-                                                    <ColumnDefinition Width="1.2*" MinWidth="100" />
-                                                    <ColumnDefinition Width="100" />
-                                                    <ColumnDefinition Width="90" />
+                                                    <ColumnDefinition Width="28" />
+                                    <ColumnDefinition Width="2.5*" MinWidth="180" />
+                                    <ColumnDefinition Width="1.2*" MinWidth="100" />
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="90" />
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Grid.Column="1" Text="名前" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.78" />
                                                 <TextBlock Grid.Column="2" Text="パス" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.78" />
@@ -2297,9 +2269,11 @@
                                          ScrollViewer.CanContentScroll="True"
                                          Background="Transparent" BorderThickness="0"
                                          Padding="5">
-                                        <ListBox.ItemTemplateSelector>
-                                            <controls:NewExplorerEntryTemplateSelector />
-                                        </ListBox.ItemTemplateSelector>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <ContentControl Content="{Binding}" />
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
                                         <ListBox.ContextMenu>
                                             <ContextMenu Style="{StaticResource FModelJP5ContextMenu}" DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}">
                                                 <ContextMenu.Resources>
@@ -2719,6 +2693,116 @@
                                                         <TextBlock Grid.Row="3" FontSize="10" Opacity="0.58" TextTrimming="CharacterEllipsis" Text="{Binding Path, Mode=OneWay}" />
                                                     </Grid>
                                                 </Border>
+                                            </DataTemplate>
+
+                                            <!-- Explorer-style compact rows. The older tile templates remain above
+                                                 as a fallback, while the selector points to these readable details rows. -->
+                                            <DataTemplate x:Key="NewExplorerFolderListTemplate">
+                                                <Border Height="34" Margin="0,1" Padding="6,0" Background="Transparent"
+                                                        BorderBrush="Transparent" BorderThickness="1" CornerRadius="3">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                                                                </Trigger>
+                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+                                                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="28" />
+                                                            <ColumnDefinition Width="2.2*" MinWidth="150" />
+                                                            <ColumnDefinition Width="2*" MinWidth="150" />
+                                                            <ColumnDefinition Width="95" />
+                                                            <ColumnDefinition Width="110" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Viewbox Grid.Column="0" Width="18" Height="18" HorizontalAlignment="Left">
+                                                            <Canvas Width="24" Height="24">
+                                                                <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" Data="M3,7.2C3,5.98 3.98,5 5.2,5H9.5L11.1,6.8H18.8C20.02,6.8 21,7.78 21,9V17.8C21,19.02 20.02,20 18.8,20H5.2C3.98,20 3,19.02 3,17.8V7.2ZM5.2,8.2V17.8H18.8V9.2H10.4L8.8,7.4H5.2Z" />
+                                                            </Canvas>
+                                                        </Viewbox>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Header}" VerticalAlignment="Center" FontWeight="SemiBold"
+                                                                   TextTrimming="CharacterEllipsis" ToolTip="{Binding Header}" />
+                                                        <TextBlock Grid.Column="2" Text="{Binding PathAtThisPoint}" VerticalAlignment="Center" Opacity="0.65"
+                                                                   TextTrimming="CharacterEllipsis" ToolTip="{Binding PathAtThisPoint}" />
+                                                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Opacity="0.7">
+                                                            <TextBlock Text="{Binding FoldersView.Count}" />
+                                                            <TextBlock Text=" / " />
+                                                            <TextBlock Text="{Binding AssetsList.Count}" />
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="4" Text="フォルダー" VerticalAlignment="Center" Opacity="0.7" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+
+                                            <DataTemplate x:Key="NewExplorerFileListTemplate">
+                                                <Border Height="34" Margin="0,1" Padding="6,0" Background="Transparent"
+                                                        BorderBrush="Transparent" BorderThickness="1" CornerRadius="3">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}" />
+                                                                </Trigger>
+                                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+                                                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="28" />
+                                                            <ColumnDefinition Width="2.2*" MinWidth="150" />
+                                                            <ColumnDefinition Width="2*" MinWidth="150" />
+                                                            <ColumnDefinition Width="95" />
+                                                            <ColumnDefinition Width="110" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid Grid.Column="0" Width="24" Height="24">
+                                                            <Image x:Name="RowThumbnailImage" Width="24" Height="24" Stretch="Uniform" controls:FileIconLoader.GameFile="{Binding}" />
+                                                            <Viewbox Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                <Viewbox.Style>
+                                                                    <Style TargetType="Viewbox">
+                                                                        <Setter Property="Visibility" Value="Visible" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding Visibility, ElementName=RowThumbnailImage}" Value="Visible">
+                                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Viewbox.Style>
+                                                                <Canvas Width="24" Height="24">
+                                                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource NoteIcon}" />
+                                                                </Canvas>
+                                                            </Viewbox>
+                                                        </Grid>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" FontWeight="SemiBold"
+                                                                   TextTrimming="CharacterEllipsis" ToolTip="{Binding Path}"
+                                                                   controls:HighlightText.Highlight="{Binding Text, ElementName=NewExplorerSearchBox}"
+                                                                   controls:HighlightText.HighlightBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                        <TextBlock Grid.Column="2" Text="{Binding Path}" VerticalAlignment="Center" Opacity="0.65"
+                                                                   TextTrimming="CharacterEllipsis" ToolTip="{Binding Path}" />
+                                                        <TextBlock Grid.Column="3" Text="{Binding Size, Converter={x:Static converters:SizeToStringConverter.Instance}}"
+                                                                   VerticalAlignment="Center" Opacity="0.7" />
+                                                        <TextBlock Grid.Column="4" Text="{Binding Extension, StringFormat={}.{0}}" VerticalAlignment="Center" Opacity="0.7"
+                                                                   TextTrimming="CharacterEllipsis" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+
+                                            <!-- Use WPF's type lookup directly so cards are selected before the
+                                                 item container is attached to the visual tree. -->
+                                            <DataTemplate DataType="{x:Type vm:TreeItem}">
+                                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource NewExplorerFolderTemplate}" />
+                                            </DataTemplate>
+                                            <DataTemplate DataType="{x:Type gameFile:GameFile}">
+                                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource NewExplorerFileTemplate}" />
                                             </DataTemplate>
                                         </ListBox.Resources>
                                     </ListBox>
