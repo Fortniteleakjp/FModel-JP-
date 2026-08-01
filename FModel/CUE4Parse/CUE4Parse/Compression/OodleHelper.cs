@@ -8,7 +8,6 @@ using CUE4Parse.Utils;
 
 using OodleDotNet;
 
-using Serilog;
 
 namespace CUE4Parse.Compression;
 
@@ -20,11 +19,10 @@ public class OodleException : ParserException
 
 public static class OodleHelper
 {
+    
     public const string OODLE_NAME_OLD = "oo2core_9_win64.dll";
     public const string OODLE_NAME_CURRENT = "oodle-data-shared.dll";
     public const string OODLE_NAME_LINUX = "liboodle-data-shared.so";
-    public const string OODLE_DLL_NAME_OLD = OODLE_NAME_OLD;
-    public const string OODLE_DLL_NAME = OODLE_NAME_CURRENT;
 
     private const string RELEASE_URL = "https://github.com/WorkingRobot/OodleUE/releases/download/2026-06-04-1357"; // 2.9.16
     private const string WINDOWS_ZIP = "clang-cl-x64-release.zip";
@@ -100,12 +98,6 @@ public static class OodleHelper
     {
         string? path = null;
         return DownloadOodleDllAsync(ref path, cancellationToken);
-    }
-
-    public static Task<bool> DownloadOodleDllAsync(string path, CancellationToken cancellationToken = default)
-    {
-        string? resolved = path;
-        return DownloadOodleDllAsync(ref resolved, cancellationToken);
     }
 
     public static Task<bool> DownloadOodleDllAsync(ref string? path, CancellationToken cancellationToken = default)

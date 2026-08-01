@@ -11,8 +11,6 @@ namespace CUE4Parse_Conversion.Meshes
         [Description("Wavefront OBJ (Not Implemented)")]
         OBJ,
         [Description("UEFormat (uemodel)")]
-        UEFormat,
-        [Description("USD (.usda) ※新パイプライン専用")]
-        USD
+        UEFormat
     }
 }

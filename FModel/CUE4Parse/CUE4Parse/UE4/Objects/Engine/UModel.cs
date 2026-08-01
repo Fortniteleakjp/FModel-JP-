@@ -249,7 +249,7 @@ namespace CUE4Parse.UE4.Objects.Engine
         public override void Deserialize(FAssetArchive Ar, long validPos)
         {
             base.Deserialize(Ar, validPos);
-            if (Ar.Game == EGame.GAME_WorldofJadeDynasty) Ar.Position += 24;
+            if (Ar.Game == GAME_WorldofJadeDynasty) Ar.Position += 24;
             if (Flags.HasFlag(EObjectFlags.RF_ClassDefaultObject) || Ar.Position >= validPos) return;
             const int StripVertexBufferFlag = 1;
             var stripData = new FStripDataFlags(Ar);
@@ -290,7 +290,7 @@ namespace CUE4Parse.UE4.Objects.Engine
 
             if (Ar.Ver < EUnrealEngineObjectUE4Version.REMOVE_ZONES_FROM_MODEL)
             {
-                var dummyPortalNodes = Ar.ReadBulkArray<int>();
+                Ar.ReadBulkArray<int>(); // PortalNodes
             }
 
             NumUniqueVertices = Ar.Read<uint>();

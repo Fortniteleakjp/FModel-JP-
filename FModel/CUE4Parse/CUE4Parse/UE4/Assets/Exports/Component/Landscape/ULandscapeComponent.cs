@@ -4,6 +4,7 @@ using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 
 namespace CUE4Parse.UE4.Assets.Exports.Component.Landscape;
@@ -28,10 +29,11 @@ public class ULandscapeComponent : UPrimitiveComponent
     public FLandscapeComponentGrassData GrassData;
     public bool bCooked;
     public FLandscapeComponentDerivedData? PlatformData;
+    public Dictionary<FName, FPackageIndex> NamedGrassTypes;
 
     public override void Deserialize(FAssetArchive Ar, long validPos)
     {
-        if (Ar.Game == EGame.GAME_WorldofJadeDynasty) Ar.Position += 20;
+        if (Ar.Game == GAME_WorldofJadeDynasty) Ar.Position += 20;
         base.Deserialize(Ar, validPos);
         SectionBaseX = GetOrDefault(nameof(SectionBaseX), 0);
         SectionBaseY = GetOrDefault(nameof(SectionBaseY), 0);
@@ -45,6 +47,7 @@ public class ULandscapeComponent : UPrimitiveComponent
         CachedLocalBox = GetOrDefault<FBox>(nameof(CachedLocalBox));
         MapBuildDataId = GetOrDefault<FGuid>(nameof(MapBuildDataId));
         WeightmapTextures = new Lazy<UTexture2D[]>(() => GetOrDefault<UTexture2D[]>("WeightmapTextures", []));
+        NamedGrassTypes = GetOrDefault<Dictionary<FName, FPackageIndex>>(nameof(NamedGrassTypes), []);
 
         if (FRenderingObjectVersion.Get(Ar) < FRenderingObjectVersion.Type.MapBuildDataSeparatePackage)
         {
@@ -70,22 +73,22 @@ public class ULandscapeComponent : UPrimitiveComponent
 
         if (Ar.Ver >= EUnrealEngineObjectUE4Version.SERIALIZE_LANDSCAPE_GRASS_DATA)
         {
-            GrassData = new FLandscapeComponentGrassData(Ar);
+            GrassData = new FLandscapeComponentGrassData(Ar, NamedGrassTypes);
         }
 
-        if (!Ar.IsFilterEditorOnly && Ar.Game >= EGame.GAME_UE4_0)
+        if (!Ar.IsFilterEditorOnly && Ar.Game >= GAME_UE4_0)
         {
             Ar.Position += sizeof(int); // SelectedType
         }
 
-        if (Ar.Game is EGame.GAME_Farlight84) Ar.Position += 32;
+        if (Ar.Game is GAME_Farlight84) Ar.Position += 32;
 
         if (Ar.Ver >= EUnrealEngineObjectUE4Version.LANDSCAPE_PLATFORMDATA_COOKING && !Flags.HasFlag(EObjectFlags.RF_ClassDefaultObject))
         {
             bCooked = Ar.ReadBoolean();
         }
 
-        if (Ar.Game is EGame.GAME_Aion2)
+        if (Ar.Game is GAME_Aion2)
         {
             var bCookedMobileData = Ar.ReadBoolean();
             var some = Ar.ReadBulkArray<FVector>();
@@ -93,13 +96,39 @@ public class ULandscapeComponent : UPrimitiveComponent
             return;
         }
 
-        if (Ar.Game >= EGame.GAME_UE4_0 && Ar.Game < EGame.GAME_UE5_1 && Ar.Position + 4 <= validPos)
+        if (Ar.Game is GAME_ArcRaiders)
+        {
+            // indices into vector array, also some other data after
+            CustomGameData = (Ar.ReadArray<FVector>(), Ar.ReadArray<uint>());
+        }
+
+        if (Ar.Game >= GAME_UE4_0 && Ar.Game < GAME_UE5_1 && Ar.Position + 4 <= validPos)
         {
             var bCookedMobileData = Ar.ReadBoolean();
             if (bCookedMobileData)
             {
                 PlatformData = new FLandscapeComponentDerivedData(Ar);
+
+                /*
+                // untested
+                if (Ar.Ver >= EUnrealEngineObjectUE4Version.SERIALIZE_LANDSCAPE_ES2_TEXTURES)
+                {
+                    new FPackageIndex(Ar); // MobileMaterialInterface
+                    new FPackageIndex(Ar); // MobileWeightNormalmapTexture
+                }
+                */
             }
+
+            /*
+            // untested
+            if (Ar.Ver >= EUnrealEngineObjectUE4Version.LANDSCAPE_GRASS_COOKING && Ar.Ver < EUnrealEngineObjectUE4Version.SERIALIZE_LANDSCAPE_GRASS_DATA)
+            {
+                var NumChannels = Ar.Read<int>();
+                if (NumChannels > 0)
+                {
+                    Ar.ReadArray(() => new FByteBulkData(Ar)); // OldData (cooked FGrassMap data)
+                }
+            }*/
         }
     }
 
@@ -133,7 +162,7 @@ public class FLandscapeComponentDerivedData
     public FLandscapeComponentDerivedData(FAssetArchive Ar)
     {
         CompressedLandscapeData = Ar.ReadArray<byte>();
-        if (Ar.Game >= EGame.GAME_UE4_26)
+        if (Ar.Game >= GAME_UE4_26)
         {
             StreamingLODDataArray = Ar.ReadArray(() => new FByteBulkData(Ar));
         }

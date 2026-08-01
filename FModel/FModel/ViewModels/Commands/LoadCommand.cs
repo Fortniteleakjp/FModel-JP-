@@ -54,17 +54,13 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 #if DEBUG
         var loadingTime = Stopwatch.StartNew();
 #endif
-        _applicationView.CUE4Parse.AssetsFolder.Folders?.Clear();
-        _applicationView.CUE4Parse.SearchVm?.SearchResults?.Clear();
+        _applicationView.CUE4Parse.AssetsFolder.Clear();
+        _applicationView.CUE4Parse.SearchVm.Clear();
         MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1; // folders tab
+        _applicationView.IsAssetsExplorerVisible = true;
         Helper.CloseWindow<AdonisWindow>("検索ウィンドウ"); // close search window if opened
 
-        // Start loading localized resources in background
-        _ = _applicationView.CUE4Parse.LoadLocalizedResources();
-
-        await Task.WhenAll(
-            _applicationView.CUE4Parse.LoadAllVirtualPaths(), // load virtual paths if not already loaded
-            _threadWorkerView.Begin(cancellationToken =>
+        await _threadWorkerView.Begin(cancellationToken =>
             {
                 // filter what to show
                 _applicationView.Status.UpdateStatusLabel("Packages", "Filtering");
@@ -99,8 +95,10 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
                 }
 
                 _discordHandler.UpdatePresence(_applicationView.CUE4Parse);
-            })
-        ).ConfigureAwait(false);
+            }).ConfigureAwait(false);
+
+        await _applicationView.CUE4Parse.LoadAllVirtualPaths().ConfigureAwait(false);
+        await _applicationView.CUE4Parse.LoadLocalizedResources().ConfigureAwait(false);
 #if DEBUG
         loadingTime.Stop();
         FLogger.Append(ELog.Debug, () =>

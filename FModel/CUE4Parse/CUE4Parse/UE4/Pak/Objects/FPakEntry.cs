@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using CUE4Parse.Compression;
 using CUE4Parse.Encryption.Aes;
+using CUE4Parse.GameTypes.Tencent.ValorantSource.Encryption.Aes;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Readers;
@@ -10,7 +11,6 @@ using CUE4Parse.Utils;
 using GenericReader;
 using static CUE4Parse.UE4.Objects.Core.Misc.ECompressionFlags;
 using static CUE4Parse.UE4.Pak.Objects.EPakFileVersion;
-using static CUE4Parse.UE4.Versions.EGame;
 
 namespace CUE4Parse.UE4.Pak.Objects;
 
@@ -83,7 +83,7 @@ public class FPakEntry : VfsEntry
                 _ when legacyCompressionMethod.HasFlag(COMPRESS_Custom) => reader.Game == GAME_SeaOfThieves ? 4 : 3, // LZ4 or Oodle, used by Fortnite Mobile until early 2019
                 _ => reader.Game switch
                 {
-                    GAME_PlayerUnknownsBattlegrounds or GAME_Ashen => 3, // TODO: Investigate what a proper detection is.
+                    GAME_PlayerUnknownsBattlegrounds or GAME_Ashen or GAME_WhatRemainsofEdithFinch => 3, // TODO: Investigate what a proper detection is.
                     GAME_DeadIsland2 => 6, // ¯\_(ツ)_/¯
                     _ => -1
                 }
@@ -185,6 +185,8 @@ public class FPakEntry : VfsEntry
                        | (isOffset32BitSafe << 31);
         }
 
+        if (reader.Game is GAME_ValorantSource) Ar.Position += FSHAHash.SIZE;
+
         uint compressionBlockSize = (bitfield & 0x3f) == 0x3f ? Ar.Read<uint>() : (bitfield & 0x3f) << 11;
 
         // Filter out the CompressionMethod.
@@ -192,14 +194,28 @@ public class FPakEntry : VfsEntry
 
         // Read the Offset.
         var bIsOffset32BitSafe = (bitfield & (1 << 31)) != 0;
-        Offset = bIsOffset32BitSafe ? Ar.Read<uint>() : Ar.Read<long>(); // Should be ulong
+        var bIsUncompressedSize32BitSafe = (bitfield & (1 << 30)) != 0;
+        if (reader.Game is GAME_ValorantSource)
+        {
+            var obfuscatedA = Ar.Read<ulong>();
+            var obfuscatedB = Ar.Read<ulong>();
+
+            const ulong lowNibbles = ValorantSourceAes.LOW_NIBBLES_MASK;
+            const ulong highNibbles = ValorantSourceAes.HIGH_NIBBLES_MASK;
+
+            var reconstructedOffset = (obfuscatedB & highNibbles) | (obfuscatedA & lowNibbles);
+            var reconstructedSize = (obfuscatedB & lowNibbles) | (obfuscatedA & highNibbles);
+            Offset = bIsOffset32BitSafe ? (uint) (reconstructedOffset >> 8) : (long) reconstructedOffset;
+            UncompressedSize = bIsUncompressedSize32BitSafe ? (uint) (reconstructedSize >> 8) : (long) reconstructedSize;
+        }
+        else
+        {
+            Offset = bIsOffset32BitSafe ? Ar.Read<uint>() : Ar.Read<long>(); // Should be ulong
+            UncompressedSize = bIsUncompressedSize32BitSafe ? Ar.Read<uint>() : Ar.Read<long>(); // Should be ulong
+        }
 
         if (reader.Game == GAME_Snowbreak) Offset ^= 0x1F1E1D1C;
         if (reader.Game is GAME_QQ or GAME_DreamStar) Offset += 8;
-
-        // Read the UncompressedSize.
-        var bIsUncompressedSize32BitSafe = (bitfield & (1 << 30)) != 0;
-        UncompressedSize = bIsUncompressedSize32BitSafe ? Ar.Read<uint>() : Ar.Read<long>(); // Should be ulong
 
         if (reader.Game == GAME_WutheringWaves && reader.Info.Version > PakFile_Version_Fnv64BugFix)
             (Offset, UncompressedSize) = (UncompressedSize, Offset);
@@ -246,6 +262,9 @@ public class FPakEntry : VfsEntry
             GAME_VisionsofMana => -3,
             _ => 0
         };
+
+        if (reader.Game == GAME_ValorantSource)
+            StructSize = 0;
 
         // Handle building of the CompressionBlocks array.
         var compressedBlockOffset = Offset + StructSize;
@@ -315,12 +334,24 @@ public class FPakEntry : VfsEntry
     {
         var startOffset = Ar.Position;
 
-        if (game == GAME_GameForPeace)
+        if (game is GAME_GameForPeace or GAME_PUBGMobile or GAME_PUBGLite)
         {
             Ar.Position += 20;
             Offset = Ar.Read<long>();
             UncompressedSize = Ar.Read<long>();
-            CompressionMethod = reader.Info.CompressionMethods[Ar.Read<int>()];
+            var serializedCompressionMethod = Ar.Read<int>();
+            if (game is GAME_PUBGMobile) CustomData = serializedCompressionMethod;
+            CompressionMethod = game is GAME_PUBGMobile or GAME_PUBGLite
+                ? serializedCompressionMethod switch
+                {
+                    0 => CompressionMethod.None,
+                    1 => CompressionMethod.Zlib,
+                    6 => CompressionMethod.Zstd,
+                    7 => CompressionMethod.Oodle,
+                    152 => CompressionMethod.Zstd, // ZSTD using `mini_obbzsdic_obb` dictionary
+                    _ => CompressionMethod.Unknown
+                }
+                : reader.Info.CompressionMethods[serializedCompressionMethod];
             CompressedSize = Ar.Read<long>();
             Size = UncompressedSize;
             Ar.Position += 21;
@@ -330,6 +361,6 @@ public class FPakEntry : VfsEntry
             Flags = (uint) Ar.ReadByte();
         }
 
-        StructSize = (int) (Ar.Position - startOffset);
+        StructSize = game is GAME_PUBGMobile or GAME_PUBGLite ? 0 : (int) (Ar.Position - startOffset);
     }
 }

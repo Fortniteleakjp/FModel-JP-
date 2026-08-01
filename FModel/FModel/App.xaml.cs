@@ -140,7 +140,9 @@ public partial class App
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"));
         if (createMe) Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"));
         Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"));
-        Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data"));
+        CacheManager.EnsureDirectories();
+
+        CacheManager.MigrateLegacyFiles();
 
         const string template = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Enriched}: {Message:lj}{NewLine}{Exception}";
         Log.Logger = new LoggerConfiguration()

@@ -3,6 +3,7 @@ using System.Windows;
 using AdonisUI.Controls;
 using System.Windows.Controls;
 using CUE4Parse.UE4.Versions;
+using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -118,7 +119,7 @@ public partial class SettingsView
         var openFileDialog = new OpenFileDialog
         {
             Title = "Select a mapping file",
-            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, ".data"),
+            InitialDirectory = CacheManager.MappingsDirectory,
             Filter = "USMAP Files (*.usmap, *.jmap, *.jmap.gz)|*.usmap;*.jmap;*.jmap.gz|All Files (*.*)|*.*"
         };
 
@@ -133,7 +134,7 @@ public partial class SettingsView
         var openFileDialog = new OpenFileDialog
         {
             Title = "Select a compare mapping file",
-            InitialDirectory = Path.Combine(UserSettings.Default.OutputDirectory, ".data"),
+            InitialDirectory = CacheManager.MappingsDirectory,
             Filter = "USMAP Files (*.usmap, *.jmap, *.jmap.gz)|*.usmap;*.jmap;*.jmap.gz|All Files (*.*)|*.*"
         };
 

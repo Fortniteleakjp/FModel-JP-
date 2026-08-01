@@ -25,3 +25,5 @@ ImageMergerApp.7z
 secrets.py
 
 MIGRATION_PR358.md
+build-intermediate/
+build-intermediate2/

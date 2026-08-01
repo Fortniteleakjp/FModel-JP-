@@ -1,0 +1,3 @@
+[submodule "FModel/CUE4Parse/CUE4Parse-Natives/ACL/external/acl"]
+	path = FModel/CUE4Parse/CUE4Parse-Natives/ACL/external/acl
+	url = https://github.com/nfrechette/acl.git

@@ -8,21 +8,14 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation;
 [JsonConverter(typeof(FReferenceSkeletonConverter))]
 public class FReferenceSkeleton
 {
-    public FMeshBoneInfo[] FinalRefBoneInfo { get; private set; }
-    public FTransform[] FinalRefBonePose { get; private set; }
-    public Dictionary<string, int> FinalNameToIndexMap { get; private set; }
+    public readonly FMeshBoneInfo[] FinalRefBoneInfo;
+    public readonly FTransform[] FinalRefBonePose;
+    public readonly Dictionary<string, int> FinalNameToIndexMap;
 
-    public FReferenceSkeleton()
-    {
-        FinalRefBoneInfo = [];
-        FinalRefBonePose = [];
-        FinalNameToIndexMap = [];
-    }
-
-    public FReferenceSkeleton(FAssetArchive Ar) : this()
+    public FReferenceSkeleton(FAssetArchive Ar)
     {
         FinalRefBoneInfo = Ar.ReadArray(() => new FMeshBoneInfo(Ar));
-        if (Ar.Game < EGame.GAME_UE4_0)
+        if (Ar.Game < GAME_UE4_0)
         {
             FinalRefBonePose = new FTransform[FinalRefBoneInfo.Length];
             for (int i = 0; i < FinalRefBoneInfo.Length; i++)
@@ -37,7 +30,7 @@ public class FReferenceSkeleton
 
         FinalNameToIndexMap = Ar.Ver >= EUnrealEngineObjectUE4Version.REFERENCE_SKELETON_REFACTOR ? Ar.ReadMap(() => Ar.ReadFName().Text, Ar.Read<int>) : [];
 
-        if (Ar.Game == EGame.GAME_DaysGone) Ar.SkipFixedArray(12);
+        if (Ar.Game == GAME_DaysGone) Ar.SkipFixedArray(12);
 
         if (Ar.Ver < EUnrealEngineObjectUE4Version.FIXUP_ROOTBONE_PARENT)
         {
@@ -49,7 +42,7 @@ public class FReferenceSkeleton
 
         AdjustBoneScales(FinalRefBonePose);
 
-        if (Ar.Game == EGame.GAME_WutheringWaves)
+        if (Ar.Game == GAME_WutheringWaves)
         {
             Ar.SkipFixedArray(12);
             Ar.Position += 4;

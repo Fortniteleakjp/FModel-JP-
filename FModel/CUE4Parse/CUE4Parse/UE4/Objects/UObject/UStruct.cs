@@ -3,13 +3,13 @@ using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Kismet;
 using CUE4Parse.UE4.Versions;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace CUE4Parse.UE4.Objects.UObject;
 
 [SkipObjectRegistration]
 public class UStruct : UField
 {
+    
     public FPackageIndex SuperStruct;
     public FPackageIndex[] Children;
     public FField[] ChildProperties;
@@ -19,7 +19,13 @@ public class UStruct : UField
     {
         base.Deserialize(Ar, validPos);
 
-        SuperStruct = new FPackageIndex(Ar);
+        SuperStruct = Ar.Ver >= EUnrealEngineObjectUE3Version.MOVED_SUPERFIELD_TO_USTRUCT ? new FPackageIndex(Ar) : SuperField;
+
+        if (Ar.Ver < EUnrealEngineObjectUE4Version.CONSOLIDATE_HEADER_PARSER_ONLY_PROPERTIES)
+        {
+            new FPackageIndex(Ar); // ScriptText
+        }
+
         if (FFrameworkObjectVersion.Get(Ar) < FFrameworkObjectVersion.Type.RemoveUField_Next)
         {
             var firstChild = new FPackageIndex(Ar);
@@ -51,7 +57,7 @@ public class UStruct : UField
             }
             catch (Exception e)
             {
-                Log.Warning(e, $"Failed to serialize script bytecode in {Name}");
+                Log.Warning(e, "Failed to serialize script bytecode in {Name}", Name);
             }
             finally
             {

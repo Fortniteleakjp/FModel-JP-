@@ -164,7 +164,8 @@ public partial class SettingsViewModel
             }
 
             // キャッシュディレクトリを作成
-            var cacheDir = Directory.CreateDirectory(Path.Combine(UserSettings.Default.OutputDirectory, ".data")).FullName;
+            var cacheDir = CacheManager.ManifestsDirectory;
+            var chunkCacheDir = CacheManager.ChunksDirectory;
             
             // 出力ディレクトリを準備
             var outputDir = Path.Combine(UserSettings.Default.OutputDirectory, "MapAES", mapCode);
@@ -189,7 +190,7 @@ public partial class SettingsViewModel
             // ManifestParseOptionsを設定（CUE4ParseViewModel.csの実装を参考）
             var manifestOptions = new ManifestParseOptions
             {
-                ChunkCacheDirectory = cacheDir,
+                ChunkCacheDirectory = chunkCacheDir,
                 ManifestCacheDirectory = cacheDir,
                 ChunkBaseUrl = chunkBaseUrl,
                 Decompressor = Compression.Decompressor,
@@ -225,7 +226,7 @@ public partial class SettingsViewModel
                         // チャンクベースURLを設定するオプション
                         var parseOptions = new ManifestParseOptions
                         {
-                            ChunkCacheDirectory = cacheDir,
+                            ChunkCacheDirectory = chunkCacheDir,
                             ChunkBaseUrl = chunkBaseUrl,
                             Decompressor = Compression.Decompressor,
                             Client = httpClient,
@@ -248,7 +249,7 @@ public partial class SettingsViewModel
                         
                         var fallbackOptions = new ManifestParseOptions
                         {
-                            ChunkCacheDirectory = cacheDir,
+                            ChunkCacheDirectory = chunkCacheDir,
                             ChunkBaseUrl = chunkBaseUrl,
                             Decompressor = Compression.Decompressor,
                             Client = httpClient,

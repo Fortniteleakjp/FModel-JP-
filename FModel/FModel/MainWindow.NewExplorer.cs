@@ -363,10 +363,36 @@ public partial class MainWindow
         if (item == null)
             return;
 
+        if (item.DataContext is TreeItem folder)
+        {
+            TrySelectFolderByPath(folder.PathAtThisPoint);
+            return;
+        }
+
         if (item.DataContext is not GameFile selectedFile)
             return;
 
         OpenNewExplorerFile(selectedFile, closeExplorer: true);
+    }
+
+    private void OnNewExplorerPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is not ListBox listBox || e.OriginalSource is not DependencyObject source)
+            return;
+
+        if (ItemsControl.ContainerFromElement(listBox, source) is not ListBoxItem item)
+            return;
+
+        if (!item.IsSelected)
+        {
+            var preserveSelection = (Keyboard.Modifiers & ModifierKeys.Control) != 0;
+            if (!preserveSelection)
+                listBox.UnselectAll();
+
+            item.IsSelected = true;
+        }
+
+        item.Focus();
     }
 
     private void OpenNewExplorerFile(GameFile file, bool closeExplorer)
@@ -673,7 +699,7 @@ public partial class MainWindow
     {
         if (NewExplorerFilesListBox?.SelectedItems != null)
         {
-            return NewExplorerFilesListBox.SelectedItems.Cast<GameFile>().ToList();
+            return NewExplorerFilesListBox.SelectedItems.OfType<GameFile>().ToList();
         }
         return null;
     }

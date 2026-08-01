@@ -70,12 +70,12 @@ public class FVirtualTextureBuiltData
 {
     public readonly uint NumLayers;
     public readonly uint NumMips;
-    public readonly uint Width;
-    public readonly uint Height;
-    public readonly uint WidthInBlocks;
+    public readonly uint Width; // Width of the texture in pixels. Note the physical width may be larger due to tiling
+    public readonly uint Height; // Height of the texture in pixels. Note the physical height may be larger due to tiling
+    public readonly uint WidthInBlocks; // Number of UDIM blocks that make up the texture, used to compute UV scaling factor
     public readonly uint HeightInBlocks;
-    public readonly uint TileSize;
-    public readonly uint TileBorderSize;
+    public readonly uint TileSize; // Tile size excluding borders
+    public readonly uint TileBorderSize; // A BorderSize pixel border will be added around all tiles
     public readonly EPixelFormat[] LayerTypes;
     public readonly FVirtualTextureDataChunk[] Chunks;
     public readonly uint[]? TileIndexPerChunk;
@@ -98,7 +98,7 @@ public class FVirtualTextureBuiltData
         HeightInBlocks = Ar.Read<uint>();
         TileSize = Ar.Read<uint>();
         TileBorderSize = Ar.Read<uint>();
-        if (Ar.Game >= EGame.GAME_UE5_0) TileDataOffsetPerLayer = Ar.ReadArray<uint>();
+        if (Ar.Game >= GAME_UE5_0) TileDataOffsetPerLayer = Ar.ReadArray<uint>();
 
         //if (!bStripMips)
         {
@@ -106,7 +106,7 @@ public class FVirtualTextureBuiltData
             Width = Ar.Read<uint>();
             Height = Ar.Read<uint>();
 
-            if (Ar.Game >= EGame.GAME_UE5_0)
+            if (Ar.Game >= GAME_UE5_0)
             {
                 ChunkIndexPerMip = Ar.ReadArray<uint>();
                 BaseOffsetPerMip = Ar.ReadArray<uint>();
@@ -120,7 +120,7 @@ public class FVirtualTextureBuiltData
 
         LayerTypes = Ar.ReadArray((int) NumLayers, () => (EPixelFormat) Enum.Parse(typeof(EPixelFormat), Ar.ReadFString()));
 
-        if (Ar.Game >= EGame.GAME_UE5_0)
+        if (Ar.Game >= GAME_UE5_0)
         {
             LayerFallbackColors = new FLinearColor[NumLayers];
             for (int i = 0; i < NumLayers; i++)

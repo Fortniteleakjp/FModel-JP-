@@ -1,4 +1,4 @@
-﻿using CUE4Parse.UE4.Assets.Readers;
+using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
 using Newtonsoft.Json;
@@ -15,13 +15,17 @@ public class UFunction : UStruct
     {
         base.Deserialize(Ar, validPos);
         FunctionFlags = Ar.Read<EFunctionFlags>();
-        if (Ar.Game is EGame.GAME_AshesOfCreation) Ar.Position += 4;
+        if (Ar.Game is GAME_AshesOfCreation) Ar.Position += 4;
 
         // Replication info
         if (FunctionFlags.HasFlag(EFunctionFlags.FUNC_Net))
         {
-            // Unused.
-            var repOffset = Ar.Read<short>();
+            Ar.Read<short>(); // RepOffset
+        }
+        
+        if (Ar.Ver >= EUnrealEngineObjectUE3Version.MovedFriendlyNameToUFunction && Ar.Game < GAME_UE4_0)
+        {
+            Ar.ReadFName(); // FriendlyName
         }
 
         if (Ar.Ver >= EUnrealEngineObjectUE4Version.SERIALIZE_BLUEPRINT_EVENTGRAPH_FASTCALLS_IN_UFUNCTION)

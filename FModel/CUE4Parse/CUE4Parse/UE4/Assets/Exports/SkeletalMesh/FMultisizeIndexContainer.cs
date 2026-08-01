@@ -10,11 +10,11 @@ public class FMultisizeIndexContainer() : FRawIndexBuffer
     {
         if (Ar.Ver < EUnrealEngineObjectUE4Version.KEEP_SKEL_MESH_INDEX_DATA)
         {
-            Ar.Position += 4; //var bOldNeedsCPUAccess = Ar.ReadBoolean();
+            Ar.ReadBoolean(); // bOldNeedsCPUAccess
         }
 
         var dataSize = Ar.Read<byte>();
-        if (Ar.Game == EGame.GAME_OutlastTrials) Ar.Position += 4;
+        if (Ar.Game == GAME_OutlastTrials) Ar.Position += 4;
 
         if (dataSize == 0x02)
         {

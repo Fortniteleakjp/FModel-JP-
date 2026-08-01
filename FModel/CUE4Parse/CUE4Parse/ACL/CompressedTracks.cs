@@ -39,19 +39,8 @@ namespace CUE4Parse.ACL
 
         public string? IsValid(bool checkHash)
         {
-            try
-            {
-                var error = Marshal.PtrToStringAnsi(nCompressedTracks_IsValid(Handle, checkHash))!;
-                return error.Length > 0 ? error : null;
-            }
-            catch (EntryPointNotFoundException)
-            {
-                return "ACL native entry point nCompressedTracks_IsValid was not found";
-            }
-            catch (DllNotFoundException)
-            {
-                return "ACL native library CUE4Parse-Natives was not found";
-            }
+            var error = Marshal.PtrToStringAnsi(nCompressedTracks_IsValid(Handle, checkHash))!;
+            return error.Length > 0 ? error : null;
         }
 
         public TracksHeader GetTracksHeader() => Marshal.PtrToStructure<TracksHeader>(Handle + Marshal.SizeOf<RawBufferHeader>());

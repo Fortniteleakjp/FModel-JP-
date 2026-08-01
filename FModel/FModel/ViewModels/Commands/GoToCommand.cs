@@ -25,6 +25,15 @@ public class GoToCommand : ViewModelCommand<CustomDirectoriesViewModel>
         if (string.IsNullOrWhiteSpace(directory))
             return null;
 
+        if (_applicationView.CUE4Parse.AssetsFolder.TryGetFolder(directory, out var indexedFolder))
+        {
+            MainWindow.YesWeCats.LeftTabControl.SelectedIndex = 1;
+            for (var ancestor = indexedFolder; ancestor != null; ancestor = ancestor.Parent)
+                ancestor.IsExpanded = true;
+            indexedFolder.IsSelected = true;
+            return indexedFolder;
+        }
+
         var folders = directory
             .Replace('\\', '/')
             .Trim('/')

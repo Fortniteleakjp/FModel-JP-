@@ -8,9 +8,6 @@
                     }
 
 DLLEXPORT bool IsFeatureAvailable(const char* feature) {
-    if (feature == nullptr || *feature == '\0')
-        return false;
-
     #if WITH_ACL
         COMP("ACL")
     #endif

@@ -36,6 +36,9 @@ public class FLogger : ITextFormatter
 
     public static void Append(ELog type, Action job)
     {
+        if (Logger is null || Application.Current is null)
+            return;
+
         Application.Current.Dispatcher.Invoke(delegate
         {
             switch (type)
@@ -60,6 +63,9 @@ public class FLogger : ITextFormatter
 
     public static void Text(string message, string color, bool newLine = false)
     {
+        if (Logger is null)
+            return;
+
         try
         {
             Logger.Document.ContentEnd.InsertTextInRun(message);
@@ -76,6 +82,9 @@ public class FLogger : ITextFormatter
 
     public static void Link(string message, string url, bool newLine = false)
     {
+        if (Logger is null)
+            return;
+
         try
         {
             new Hyperlink(new Run(newLine ? $"{message}{Environment.NewLine}" : message), Logger.Document.ContentEnd)
@@ -98,6 +107,9 @@ public class FLogger : ITextFormatter
 
     private static void Finally()
     {
+        if (Logger is null)
+            return;
+
         Logger.ScrollToEnd();
         _previous = Math.Abs(Logger.Document.ContentEnd.GetOffsetToPosition(Logger.Document.ContentStart)) - 2;
     }

@@ -340,6 +340,32 @@ public partial class MainWindow
         _applicationView.LoadingModes.LoadCommand.Execute(listBox.SelectedItems);
     }
 
+    private void OnLoadArchivesClick(object sender, RoutedEventArgs e)
+    {
+        if (!_applicationView.Status.IsReady)
+            return;
+
+        var selectedItems = DirectoryFilesListBox?.SelectedItems?
+            .OfType<FileItem>()
+            .Where(item => item.IsEnabled || item.IsLooseFilesContainer)
+            .ToList();
+
+        if (selectedItems == null)
+            return;
+
+        if (UserSettings.Default.LoadingMode == ELoadingMode.Multiple && selectedItems.Count == 0)
+        {
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text("読み込むアーカイブを選択してください。", Constants.YELLOW, true));
+            return;
+        }
+
+        FLogger.Append(ELog.Information, () =>
+            FLogger.Text($"アーカイブ読み込みを開始します。方式: {UserSettings.Default.LoadingMode}, 選択数: {selectedItems.Count}", Constants.WHITE, true));
+
+        _applicationView.LoadingModes.LoadCommand.Execute(selectedItems);
+    }
+
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
         if (!_applicationView.Status.IsReady || sender is not ListBox listBox)
