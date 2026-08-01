@@ -5,11 +5,14 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using AdonisUI.Controls;
 using FModel.Framework;
 using FModel.Settings;
+using FModel.ViewModels;
+using FModel.Views;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
@@ -100,9 +103,16 @@ public class GitHubCommit : ViewModel
         MessageBox.Show(messageBox);
         if (messageBox.Result != MessageBoxResult.Yes) return;
 
+        var progressViewModel = new UpdateDownloadProgressViewModel(
+            "アップデートをダウンロード中",
+            $"FModel {ShortSha} の更新パッケージをダウンロードしています...");
+        var progressWindow = new UpdateDownloadProgressWindow(progressViewModel);
+        progressWindow.Show();
+
         try
         {
-            await DownloadAndReplaceExecutableAsync();
+            await DownloadAndReplaceExecutableAsync(progressViewModel);
+            progressViewModel.Complete();
 
             MessageBox.Show(
                 "アップデートを適用するため、FModelを終了して再起動します。",
@@ -112,14 +122,23 @@ public class GitHubCommit : ViewModel
 
             Application.Current.Shutdown();
         }
+        catch (OperationCanceledException) when (progressViewModel.Token.IsCancellationRequested)
+        {
+            // ユーザーによるキャンセル時はエラーダイアログを表示しない。
+        }
         catch (Exception exception)
         {
             UserSettings.Default.ShowChangelog = false;
             MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        finally
+        {
+            if (!progressViewModel.IsCompleted)
+                progressViewModel.Complete();
+        }
     }
 
-    private async Task DownloadAndReplaceExecutableAsync()
+    private async Task DownloadAndReplaceExecutableAsync(UpdateDownloadProgressViewModel progressViewModel)
     {
         var appPath = Constants.APP_PATH;
         var baseName = Path.GetFileNameWithoutExtension(appPath);
@@ -138,9 +157,27 @@ public class GitHubCommit : ViewModel
         Directory.CreateDirectory(extractDir);
 
         using (var httpClient = new HttpClient())
+        using (var response = await httpClient.GetAsync(
+                   Asset.BrowserDownloadUrl,
+                   HttpCompletionOption.ResponseHeadersRead,
+                   progressViewModel.Token))
         {
-            var zipBytes = await httpClient.GetByteArrayAsync(Asset.BrowserDownloadUrl).ConfigureAwait(false);
-            await File.WriteAllBytesAsync(zipPath, zipBytes).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            var totalBytes = response.Content.Headers.ContentLength;
+
+            await using var source = await response.Content.ReadAsStreamAsync(progressViewModel.Token).ConfigureAwait(false);
+            await using var destination = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 81920, true);
+            var buffer = new byte[81920];
+            long downloadedBytes = 0;
+            progressViewModel.Report(downloadedBytes, totalBytes);
+
+            int bytesRead;
+            while ((bytesRead = await source.ReadAsync(buffer.AsMemory(0, buffer.Length), progressViewModel.Token).ConfigureAwait(false)) > 0)
+            {
+                await destination.WriteAsync(buffer.AsMemory(0, bytesRead), progressViewModel.Token).ConfigureAwait(false);
+                downloadedBytes += bytesRead;
+                progressViewModel.Report(downloadedBytes, totalBytes);
+            }
         }
 
         ZipFile.ExtractToDirectory(zipPath, extractDir, true);
