@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic; // List<> を使用するために追加
+using System.Collections.Generic; // List<> 繧剃ｽｿ逕ｨ縺吶ｋ縺溘ａ縺ｫ霑ｽ蜉
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -28,8 +28,8 @@ using FModel.ViewModels;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using ICSharpCode.AvalonEdit.Editing;
-using FModel.Framework; // RelayCommand を使用するためのやつ
-using System.Collections.Specialized; // NotifyCollectionChangedEventArgs を使用するためのやつ
+using FModel.Framework; // RelayCommand 繧剃ｽｿ逕ｨ縺吶ｋ縺溘ａ縺ｮ繧・▽
+using System.Collections.Specialized; // NotifyCollectionChangedEventArgs 繧剃ｽｿ逕ｨ縺吶ｋ縺溘ａ縺ｮ繧・▽
 using Microsoft.Win32;
 using FModel.Features.Athena;
 using Serilog;
@@ -66,13 +66,13 @@ public partial class MainWindow
         DataContext = _applicationView;
         InitializeComponent();
 
-        // テクスチャプレビュー設定の変更を監視
+        // 繝・け繧ｹ繝√Ε繝励Ξ繝薙Η繝ｼ險ｭ螳壹・螟画峩繧堤屮隕・
         UserSettings.Default.PropertyChanged += OnUserSettingsPropertyChanged;
 
         FLogger.Logger = LogRtbName;
         YesWeCats = this;
 
-        // 閲覧履歴メニューの初期化と更新
+        // 髢ｲ隕ｧ螻･豁ｴ繝｡繝九Η繝ｼ縺ｮ蛻晄悄蛹悶→譖ｴ譁ｰ
         UpdateRecentFilesMenu();
         UserSettings.Default.RecentFiles.CollectionChanged += RecentFiles_CollectionChanged;
         UpdateNewExplorerNavigationButtons();
@@ -97,34 +97,13 @@ public partial class MainWindow
         UserSettings.Save();
     }
 
-    // このバージョンの初回起動時のみ、エクスポート方式（旧/新パイプライン）を選択させる。
-    private void ShowExportPipelineFirstRunDialog()
-    {
-        if (UserSettings.Default.HasChosenExportPipeline) return;
-        try
-        {
-            var dialog = new ExportPipelineDialog { Owner = this };
-            dialog.ShowDialog();
-            UserSettings.Default.ExportPipeline = dialog.SelectedPipeline;
-        }
-        catch (Exception ex)
-        {
-            Log.Warning(ex, "Failed to show export pipeline selection dialog; defaulting to Legacy.");
-            UserSettings.Default.ExportPipeline = EExportPipeline.Legacy;
-        }
-        finally
-        {
-            UserSettings.Default.HasChosenExportPipeline = true;
-            UserSettings.Save();
-        }
-    }
-
+    // 縺薙・繝舌・繧ｸ繝ｧ繝ｳ縺ｮ蛻晏屓襍ｷ蜍墓凾縺ｮ縺ｿ縲√お繧ｯ繧ｹ繝昴・繝域婿蠑擾ｼ域立/譁ｰ繝代う繝励Λ繧､繝ｳ・峨ｒ驕ｸ謚槭＆縺帙ｋ縲・
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         try
         {
-            // このバージョンの初回起動時のみ、エクスポート方式（旧/新パイプライン）の選択を促す。
-            ShowExportPipelineFirstRunDialog();
+            // 縺薙・繝舌・繧ｸ繝ｧ繝ｳ縺ｮ蛻晏屓襍ｷ蜍墓凾縺ｮ縺ｿ縲√お繧ｯ繧ｹ繝昴・繝域婿蠑擾ｼ域立/譁ｰ繝代う繝励Λ繧､繝ｳ・峨・驕ｸ謚槭ｒ菫・☆縲・
+            UserSettings.Default.ExportPipeline = EExportPipeline.New;
 
             var newOrUpdated = UserSettings.Default.ShowChangelog;
 #if !DEBUG
@@ -161,7 +140,7 @@ public partial class MainWindow
                 catch
                 {
                     Application.Current.Dispatcher.Invoke(() =>
-                        AdonisUI.Controls.MessageBox.Show("マッピングファイルが読み込めませんでした、最新のマッピングファイルをローカルで読み込んでください", "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error));
+                        AdonisUI.Controls.MessageBox.Show("繝槭ャ繝斐Φ繧ｰ繝輔ぃ繧､繝ｫ縺瑚ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆縲∵怙譁ｰ縺ｮ繝槭ャ繝斐Φ繧ｰ繝輔ぃ繧､繝ｫ繧偵Ο繝ｼ繧ｫ繝ｫ縺ｧ隱ｭ縺ｿ霎ｼ繧薙〒縺上□縺輔＞", "繧ｨ繝ｩ繝ｼ", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error));
                     throw;
                 }
             };
@@ -186,9 +165,9 @@ public partial class MainWindow
             Log.Error(ex, "An error occurred during initialization");
             if (ex.GetBaseException() is ParserException && ex.GetBaseException().Message.Contains("mapping file is missing"))
             {
-                AdonisUI.Controls.MessageBox.Show("マッピングファイルが読み込めませんでした、最新のマッピングファイルをローカルで読み込んでください", "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+                AdonisUI.Controls.MessageBox.Show("繝槭ャ繝斐Φ繧ｰ繝輔ぃ繧､繝ｫ縺瑚ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆縲∵怙譁ｰ縺ｮ繝槭ャ繝斐Φ繧ｰ繝輔ぃ繧､繝ｫ繧偵Ο繝ｼ繧ｫ繝ｫ縺ｧ隱ｭ縺ｿ霎ｼ繧薙〒縺上□縺輔＞", "繧ｨ繝ｩ繝ｼ", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
             }
-            FLogger.Append(ELog.Error, () => FLogger.Text($"初期化中にエラーが発生しました: {ex.Message}", Constants.RED));
+            FLogger.Append(ELog.Error, () => FLogger.Text($"蛻晄悄蛹紋ｸｭ縺ｫ繧ｨ繝ｩ繝ｼ縺檎匱逕溘＠縺ｾ縺励◆: {ex.Message}", Constants.RED));
         }
 
         await Dispatcher.InvokeAsync(() =>
@@ -198,7 +177,7 @@ public partial class MainWindow
                 if (UserSettings.Default.RestoreTabsOnStartup && UserSettings.Default.CurrentDir.LastOpenedTabs?.Any() == true)
                 {
                     var paths = UserSettings.Default.CurrentDir.LastOpenedTabs;
-                    _applicationView.CUE4Parse.TabControl.RemoveAllTabs(); // "新しいタブ"を削除
+                    _applicationView.CUE4Parse.TabControl.RemoveAllTabs(); // "譁ｰ縺励＞繧ｿ繝・繧貞炎髯､
                     foreach (var path in paths)
                     {
                         if (_applicationView.CUE4Parse.Provider.TryGetGameFile(path, out var gameFile))
@@ -225,7 +204,7 @@ public partial class MainWindow
         if (ex.GetBaseException() is ParserException && ex.GetBaseException().Message.Contains("mapping file is missing"))
         {
             Application.Current.Dispatcher.Invoke(() =>
-                AdonisUI.Controls.MessageBox.Show("マッピングファイルが読み込めませんでした、最新のマッピングファイルをローカルで読み込んでください", "エラー", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error));
+                AdonisUI.Controls.MessageBox.Show("繝槭ャ繝斐Φ繧ｰ繝輔ぃ繧､繝ｫ縺瑚ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆縲∵怙譁ｰ縺ｮ繝槭ャ繝斐Φ繧ｰ繝輔ぃ繧､繝ｫ繧偵Ο繝ｼ繧ｫ繝ｫ縺ｧ隱ｭ縺ｿ霎ｼ繧薙〒縺上□縺輔＞", "繧ｨ繝ｩ繝ｼ", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error));
         }
     }
 
@@ -268,3 +247,5 @@ public partial class MainWindow
 
 
 }
+
+

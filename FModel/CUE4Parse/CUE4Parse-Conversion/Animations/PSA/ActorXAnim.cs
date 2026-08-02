@@ -7,15 +7,15 @@ namespace CUE4Parse_Conversion.Animations.PSA;
 public class ActorXAnim
 {
     private FArchiveWriter Ar;
-    private readonly ExporterOptions Options;
+    private readonly WriterOptions Options;
     
-    public ActorXAnim(ExporterOptions options)
+    public ActorXAnim(WriterOptions options)
     {
         Options = options;
         Ar = new FArchiveWriter();
     }
 
-    public ActorXAnim(CAnimSet anim, int seqIdx, ExporterOptions options) : this(options)
+    public ActorXAnim(CAnimSet anim, int seqIdx, WriterOptions options) : this(options)
     {
         DoExportPsa(anim, seqIdx);
     }
@@ -133,3 +133,4 @@ public class ActorXAnim
         }
     }
 }
+

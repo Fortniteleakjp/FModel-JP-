@@ -1,5 +1,4 @@
 global using static CUE4Parse.UE4.Versions.EGame;
-global using static CUE4Parse.CUE4ParseLog;
 
 using System.Diagnostics.CodeAnalysis;
 

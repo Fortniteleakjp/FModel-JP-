@@ -3,10 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CUE4Parse;
 using CUE4Parse_Conversion;
-using CUE4Parse_Conversion.Animations;
-using CUE4Parse_Conversion.Meshes;
+using CUE4Parse_Conversion.Options;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse_Conversion.Textures;
 using CUE4Parse_Conversion.UEFormat.Enums;
@@ -27,8 +25,8 @@ using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
+using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
-using static CUE4Parse.CUE4ParseLog;
 
 namespace CUE4Parse.Example;
 
@@ -44,7 +42,6 @@ public enum ExportType
 
 public static class Exporter
 {
-
     private const string _archiveDirectory = "D:\\Games\\Fortnite\\FortniteGame\\Content\\Paks";
     private const string _aesKey = "0x61D4FD0F3AC7768A08E82A99D275A13762A299FCC28CCF53C46BB221BB90D2B8";
     private const string _mapping = "./++Fortnite+Release-33.20-CL-39082670-Windows_oo.usmap";
@@ -55,10 +52,7 @@ public static class Exporter
 
     private static void Export(ExportType type)
     {
-        var loggerConfiguration = new Serilog.LoggerConfiguration();
-        Serilog.ConsoleLoggerConfigurationExtensions.Console(loggerConfiguration.WriteTo, theme: AnsiConsoleTheme.Literate);
-        Serilog.Log.Logger = loggerConfiguration.CreateLogger();
-        CUE4ParseLog.UseLogger(Serilog.Log.Logger);
+        Log.Logger = new LoggerConfiguration().WriteTo.Console(theme: AnsiConsoleTheme.Literate).CreateLogger();
 
         ZlibHelper.Initialize();
         OodleHelper.Initialize();
@@ -76,19 +70,13 @@ public static class Exporter
             .GroupBy(it => it.Path.SubstringBeforeLast('/'))
             .ToDictionary(it => it.Key, it => it.ToArray());
 
-        var options = new ExporterOptions
-        {
-            LodFormat = ELodFormat.FirstLod,
-            MeshFormat = EMeshFormat.UEFormat,
-            AnimFormat = EAnimFormat.UEFormat,
-            MaterialFormat = EMaterialFormat.AllLayersNoRef,
-            TextureFormat = ETextureFormat.Png,
-            CompressionFormat = EFileCompressionFormat.None,
-            Platform = version.Platform,
-            SocketFormat = ESocketFormat.Bone,
-            ExportMorphTargets = true,
-            ExportMaterials = false
-        };
+        var options = new ExportOptions(
+            meshFormat: EMeshFormat.UEFormat,
+            texturePlatform: version.Platform,
+            textureFormat: CUE4Parse_Conversion.Options.ETextureFormat.Png,
+            compressionFormat: EFileCompressionFormat.None,
+            exportMorphTargets: true,
+            exportMaterials: false);
 
         var exportCount = 0;
         var watch = new Stopwatch();
@@ -145,10 +133,19 @@ public static class Exporter
                         {
                             Log.Information("{ExportType} found in {PackageName}", dummy.ExportType, package.Name);
 
-                            var exporter = new CUE4Parse_Conversion.Exporter(pointer.Object.Value, options);
-                            if (exporter.TryWriteToDir(new DirectoryInfo(_exportDirectory), out _, out var filePath))
+                            var session = new ExportSession();
+                            try
                             {
-                                WriteToLog(folder, Path.GetFileName(filePath), ref exportCount);
+                                session.Add(pointer.Object.Value);
+                                var results = session.RunAsync(_exportDirectory, options).GetAwaiter().GetResult();
+                                foreach (var result in results.Where(result => result.Success))
+                                {
+                                    WriteToLog(folder, Path.GetFileName(result.DiskFilePath), ref exportCount);
+                                }
+                            }
+                            catch (NotSupportedException)
+                            {
+                                Log.Debug("No exporter for {ExportType}", pointer.Object.Value.ExportType);
                             }
                             break;
                         }
@@ -164,7 +161,7 @@ public static class Exporter
             watch.Elapsed);
     }
 
-    private static void SaveTexture(string folder, UTexture texture, ETexturePlatform platform, ExporterOptions options, ref int exportCount)
+    private static void SaveTexture(string folder, UTexture texture, ETexturePlatform platform, ExportOptions options, ref int exportCount)
     {
         var bitmaps = new[] { texture.Decode(platform) };
         switch (texture)
@@ -180,7 +177,7 @@ public static class Exporter
         foreach (var bitmap in bitmaps)
         {
             if (bitmap is null) continue;
-            var bytes = bitmap.Encode(options.TextureFormat, false, out var extension);
+            var bytes = bitmap.Encode(options, out var extension);
             var fileName = $"{texture.Name}.{extension}";
 
             WriteToFile(folder, fileName, bytes, $"{fileName} ({bitmap.Width}x{bitmap.Height})", ref exportCount);

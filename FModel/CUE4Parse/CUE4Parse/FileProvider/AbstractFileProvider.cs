@@ -20,6 +20,7 @@ using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.VirtualFileSystem;
 using CUE4Parse.Utils;
 using Newtonsoft.Json;
+using Serilog;
 using UE4Config.Parsing;
 
 namespace CUE4Parse.FileProvider
@@ -36,6 +37,8 @@ namespace CUE4Parse.FileProvider
 
     public abstract class AbstractFileProvider : IFileProvider
     {
+        protected static readonly ILogger Log = Serilog.Log.ForContext<IFileProvider>();
+
         public VersionContainer Versions { get; }
         public StringComparer PathComparer { get; }
         public StringComparison StringComparison { get; }
@@ -73,74 +76,66 @@ namespace CUE4Parse.FileProvider
             DefaultEngine = new CustomConfigIni(nameof(DefaultEngine));
         }
 
+        private string? _gameDisplayName;
         public string? GameDisplayName
         {
             get
             {
-                if (string.IsNullOrEmpty(field))
+                if (string.IsNullOrEmpty(_gameDisplayName))
                 {
                     var inst = new List<InstructionToken>();
-                    // account for android projects that may not set the display title
-                    DefaultEngine.FindPropertyInstructions("/Script/AndroidRuntimeSettings.AndroidRuntimeSettings", "ApplicationDisplayName", inst);
-                    if (inst.Count > 0 && !string.IsNullOrWhiteSpace(inst[0].Value))
+                    DefaultGame.FindPropertyInstructions("/Script/EngineSettings.GeneralProjectSettings", "ProjectDisplayedTitle", inst);
+                    if (inst.Count > 0)
                     {
-                        field = inst[0].Value;
-                    }
-
-                    if (string.IsNullOrEmpty(field))
-                    {
-                        DefaultGame.FindPropertyInstructions("/Script/EngineSettings.GeneralProjectSettings", "ProjectDisplayedTitle", inst);
-                        if (inst.Count > 0)
+                        var projectMatch = Regex.Match(inst[0].Value, "^(?:NSLOCTEXT\\(\".*\", \".*\", \"(?'target'.*)\"\\)|(?:INVTEXT\\(\"(?'target'.*)\"\\))|(?'target'.*))$", RegexOptions.Singleline);
+                        if (projectMatch.Groups.TryGetValue("target", out var g))
                         {
-                            var projectMatch = Regex.Match(inst[0].Value, "^(?:NSLOCTEXT\\(\".*\", \".*\", \"(?'target'.*)\"\\)|(?:INVTEXT\\(\"(?'target'.*)\"\\))|(?'target'.*))$", RegexOptions.Singleline);
-                            if (projectMatch.Groups.TryGetValue("target", out var g))
+                            if (g.Value.StartsWith("LOCTABLE(\"/Game/"))
                             {
-                                if (g.Value.StartsWith("LOCTABLE(\"/Game/"))
-                                {
-                                    var stringTablePath = g.Value.SubstringAfter("LOCTABLE(\"").SubstringBeforeLast("\",");
+                                var stringTablePath = g.Value.SubstringAfter("LOCTABLE(\"").SubstringBeforeLast("\",");
 
-                                    if (UStringTable.TryGet(this, stringTablePath, out var stringTable))
+                                if (TryLoadPackageObject<UStringTable>(stringTablePath, out var stringTable))
+                                {
+                                    var keyName = g.Value.SubstringAfterLast(", \"").SubstringBeforeLast("\")"); // LOCTABLE("/Game/Narrative/LocalisedStrings/UI_Strings.UI_Strings", "23138_ui_pc_game_name_titlebar")
+                                    var stringTableEntry = stringTable.StringTable.KeysToEntries;
+                                    if (stringTableEntry.TryGetValue(keyName, out var value))
                                     {
-                                        var keyName = g.Value.SubstringAfterLast(", \"").SubstringBeforeLast("\")"); // LOCTABLE("/Game/Narrative/LocalisedStrings/UI_Strings.UI_Strings", "23138_ui_pc_game_name_titlebar")
-                                        var stringTableEntry = stringTable.StringTable.KeysToEntries;
-                                        if (stringTableEntry.TryGetValue(keyName, out var value))
-                                        {
-                                            field = value;
-                                        }
+                                        _gameDisplayName = value;
                                     }
                                 }
-                                else if (!string.IsNullOrWhiteSpace(g.Value) && g.Value != "{GameName}")
-                                {
-                                    field = g.Value;
-                                }
-                                else
-                                {
-                                    inst.Clear();
-                                    DefaultGame.FindPropertyInstructions("/Script/EngineSettings.GeneralProjectSettings", "ProjectName", inst);
-                                    if (inst.Count > 0) field = inst[0].Value;
-                                }
+                            }
+                            else if (!string.IsNullOrWhiteSpace(g.Value) && g.Value != "{GameName}")
+                            {
+                                _gameDisplayName = g.Value;
+                            }
+                            else
+                            {
+                                inst.Clear();
+                                DefaultGame.FindPropertyInstructions("/Script/EngineSettings.GeneralProjectSettings", "ProjectName", inst);
+                                if (inst.Count > 0) _gameDisplayName = inst[0].Value;
                             }
                         }
-                        else
-                        {
-                            DefaultGame.FindPropertyInstructions("/Script/EngineSettings.GeneralProjectSettings", "ProjectName", inst);
-                            if (inst.Count > 0) field = inst[0].Value;
-                        }
+                    }
+                    else
+                    {
+                        DefaultGame.FindPropertyInstructions("/Script/EngineSettings.GeneralProjectSettings", "ProjectName", inst);
+                        if (inst.Count > 0) _gameDisplayName = inst[0].Value;
                     }
                 }
 
-                if (Versions.Game is GAME_Back4Blood)
-                    field = "Back 4 Blood"; // They left is as LDTEXT("TEXT_UI_GameTitle")
+                if (Versions.Game is EGame.GAME_Back4Blood)
+                    _gameDisplayName = "Back 4 Blood"; // They left is as LDTEXT("TEXT_UI_GameTitle")
 
-                return field;
+                return _gameDisplayName;
             }
         }
 
+        private string? _projectName;
         public string ProjectName
         {
             get
             {
-                if (string.IsNullOrEmpty(field))
+                if (string.IsNullOrEmpty(_projectName))
                 {
                     if (Files.Keys.FirstOrDefault(it => it.EndsWith(".uproject", StringComparison.OrdinalIgnoreCase)) is not { } t)
                     {
@@ -149,11 +144,11 @@ namespace CUE4Parse.FileProvider
                                   !it.SubstringBefore('/').EndsWith("Engine", StringComparison.OrdinalIgnoreCase)) ?? string.Empty;
                     }
 
-                    field = t.SubstringBefore('/');
-                    if (PathComparer.Equals(field, "MidnightSuns"))
-                        field = "CodaGame";
+                    _projectName = t.SubstringBefore('/');
+                    if (PathComparer.Equals(_projectName, "MidnightSuns"))
+                        _projectName = "CodaGame";
                 }
-                return field;
+                return _projectName;
             }
         }
 
@@ -165,16 +160,7 @@ namespace CUE4Parse.FileProvider
                 !collection.TryGetValue(fixedPath.SubstringBeforeWithLast('.') + GameFile.UePackageExtensions[1], out file) && // umap
                 !collection.TryGetValue(path, out file)) // in case FixPath broke something
             {
-                if (Versions.Game >= EGame.GAME_UE4_0)
-                {
-                    file = null;
-                }
-                else
-                {
-                    // If game is UE3 just find file that matches name
-                    var nameOnly = Path.GetFileNameWithoutExtension(fixedPath);
-                    file = collection.Values.FirstOrDefault(x => x.NameWithoutExtension.Equals(nameOnly, StringComparison.OrdinalIgnoreCase));
-                }
+                file = null;
             }
 
             return file != null;
@@ -508,7 +494,7 @@ namespace CUE4Parse.FileProvider
             // This part is only for FSoftObjectPaths and not really needed anymore internally, but it's still in here for user input
             if (lastPart.Contains('.') && lastPart.SubstringBefore('.') == lastPart.SubstringAfter('.'))
                 path = string.Concat(path.SubstringBeforeWithLast('/'), lastPart.SubstringBefore('.'));
-            if (path[^1] != '/' && !lastPart.Contains('.') && Versions.Game >= EGame.GAME_UE4_0)
+            if (path[^1] != '/' && !lastPart.Contains('.'))
                 path += "." + GameFile.UePackageExtensions[0]; // uasset
 
             var ret = path;

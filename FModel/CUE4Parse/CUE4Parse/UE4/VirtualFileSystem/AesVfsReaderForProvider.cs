@@ -1,6 +1,5 @@
 ﻿using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider.Vfs;
-using CUE4Parse.UE4.IO;
 
 namespace CUE4Parse.UE4.VirtualFileSystem
 {
@@ -10,7 +9,7 @@ namespace CUE4Parse.UE4.VirtualFileSystem
         {
             Mount(pathComparer);
 
-            files.AddFiles(Files, ReadOrder, this is IoStoreReader ioStoreReader ? ioStoreReader.PackageIdIndex : null);
+            files.AddFiles(Files, ReadOrder);
             vfsMounted?.Invoke(this, files.Count);
         }
     }

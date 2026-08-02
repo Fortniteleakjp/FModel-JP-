@@ -26,7 +26,7 @@ public static class FHeightmapTextureEdgeSnapshotCustomVersion
 
         return Ar.Game switch
         {
-            < GAME_UE5_6 => Type.BeforeCustomVersionWasAdded,
+            < EGame.GAME_UE5_6 => Type.BeforeCustomVersionWasAdded,
             _ => Type.LatestVersion
         };
     }

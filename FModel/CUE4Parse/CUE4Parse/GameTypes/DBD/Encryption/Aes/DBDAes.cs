@@ -3,7 +3,6 @@ using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.IO;
 using CUE4Parse.UE4.Pak;
 using CUE4Parse.UE4.VirtualFileSystem;
-using CUE4Parse.Utils;
 
 namespace CUE4Parse.GameTypes.DBD.Encryption.Aes;
 
@@ -23,13 +22,20 @@ public static class DBDAes
         if (keylength == 28)
         {
             var decrypted = bytes.Decrypt(beginOffset, count, aesKey);
-            TensorUtils.Xor(decrypted, key);
+            for (var i = 0; i < decrypted.Length; i++)
+            {
+                decrypted[i] ^= key[i % keylength];
+            }
+
             return decrypted;
         }
 
         var decrypted2 = new byte[count];
         Buffer.BlockCopy(bytes, beginOffset, decrypted2, 0, count);
-        TensorUtils.Xor(decrypted2, key);
+        for (var i = 0; i < decrypted2.Length; i++)
+        {
+            decrypted2[i] ^= key[i % keylength];
+        }
 
         return decrypted2.Decrypt(aesKey);
     }

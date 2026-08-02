@@ -21,4 +21,10 @@ public readonly struct FMaterialRange
         TriLength = triLength;
         MaterialIndex = materialIndex;
     }
+
+    // Back-ported from CUE4Parse PR #358: copy a range while overriding only the material index
+    // (used when clamping Nanite material indices into the valid section range).
+    public FMaterialRange(FMaterialRange range, uint materialIndex) : this(range.TriStart, range.TriLength, materialIndex)
+    {
+    }
 }

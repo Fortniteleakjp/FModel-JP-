@@ -4,12 +4,12 @@ using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.Objects.UObject;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace CUE4Parse.GameTypes.LegoBatman.Assets;
 
 public class UWubDialogueEvent : UObject
 {
-    
     public FWubStruct2 Sequence;
     public HashSet<FName> Wems = [];
 
@@ -75,7 +75,6 @@ public class UWubDialogueEvent : UObject
 
     public class FWubStruct2 : FWubStructBase
     {
-
         public FName EventId;
         public float DelayInSeconds;
         public float TriggerChance;
@@ -132,3 +131,4 @@ public class UWubDialogueEvent : UObject
         }
     }
 }
+

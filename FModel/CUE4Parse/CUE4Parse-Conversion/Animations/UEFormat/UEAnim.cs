@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse_Conversion.UEFormat;
@@ -12,7 +12,7 @@ public class UEAnim : UEFormatExport
 {
     protected override string Identifier { get; set; } = "UEANIM";
 
-    public UEAnim(string name, CAnimSet animSet, int sequenceIndex, ExporterOptions options) : base(name, options)
+    public UEAnim(string name, CAnimSet animSet, int sequenceIndex, WriterOptions options) : base(name, options)
     {
         var sequence = animSet.Sequences[sequenceIndex];
         var originalSequence = sequence.OriginalSequence;
@@ -145,3 +145,5 @@ public class UEAnim : UEFormatExport
 
     }
 }
+
+

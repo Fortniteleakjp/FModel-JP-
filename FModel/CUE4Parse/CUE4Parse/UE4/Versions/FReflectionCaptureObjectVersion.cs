@@ -29,7 +29,7 @@ public static class FReflectionCaptureObjectVersion
 
         return Ar.Game switch
         {
-            < GAME_UE4_19 => Type.BeforeCustomVersionWasAdded,
+            < EGame.GAME_UE4_19 => Type.BeforeCustomVersionWasAdded,
             _ => Type.LatestVersion
         };
     }

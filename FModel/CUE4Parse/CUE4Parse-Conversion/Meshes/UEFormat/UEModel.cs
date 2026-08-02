@@ -1,4 +1,4 @@
-﻿using CUE4Parse_Conversion.Meshes.PSK;
+using CUE4Parse_Conversion.Meshes.PSK;
 using CUE4Parse_Conversion.Meshes.UEFormat.Collision;
 using CUE4Parse_Conversion.UEFormat;
 using CUE4Parse_Conversion.UEFormat.Structs;
@@ -16,7 +16,7 @@ public class UEModel : UEFormatExport
 {
     protected override string Identifier { get; set; } = "UEMODEL";
 
-    public UEModel(string name, CStaticMesh mesh, FPackageIndex bodySetupLazy, ExporterOptions options) : base(name, options)
+    public UEModel(string name, CStaticMesh mesh, FPackageIndex bodySetupLazy, WriterOptions options) : base(name, options)
     {
         using (var lodChunk = new FDataChunk("LODS"))
         {
@@ -50,7 +50,7 @@ public class UEModel : UEFormatExport
 
     }
 
-    public UEModel(string name, CSkeletalMesh mesh, FPackageIndex[]? morphTargets, FPackageIndex[] sockets, FPackageIndex skeletonLazy, FPackageIndex physicsAssetLazy, ExporterOptions options) : base(name, options)
+    public UEModel(string name, CSkeletalMesh mesh, FPackageIndex[]? morphTargets, FPackageIndex[] sockets, FPackageIndex skeletonLazy, FPackageIndex physicsAssetLazy, WriterOptions options) : base(name, options)
     {
         using (var lodChunk = new FDataChunk("LODS"))
         {
@@ -89,7 +89,7 @@ public class UEModel : UEFormatExport
         }*/
     }
 
-    public UEModel(string name, USkeleton skeleton, List<CSkelMeshBone> bones, FPackageIndex[] sockets, FVirtualBone[] virtualBones, ExporterOptions options) : base(name, options)
+    public UEModel(string name, USkeleton skeleton, List<CSkelMeshBone> bones, FPackageIndex[] sockets, FVirtualBone[] virtualBones, WriterOptions options) : base(name, options)
     {
         using (var skeletonChunk = new FDataChunk("SKELETON", 1))
         {
@@ -319,3 +319,5 @@ public class UEModel : UEFormatExport
     }
 
 }
+
+

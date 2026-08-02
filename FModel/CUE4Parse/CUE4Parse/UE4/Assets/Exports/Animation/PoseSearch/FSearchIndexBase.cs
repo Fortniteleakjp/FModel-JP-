@@ -1,4 +1,5 @@
-using CUE4Parse.UE4.Assets.Readers;
+﻿using CUE4Parse.UE4.Assets.Readers;
+using CUE4Parse.UE4.Versions;
 
 namespace CUE4Parse.UE4.Assets.Exports.Animation.PoseSearch;
 
@@ -21,12 +22,11 @@ public class FSearchIndexBase
         PoseMetadata = Ar.ReadArray(() => new FPoseMetadata(Ar));
         bAnyBlockTransition = Ar.ReadBoolean();
         Assets = Ar.ReadArray(() => new FSearchIndexAsset(Ar));
-        if (Ar.Game >= GAME_UE5_6)
+        if (Ar.Game >= EGame.GAME_UE5_6)
         {
             EventData = new FEventData(Ar);
         }
         MinCostAddend = Ar.Read<float>();
-        if (Ar.Game < GAME_UE5_8 || !Ar.IsFilterEditorOnly)
-            Stats = Ar.Read<FSearchStats>();
+        Stats = Ar.Read<FSearchStats>();
     }
 }

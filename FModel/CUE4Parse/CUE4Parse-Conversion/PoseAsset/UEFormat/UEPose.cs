@@ -11,7 +11,7 @@ public class UEPose : UEFormatExport
 {
     protected override string Identifier { get; set; } = "UEPOSE";
     
-    public UEPose(string name, CPoseAsset poseAsset, ExporterOptions options) : base(name, options)
+    public UEPose(string name, CPoseAsset poseAsset, WriterOptions options) : base(name, options)
     {
         using (var posesChunk = new FDataChunk("POSES", poseAsset.Poses.Count))
         {
@@ -56,3 +56,4 @@ public class UEPose : UEFormatExport
         }
     }
 }
+

@@ -32,8 +32,8 @@ public class FInstancedStruct : IUStruct
 
         ScriptStruct = Ar.Game switch
         {
-            GAME_VEIN => new FScriptStruct(new FRawStruct<string>(Ar.ReadFString)),
-            GAME_AshesOfCreation when Ar is FAoCDBCReader AoCReader => AoCReader.ReadInstancedStruct(),
+            EGame.GAME_VEIN => new FScriptStruct(new FRawStruct<string>(Ar.ReadFString)),
+            EGame.GAME_AshesOfCreation when Ar is FAoCDBCReader AoCReader => AoCReader.ReadInstancedStruct(),
             _ => FScriptStruct.ReadInstancedStruct(Ar)
         };
     }

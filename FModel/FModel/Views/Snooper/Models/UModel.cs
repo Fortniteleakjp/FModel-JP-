@@ -11,6 +11,7 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.Utils;
 using FModel.Settings;
+using FModel.Services;
 using FModel.Views.Snooper.Buffers;
 using FModel.Views.Snooper.Shading;
 using OpenTK.Graphics.OpenGL4;
@@ -394,8 +395,7 @@ public abstract class UModel : IRenderableModel
 
     public bool Save(out string label, out string savedFilePath)
     {
-        var toSave = new Exporter(_export, UserSettings.Default.ExportOptions);
-        return toSave.TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out label, out savedFilePath);
+        return ExportSessionService.TryExport(_export, UserSettings.Default.ModelDirectory, out label, out savedFilePath);
     }
 
     public virtual void Dispose()

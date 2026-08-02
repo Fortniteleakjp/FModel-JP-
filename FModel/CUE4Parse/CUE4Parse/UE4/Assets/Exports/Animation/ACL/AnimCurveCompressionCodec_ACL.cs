@@ -9,14 +9,35 @@ public class AnimCurveCompressionCodec_ACL : UAnimCurveCompressionCodec
 {
     public override unsafe FFloatCurve[] ConvertCurves(FSmartName[] names, byte[] data)
     {
-        var compressedTracks = new CompressedTracks(data);
+        if (names.Length == 0 || data.Length == 0)
+        {
+            return [];
+        }
+
+        CompressedTracks compressedTracks;
+        try
+        {
+            compressedTracks = new CompressedTracks(data);
+        }
+        catch (Exception e) when (e is ACLException or EntryPointNotFoundException or DllNotFoundException)
+        {
+            return [];
+        }
+
         var header = compressedTracks.GetTracksHeader();
         var numSamples = header.NumSamples;
 
         var floatKeys = new float[names.Length * numSamples];
         fixed (float* floatKeysPtr = floatKeys)
         {
-            nReadCurveACLData(compressedTracks.Handle, floatKeysPtr);
+            try
+            {
+                nReadCurveACLData(compressedTracks.Handle, floatKeysPtr);
+            }
+            catch (Exception e) when (e is EntryPointNotFoundException or DllNotFoundException)
+            {
+                return [];
+            }
         }
 
         var floatCurves = new FFloatCurve[names.Length];

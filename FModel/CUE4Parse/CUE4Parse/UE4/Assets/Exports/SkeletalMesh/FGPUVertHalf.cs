@@ -1,4 +1,5 @@
-﻿using CUE4Parse.UE4.Objects.Meshes;
+﻿using System;
+using CUE4Parse.UE4.Objects.Meshes;
 using CUE4Parse.UE4.Readers;
 
 namespace CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
@@ -6,6 +7,7 @@ namespace CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 public class FGPUVertHalf : FSkelMeshVertexBase
 {
     public readonly FMeshUVHalf[] UV;
+    public override FMeshUVFloat[] UVs => Array.ConvertAll(UV, static u => (FMeshUVFloat) u); // PR #358 back-port
 
     public FGPUVertHalf()
     {

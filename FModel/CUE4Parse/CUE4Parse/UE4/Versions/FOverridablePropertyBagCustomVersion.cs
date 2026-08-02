@@ -27,7 +27,7 @@ public static class FOverridablePropertyBagCustomVersion
 
         return Ar.Game switch
         {
-            < GAME_UE5_7 => Type.BeforeCustomVersionWasAdded,
+            < EGame.GAME_UE5_7 => Type.BeforeCustomVersionWasAdded,
             _ => Type.LatestVersion
         };
     }

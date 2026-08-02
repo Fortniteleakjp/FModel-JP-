@@ -36,8 +36,8 @@ public static class FVariantManagerObjectVersion
 
         return Ar.Game switch
         {
-            < GAME_UE4_22 => Type.BeforeCustomVersionWasAdded,
-            < GAME_UE4_23 => Type.SerializePropertiesAsNames,
+            < EGame.GAME_UE4_22 => Type.BeforeCustomVersionWasAdded,
+            < EGame.GAME_UE4_23 => Type.SerializePropertiesAsNames,
             _ => Type.LatestVersion
         };
     }

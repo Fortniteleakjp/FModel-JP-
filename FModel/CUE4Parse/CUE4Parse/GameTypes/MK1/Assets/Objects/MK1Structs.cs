@@ -9,6 +9,7 @@ using CUE4Parse.UE4.Assets.Readers;
 using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.UObject;
+using Serilog;
 
 namespace CUE4Parse.GameTypes.MK1.Assets.Objects;
 
@@ -83,7 +84,6 @@ public class FTimelinePredicateState(FAssetArchive Ar) : IUStruct
 
 public class FCompiledTimelinePredicate(FAssetArchive Ar) : IUStruct
 {
-
     public byte[] Unknown = Ar.ReadArray<byte>();
     public object[] Parameters = Ar.ReadArray(() => ReadParameterValue(Ar));
 

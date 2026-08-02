@@ -38,12 +38,6 @@ public readonly struct FSHAHash : IUStruct, IEquatable<FSHAHash>
         src.CopyTo(dst);
     }
 
-    public FSHAHash(ReadOnlySpan<byte> hash)
-    {
-        Hash = default;
-        hash[..SIZE].CopyTo(Hash);
-    }
-
     public static implicit operator FSHAHash(FIoChunkHash InChunkHash) => new(InChunkHash);
 
     public override string ToString()

@@ -7,6 +7,7 @@ using CUE4Parse_Conversion.Animations.PSA;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using FModel.Settings;
+using FModel.Services;
 using FModel.Views.Snooper.Models;
 using ImGuiNET;
 
@@ -134,7 +135,7 @@ public class Animation : IDisposable
             if (ImGui.MenuItem("保存"))
             {
                 s.WindowShouldFreeze(true);
-                saver.Value = new Exporter(_export, UserSettings.Default.ExportOptions).TryWriteToDir(new DirectoryInfo(UserSettings.Default.ModelDirectory), out saver.Label, out saver.Path);
+                saver.Value = ExportSessionService.TryExport(_export, UserSettings.Default.ModelDirectory, out saver.Label, out saver.Path);
                 s.WindowShouldFreeze(false);
             }
             ImGui.Separator();
