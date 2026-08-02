@@ -27,3 +27,4 @@ secrets.py
 MIGRATION_PR358.md
 build-intermediate/
 build-intermediate2/
+FModel/CUE4Parse/CUE4Parse-Natives/build-gha/
