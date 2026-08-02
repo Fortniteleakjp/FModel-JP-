@@ -18,7 +18,6 @@ namespace CUE4Parse.GameTypes.HonorOfKings.Vfs;
 
 public sealed class HoKdbFileReader : AbstractAesVfsReader
 {
-    
     public static readonly ConcurrentDictionary<ulong, string> HashMap = [];
     private static readonly ConcurrentDictionary<ulong, string> _indexFiles = [];
     private readonly IReadOnlyList<HoKdbContainerStream> _containerStreams;

@@ -1,4 +1,4 @@
-using CUE4Parse.UE4.Objects.Core.Misc;
+﻿using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Readers;
 
 namespace CUE4Parse.UE4.Versions;
@@ -33,8 +33,8 @@ public static class FInterchangeCustomVersion
 
         return Ar.Game switch
         {
-            < GAME_UE5_2 => Type.BeforeCustomVersionWasAdded,
-            < GAME_UE5_7 => Type.SerializedInterchangeObjectStoring,
+            < EGame.GAME_UE5_2 => Type.BeforeCustomVersionWasAdded,
+            < EGame.GAME_UE5_7 => Type.SerializedInterchangeObjectStoring,
             _ => Type.LatestVersion
         };
     }

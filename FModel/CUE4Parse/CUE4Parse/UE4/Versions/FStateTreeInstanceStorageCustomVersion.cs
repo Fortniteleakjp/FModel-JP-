@@ -27,7 +27,7 @@ public static class FStateTreeInstanceStorageCustomVersion
 
         return Ar.Game switch
         {
-            < GAME_UE5_4 => Type.BeforeCustomVersionWasAdded,
+            < EGame.GAME_UE5_4 => Type.BeforeCustomVersionWasAdded,
             _ => Type.LatestVersion
         };
     }

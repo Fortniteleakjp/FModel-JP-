@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,6 +9,7 @@ using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 using OffiUtils;
+using Serilog;
 using static CUE4Parse.Compression.Compression;
 using static CUE4Parse.UE4.Objects.Core.Misc.ECompressionFlags;
 using static CUE4Parse.UE4.Objects.UObject.FPackageFileSummary;
@@ -18,7 +18,6 @@ namespace CUE4Parse.UE4.Readers
 {
     public abstract class FArchive : RandomAccessStream, ICloneable
     {
-
         public VersionContainer Versions;
         public EGame Game
         {
@@ -30,11 +29,6 @@ namespace CUE4Parse.UE4.Readers
             get => Versions.Ver;
             set => Versions.Ver = value;
         }
-        public EUnrealEngineObjectLicenseeUEVersion LicenseeVer
-        {
-            get => Versions.LicenseeVer;
-            set => Versions.LicenseeVer = value;
-        }
         public ETexturePlatform Platform
         {
             get => Versions.Platform;
@@ -44,7 +38,7 @@ namespace CUE4Parse.UE4.Readers
 
         public bool SupportPartialReads => Game switch
         {
-            GAME_GameForPeace or GAME_Rennsport or GAME_DragonQuestXI => false,
+            EGame.GAME_GameForPeace or EGame.GAME_Rennsport or EGame.GAME_DragonQuestXI => false,
             _ => true,
         };
 
@@ -95,18 +89,6 @@ namespace CUE4Parse.UE4.Readers
             Unsafe.CopyBlockUnaligned(ref ptr[0], ref bytes[0], (uint) length);
         }
 
-        public virtual T Peek<T>()
-        {
-            var size = Unsafe.SizeOf<T>();
-            var saved = Position;
-            var buffer = ArrayPool<byte>.Shared.Rent(size);
-            Read(buffer, 0,  size);
-            Position = saved;
-            var result = Unsafe.ReadUnaligned<T>(ref buffer[0]);
-            ArrayPool<byte>.Shared.Return(buffer);
-            return result;
-        }
-
         public virtual T Read<T>()
         {
             var size = Unsafe.SizeOf<T>();
@@ -119,7 +101,7 @@ namespace CUE4Parse.UE4.Readers
             var size = Unsafe.SizeOf<T>();
             var readLength = size * length;
             CheckReadSize(readLength);
-
+            
             var buffer = ReadBytes(readLength);
             var result = new T[length];
             if (length > 0) Unsafe.CopyBlockUnaligned(ref Unsafe.As<T, byte>(ref result[0]), ref buffer[0], (uint)(readLength));
@@ -141,7 +123,7 @@ namespace CUE4Parse.UE4.Readers
         {
             Versions = versions ?? new VersionContainer();
         }
-
+        
         public override void Flush() { }
         public override bool CanRead { get; } = true;
         public override bool CanWrite { get; } = false;
@@ -208,7 +190,7 @@ namespace CUE4Parse.UE4.Readers
         {
             var pos = Position;
             T[] array = ReadArray(elementCount, getter);
-            if (Game != GAME_HogwartsLegacy && Position != pos + array.Length * elementSize)
+            if (Game != EGame.GAME_HogwartsLegacy && Position != pos + array.Length * elementSize)
                 throw new ParserException($"RawArray item size mismatch: expected {elementSize}, serialized {(Position - pos) / array.Length}");
             return array;
         }
@@ -269,21 +251,6 @@ namespace CUE4Parse.UE4.Readers
         {
             var num = Read<int>();
             Position += num * size;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SkipArray<T>()
-        {
-            var length = Read<int>();
-            var size = Unsafe.SizeOf<T>();
-            Position += length * size;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SkipArray<T>(int length)
-        {
-            var size = Unsafe.SizeOf<T>();
-            Position += length * size;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -421,26 +388,6 @@ namespace CUE4Parse.UE4.Readers
             {
                 ((byte*)v)[lengthBits / 8] &= (byte) ((1 << (int)(lengthBits & 7)) - 1);
             }
-        }
-
-        public int ReadCompactIndex()
-        {
-            byte b = Read<byte>();
-            int sign = b & 0x80;
-            int shift = 6;
-            int r = b & 0x3F;
-
-            if ((b & 0x40) != 0)
-            {
-                do
-                {
-                    b = Read<byte>();
-                    r |= (b & 0x7F) << shift;
-                    shift += 7;
-                } while ((b & 0x80) != 0);
-            }
-
-            return sign != 0 ? -r : r;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -665,8 +612,8 @@ namespace CUE4Parse.UE4.Readers
             }
 
             // Read in base summary, contains total sizes :
-            var summary = new FCompressedChunkInfo(this);
-
+            var summary = Read<FCompressedChunkInfo>();
+            
             if (bWasByteSwapped)
             {
                 summary.CompressedSize = (long) BYTESWAP_ORDER64((ulong) summary.CompressedSize);
@@ -807,8 +754,8 @@ namespace CUE4Parse.UE4.Readers
 
             public FCompressedChunkInfo(FArchive Ar)
             {
-                CompressedSize = Ar.Game < GAME_UE4_0 ? Ar.Read<uint>() : Ar.Read<long>();
-                UncompressedSize = Ar.Game < GAME_UE4_0 ? Ar.Read<uint>() : Ar.Read<long>();
+                CompressedSize = Ar.Game < EGame.GAME_UE4_0 ? Ar.Read<uint>() : Ar.Read<long>();
+                UncompressedSize = Ar.Game < EGame.GAME_UE4_0 ? Ar.Read<uint>() : Ar.Read<long>();
             }
         }
     }

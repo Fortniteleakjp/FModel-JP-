@@ -16,6 +16,7 @@ using CUE4Parse.UE4.Objects.Meshes;
 using CUE4Parse.UE4.Objects.RenderCore;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
+using Serilog;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SkiaSharp;
@@ -24,11 +25,20 @@ namespace CUE4Parse_Conversion.Meshes;
 
 public static class MeshConverter
 {
-    
-    public static bool TryConvert(this USkeleton originalSkeleton, out List<CSkelMeshBone> bones, out FBox box)
+    public static bool TryConvert(this USkeleton? originalSkeleton, out List<CSkelMeshBone> bones, out FBox box)
     {
         bones = new List<CSkelMeshBone>();
         box = new FBox();
+
+        if (originalSkeleton == null ||
+            originalSkeleton.ReferenceSkeleton == null ||
+            originalSkeleton.ReferenceSkeleton.FinalRefBoneInfo == null ||
+            originalSkeleton.ReferenceSkeleton.FinalRefBonePose == null ||
+            originalSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length == 0)
+        {
+            return false;
+        }
+
         for (var i = 0; i < originalSkeleton.ReferenceSkeleton.FinalRefBoneInfo.Length; i++)
         {
             var skeletalMeshBone = new CSkelMeshBone
@@ -92,7 +102,7 @@ public static class MeshConverter
             }
 
             if (numTexCoords > Constants.MAX_MESH_UV_SETS)
-                Log.Warning("Static mesh has too many UV sets ({NumTexCoords})", numTexCoords);
+                Log.Warning($"Static mesh has too many UV sets ({numTexCoords})");
 
             var screenSize = 0.0f;
             if (i < originalMesh.RenderData.ScreenSize.Length)
@@ -391,7 +401,7 @@ public static class MeshConverter
 
             var numTexCoords = srcLod.NumTexCoords;
             if (numTexCoords > Constants.MAX_MESH_UV_SETS)
-                Log.Warning("Skeletal mesh has too many UV sets ({NumTexCoords})", numTexCoords);
+                Log.Warning($"Skeletal mesh has too many UV sets ({numTexCoords})");
 
             var skeletalMeshLod = new CSkelMeshLod
             {
@@ -572,7 +582,7 @@ public static class MeshConverter
         // UE3 - normal[1] not restored in vertex shader
     }
 
-    public static bool TryConvert(this ALandscapeProxy landscape, ULandscapeComponent[]? landscapeComponents, ELandscapeExportFlags flags, out CStaticMesh? convertedMesh, out Dictionary<string,Image> heightMaps, out Dictionary<string, SKBitmap> weightMaps)
+    public static bool TryConvert(this ALandscapeProxy landscape, ULandscapeComponent[]? landscapeComponents, CUE4Parse_Conversion.Options.ELandscapeFlags flags, out CStaticMesh? convertedMesh, out Dictionary<string,Image> heightMaps, out Dictionary<string, SKBitmap> weightMaps)
     {
         heightMaps = [];
         weightMaps = [];
@@ -618,7 +628,7 @@ public static class MeshConverter
         int height = maxY - minY + 1;
 
         CStaticMeshLod? landscapeLod = null;
-        if (flags.HasFlag(ELandscapeExportFlags.Mesh))
+        if (flags.HasFlag(CUE4Parse_Conversion.Options.ELandscapeFlags.Mesh))
         {
             landscapeLod = new CStaticMeshLod();
             landscapeLod.NumTexCoords = 2; // TextureUV and weightmapUV
@@ -683,7 +693,7 @@ public static class MeshConverter
                         var layerName = allocationInfo.GetLayerName();
 
                         // weight as Mesh Vertex colors
-                        if ((flags & ELandscapeExportFlags.Mesh) == ELandscapeExportFlags.Mesh)
+                        if ((flags & CUE4Parse_Conversion.Options.ELandscapeFlags.Mesh) == CUE4Parse_Conversion.Options.ELandscapeFlags.Mesh)
                         {
                             // ReSharper disable once CanSimplifyDictionaryLookupWithTryAdd
                             if (!extraVertexColorMap.ContainsKey(layerName))
@@ -699,7 +709,7 @@ public static class MeshConverter
                         var pixelX = textureUv2.X;
                         var pixelY = textureUv2.Y;
 
-                        if ((flags & ELandscapeExportFlags.Weightmap) == ELandscapeExportFlags.Weightmap)
+                        if ((flags & CUE4Parse_Conversion.Options.ELandscapeFlags.Weightmap) == CUE4Parse_Conversion.Options.ELandscapeFlags.Weightmap)
                         {
                             lock (weightMapLock)
                             {
@@ -728,7 +738,7 @@ public static class MeshConverter
                         }
                     }
 
-                    if ((flags & ELandscapeExportFlags.Mesh) == ELandscapeExportFlags.Mesh && landscapeLod != null)
+                    if ((flags & CUE4Parse_Conversion.Options.ELandscapeFlags.Mesh) == CUE4Parse_Conversion.Options.ELandscapeFlags.Mesh && landscapeLod != null)
                     {
                         var vert = landscapeLod.Verts[baseVertIndex + vertIndex];
                         vert.Position = position;
@@ -761,7 +771,7 @@ public static class MeshConverter
         Task.WaitAll(tasks);
 
         // image.Save(File.OpenWrite("heightmap.png"), new PngEncoder());
-        if (flags.HasFlag(ELandscapeExportFlags.Heightmap))
+        if (flags.HasFlag(CUE4Parse_Conversion.Options.ELandscapeFlags.Heightmap))
         {
             var image = Image.LoadPixelData<L16>(heightMapData, width, height);
             heightMaps.Add("heightmap", image);
@@ -770,12 +780,12 @@ public static class MeshConverter
         // skimage
         //var heightMap = new SKBitmap(Width, Height, SKColorType.RgbaF16, SKAlphaType.Unpremul);
         // heightMap.Encode(SKEncodedImageFormat.Png, 100).SaveTo(File.OpenWrite("heightmap.png"));
-        if (flags.HasFlag(ELandscapeExportFlags.Weightmap))
+        if (flags.HasFlag(CUE4Parse_Conversion.Options.ELandscapeFlags.Weightmap))
         {
             weightMaps = weightMapsInternal.ToDictionary(x => x.Key, x => x.Value);
         }
 
-        if (!flags.HasFlag(ELandscapeExportFlags.Mesh) || landscapeLod == null)
+        if (!flags.HasFlag(CUE4Parse_Conversion.Options.ELandscapeFlags.Mesh) || landscapeLod == null)
         {
             return true;
         }
@@ -839,3 +849,5 @@ public static class MeshConverter
         return true;
     }
 }
+
+

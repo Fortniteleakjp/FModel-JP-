@@ -6,22 +6,12 @@ namespace CUE4Parse.UE4.Assets.Exports.Animation.PoseSearch;
 
 public class UPoseSearchDatabase : UDataAsset
 {
-    public FSearchIndex? SearchIndexPrivate;
+    public FSearchIndex SearchIndexPrivate;
 
     public override void Deserialize(FAssetArchive Ar, long validPos)
     {
         base.Deserialize(Ar, validPos);
-        if (Ar.Game < GAME_UE5_6)
-        {
-            if (Ar.IsFilterEditorOnly)
-                SearchIndexPrivate = new FSearchIndex(Ar);
-        }
-        else
-        {
-            if (!Flags.HasFlag(EObjectFlags.RF_ArchetypeObject | EObjectFlags.RF_ClassDefaultObject) && Ar.IsLoadingFromCookedPackage)
-                SearchIndexPrivate = new FSearchIndex(Ar);
-        }
-
+        SearchIndexPrivate = new FSearchIndex(Ar);
     }
 
     protected internal override void WriteJson(JsonWriter writer, JsonSerializer serializer)

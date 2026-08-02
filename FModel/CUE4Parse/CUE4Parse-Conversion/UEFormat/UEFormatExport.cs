@@ -11,7 +11,7 @@ public class UEFormatExport
 {
     protected virtual string Identifier { get; set; }
     protected readonly FArchiveWriter Ar = new();
-    protected ExporterOptions Options;
+    protected WriterOptions Options;
     private string ObjectName;
 
     // TODO make user selectable
@@ -19,7 +19,7 @@ public class UEFormatExport
     private const OodleCompressionLevel OODLE_COMPRESSION_LEVEL = OodleCompressionLevel.Fast;
     private const int ZSTD_LEVEL = 6;
 
-    protected UEFormatExport(string name, ExporterOptions options)
+    protected UEFormatExport(string name, WriterOptions options)
     {
         ObjectName = name;
         Options = options;
@@ -55,3 +55,5 @@ public class UEFormatExport
         return outStream.ToArray();
     }
 }
+
+

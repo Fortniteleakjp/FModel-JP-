@@ -1,5 +1,6 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using CUE4Parse.UE4.VirtualFileSystem;
-using CUE4Parse.Utils;
 using AesProvider = CUE4Parse.Encryption.Aes.Aes;
 
 namespace CUE4Parse.GameTypes.DragonSword.Encryption.Aes;
@@ -19,7 +20,15 @@ public static class DragonSwordAes
 
         if (isIndex && count >= 16)
         {
-            TensorUtils.Xor(output, output[2]);
+            var xorbyte = output[2];
+            Span<byte> key = stackalloc byte[8];
+            key.Fill(xorbyte);
+            var xorKey = BitConverter.ToUInt64(key);
+            var span = MemoryMarshal.CreateSpan(ref Unsafe.As<byte, ulong>(ref output[0]), count >> 3);
+            for (var i = 0; i < span.Length; i++)
+            {
+                span[i] ^= xorKey;
+            }
         }
 
         return output;

@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -9,6 +9,22 @@ namespace CUE4Parse_Conversion.Textures;
 
 public static class TextureEncoder
 {
+    public static byte[] Encode(this CTexture bitmap, ETextureFormat format, bool saveHdrAsHdr) => Encode(bitmap, format, saveHdrAsHdr, out _);
+
+    // PR #358 back-port (JP適合): 新パイプラインの ExportOptions(Options.ETextureFormat) から
+    // JP 既存の Encode(Textures.ETextureFormat, ...) へ橋渡しする。Webp は JP 未対応のため PNG にフォールバック。
+    public static byte[] Encode(this CTexture bitmap, CUE4Parse_Conversion.Options.ExportOptions options, out string ext)
+    {
+        var format = options.TextureFormat switch
+        {
+            CUE4Parse_Conversion.Options.ETextureFormat.Jpeg => ETextureFormat.Jpeg,
+            CUE4Parse_Conversion.Options.ETextureFormat.Tga => ETextureFormat.Tga,
+            CUE4Parse_Conversion.Options.ETextureFormat.Dds => ETextureFormat.Dds,
+            _ => ETextureFormat.Png, // Png / Webp(JP未対応) は PNG
+        };
+        return bitmap.Encode(format, options.ExportHdrTexturesAsHdr, out ext);
+    }
+
     public static byte[] Encode(this CTexture bitmap, ETextureFormat format, bool saveHdrAsHdr, out string ext)
     {
         if (saveHdrAsHdr && PixelFormatUtils.IsHDR(bitmap.PixelFormat))
@@ -136,10 +152,7 @@ public static class TextureEncoder
     // TODO cant cast to float from T so have to use Func<T, float>
     private static unsafe nint ConvertToRGBE<T>(EPixelFormat pixelFormat, int width, int height, ReadOnlySpan<byte> inp, Func<T, float> toFloat, bool flipOrder = false) where T : unmanaged
     {
-        if (!PixelFormatUtils.PixelFormats.TryGetValue(pixelFormat, out var formatInfo))
-            throw new NotImplementedException("Unsupported pixel format: " + pixelFormat);
-
-        int channelCount = formatInfo.NumComponents;
+        int channelCount = PixelFormatUtils.PixelFormats.First(x => x.UnrealFormat == pixelFormat).NumComponents;
 
         MemoryUtils.NativeAlloc<byte>(width * height * 4, out var retPtr);
 
@@ -376,9 +389,7 @@ public static class TextureEncoder
 
     private static unsafe nint ConvertTo8<T>(EPixelFormat pixelFormat, int width, int height, ReadOnlySpan<byte> inp, Func<T, byte> conversionFunc, bool flipOrder = false)
     {
-        if (!PixelFormatUtils.PixelFormats.TryGetValue(pixelFormat, out var formatInfo))
-            throw new NotImplementedException("Unsupported pixel format: " + pixelFormat);
-        int channelCount = formatInfo.NumComponents;
+        int channelCount = PixelFormatUtils.PixelFormats.First(x => x.UnrealFormat == pixelFormat).NumComponents;
 
         //(4 bytes per pixel for RGBA)
         MemoryUtils.NativeAlloc<byte>(width * height * 4, out var retPtr);
@@ -399,14 +410,14 @@ public static class TextureEncoder
                         *outPtr = conversionFunc(value);
                         outPtr += sizeof(byte);
                     }
-                    FillMissingChannels(ref outPtr, channelCount);
+                    FillMissingChannels(outPtr, channelCount);
                 }
             }
         }
         return retPtr;
     }
 
-    private static unsafe void FillMissingChannels(ref byte* outPtr, int channelCount)
+    private static unsafe void FillMissingChannels(byte* outPtr, int channelCount)
     {
         for (int i = channelCount; i < 4; i++)
         {

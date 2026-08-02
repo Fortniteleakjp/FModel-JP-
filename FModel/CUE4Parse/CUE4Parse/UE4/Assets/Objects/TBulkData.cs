@@ -8,6 +8,7 @@ using CUE4Parse.UE4.Exceptions;
 using CUE4Parse.UE4.Objects.Core.Misc;
 using CUE4Parse.UE4.Readers;
 using Newtonsoft.Json;
+using Serilog;
 using static CUE4Parse.UE4.Assets.Objects.EBulkDataFlags;
 
 namespace CUE4Parse.UE4.Assets.Objects;
@@ -15,7 +16,6 @@ namespace CUE4Parse.UE4.Assets.Objects;
 [JsonConverter(typeof(TBulkDataConverter))]
 public abstract class TBulkData<T> where T: struct
 {
-    
     public FByteBulkDataHeader Header { get; init; }
     public EBulkDataFlags BulkDataFlags => Header.BulkDataFlags;
 
@@ -63,23 +63,6 @@ public abstract class TBulkData<T> where T: struct
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual int GetDataSize() => Header.ElementCount * Unsafe.SizeOf<T>();
 
-    /// <summary>
-    /// Reads bulk data once without storing it in this instance.
-    /// If data is already cached, optionally returns a copy of a cached data.
-    /// </summary>
-    public T[]? ReadDataOnce(bool returnCachedData = true)
-    {
-        if (_data is { IsValueCreated: true })
-        {
-            var cached = _data.Value;
-            if (cached is null) return null;
-
-            return returnCachedData ? cached : (T[]) cached.Clone();
-        }
-
-        return ReadBulkDataInto(out var data) ? data : null;
-    }
-
     protected virtual bool ReadBulkDataInto(out T[] data)
     {
         data = [];
@@ -111,14 +94,6 @@ public abstract class TBulkData<T> where T: struct
             // To-Do rewrite once SerializeCompressedNew/Decompress works with span
             // var dest = MemoryMarshal.AsBytes(data.AsSpan());
             // dataAr.SerializeCompressedNew(dest, size, "Zlib", ECompressionFlags.COMPRESS_NoFlags, false, out _);
-        }
-        else if (BulkDataFlags.HasFlag(BULKDATA_CompressedLZO))
-        {
-            var size = GetDataSize();
-            var uncompressedData = new byte[size];
-            data = new T[Header.ElementCount];
-            dataAr.SerializeCompressedNew(uncompressedData, size, "LZO", ECompressionFlags.COMPRESS_NoFlags, false, out _);
-            Unsafe.CopyBlockUnaligned(ref Unsafe.As<T, byte>(ref data[0]), ref uncompressedData[0], (uint) size);
         }
         else
         {
@@ -152,19 +127,6 @@ public abstract class TBulkData<T> where T: struct
 
             archive = uptnlAr;
             position = uptnlAr.Length == Header.SizeOnDisk ? 0 : Header.OffsetInFile;
-        }
-        else if (BulkDataFlags.HasFlag(BULKDATA_PayloadInSeperateFile | BULKDATA_MemoryMappedPayload))
-        {
-            if (!TryGetBulkPayload(archive, PayloadType.MUBULK, out var mubulkAr))
-            {
-#if DEBUG
-                Log.Debug("Failed to load bulk data in {CookedIndex}.m.ubulk file (Payload In Separate File) (flags={BulkDataFlags}, pos={HeaderOffsetInFile}, size={HeaderSizeOnDisk}))", Header.CookedIndex, BulkDataFlags, Header.OffsetInFile, Header.SizeOnDisk);
-#endif
-                return false;
-            }
-
-            archive = mubulkAr;
-            position = mubulkAr.Length == Header.SizeOnDisk ? 0 : Header.OffsetInFile;
         }
         else if (BulkDataFlags.HasFlag(BULKDATA_PayloadInSeperateFile))
         {
@@ -202,16 +164,7 @@ public abstract class TBulkData<T> where T: struct
         payloadAr = null;
         if (Header.CookedIndex.IsDefault)
         {
-            if (type is PayloadType.MUBULK && Ar.Owner?.Provider is IVfsFileProvider vfsFileProvider)
-            {
-                var path = Path.ChangeExtension(Ar.Name, ".m.ubulk");
-                if (vfsFileProvider.TryGetGameFile(path, out var file) && file.TryCreateReader(out var reader, Header))
-                {
-                    payloadAr = new FAssetArchive(reader, Ar.Owner);
-                }
-            }
-            else
-                Ar.TryGetPayload(type, out payloadAr, Header);
+            Ar.TryGetPayload(type, out payloadAr, Header);
         }
         else if (Ar.Owner?.Provider is IVfsFileProvider vfsFileProvider)
         {

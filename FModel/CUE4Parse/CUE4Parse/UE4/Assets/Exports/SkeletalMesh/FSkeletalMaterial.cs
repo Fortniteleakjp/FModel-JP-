@@ -51,13 +51,13 @@ public class FSkeletalMaterial
 
         switch (Ar.Game)
         {
-            case GAME_MarvelRivals:
+            case EGame.GAME_MarvelRivals:
                 _ = new FGameplayTagContainer(Ar);
                 break;
-            case GAME_FragPunk or GAME_DaysGone or GAME_WorldofJadeDynasty or GAME_AssaultFireFuture:
+            case EGame.GAME_FragPunk or EGame.GAME_DaysGone or EGame.GAME_WorldofJadeDynasty or EGame.GAME_AssaultFireFuture:
                 Ar.Position += 4;
                 break;
-            case GAME_Strinova:
+            case EGame.GAME_Strinova:
                 Ar.Position += 8;
                 break;
         }

@@ -21,7 +21,7 @@ using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.MappingsProvider;
-using CUE4Parse.MappingsProvider.Usmap; // 上流同期: FileUsmapTypeMappingsProvider が Usmap/ サブ名前空間へ移動
+using CUE4Parse.MappingsProvider.Usmap; // 荳頑ｵ∝酔譛・ FileUsmapTypeMappingsProvider 縺・Usmap/ 繧ｵ繝門錐蜑咲ｩｺ髢薙∈遘ｻ蜍・
 using CUE4Parse.UE4.AssetRegistry;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
@@ -178,45 +178,21 @@ public partial class CUE4ParseViewModel
 
     private void SaveExport(UObject export, bool updateUi = true)
     {
-        // エクスポート方式の切替点（CUE4Parse PR #358 の新パイプライン段階導入）。
-        // 新パイプライン選択時、または USD 形式(新パイプライン専用)選択時はそちらを試み、未対応なら旧へフォールバック。
-        var wantsNewPipeline = UserSettings.Default.ExportPipeline == EExportPipeline.New
-            || export is UWorld; // World は新パイプライン(USD)のみ対応のため必ず新パイプラインで処理
-        if (wantsNewPipeline && TrySaveExportNewPipeline(export, updateUi))
-            return;
-
-        var toSave = new Exporter(export, UserSettings.Default.ExportOptions);
-        var toSaveDirectory = new DirectoryInfo(UserSettings.Default.ModelDirectory);
-        if (toSave.TryWriteToDir(toSaveDirectory, out var label, out var savedFilePath))
-        {
-            Log.Information("Successfully saved {FilePath}", savedFilePath);
-            if (updateUi)
-            {
-                FLogger.Append(ELog.Information, () =>
-                {
-                    FLogger.Text("Successfully saved ", Constants.WHITE);
-                    FLogger.Link(label, savedFilePath, true);
-                });
-            }
-        }
-        else
-        {
-            Log.Error("{FileName} could not be saved", export.Name);
-            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}'", Constants.WHITE, true));
-        }
+        // 旧Exporter APIは廃止し、すべてExportSessionで処理する。
+        TrySaveExportNewPipeline(export, updateUi);
     }
 
     /// <summary>
-    /// 新エクスポートパイプライン（CUE4Parse PR #358 の ExportSession ベース）での書き出し。
-    /// 段階導入中: 未対応の型（Add が NotSupported）や実行時の予期せぬ失敗時は false を返し、
-    /// 呼び出し元が旧パイプラインへフォールバックする。現状メッシュは USD 形式で書き出す。
+    /// 譁ｰ繧ｨ繧ｯ繧ｹ繝昴・繝医ヱ繧､繝励Λ繧､繝ｳ・・UE4Parse PR #358 縺ｮ ExportSession 繝吶・繧ｹ・峨〒縺ｮ譖ｸ縺榊・縺励・
+    /// 谿ｵ髫主ｰ主・荳ｭ: 譛ｪ蟇ｾ蠢懊・蝙具ｼ・dd 縺・NotSupported・峨ｄ螳溯｡梧凾縺ｮ莠域悄縺帙〓螟ｱ謨玲凾縺ｯ false 繧定ｿ斐＠縲・
+    /// 蜻ｼ縺ｳ蜃ｺ縺怜・縺梧立繝代う繝励Λ繧､繝ｳ縺ｸ繝輔か繝ｼ繝ｫ繝舌ャ繧ｯ縺吶ｋ縲ら樟迥ｶ繝｡繝・す繝･縺ｯ USD 蠖｢蠑上〒譖ｸ縺榊・縺吶・
     /// </summary>
     private bool TrySaveExportNewPipeline(UObject export, bool updateUi)
     {
-        // 出力メッシュ形式を旧設定(Meshes.EMeshFormat)から新(Options.EMeshFormat)へマップ(序数一致)。
-        // 全メッシュ形式(ActorX/glTF/OBJ/UEFormat/USD)が新パイプラインに移植済みのため形式ゲートは不要。
+        // 蜃ｺ蜉帙Γ繝・す繝･蠖｢蠑上ｒ譌ｧ險ｭ螳・Meshes.EMeshFormat)縺九ｉ譁ｰ(Options.EMeshFormat)縺ｸ繝槭ャ繝・蠎乗焚荳閾ｴ)縲・
+        // 蜈ｨ繝｡繝・す繝･蠖｢蠑・ActorX/glTF/OBJ/UEFormat/USD)縺梧眠繝代う繝励Λ繧､繝ｳ縺ｫ遘ｻ讀肴ｸ医∩縺ｮ縺溘ａ蠖｢蠑上ご繝ｼ繝医・荳崎ｦ√・
         var meshFormat = (CUE4Parse_Conversion.Options.EMeshFormat)(int)UserSettings.Default.MeshExportFormat;
-        // World(UWorld) は WorldExporter が USD 形式のみ対応のため、設定に関わらず USD を強制する。
+        // World(UWorld) 縺ｯ WorldExporter 縺・USD 蠖｢蠑上・縺ｿ蟇ｾ蠢懊・縺溘ａ縲∬ｨｭ螳壹↓髢｢繧上ｉ縺・USD 繧貞ｼｷ蛻ｶ縺吶ｋ縲・
         if (export is UWorld)
             meshFormat = CUE4Parse_Conversion.Options.EMeshFormat.USD;
 
@@ -224,11 +200,11 @@ public partial class CUE4ParseViewModel
         try
         {
             session = new CUE4Parse_Conversion.ExportSession();
-            session.Add(export); // 未対応の型はここで NotSupportedException
+            session.Add(export); // 譛ｪ蟇ｾ蠢懊・蝙九・縺薙％縺ｧ NotSupportedException
         }
         catch (NotSupportedException)
         {
-            return false; // 未対応の型 → 旧パイプラインへフォールバック
+            return false; // 譛ｪ蟇ｾ蠢懊・蝙・竊・譌ｧ繝代う繝励Λ繧､繝ｳ縺ｸ繝輔か繝ｼ繝ｫ繝舌ャ繧ｯ
         }
 
         ExportSessionViewModel.Instance.BeginExport(export.Name);
@@ -238,12 +214,12 @@ public partial class CUE4ParseViewModel
             var options = new CUE4Parse_Conversion.Options.ExportOptions(
                 meshFormat: meshFormat,
                 naniteMeshFormat: legacy.NaniteMeshFormat,
-                texturePlatform: legacy.Platform,
+                texturePlatform: legacy.TexturePlatform,
                 exportHdrTexturesAsHdr: legacy.ExportHdrTexturesAsHdr,
                 exportMaterials: legacy.ExportMaterials,
                 exportMorphTargets: legacy.ExportMorphTargets);
 
-            // Export Session ウインドウへ進捗を報告（出力先はセッション上書き設定があればそちらを使用）
+            // Export Session 繧ｦ繧､繝ｳ繝峨え縺ｸ騾ｲ謐励ｒ蝣ｱ蜻奇ｼ亥・蜉帛・縺ｯ繧ｻ繝・す繝ｧ繝ｳ荳頑嶌縺崎ｨｭ螳壹′縺ゅｌ縺ｰ縺昴■繧峨ｒ菴ｿ逕ｨ・・
             var results = session.RunAsync(ExportSessionViewModel.Instance.EffectiveModelDirectory, options, ExportSessionViewModel.Instance).GetAwaiter().GetResult();
 
             string savedPath = null;
@@ -274,12 +250,12 @@ public partial class CUE4ParseViewModel
                     FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{export.Name}' (new pipeline)", Constants.WHITE, true));
             }
 
-            return true; // 型は対応済み → 新パイプラインで処理済み（旧へは回さない）
+            return true; // 蝙九・蟇ｾ蠢懈ｸ医∩ 竊・譁ｰ繝代う繝励Λ繧､繝ｳ縺ｧ蜃ｦ逅・ｸ医∩・域立縺ｸ縺ｯ蝗槭＆縺ｪ縺・ｼ・
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "New export pipeline threw for {Name}; falling back to legacy", export.Name);
-            return false; // 実行時の予期せぬ失敗のみ旧パイプラインへフォールバック
+            Log.Error(ex, "New export pipeline threw for {Name}", export.Name);
+            return false; // 螳溯｡梧凾縺ｮ莠域悄縺帙〓螟ｱ謨励・縺ｿ譌ｧ繝代う繝励Λ繧､繝ｳ縺ｸ繝輔か繝ｼ繝ｫ繝舌ャ繧ｯ
         }
         finally
         {

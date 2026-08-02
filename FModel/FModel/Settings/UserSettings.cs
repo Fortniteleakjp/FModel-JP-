@@ -89,25 +89,16 @@ namespace FModel.Settings
         }
 
         [JsonIgnore]
-        public ExporterOptions ExportOptions => new()
-        {
-            LodFormat = Default.LodExportFormat,
-            MeshFormat = Default.MeshExportFormat,
-            NaniteMeshFormat = Default.NaniteMeshExportFormat,
-            AnimFormat = Default.MeshExportFormat switch
-            {
-                EMeshFormat.UEFormat => EAnimFormat.UEFormat,
-                _ => EAnimFormat.ActorX
-            },
-            MaterialFormat = Default.MaterialExportFormat,
-            TextureFormat = Default.TextureExportFormat,
-            SocketFormat = Default.SocketExportFormat,
-            CompressionFormat = Default.CompressionFormat,
-            Platform = Default.CurrentDir.TexturePlatform,
-            ExportMorphTargets = Default.SaveMorphTargets,
-            ExportMaterials = Default.SaveEmbeddedMaterials,
-            ExportHdrTexturesAsHdr = Default.SaveHdrTexturesAsHdr
-        };
+        public CUE4Parse_Conversion.Options.ExportOptions ExportOptions => new(
+            meshFormat: (CUE4Parse_Conversion.Options.EMeshFormat)(int)Default.MeshExportFormat,
+            naniteMeshFormat: (CUE4Parse_Conversion.Options.ENaniteMeshFormat)(int)Default.NaniteMeshExportFormat,
+            texturePlatform: Default.CurrentDir.TexturePlatform,
+            textureFormat: (CUE4Parse_Conversion.Options.ETextureFormat)(int)Default.TextureExportFormat,
+            exportHdrTexturesAsHdr: Default.SaveHdrTexturesAsHdr,
+            exportMaterials: Default.SaveEmbeddedMaterials,
+            exportMorphTargets: Default.SaveMorphTargets,
+            socketFormat: (CUE4Parse_Conversion.Options.ESocketFormat)(int)Default.SocketExportFormat,
+            compressionFormat: (CUE4Parse_Conversion.UEFormat.Enums.EFileCompressionFormat)(int)Default.CompressionFormat);
 
         private bool _showChangelog = true;
         [JsonProperty]
@@ -339,23 +330,19 @@ namespace FModel.Settings
         }
 
         // エクスポート方式（旧/新パイプライン）。CUE4Parse PR #358 の新パイプラインを段階導入するための切替。
-        private EExportPipeline _exportPipeline = EExportPipeline.Legacy;
+        private EExportPipeline _exportPipeline = EExportPipeline.New;
         [JsonProperty]
         public EExportPipeline ExportPipeline
         {
             get => _exportPipeline;
-            set => SetProperty(ref _exportPipeline, value);
+            set
+            {
+                // 旧設定ファイルに Legacy が残っていても、旧APIへ戻さない。
+                SetProperty(ref _exportPipeline, EExportPipeline.New);
+            }
         }
 
         // このバージョンで初回起動時にエクスポート方式の選択ダイアログを出したか。
-        private bool _hasChosenExportPipeline;
-        [JsonProperty]
-        public bool HasChosenExportPipeline
-        {
-            get => _hasChosenExportPipeline;
-            set => SetProperty(ref _hasChosenExportPipeline, value);
-        }
-
         private EDiscordRpc _discordRpc = EDiscordRpc.Always;
         [JsonProperty]
         public EDiscordRpc DiscordRpc
