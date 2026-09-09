@@ -29,6 +29,57 @@ public class TabImage : ViewModel
 
     public byte[] ImageBuffer { get; set; }
 
+    private ulong? _imageHash;
+    /// <summary>
+    /// Perceptual (average) hash of the decoded bitmap, used to tell whether two images look the same.
+    /// </summary>
+    public ulong ImageHash => _imageHash ??= GetVisualHash(_bmp);
+
+    /// <summary>
+    /// Compares two images by perceptual hash, tolerating <paramref name="tolerance"/> differing bits.
+    /// </summary>
+    public bool VisuallyEquals(TabImage other, int tolerance = 3)
+    {
+        if (other == null) return false;
+
+        var x = ImageHash ^ other.ImageHash;
+        var setBits = 0;
+        while (x > 0)
+        {
+            setBits += (int) (x & 1);
+            x >>= 1;
+        }
+        return setBits <= tolerance;
+    }
+
+    private static ulong GetVisualHash(SKBitmap bmp, int size = 8)
+    {
+        using var smallBmp = bmp?.Resize(new SKImageInfo(size, size), SKFilterQuality.Medium);
+        if (smallBmp == null) return 0;
+
+        var gray = new byte[size * size];
+        var total = 0;
+        var i = 0;
+        for (var y = 0; y < size; y++)
+        {
+            for (var x = 0; x < size; x++)
+            {
+                var pixel = smallBmp.GetPixel(x, y);
+                var luma = (byte) ((pixel.Red * 299 + pixel.Green * 587 + pixel.Blue * 114) / 1000);
+                gray[i++] = luma;
+                total += luma;
+            }
+        }
+
+        var avg = total / gray.Length;
+        ulong hash = 0;
+        for (var j = 0; j < gray.Length; j++)
+        {
+            if (gray[j] > avg) hash |= 1UL << j;
+        }
+        return hash;
+    }
+
     public TabImage(string name, bool rnn, SKBitmap img)
     {
         ExportName = name;
@@ -155,6 +206,21 @@ public class TabItem : ViewModel
         }
     }
 
+    /// <summary>
+    /// Marks tabs that are not showing a regular asset, e.g. "Diff" for the asset diff viewer.
+    /// </summary>
+    public string ParentExportType { get; set; } = string.Empty;
+
+    private object _diffContent;
+    /// <summary>
+    /// When set, this control replaces the default tab content (editor + image preview).
+    /// </summary>
+    public object DiffContent
+    {
+        get => _diffContent;
+        set => SetProperty(ref _diffContent, value);
+    }
+
     private bool _hasSearchOpen;
     public bool HasSearchOpen
     {
@@ -272,10 +338,17 @@ public class TabItem : ViewModel
         _images = new ObservableCollection<TabImage>();
     }
 
+    public TabItem(GameFile entry, string parentExportType) : this(entry)
+    {
+        ParentExportType = parentExportType;
+    }
+
     public void SoftReset(GameFile entry)
     {
         Entry = entry;
         TitleExtra = string.Empty;
+        ParentExportType = string.Empty;
+        DiffContent = null;
         ScrollTrigger = null;
         Application.Current.Dispatcher.Invoke(() =>
         {
@@ -482,6 +555,16 @@ public class TabControlViewModel : ViewModel
         {
             _tabItems.Add(new TabItem(entry));
             SelectedTab = _tabItems.Last();
+        });
+    }
+
+    public void AddTab(TabItem tab)
+    {
+        if (!CanAddTabs) return;
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            _tabItems.Add(tab);
+            SelectedTab = tab;
         });
     }
 

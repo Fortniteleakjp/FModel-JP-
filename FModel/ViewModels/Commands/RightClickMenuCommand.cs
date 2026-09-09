@@ -9,7 +9,9 @@ using CUE4Parse.Utils;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
+using FModel.Views;
 using FModel.Views.Resources.Controls;
+using Ookii.Dialogs.Wpf;
 
 namespace FModel.ViewModels.Commands;
 
@@ -25,13 +27,40 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         Export,
     }
 
+    /// <summary>
+    /// Asks for the build directory the current one is compared against.
+    /// </summary>
+    private static bool TryBrowseDiffDirectory(out string path)
+    {
+        var selected = string.Empty;
+        var picked = System.Windows.Application.Current.Dispatcher.Invoke(() =>
+        {
+            var folderBrowser = new VistaFolderBrowserDialog
+            {
+                ShowNewFolderButton = false,
+                Description = "Select the build directory to compare the current one against",
+                UseDescriptionForTitle = true
+            };
+            if (folderBrowser.ShowDialog() != true) return false;
+
+            selected = folderBrowser.SelectedPath;
+            return true;
+        });
+
+        path = picked ? selected : string.Empty;
+        return picked;
+    }
+
     private enum EShowAssetType
     {
         None,
         JSON,
         Metadata,
         References,
+        ReferenceViewer,
         Decompile,
+        Diff,
+        DiffPickFolder,
     }
 
     public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
@@ -61,6 +90,9 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_Extract_New_Tab" => (EAction.Show, EShowAssetType.JSON, EBulkType.None),
             "Assets_Show_Metadata" => (EAction.Show, EShowAssetType.Metadata, EBulkType.None),
             "Assets_Show_References" => (EAction.Show, EShowAssetType.References, EBulkType.None),
+            "Assets_Reference_Viewer" => (EAction.Show, EShowAssetType.ReferenceViewer, EBulkType.None),
+            "Assets_Diff" => (EAction.Show, EShowAssetType.Diff, EBulkType.None),
+            "Assets_Diff_Pick_Folder" => (EAction.Show, EShowAssetType.DiffPickFolder, EBulkType.None),
             "Assets_Decompile" => (EAction.Show, EShowAssetType.Decompile, EBulkType.Code),
 
             "Save_Data" => (EAction.Export, EShowAssetType.None, EBulkType.Raw),
@@ -81,6 +113,29 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         {
             if (action is EAction.Show)
             {
+                if (showtype is EShowAssetType.ReferenceViewer)
+                {
+                    var roots = assets.ToList();
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => new ReferenceChainWindow(roots).Show());
+                    return;
+                }
+
+                if (showtype is EShowAssetType.Diff or EShowAssetType.DiffPickFolder)
+                {
+                    var entry = assets.FirstOrDefault();
+                    if (entry is null) return;
+
+                    var cue4Parse = contextViewModel.CUE4Parse;
+                    if (showtype is EShowAssetType.DiffPickFolder || !cue4Parse.HasDiffProvider)
+                    {
+                        if (!TryBrowseDiffDirectory(out var directory)) return;
+                        cue4Parse.LoadDiffProvider(directory);
+                    }
+
+                    cue4Parse.ShowAssetDiff(entry.Path).GetAwaiter().GetResult();
+                    return;
+                }
+
                 if (showtype is EShowAssetType.References)
                     assets = [assets.FirstOrDefault()];
 

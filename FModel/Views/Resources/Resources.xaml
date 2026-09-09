@@ -733,7 +733,8 @@
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <Grid>
+                  <Grid>
+                    <Grid x:Name="DefaultArea">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -798,9 +799,18 @@
                                        Text="{Binding SelectedItem.Page, ElementName=TabControlName}" />
                         </StackPanel>
                     </Grid>
+                    <ContentPresenter x:Name="DiffPresenter" Visibility="Collapsed"
+                                      Content="{Binding SelectedItem.DiffContent, ElementName=TabControlName}"
+                                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                  </Grid>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding SelectedItem.HasImage, ElementName=TabControlName}" Value="False">
                             <Setter TargetName="DynamicArea" Property="Grid.ColumnSpan" Value="3" />
+                        </DataTrigger>
+                        <DataTrigger Value="True"
+                                     Binding="{Binding SelectedItem.DiffContent, ElementName=TabControlName, Converter={x:Static converters:IsNullToBoolReversedConverter.Instance}}">
+                            <Setter TargetName="DefaultArea" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="DiffPresenter" Property="Visibility" Value="Visible" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>

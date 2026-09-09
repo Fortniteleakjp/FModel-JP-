@@ -161,6 +161,7 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
     <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
+    <PackageReference Include="DiffPlex" Version="1.9.0" />
     <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
     <PackageReference Include="EpicManifestParser" Version="3.0.0-preview.1" />
     <PackageReference Include="FModel.AdonisUI" Version="1.18.0" />

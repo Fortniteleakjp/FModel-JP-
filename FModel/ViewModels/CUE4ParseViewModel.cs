@@ -96,7 +96,7 @@ using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
 
 namespace FModel.ViewModels;
 
-public class CUE4ParseViewModel : ViewModel
+public partial class CUE4ParseViewModel : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
@@ -398,6 +398,7 @@ public class CUE4ParseViewModel : ViewModel
         AssetsFolder.Folders.Clear();
         SearchVm.SearchResults.Clear();
         Helper.CloseWindow<AdonisWindow>("Search For Packages");
+        UnloadDiffProvider();
         Provider.UnloadNonStreamedVfs();
         GC.Collect();
     }
