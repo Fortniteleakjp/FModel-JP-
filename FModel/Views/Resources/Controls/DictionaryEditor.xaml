@@ -29,16 +29,16 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock x:Name="HeBrokeIt" Grid.Column="0" Text="IF YOU DON'T KNOW WHAT THIS DOES, DON'T TOUCH IT!"
+                <TextBlock x:Name="HeBrokeIt" Grid.Column="0" Text="{DynamicResource UI_IFYOUDONTKNOWWHAT}"
                            HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" Margin="0 0 10 0" FontWeight="DemiBold"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.Layer1InteractionForegroundBrush}}" />
 
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="True" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK" Click="OnClick" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="{DynamicResource UI_OK}" Click="OnClick" />
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Reset" Click="OnReset" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="{DynamicResource UI_Reset}" Click="OnReset" />
                 <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False"  IsCancel="True"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Cancel" />
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="{DynamicResource UI_Cancel}" />
             </Grid>
         </Border>
     </Grid>

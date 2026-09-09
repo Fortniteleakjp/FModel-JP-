@@ -52,13 +52,13 @@
                 Download Latest Release
             </Button>
             <StackPanel Grid.Column="2">
-                <adonisControls:SplitButton x:Name="RemindButton" Content="Remind Me Now ..." Command="{Binding RemindMeCommand}">
+                <adonisControls:SplitButton x:Name="RemindButton" Content="{DynamicResource UI_RemindMeNow}" Command="{Binding RemindMeCommand}">
                     <adonisControls:SplitButton.SplitMenu>
                         <ContextMenu>
-                            <MenuItem Header="In 3 Days" Command="{Binding RemindMeCommand}" CommandParameter="Days" />
-                            <MenuItem Header="Next Week" Command="{Binding RemindMeCommand}" CommandParameter="Week" />
-                            <MenuItem Header="Next Month" Command="{Binding RemindMeCommand}" CommandParameter="Month" />
-                            <MenuItem Header="Never" Command="{Binding RemindMeCommand}" CommandParameter="Never" />
+                            <MenuItem Header="{DynamicResource UI_In3Days}" Command="{Binding RemindMeCommand}" CommandParameter="Days" />
+                            <MenuItem Header="{DynamicResource UI_NextWeek}" Command="{Binding RemindMeCommand}" CommandParameter="Week" />
+                            <MenuItem Header="{DynamicResource UI_NextMonth}" Command="{Binding RemindMeCommand}" CommandParameter="Month" />
+                            <MenuItem Header="{DynamicResource UI_Never}" Command="{Binding RemindMeCommand}" CommandParameter="Never" />
                         </ContextMenu>
                     </adonisControls:SplitButton.SplitMenu>
                 </adonisControls:SplitButton>
@@ -108,7 +108,7 @@
                                     <Setter.Value>
                                         <ControlTemplate>
                                             <Grid>
-                                                <TextBlock Text="No commits found" FontWeight="SemiBold" TextAlignment="Center"
+                                                <TextBlock Text="{DynamicResource UI_NoCommitsFound}" FontWeight="SemiBold" TextAlignment="Center"
                                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                                             </Grid>
                                         </ControlTemplate>

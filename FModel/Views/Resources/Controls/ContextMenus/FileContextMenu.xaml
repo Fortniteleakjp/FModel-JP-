@@ -1,11 +1,11 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
                     xmlns:settings="clr-namespace:FModel.Settings"
                     xmlns:converters="clr-namespace:FModel.Views.Resources.Converters">
     <ContextMenu x:Key="FileContextMenu" x:Shared="False"
                  DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
-        <MenuItem Header="Extract in New Tab" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="{DynamicResource UI_ExtractInNewTab}" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Assets_Extract_New_Tab" />
@@ -20,7 +20,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Show Metadata" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="{DynamicResource UI_ShowMetadata}" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Assets_Show_Metadata" />
@@ -46,7 +46,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Find References" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="{DynamicResource UI_FindReferences}" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Assets_Show_References" />
@@ -73,8 +73,8 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Compare">
-            <MenuItem Header="Compare With Another Build" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="{DynamicResource UI_Compare}">
+            <MenuItem Header="{DynamicResource UI_CompareWithAnotherBuild}" Command="{Binding RightClickMenuCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="Assets_Diff" />
@@ -82,7 +82,7 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
-            <MenuItem Header="Change Comparison Folder..." Command="{Binding RightClickMenuCommand}">
+            <MenuItem Header="{DynamicResource UI_ChangeComparisonFolder}" Command="{Binding RightClickMenuCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="Assets_Diff_Pick_Folder" />
@@ -98,7 +98,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Reference Viewer" Command="{Binding RightClickMenuCommand}">
+        <MenuItem Header="{DynamicResource UI_ReferenceViewer}" Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                     <Binding Source="Assets_Reference_Viewer" />
@@ -125,7 +125,7 @@
                 </Viewbox>
             </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Decompile Blueprint"
+        <MenuItem Header="{DynamicResource UI_DecompileBlueprint}"
                   Command="{Binding RightClickMenuCommand}">
             <MenuItem.CommandParameter>
                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -162,7 +162,7 @@
             </MenuItem.Style>
         </MenuItem>
         <Separator />
-        <MenuItem Header="Export">
+        <MenuItem Header="{DynamicResource UI_Export}">
             <MenuItem.Icon>
                 <Viewbox Width="16"
                          Height="16">
@@ -197,7 +197,7 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Properties (.json)"
+            <MenuItem Header="{DynamicResource UI_PropertiesJson}"
                       Command="{Binding RightClickMenuCommand}"
                       InputGestureText="{Binding ExportProperties, Source={x:Static settings:UserSettings.Default}}">
                 <MenuItem.CommandParameter>
@@ -214,7 +214,7 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Texture"
+            <MenuItem Header="{DynamicResource UI_Texture}"
                       Command="{Binding RightClickMenuCommand}"
                       InputGestureText="{Binding ExportTextures, Source={x:Static settings:UserSettings.Default}}">
                 <MenuItem.CommandParameter>
@@ -242,7 +242,7 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Model"
+            <MenuItem Header="{DynamicResource UI_Model}"
                       Command="{Binding RightClickMenuCommand}"
                       InputGestureText="{Binding ExportModels, Source={x:Static settings:UserSettings.Default}}">
                 <MenuItem.CommandParameter>
@@ -270,7 +270,7 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="World"
+            <MenuItem Header="{DynamicResource UI_World}"
                       Command="{Binding RightClickMenuCommand}"
                       InputGestureText="{Binding ExportWorlds, Source={x:Static settings:UserSettings.Default}}">
                 <MenuItem.CommandParameter>
@@ -302,7 +302,7 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Animation"
+            <MenuItem Header="{DynamicResource UI_Animation}"
                       Command="{Binding RightClickMenuCommand}"
                       InputGestureText="{Binding ExportAnimations, Source={x:Static settings:UserSettings.Default}}">
                 <MenuItem.CommandParameter>
@@ -330,7 +330,7 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Audio"
+            <MenuItem Header="{DynamicResource UI_Audio}"
                       Command="{Binding RightClickMenuCommand}"
                       InputGestureText="{Binding ExportAudio, Source={x:Static settings:UserSettings.Default}}">
                 <MenuItem.CommandParameter>
@@ -360,7 +360,7 @@
             </MenuItem>
         </MenuItem>
         <Separator />
-        <MenuItem Header="Copy">
+        <MenuItem Header="{DynamicResource UI_Copy}">
             <MenuItem.Icon>
                 <Viewbox Width="16" Height="16">
                     <Canvas Width="24" Height="24">
@@ -368,7 +368,7 @@
                     </Canvas>
                 </Viewbox>
             </MenuItem.Icon>
-            <MenuItem Header="Package Path" Command="{Binding CopyCommand}">
+            <MenuItem Header="{DynamicResource UI_PackagePath}" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="File_Path" />
@@ -376,7 +376,7 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
-            <MenuItem Header="Package Name" Command="{Binding CopyCommand}">
+            <MenuItem Header="{DynamicResource UI_PackageName}" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="File_Name" />
@@ -384,7 +384,7 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
-            <MenuItem Header="Directory Path" Command="{Binding CopyCommand}">
+            <MenuItem Header="{DynamicResource UI_DirectoryPath}" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="Directory_Path" />
@@ -392,7 +392,7 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
-            <MenuItem Header="Package Path w/o Extension" Command="{Binding CopyCommand}">
+            <MenuItem Header="{DynamicResource UI_PackagePathWOExtension}" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="File_Path_No_Extension" />
@@ -400,7 +400,7 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
-            <MenuItem Header="Package Name w/o Extension" Command="{Binding CopyCommand}">
+            <MenuItem Header="{DynamicResource UI_PackageNameWOExtension}" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                         <Binding Source="File_Name_No_Extension" />

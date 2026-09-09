@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:vwp="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
                     xmlns:vm="clr-namespace:FModel.ViewModels"
@@ -106,7 +106,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No folders or packages found" FontWeight="SemiBold" TextAlignment="Center"
+                                <TextBlock Text="{DynamicResource UI_NoFoldersOrPackagesFound}" FontWeight="SemiBold" TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />
                             </Grid>
                         </ControlTemplate>
@@ -333,7 +333,7 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <Grid>
-                                <TextBlock Text="No packages found in folder"
+                                <TextBlock Text="{DynamicResource UI_NoPackagesFoundInFolder}"
                                            FontWeight="SemiBold"
                                            TextAlignment="Center"
                                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ErrorBrush}}" />

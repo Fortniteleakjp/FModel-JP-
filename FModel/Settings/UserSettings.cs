@@ -234,6 +234,13 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _assetLanguage, value);
     }
 
+    private EInterfaceLanguage _interfaceLanguage = EInterfaceLanguage.English;
+    public EInterfaceLanguage InterfaceLanguage
+    {
+        get => _interfaceLanguage;
+        set => SetProperty(ref _interfaceLanguage, value);
+    }
+
     private EIconStyle _cosmeticStyle = EIconStyle.Default;
     public EIconStyle CosmeticStyle
     {

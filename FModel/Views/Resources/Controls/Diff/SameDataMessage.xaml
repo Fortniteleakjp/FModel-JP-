@@ -1,4 +1,4 @@
-<UserControl x:Class="FModel.Views.Resources.Controls.Diff.SameDataMessage"
+﻿<UserControl x:Class="FModel.Views.Resources.Controls.Diff.SameDataMessage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
@@ -24,14 +24,14 @@
                               StrokeEndLineCap="Round" />
                     </Canvas>
                 </Viewbox>
-                <TextBlock Text="No changes"
+                <TextBlock Text="{DynamicResource UI_NoChanges}"
                            FontWeight="SemiBold"
                            FontSize="18"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.SuccessBrush}}"
                            TextAlignment="Center"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,4" />
-                <TextBlock Text="This file is identical in both builds"
+                <TextBlock Text="{DynamicResource UI_ThisFileIsIdenticalInBoth}"
                            FontSize="13"
                            TextWrapping="Wrap"
                            TextAlignment="Center"

@@ -1,4 +1,4 @@
-<adonisControls:AdonisWindow x:Class="FModel.Views.ExportSessionWindow"
+﻿<adonisControls:AdonisWindow x:Class="FModel.Views.ExportSessionWindow"
                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -224,7 +224,7 @@
                          Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                 </TextBlock>
 
-                <Button Grid.Column="2" ToolTip="Remove from queue" Click="OnRemoveFromQueueClick"
+                <Button Grid.Column="2" ToolTip="{DynamicResource UI_RemoveFromQueue}" Click="OnRemoveFromQueueClick"
                         Visibility="{Binding DataContext.CanExport, RelativeSource={RelativeSource AncestorType=adonisControls:AdonisWindow}, Converter={StaticResource BoolToVisibilityConverter}}"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0" Margin="0" Focusable="False"
                         Foreground="#EF5350" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}">
@@ -236,7 +236,7 @@
                     </Viewbox>
                 </Button>
 
-                <Button Grid.Column="3" ToolTip="Open in Explorer" Click="OnOpenInExplorerClick"
+                <Button Grid.Column="3" ToolTip="{DynamicResource UI_OpenInExplorer}" Click="OnOpenInExplorerClick"
                         Tag="{Binding FirstFilePath}"
                         Visibility="{Binding HasFilePath, Converter={StaticResource BoolToVisibilityConverter}}"
                         Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}"
@@ -280,7 +280,7 @@
                 <TextBlock Grid.Column="2" VerticalAlignment="Center" Margin="5 0 0 0"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
                            Text="{Binding Objects.Count, Mode=OneWay, StringFormat='({0})'}"
-                           ToolTip="Assets sharing the same name across different packages are grouped together in this view. Exports are not affected."/>
+                           ToolTip="{DynamicResource UI_AssetsSharingTheSameNameAcross}"/>
             </Grid>
         </DataTemplate>
     </adonisControls:AdonisWindow.Resources>
@@ -310,7 +310,7 @@
                            FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Right"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" FontSize="10" HorizontalAlignment="Right">
-                    <Run Text="ETA " Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                    <Run Text="{DynamicResource UI_ETA}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
                     <Run Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
                          Text="{Binding EtaTime, Mode=OneWay, Converter={x:Static converters:TimeSpanConverter.Instance}, FallbackValue=--:--}" />
                 </TextBlock>
@@ -354,7 +354,7 @@
                            Text="{Binding Session.TotalQueued, Mode=OneWay, FallbackValue=0}"
                            FontSize="20" FontWeight="SemiBold"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="in queue" FontSize="10"
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource UI_InQueue}" FontSize="10"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
 
                 <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Width="1" Margin="16 2"
@@ -364,7 +364,7 @@
                            Text="{Binding CompletedCount, Mode=OneWay, FallbackValue=0}"
                            FontSize="20" FontWeight="SemiBold"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
-                <TextBlock Grid.Row="1" Grid.Column="2" Text="completed" FontSize="10"
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{DynamicResource UI_Completed}" FontSize="10"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
 
                 <Rectangle Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" Width="1" Margin="16 2"
@@ -373,13 +373,13 @@
                 <TextBlock Grid.Row="0" Grid.Column="4"
                            Text="{Binding SucceededCount, Mode=OneWay, FallbackValue=0}"
                            FontSize="20" FontWeight="SemiBold" Foreground="#66BB6A" />
-                <TextBlock Grid.Row="1" Grid.Column="4" Text="succeeded" FontSize="10"
+                <TextBlock Grid.Row="1" Grid.Column="4" Text="{DynamicResource UI_Succeeded}" FontSize="10"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
 
                 <TextBlock Grid.Row="0" Grid.Column="5" Margin="5 0 0 0"
                            Text="{Binding FailedCount, Mode=OneWay, FallbackValue=0}"
                            FontSize="20" FontWeight="SemiBold" Foreground="#EF5350" />
-                <TextBlock Grid.Row="1" Grid.Column="5" Text="failed" FontSize="10" Margin="5 0 0 0"
+                <TextBlock Grid.Row="1" Grid.Column="5" Text="{DynamicResource UI_Failed}" FontSize="10" Margin="5 0 0 0"
                            Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
             </Grid>
         </DockPanel>
@@ -388,10 +388,10 @@
 
         <TabControl x:Name="Tabs" Grid.Row="2" adonisExtensions:LayerExtension.Layer="2"
                     Background="{DynamicResource {x:Static adonisUi:Brushes.Layer0BackgroundBrush}}">
-            <TabItem Header="Export Logs">
+            <TabItem Header="{DynamicResource UI_ExportLogs}">
                 <Grid>
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="13"
-                               Text="Start an export to see results here." FontWeight="SemiBold"
+                               Text="{DynamicResource UI_StartAnExportToSeeResults}" FontWeight="SemiBold"
                                Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
@@ -485,7 +485,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Export Options" adonisExtensions:LayerExtension.Layer="2">
+            <TabItem Header="{DynamicResource UI_ExportOptions}" adonisExtensions:LayerExtension.Layer="2">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -508,14 +508,14 @@
                                       Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}" />
                             <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="11" Margin="5 2 0 0"
                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}"
-                                       Text="Override default export options for this session"
+                                       Text="{DynamicResource UI_OverrideDefaultExportOptionsForThis}"
                                        Visibility="{Binding Options.HasFeedback, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}}" />
                             <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="11" Margin="5 2 0 0"
                                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
                                        FontWeight="SemiBold" Text="{Binding Options.FeedbackMessage}"
                                        Visibility="{Binding Options.HasFeedback, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                            <Button Grid.Column="2" Click="OnMakeDefaultOptions" ToolTip="Save current options as your default settings"
+                            <Button Grid.Column="2" Click="OnMakeDefaultOptions" ToolTip="{DynamicResource UI_SaveCurrentOptionsAsYourDefault}"
                                     Padding="4" BorderThickness="1" Margin="5 0 0 0"
                                     IsEnabled="{Binding Options.OverrideOptions}" Focusable="False"
                                     Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}">
@@ -525,7 +525,7 @@
                                     </Canvas>
                                 </Viewbox>
                             </Button>
-                            <Button Grid.Column="3" Click="OnResetOptions" ToolTip="Reset all options to default settings"
+                            <Button Grid.Column="3" Click="OnResetOptions" ToolTip="{DynamicResource UI_ResetAllOptionsToDefaultSettings}"
                                     Padding="4" BorderThickness="1" Margin="5 0 0 0"
                                     IsEnabled="{Binding Options.OverrideOptions}" Focusable="False"
                                     Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}">
@@ -561,7 +561,7 @@
 
                 <Button Grid.Column="1" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="True"
                         Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Cancel" Click="OnCancelClick"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="{DynamicResource UI_Cancel}" Click="OnCancelClick"
                         Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}">
                     <Button.Resources>
                         <SolidColorBrush x:Key="{x:Static adonisUi:Brushes.AccentBrush}" Color="#E53935" />
@@ -574,7 +574,7 @@
 
                 <Button Grid.Column="2" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
                         IsEnabled="{Binding CanExport}"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Clear Queue" Click="OnClearQueueClick">
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="{DynamicResource UI_ClearQueue}" Click="OnClearQueueClick">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                             <Setter Property="Visibility" Value="Visible" />
@@ -591,13 +591,13 @@
                 </Button>
 
                 <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Export"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="{DynamicResource UI_Export}"
                         IsEnabled="{Binding CanExport}"
                         Visibility="{Binding IsFinished, Converter={x:Static converters:InvertBoolToVisibilityConverter.Instance}}"
                         Click="OnExportClick" />
 
                 <Button Grid.Column="3" MinWidth="78" Margin="0 0 12 0" IsDefault="False" IsCancel="False"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="OK"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="{DynamicResource UI_OK}"
                         Visibility="{Binding IsFinished, Converter={StaticResource BoolToVisibilityConverter}}"
                         Click="OnOkClick" />
             </Grid>

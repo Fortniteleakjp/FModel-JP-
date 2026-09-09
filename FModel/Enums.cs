@@ -35,6 +35,17 @@ public enum EStatusKind
     Completed // worked
 }
 
+/// <summary>
+/// Language the application's own interface is displayed in, independent of the packages language.
+/// </summary>
+public enum EInterfaceLanguage
+{
+    [Description("English")]
+    English,
+    [Description("日本語")]
+    Japanese
+}
+
 public enum EAesReload
 {
     [Description("Always")]

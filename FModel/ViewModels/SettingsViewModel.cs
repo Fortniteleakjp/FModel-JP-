@@ -75,6 +75,13 @@ public class SettingsViewModel : ViewModel
         set => SetProperty(ref _selectedAssetLanguage, value);
     }
 
+    private EInterfaceLanguage _selectedInterfaceLanguage;
+    public EInterfaceLanguage SelectedInterfaceLanguage
+    {
+        get => _selectedInterfaceLanguage;
+        set => SetProperty(ref _selectedInterfaceLanguage, value);
+    }
+
     private EAesReload _selectedAesReload;
     public EAesReload SelectedAesReload
     {
@@ -128,6 +135,7 @@ public class SettingsViewModel : ViewModel
 
     public ReadOnlyObservableCollection<EGame> UeGames { get; private set; }
     public ReadOnlyObservableCollection<ELanguage> AssetLanguages { get; private set; }
+    public ReadOnlyObservableCollection<EInterfaceLanguage> InterfaceLanguages { get; private set; }
     public ReadOnlyObservableCollection<EAesReload> AesReloads { get; private set; }
     public ReadOnlyObservableCollection<EDiscordRpc> DiscordRpcs { get; private set; }
     public ReadOnlyObservableCollection<ECompressedAudio> CompressedAudios { get; private set; }
@@ -198,11 +206,13 @@ public class SettingsViewModel : ViewModel
         CriwareDecryptionKey = _criwareDecryptionKey;
         UnluacOpcodeMap = _unluacOpcodeMap;
         SelectedJsonHighlightTheme = _jsonHighlightThemeSnapshot;
+        SelectedInterfaceLanguage = UserSettings.Default.InterfaceLanguage;
         SelectedAesReload = UserSettings.Default.AesReload;
         SelectedDiscordRpc = UserSettings.Default.DiscordRpc;
 
         UeGames = new ReadOnlyObservableCollection<EGame>(new ObservableCollection<EGame>(EnumerateUeGames()));
         AssetLanguages = new ReadOnlyObservableCollection<ELanguage>(new ObservableCollection<ELanguage>(EnumerateAssetLanguages()));
+        InterfaceLanguages = new ReadOnlyObservableCollection<EInterfaceLanguage>(new ObservableCollection<EInterfaceLanguage>(EnumerateInterfaceLanguages()));
         AesReloads = new ReadOnlyObservableCollection<EAesReload>(new ObservableCollection<EAesReload>(EnumerateAesReloads()));
         DiscordRpcs = new ReadOnlyObservableCollection<EDiscordRpc>(new ObservableCollection<EDiscordRpc>(EnumerateDiscordRpcs()));
         CompressedAudios = new ReadOnlyObservableCollection<ECompressedAudio>(new ObservableCollection<ECompressedAudio>(EnumerateCompressedAudios()));
@@ -233,6 +243,12 @@ public class SettingsViewModel : ViewModel
         UserSettings.Default.CurrentDir.CriwareDecryptionKey = CriwareDecryptionKey;
         UserSettings.Default.CurrentDir.UnluacOpCodeMap = UnluacOpcodeMap;
 
+        if (UserSettings.Default.InterfaceLanguage != SelectedInterfaceLanguage)
+        {
+            UserSettings.Default.InterfaceLanguage = SelectedInterfaceLanguage;
+            App.ApplyInterfaceLanguage(); // DynamicResource picks the new strings up without a restart
+        }
+
         UserSettings.Default.AssetLanguage = SelectedAssetLanguage;
         UserSettings.Default.CompressedAudioMode = SelectedCompressedAudio;
         UserSettings.Default.CosmeticStyle = SelectedCosmeticStyle;
@@ -254,6 +270,7 @@ public class SettingsViewModel : ViewModel
             .Select(group => group.First())
             .OrderBy(value => ((int)value & 0xFF) == 0);
     private IEnumerable<ELanguage> EnumerateAssetLanguages() => Enum.GetValues<ELanguage>();
+    private IEnumerable<EInterfaceLanguage> EnumerateInterfaceLanguages() => Enum.GetValues<EInterfaceLanguage>();
     private IEnumerable<EAesReload> EnumerateAesReloads() => Enum.GetValues<EAesReload>();
     private IEnumerable<EDiscordRpc> EnumerateDiscordRpcs() => Enum.GetValues<EDiscordRpc>();
     private IEnumerable<ECompressedAudio> EnumerateCompressedAudios() => Enum.GetValues<ECompressedAudio>();

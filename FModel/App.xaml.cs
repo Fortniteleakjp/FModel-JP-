@@ -4,6 +4,7 @@ using Serilog;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
@@ -33,6 +34,45 @@ public partial class App
     [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     static extern string BrandingFormatString(string format);
 
+    private const string LanguageDictionaryFolder = "Settings/Languages/";
+
+    /// <summary>
+    /// Merges the interface language dictionaries. English is always loaded first so that a key missing from
+    /// another language falls back to English instead of rendering blank.
+    /// </summary>
+    public static void ApplyInterfaceLanguage()
+    {
+        if (Current is null) return;
+
+        try
+        {
+            var merged = Current.Resources.MergedDictionaries;
+            foreach (var stale in merged
+                         .Where(d => d.Source?.OriginalString.Contains(LanguageDictionaryFolder, StringComparison.OrdinalIgnoreCase) == true)
+                         .ToList())
+            {
+                merged.Remove(stale);
+            }
+
+            merged.Add(new ResourceDictionary
+            {
+                Source = new Uri($"pack://application:,,,/FModel;component/{LanguageDictionaryFolder}English.xaml")
+            });
+
+            if (UserSettings.Default.InterfaceLanguage != EInterfaceLanguage.English)
+            {
+                merged.Add(new ResourceDictionary
+                {
+                    Source = new Uri($"pack://application:,,,/FModel;component/{LanguageDictionaryFolder}{UserSettings.Default.InterfaceLanguage}.xaml")
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to load the interface language dictionary");
+        }
+    }
+
     protected override void OnStartup(StartupEventArgs e)
     {
 #if DEBUG
@@ -49,6 +89,8 @@ public partial class App
         {
             UserSettings.Default = new UserSettings();
         }
+
+        ApplyInterfaceLanguage();
 
         var createMe = false;
         if (!Directory.Exists(UserSettings.Default.OutputDirectory))
