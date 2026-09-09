@@ -1,0 +1,103 @@
+name: FModel-JP- exe Builder
+
+on:
+  push:
+    branches: [ main, FModelJP-Renewal ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: .NET 10 Setup
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: .NET Restore
+        run: dotnet restore "./FModel/FModel.slnx" -r win-x64
+
+      - name: .NET Publish
+        run: dotnet publish "./FModel/FModel.csproj" -c Release --no-restore --self-contained true -r win-x64 -f net10.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
+
+      - name: Build CUE4Parse-Natives
+        shell: pwsh
+        run: |
+          cmake -S "./CUE4Parse/CUE4Parse-Natives" -B "./CUE4Parse/CUE4Parse-Natives/build-gha"
+          cmake --build "./CUE4Parse/CUE4Parse-Natives/build-gha" --config Release
+
+      - name: Bundle CUE4Parse-Natives.dll
+        shell: pwsh
+        run: |
+          $publishDir = "./FModel/bin/Publish"
+          $candidates = @(
+            "./CUE4Parse/CUE4Parse-Natives/build-gha/Release/CUE4Parse-Natives.dll",
+            "./CUE4Parse/CUE4Parse-Natives/build-gha/CUE4Parse-Natives.dll",
+            "./CUE4Parse/CUE4Parse-Natives/bin/Release/CUE4Parse-Natives.dll"
+          )
+
+          $dll = $null
+          foreach ($candidate in $candidates) {
+            if (Test-Path $candidate) {
+              $item = Get-Item $candidate
+              if ($item.Length -gt 0) {
+                $dll = $item.FullName
+                break
+              }
+            }
+          }
+
+          if (-not $dll) {
+            throw "CUE4Parse-Natives.dll was not produced by CI build."
+          }
+
+          New-Item -ItemType Directory -Path $publishDir -Force | Out-Null
+          Copy-Item $dll (Join-Path $publishDir "CUE4Parse-Natives.dll") -Force
+          Write-Host "Bundled native DLL from: $dll"
+
+      - name: Create ZIP File
+        uses: thedoctor0/zip-release@0.7.6
+        with:
+          type: zip
+          filename: ${{ github.sha }}.zip
+          path: ./FModel/bin/Publish/
+
+      - name: Add Release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: 'FModel-JP- Release'
+          body: |
+            初回の場合、FModel.exe をダウンロードしてください。
+            実行した際にアップデート情報が表示されたら、アップデートを実行してください。
+          tag: 'qa'
+          artifacts: |
+           ${{ github.sha }}.zip
+          allowUpdates: true
+
+      - name: Get App Version
+        id: package_version
+        uses: kzrnm/get-net-sdk-project-versions-action@v2
+        with:
+          proj-path: ./FModel/FModel.csproj
+
+      - name: Install Requests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r .github/workflows/requirements.txt
+
+      - name: Set Secrets
+        run: |
+          echo '${{ secrets.SECRETS }}' > secrets.py
+
+      - name: Update Download Url
+        run: |
+          python Update_DownloadUrl.py "${{ github.sha }}" "${{ steps.package_version.outputs.version }}"

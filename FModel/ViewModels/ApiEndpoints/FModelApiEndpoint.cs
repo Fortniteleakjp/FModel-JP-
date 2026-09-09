@@ -103,25 +103,47 @@ public class FModelApiEndpoint : AbstractApiProvider
             AutoUpdater.ParseUpdateInfoEvent += ParseUpdateInfoEvent;
             AutoUpdater.CheckForUpdateEvent += CheckForUpdateEvent;
         }
-        AutoUpdater.Start("https://api.fmodel.app/v1/infos/Qa");
+        AutoUpdater.Start("https://fmodeljpbigbackup.fljpapi.jp/v1/infos/Qa");
     }
 
     private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
     {
         _infos = JsonConvert.DeserializeObject<Info>(args.RemoteData);
-        if (_infos != null)
+        if (_infos == null)
         {
-            args.UpdateInfo = new UpdateInfoEventArgs
-            {
-                CurrentVersion = _infos.Version.SubstringBefore('-'),
-                ChangelogURL = _infos.ChangelogUrl,
-                DownloadURL = _infos.DownloadUrl,
-                Mandatory = new CustomMandatory
-                {
-                    CommitHash = _infos.Version.SubstringAfter('+')
-                }
-            };
+            Log.Error("Failed to deserialize update info: RemoteData is null or invalid JSON");
+            return;
         }
+
+        // the JP build pipeline publishes the version as "<version>-<sha>"
+        var version = _infos.Version;
+        var currentVersion = version;
+        var commitHash = string.Empty;
+
+        if (!string.IsNullOrEmpty(version))
+        {
+            if (version.Contains('-'))
+            {
+                currentVersion = version.SubstringBefore('-');
+                commitHash = version.SubstringAfter('-');
+            }
+            else if (version.LastIndexOf('.') is var lastDot && lastDot > 0 && version.Length - lastDot - 1 >= 7)
+            {
+                currentVersion = version[..lastDot];
+                commitHash = version[(lastDot + 1)..];
+            }
+        }
+
+        args.UpdateInfo = new UpdateInfoEventArgs
+        {
+            CurrentVersion = currentVersion,
+            ChangelogURL = _infos.ChangelogUrl,
+            DownloadURL = _infos.DownloadUrl,
+            Mandatory = new CustomMandatory
+            {
+                CommitHash = commitHash
+            }
+        };
     }
 
     private void CheckForUpdateEvent(UpdateInfoEventArgs args)
@@ -131,7 +153,9 @@ public class FModelApiEndpoint : AbstractApiProvider
             UserSettings.Default.LastUpdateCheck = DateTime.Now;
 
             var targetHash = ((CustomMandatory) args.Mandatory).CommitHash;
-            if (targetHash == Constants.APP_COMMIT_ID)
+            if (string.Equals(targetHash, Constants.APP_COMMIT_ID, StringComparison.OrdinalIgnoreCase) ||
+                (!string.IsNullOrEmpty(Constants.APP_COMMIT_ID) && !string.IsNullOrEmpty(targetHash) &&
+                 Constants.APP_COMMIT_ID.StartsWith(targetHash, StringComparison.OrdinalIgnoreCase)))
             {
                 if (UserSettings.Default.ShowChangelog)
                     ShowChangelog(args);
