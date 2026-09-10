@@ -45,6 +45,7 @@
     <system:String x:Key="UI_CollapseAll">Collapse All</system:String>
     <system:String x:Key="UI_Compare">Compare</system:String>
     <system:String x:Key="UI_CompareWithAnotherBuild">Compare With Another Build</system:String>
+    <system:String x:Key="UI_CompareWithPreviousVersion">Compare With Previous Version</system:String>
     <system:String x:Key="UI_Completed">completed</system:String>
     <system:String x:Key="UI_CompressedAudio">Compressed Audio</system:String>
     <system:String x:Key="UI_CompressionFormat">Compression Format</system:String>

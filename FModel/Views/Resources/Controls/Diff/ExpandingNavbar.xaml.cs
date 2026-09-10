@@ -15,7 +15,7 @@ public partial class ExpandingNavbar
 {
     public event Action<int> LineClicked;
     private bool _isExpanded;
-    private const double NavExpandedWidth = 200, NavCollapsedWidth = 36;
+    private const double NavExpandedWidth = 200, NavCollapsedWidth = 36, MarkerHeight = 2;
     private readonly List<LineMeta> _meta = [];
     private HashSet<string> _movedStrings = [];
     private ScrollViewer _editorScroll;
@@ -175,9 +175,23 @@ public partial class ExpandingNavbar
     {
         MarkerCanvas.Children.Clear();
         if (_editorScroll == null || TotalLines == 0)
+        {
+            RestoreScrollIndicator();
             return;
+        }
 
         double h = MarkerCanvas.ActualHeight;
+        if (h <= 0)
+        {
+            RestoreScrollIndicator();
+            return;
+        }
+
+        // several lines share the same marker row on a canvas only a few hundred pixels tall, so they are
+        // collapsed into a single rectangle: a 70k lines file would otherwise spawn 70k framework elements
+        int rows = Math.Max(1, (int) (h / MarkerHeight));
+        var rowBrush = new Brush[rows];
+        var rowRank = new int[rows];
 
         for (int i = 0; i < _meta.Count; i++)
         {
@@ -188,28 +202,55 @@ public partial class ExpandingNavbar
             if (piece == null || piece.Type == ChangeType.Unchanged || piece.Type == ChangeType.Imaginary)
                 continue;
 
+            // the most meaningful change of a row wins the color it is drawn with
+            var (brush, rank) = piece.Type switch
+            {
+                ChangeType.Modified => (DiffColors.Modify, 3),
+                ChangeType.Deleted => (DiffColors.Delete, 2),
+                ChangeType.Inserted => (DiffColors.Insert, 1),
+                _ => (Brushes.Gray, 1)
+            };
+
+            if (piece.Type == ChangeType.Inserted && !string.IsNullOrEmpty(piece.Text) && _movedStrings.Contains(piece.Text))
+                brush = DiffColors.Move;
+
+            int row = (int) Math.Min(rows - 1L, (long) i * rows / TotalLines);
+            if (rowBrush[row] != null && rank <= rowRank[row])
+                continue;
+
+            rowBrush[row] = brush;
+            rowRank[row] = rank;
+        }
+
+        for (int row = 0; row < rows; row++)
+        {
+            if (rowBrush[row] is not { } brush)
+                continue;
+
             var rect = new Rectangle
             {
                 Width = NavExpandedWidth,
-                Height = 2,
-                Tag = i,
-                Fill = piece.Type switch
-                {
-                    ChangeType.Inserted => DiffColors.Insert,
-                    ChangeType.Deleted => DiffColors.Delete,
-                    ChangeType.Modified => DiffColors.Modify,
-                    _ => Brushes.Gray
-                }
+                Height = MarkerHeight,
+                Tag = (long) row * TotalLines / rows,
+                Fill = brush
             };
 
-            if (piece.Type == ChangeType.Inserted && _movedStrings.Contains(piece.Text) && !string.IsNullOrEmpty(piece.Text))
-                rect.Fill = DiffColors.Move;
-
-            Canvas.SetTop(rect, i * h / TotalLines);
+            Canvas.SetTop(rect, row * MarkerHeight);
             MarkerCanvas.Children.Add(rect);
         }
 
-        MarkerCanvas.Children.Add(ScrollIndicator); // Important because I clear children
+        RestoreScrollIndicator();
+    }
+
+    /// <summary>
+    /// <see cref="BuildMarkers"/> clears the canvas, the indicator lives in it and has to be put back.
+    /// </summary>
+    private void RestoreScrollIndicator()
+    {
+        if (MarkerCanvas.Children.Contains(ScrollIndicator))
+            return;
+
+        MarkerCanvas.Children.Add(ScrollIndicator);
         Panel.SetZIndex(ScrollIndicator, int.MaxValue);
     }
 

@@ -45,6 +45,7 @@
     <system:String x:Key="UI_CollapseAll">すべて折りたたむ</system:String>
     <system:String x:Key="UI_Compare">比較</system:String>
     <system:String x:Key="UI_CompareWithAnotherBuild">別のビルドと比較</system:String>
+    <system:String x:Key="UI_CompareWithPreviousVersion">一つ前のバージョンと比較</system:String>
     <system:String x:Key="UI_Completed">完了</system:String>
     <system:String x:Key="UI_CompressedAudio">圧縮音声</system:String>
     <system:String x:Key="UI_CompressionFormat">圧縮フォーマット</system:String>

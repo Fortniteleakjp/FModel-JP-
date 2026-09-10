@@ -82,6 +82,15 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
+            <MenuItem Header="{DynamicResource UI_CompareWithPreviousVersion}" Command="{Binding RightClickMenuCommand}">
+                <MenuItem.CommandParameter>
+                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                        <Binding Source="Assets_Diff_Previous_Version" />
+                        <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                    </MultiBinding>
+                </MenuItem.CommandParameter>
+            </MenuItem>
+            <Separator />
             <MenuItem Header="{DynamicResource UI_ChangeComparisonFolder}" Command="{Binding RightClickMenuCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">

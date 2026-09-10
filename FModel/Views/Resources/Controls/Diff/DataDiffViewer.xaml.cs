@@ -30,6 +30,8 @@ public partial class DataDiffViewer
     private GapWidthBackgroundRenderer _leftGapRenderer;
     private GapWidthBackgroundRenderer _rightGapRenderer;
 
+    private double _monospaceCharWidth;
+
     public DataDiffViewer(List<string> leftChunks, List<string> rightChunks, string extension)
     {
         InitializeComponent();
@@ -93,23 +95,28 @@ public partial class DataDiffViewer
             string leftChunk = _loadedChunkIndex + i < _leftChunks.Count ? _leftChunks[_loadedChunkIndex + i] : "";
             string rightChunk = _loadedChunkIndex + i < _rightChunks.Count ? _rightChunks[_loadedChunkIndex + i] : "";
 
-            var builder = new SideBySideDiffBuilder();
-            var model = await Task.Run(() => builder.BuildDiffModel(leftChunk, rightChunk));
-            var alignment = AlignLinesWithGaps(model);
+            // everything that does not touch a UI object is done off the dispatcher, otherwise a file with
+            // tens of thousands of lines freezes the whole window while it is being aligned and joined
+            var (alignment, moved, leftText, rightText) = await Task.Run(() =>
+            {
+                var model = new SideBySideDiffBuilder().BuildDiffModel(leftChunk, rightChunk);
+                var a = AlignLinesWithGaps(model);
+                var m = a.Meta
+                    .Where(x => x.Old != null && x.New != null && x.Old.Text == x.New.Text)
+                    .Select(x => x.New.Text)
+                    .ToList();
+
+                return (a, m, string.Join("\n", a.LeftLines) + "\n", string.Join("\n", a.RightLines) + "\n");
+            });
 
             _globalAlignment.LeftLines.AddRange(alignment.LeftLines);
             _globalAlignment.RightLines.AddRange(alignment.RightLines);
             _globalAlignment.Meta.AddRange(alignment.Meta);
 
-            foreach (var moved in alignment.Meta
-                         .Where(m => m.Old != null && m.New != null && m.Old.Text == m.New.Text)
-                         .Select(m => m.New.Text))
+            foreach (var text in moved)
             {
-                _globalMovedStrings.Add(moved);
+                _globalMovedStrings.Add(text);
             }
-
-            var leftText = string.Join("\n", alignment.LeftLines) + "\n";
-            var rightText = string.Join("\n", alignment.RightLines) + "\n";
 
             AvalonLeft.Document.BeginUpdate();
             AvalonRight.Document.BeginUpdate();
@@ -239,20 +246,18 @@ public partial class DataDiffViewer
 
         var leftGapMap = new Dictionary<int, double>();
         var rightGapMap = new Dictionary<int, double>();
-        var typeface = new Typeface(AvalonLeft.FontFamily, AvalonLeft.FontStyle, AvalonLeft.FontWeight, AvalonLeft.FontStretch);
+        var charWidth = GetMonospaceCharWidth();
 
         for (int i = 0; i < _globalAlignment.Meta.Count; i++)
         {
             var meta = _globalAlignment.Meta[i];
             if (meta.Old == null || meta.Old.Type == ChangeType.Imaginary)
             {
-                string reference = _globalAlignment.RightLines[i];
-                leftGapMap[i] = MeasureStringWidth(reference, typeface, AvalonLeft.FontSize);
+                leftGapMap[i] = MeasureCells(_globalAlignment.RightLines[i]) * charWidth;
             }
             if (meta.New == null || meta.New.Type == ChangeType.Imaginary)
             {
-                string reference = _globalAlignment.LeftLines[i];
-                rightGapMap[i] = MeasureStringWidth(reference, typeface, AvalonRight.FontSize);
+                rightGapMap[i] = MeasureCells(_globalAlignment.LeftLines[i]) * charWidth;
             }
         }
 
@@ -263,19 +268,56 @@ public partial class DataDiffViewer
         AvalonRight.TextArea.TextView.BackgroundRenderers.Add(_rightGapRenderer);
     }
 
-    private static double MeasureStringWidth(string text, Typeface typeface, double fontSize)
+    /// <summary>
+    /// Width of a line in character cells, CJK glyphs taking two of them. Assets carry localized strings,
+    /// so counting raw characters would make the gap stripe too short on those lines.
+    /// </summary>
+    private static int MeasureCells(string text)
     {
         if (string.IsNullOrEmpty(text))
             return 0;
+
+        int cells = 0;
+        foreach (var c in text)
+        {
+            cells += IsWide(c) ? 2 : 1;
+        }
+
+        return cells;
+    }
+
+    private static bool IsWide(char c) => c switch
+    {
+        >= '\u1100' and <= '\u115F' => true, // hangul jamo
+        >= '\u2E80' and <= '\uA4CF' => true, // cjk radicals, kana, cjk ideographs
+        >= '\uAC00' and <= '\uD7A3' => true, // hangul syllables
+        >= '\uF900' and <= '\uFAFF' => true, // cjk compatibility ideographs
+        >= '\uFE30' and <= '\uFE6F' => true, // cjk compatibility forms
+        >= '\uFF00' and <= '\uFF60' => true, // fullwidth forms
+        >= '\uFFE0' and <= '\uFFE6' => true, // fullwidth signs
+        _ => false
+    };
+
+    /// <summary>
+    /// Both editors use a fixed width font, so the gap stripes can be sized from a single character
+    /// measurement. Building a <see cref="FormattedText"/> per line costs seconds on a 70k lines file.
+    /// </summary>
+    private double GetMonospaceCharWidth()
+    {
+        if (_monospaceCharWidth > 0)
+            return _monospaceCharWidth;
+
+        var typeface = new Typeface(AvalonLeft.FontFamily, AvalonLeft.FontStyle, AvalonLeft.FontWeight, AvalonLeft.FontStretch);
         var formatted = new FormattedText(
-            text,
+            "0",
             System.Globalization.CultureInfo.CurrentCulture,
             FlowDirection.LeftToRight,
             typeface,
-            fontSize,
+            AvalonLeft.FontSize,
             Brushes.Transparent,
-            VisualTreeHelper.GetDpi(Application.Current.MainWindow).PixelsPerDip);
+            VisualTreeHelper.GetDpi(this).PixelsPerDip);
 
-        return formatted.WidthIncludingTrailingWhitespace;
+        _monospaceCharWidth = formatted.WidthIncludingTrailingWhitespace;
+        return _monospaceCharWidth;
     }
 }

@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using CUE4Parse.FileProvider;
@@ -106,30 +104,37 @@ public partial class CUE4ParseViewModel
         var titleExtra = Path.GetFileName(assetPath);
         string extension = Path.GetExtension(assetPath).TrimStart('.');
 
-        var existingTab = TabControl.TabsItems.FirstOrDefault(tab => tab.ParentExportType == "Diff");
-
         await Application.Current.Dispatcher.Invoke(async () =>
         {
             var diffContent = await CreateDiffViewer(leftFile, rightFile, leftImage, rightImage, extension);
-
-            if (existingTab != null)
-            {
-                existingTab.TitleExtra = titleExtra;
-                existingTab.DiffContent = diffContent;
-                if (TabControl.SelectedTab != existingTab)
-                    TabControl.SelectedTab = existingTab;
-            }
-            else
-            {
-                var tab = new TabItem(new FakeGameFile("Diff Viewer"), "Diff")
-                {
-                    TitleExtra = titleExtra,
-                    DiffContent = diffContent
-                };
-                TabControl.AddTab(tab);
-                TabControl.SelectedTab = tab;
-            }
+            SetDiffTabContent(titleExtra, diffContent);
         });
+    }
+
+    /// <summary>
+    /// Pushes <paramref name="diffContent"/> into the single diff tab, creating it if it does not exist yet.
+    /// Must be called on the UI thread.
+    /// </summary>
+    private void SetDiffTabContent(string titleExtra, object diffContent)
+    {
+        var existingTab = TabControl.TabsItems.FirstOrDefault(tab => tab.ParentExportType == "Diff");
+        if (existingTab != null)
+        {
+            existingTab.TitleExtra = titleExtra;
+            existingTab.DiffContent = diffContent;
+            if (TabControl.SelectedTab != existingTab)
+                TabControl.SelectedTab = existingTab;
+        }
+        else
+        {
+            var tab = new TabItem(new FakeGameFile("Diff Viewer"), "Diff")
+            {
+                TitleExtra = titleExtra,
+                DiffContent = diffContent
+            };
+            TabControl.AddTab(tab);
+            TabControl.SelectedTab = tab;
+        }
     }
 
     private async Task<object> CreateDiffViewer(GameFile leftFile, GameFile rightFile, TabImage leftImage, TabImage rightImage, string extension)
@@ -472,15 +477,13 @@ public partial class CUE4ParseViewModel
         if (leftChunks.Count != rightChunks.Count)
             return false;
 
-        var leftHash = ComputeHashForChunks(leftChunks);
-        var rightHash = ComputeHashForChunks(rightChunks);
+        // comparing the chunks directly bails out on the first difference instead of hashing megabytes twice
+        for (int i = 0; i < leftChunks.Count; i++)
+        {
+            if (!string.Equals(leftChunks[i], rightChunks[i], StringComparison.Ordinal))
+                return false;
+        }
 
-        return leftHash.SequenceEqual(rightHash);
-    }
-
-    private static byte[] ComputeHashForChunks(List<string> chunks)
-    {
-        var combined = string.Concat(chunks);
-        return SHA256.HashData(Encoding.UTF8.GetBytes(combined));
+        return true;
     }
 }

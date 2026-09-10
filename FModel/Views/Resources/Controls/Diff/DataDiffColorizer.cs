@@ -41,6 +41,8 @@ public partial class DataDiffViewer
         int lineOffset = 0)
         : DocumentColorizingTransformer
     {
+        private static readonly char[] _wordSeparators = [' ', '\t', '\r', '\n', ',', '.', ':', ';', '"', '\'', '[', ']', '{', '}', '(', ')', '=', '!'];
+
         protected override void ColorizeLine(DocumentLine line)
         {
             int row = line.LineNumber - 1 - lineOffset;
@@ -71,9 +73,7 @@ public partial class DataDiffViewer
 
             if (piece.Type == ChangeType.Modified && meta.Old != null && meta.New != null)
             {
-                char[] separators = [' ', '\t', '\r', '\n', ',', '.', ':', ';', '"', '\'', '[', ']', '{', '}', '(', ')', '=', '!'];
-                var differ = new Differ();
-                var diff = differ.CreateWordDiffs(meta.Old.Text ?? "", meta.New.Text ?? "", ignoreWhitespace: false, separators);
+                var diff = Differ.Instance.CreateWordDiffs(meta.Old.Text ?? "", meta.New.Text ?? "", ignoreWhitespace: false, _wordSeparators);
 
                 string lineText = CurrentContext.Document.GetText(line);
                 int lineStart = line.Offset;

@@ -61,6 +61,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         Decompile,
         Diff,
         DiffPickFolder,
+        DiffPreviousVersion,
     }
 
     public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
@@ -93,6 +94,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_Reference_Viewer" => (EAction.Show, EShowAssetType.ReferenceViewer, EBulkType.None),
             "Assets_Diff" => (EAction.Show, EShowAssetType.Diff, EBulkType.None),
             "Assets_Diff_Pick_Folder" => (EAction.Show, EShowAssetType.DiffPickFolder, EBulkType.None),
+            "Assets_Diff_Previous_Version" => (EAction.Show, EShowAssetType.DiffPreviousVersion, EBulkType.None),
             "Assets_Decompile" => (EAction.Show, EShowAssetType.Decompile, EBulkType.Code),
 
             "Save_Data" => (EAction.Export, EShowAssetType.None, EBulkType.Raw),
@@ -117,6 +119,15 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 {
                     var roots = assets.ToList();
                     System.Windows.Application.Current.Dispatcher.Invoke(() => new ReferenceChainWindow(roots).Show());
+                    return;
+                }
+
+                if (showtype is EShowAssetType.DiffPreviousVersion)
+                {
+                    var entry = assets.FirstOrDefault();
+                    if (entry is null) return;
+
+                    contextViewModel.CUE4Parse.ShowApiAssetDiff(entry.Path, cancellationToken).GetAwaiter().GetResult();
                     return;
                 }
 

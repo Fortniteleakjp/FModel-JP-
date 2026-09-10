@@ -18,6 +18,7 @@ public class ApiEndpointViewModel
     public FortniteApiEndpoint FortniteApi { get; }
     public ValorantApiEndpoint ValorantApi { get; }
     public DillyApiEndpoint DillyApi { get; }
+    public FortniteApiComEndpoint FortniteApiCom { get; }
     public EpicApiEndpoint EpicApi { get; }
     public FModelApiEndpoint FModelApi { get; }
     public GitHubApiEndpoint GitHubApi { get; }
@@ -28,6 +29,7 @@ public class ApiEndpointViewModel
         FortniteApi = new FortniteApiEndpoint(_client);
         ValorantApi = new ValorantApiEndpoint(_client);
         DillyApi = new DillyApiEndpoint(_client);
+        FortniteApiCom = new FortniteApiComEndpoint(_client);
         EpicApi = new EpicApiEndpoint(_client);
         FModelApi = new FModelApiEndpoint(_client);
         GitHubApi = new GitHubApiEndpoint(_client);
