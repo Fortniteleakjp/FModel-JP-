@@ -203,6 +203,7 @@
     <system:String x:Key="UI_NoPackagesFoundInFolder">フォルダ内にパッケージが見つかりません</system:String>
     <system:String x:Key="UI_NoPackagesFoundMatchingTheQuery">条件に一致するパッケージが見つかりません</system:String>
     <system:String x:Key="UI_NoReferencesFoundInOtherPackages">他のパッケージからの参照は見つかりません</system:String>
+    <system:String x:Key="UI_Nodes">ノード</system:String>
     <system:String x:Key="UI_OK">OK</system:String>
     <system:String x:Key="UI_Offset">オフセット</system:String>
     <system:String x:Key="UI_OnlineEvaluator">オンライン評価ツール</system:String>
@@ -243,6 +244,7 @@
     <system:String x:Key="UI_RawString">生の文字列</system:String>
     <system:String x:Key="UI_ReadsOUassetPackagesAndMerges">.o.uasset パッケージを読み込み、エディタ専用データを親アセットに統合します。JSON ベースのエクスポート作業に便利です</system:String>
     <system:String x:Key="UI_ReferenceViewer">参照ビューア</system:String>
+    <system:String x:Key="UI_ReferenceViewerHint">ドラッグで移動 / ホイールで拡大縮小 / ダブルクリックでアセットを開く</system:String>
     <system:String x:Key="UI_Referencers">参照元 (Referencers)</system:String>
     <system:String x:Key="UI_References">参照</system:String>
     <system:String x:Key="UI_Refresh">更新</system:String>
@@ -255,6 +257,7 @@
     <system:String x:Key="UI_RemoveSelectedAudio">選択した音声を削除</system:String>
     <system:String x:Key="UI_Reset">リセット</system:String>
     <system:String x:Key="UI_ResetAllOptionsToDefaultSettings">すべての設定を既定値に戻す</system:String>
+    <system:String x:Key="UI_ResetView">表示をリセット</system:String>
     <system:String x:Key="UI_RightSwitchOnAssetTab">アセットタブを右へ切り替え</system:String>
     <system:String x:Key="UI_RightSwitchOnDirectoryTab">ディレクトリタブを右へ切り替え</system:String>
     <system:String x:Key="UI_S3DViewer">3Dビューアー</system:String>
@@ -267,6 +270,7 @@
     <system:String x:Key="UI_SavePropertiesDirectory">プロパティの保存先 *</system:String>
     <system:String x:Key="UI_SaveTextureDirectory">テクスチャの保存先 *</system:String>
     <system:String x:Key="UI_Search">検索</system:String>
+    <system:String x:Key="UI_SearchByName">名前で検索...</system:String>
     <system:String x:Key="UI_SearchUp">上へ検索</system:String>
     <system:String x:Key="UI_Search_2">検索:</system:String>
     <system:String x:Key="UI_SelectFileForComparison">比較するファイルを選択</system:String>
@@ -309,4 +313,6 @@
     <system:String x:Key="UI_World">ワールド</system:String>
     <system:String x:Key="UI_Worlds">ワールド</system:String>
     <system:String x:Key="UI_YouCanOnlyUseBackupFiles">バックアップファイルは、新規・変更されたアーカイブを読み込むときにのみ使用できます。FModel はローカルのアーカイブと選択したバックアップを比較し、必要なパッケージだけを表示します。主要なゲーム向けには作成済みのバックアップを提供していますが、ある時点のパッケージ情報を保存した独自のバックアップを作ることもできます。</system:String>
+    <system:String x:Key="UI_ZoomIn">拡大</system:String>
+    <system:String x:Key="UI_ZoomOut">縮小</system:String>
 </ResourceDictionary>

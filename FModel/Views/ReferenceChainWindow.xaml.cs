@@ -35,11 +35,14 @@ namespace FModel.Views
         private ObservableCollection<NodeConnection> _connections;
         private int _searchMode;
         private string _assetTypeFilter = "All";
-        private int _maxDepth = 10;
+        private int _maxDepth = 3;
         private int _progressValue;
         private int _progressMax = 100;
         private string _progressText = "Preparing...";
         private string _searchText;
+        private string _rootLabel;
+        private string _searchStatus;
+        private bool _hasLoaded;
         private readonly IList _selectedItems;
         private double _canvasWidth;
         private double _canvasHeight;
@@ -52,6 +55,14 @@ namespace FModel.Views
 
         public static readonly RoutedCommand FindCommand = new RoutedCommand();
 
+        // ノードのカードと配置に関する寸法
+        private const double NodeWidth = 250;
+        private const double NodeHeight = 80;
+        private const double ColumnGap = 190;      // 深さ方向（列と列）の間隔
+        private const double RowGap = 48;          // 同じ列に並ぶノード同士の間隔
+        private const double ColumnStagger = 36;   // 列内で互い違いにずらす量
+        private const double NodeMargin = 60;      // グラフ全体の余白
+
         // Dragging variables
         private bool _isDraggingView;
         private Point _lastViewMousePosition;
@@ -63,13 +74,33 @@ namespace FModel.Views
         public bool IsLoading
         {
             get => _isLoading;
-            set { _isLoading = value; OnPropertyChanged(); }
+            set { _isLoading = value; OnPropertyChanged(); OnPropertyChanged(nameof(IsEmpty)); }
         }
 
         public ObservableCollection<ReferenceNode> FlatNodes
         {
             get => _flatNodes;
-            set { _flatNodes = value; OnPropertyChanged(); }
+            set { _flatNodes = value; OnPropertyChanged(); OnPropertyChanged(nameof(NodeCount)); OnPropertyChanged(nameof(IsEmpty)); }
+        }
+
+        // ヘッダーに表示するノード数
+        public int NodeCount => _flatNodes?.Count ?? 0;
+
+        // 読み込み済みで結果が空のときだけプレースホルダーを出す
+        public bool IsEmpty => _hasLoaded && !_isLoading && NodeCount == 0;
+
+        // ヘッダーに表示する対象アセット名
+        public string RootLabel
+        {
+            get => _rootLabel;
+            private set { _rootLabel = value; OnPropertyChanged(); }
+        }
+
+        // ステータスバーに表示する検索結果
+        public string SearchStatus
+        {
+            get => _searchStatus;
+            private set { _searchStatus = value; OnPropertyChanged(); }
         }
 
         public ObservableCollection<NodeConnection> Connections
@@ -93,7 +124,7 @@ namespace FModel.Views
         public double ZoomScale
         {
             get => _zoomScale;
-            set { _zoomScale = value; OnPropertyChanged(); }
+            set { _zoomScale = Math.Max(0.1, Math.Min(10.0, value)); OnPropertyChanged(); }
         }
 
         public int SearchMode
@@ -144,21 +175,25 @@ namespace FModel.Views
             DataContext = this;
             _selectedItems = selectedItems;
 
+            // アセットエクスプローラーと同じアイコンセットを使う
             _iconCache = new Dictionary<string, Geometry>();
-            void Cache(string key, string resKey)
+            foreach (var resKey in new[]
+                     {
+                         "TextureIconAlt", "StaticMeshIconAlt", "SkeletalMeshIconAlt", "MaterialIcon",
+                         "MaterialFunctionIcon", "MaterialParameterCollectionIcon", "BlueprintIcon",
+                         "AnimationIconAlt", "SkeletonIcon", "PhysicsIcon", "AudioIconAlt", "VideoIcon",
+                         "FontIcon", "WorldIcon", "MapIconAlt", "ClapperIcon", "FoliageIcon", "ParticleIcon",
+                         "CurveIcon", "DataTableIcon", "RedirectorIcon", "ConfigIcon", "AssetIcon", "NoteIcon"
+                     })
             {
-                if (TryFindResource(resKey) is Geometry g)
-                {
-                    if (g.CanFreeze) g.Freeze();
-                    _iconCache[key] = g;
-                }
+                if (TryFindResource(resKey) is not Geometry g) continue;
+                if (g.CanFreeze) g.Freeze();
+                _iconCache[resKey] = g;
             }
-            Cache("Texture", "TextureIcon");
-            Cache("Model", "ModelIcon");
-            Cache("Audio", "AudioIcon");
-            Cache("Animation", "AnimationIcon");
-            Cache("Info", "InfoIcon");
-            Cache("Note", "NoteIcon");
+
+            RootLabel = _selectedItems is { Count: 1 } && _selectedItems[0] is GameFile single
+                ? single.Path
+                : $"{_selectedItems?.Count ?? 0} assets";
 
             CommandBindings.Add(new CommandBinding(FindCommand, OnFindCommand));
 
@@ -168,8 +203,77 @@ namespace FModel.Views
 
         private void OnFindCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            SearchBox.Focus();
-            SearchBox.SelectAll();
+            SearchBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+            if (Keyboard.FocusedElement is TextBox textBox) textBox.SelectAll();
+        }
+
+        // 検索欄のクリアボタン
+        private void OnSearchCleared(object sender, RoutedEventArgs e)
+        {
+            ClearSearchHighlights();
+        }
+
+        private void ClearSearchHighlights()
+        {
+            if (FlatNodes != null)
+            {
+                foreach (var n in FlatNodes) n.IsHighlighted = false;
+            }
+
+            _searchResults = new List<ReferenceNode>();
+            _currentSearchIndex = -1;
+            SearchStatus = null;
+        }
+
+        // ズーム操作（ビューの中心を保つ）
+        private void OnZoomInClick(object sender, RoutedEventArgs e) => ZoomAtViewportCenter(1.2);
+
+        private void OnZoomOutClick(object sender, RoutedEventArgs e) => ZoomAtViewportCenter(1.0 / 1.2);
+
+        private void OnResetViewClick(object sender, RoutedEventArgs e)
+        {
+            ZoomScale = 1.0;
+            MainScrollViewer.UpdateLayout();
+
+            var root = _rootNodes?.FirstOrDefault();
+            if (root != null) CenterOnNode(root);
+            else
+            {
+                MainScrollViewer.ScrollToHorizontalOffset(0);
+                MainScrollViewer.ScrollToVerticalOffset(0);
+            }
+        }
+
+        // 指定したノードが画面の中央に来るようにスクロールする
+        private void CenterOnNode(ReferenceNode node)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                MainScrollViewer.UpdateLayout();
+
+                // グラフの Grid には Margin="100" が付いている
+                const double margin = 100;
+                var scale = ZoomScale;
+                var x = node.X * scale + margin - (MainScrollViewer.ViewportWidth - NodeWidth * scale) / 2;
+                var y = node.Y * scale + margin - (MainScrollViewer.ViewportHeight - NodeHeight * scale) / 2;
+
+                MainScrollViewer.ScrollToHorizontalOffset(Math.Max(0, x));
+                MainScrollViewer.ScrollToVerticalOffset(Math.Max(0, y));
+            }, DispatcherPriority.Loaded);
+        }
+
+        private void ZoomAtViewportCenter(double factor)
+        {
+            var oldZoom = ZoomScale;
+            var centerX = MainScrollViewer.HorizontalOffset + MainScrollViewer.ViewportWidth / 2;
+            var centerY = MainScrollViewer.VerticalOffset + MainScrollViewer.ViewportHeight / 2;
+
+            ZoomScale = oldZoom * factor;
+            var ratio = ZoomScale / oldZoom;
+
+            MainScrollViewer.UpdateLayout();
+            MainScrollViewer.ScrollToHorizontalOffset(centerX * ratio - MainScrollViewer.ViewportWidth / 2);
+            MainScrollViewer.ScrollToVerticalOffset(centerY * ratio - MainScrollViewer.ViewportHeight / 2);
         }
 
         private void OnSearchKeyDown(object sender, KeyEventArgs e)
@@ -197,7 +301,11 @@ namespace FModel.Views
 
         private void PerformSearch(bool forward, bool newSearch)
         {
-            if (string.IsNullOrWhiteSpace(SearchText)) return;
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                ClearSearchHighlights();
+                return;
+            }
 
             if (newSearch || _searchResults.Count == 0 || _searchResults.All(n => n.Name.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) < 0))
             {
@@ -212,7 +320,7 @@ namespace FModel.Views
 
                 if (_searchResults.Count == 0)
                 {
-                    AdonisUI.Controls.MessageBox.Show(this, $"'{SearchText}' was not found.", "Search Results", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Information);
+                    SearchStatus = $"'{SearchText}' was not found";
                     return;
                 }
             }
@@ -237,6 +345,7 @@ namespace FModel.Views
 
             var node = _searchResults[_currentSearchIndex];
             node.IsHighlighted = true;
+            SearchStatus = $"{_currentSearchIndex + 1} / {_searchResults.Count} — {node.Name}";
 
             if (node != null)
             {
@@ -250,8 +359,8 @@ namespace FModel.Views
 
                     double margin = 100;
                     double scale = ZoomScale;
-                    double nodeWidth = 250;
-                    double nodeHeight = 80;
+                    double nodeWidth = NodeWidth;
+                    double nodeHeight = NodeHeight;
 
                     double targetX = (node.X * scale) + margin - (MainScrollViewer.ViewportWidth - (nodeWidth * scale)) / 2;
                     double targetY = (node.Y * scale) + margin - (MainScrollViewer.ViewportHeight - (nodeHeight * scale)) / 2;
@@ -297,6 +406,7 @@ namespace FModel.Views
         {
             if (IsLoading) return;
             IsLoading = true;
+            ClearSearchHighlights();
             FlatNodes = null;
             Connections = null;
             try
@@ -333,6 +443,11 @@ namespace FModel.Views
 
                 _rootNodes = result;
                 LayoutNodes(_rootNodes);
+
+                // 読み込み直後は対象アセットのノードが画面中央に来るようにする
+                ZoomScale = 1.0;
+                var focus = _rootNodes.FirstOrDefault();
+                if (focus != null) CenterOnNode(focus);
             }
             catch (Exception ex)
             {
@@ -340,97 +455,119 @@ namespace FModel.Views
             }
             finally
             {
+                _hasLoaded = true;
                 IsLoading = false;
             }
         }
 
+        // UEFN の参照ビューアのように、深さごとの列に分けつつ親を子の中央に置いて上下へ広げる
         private void LayoutNodes(List<ReferenceNode> rootNodes)
         {
             var flatList = new List<ReferenceNode>();
             var connectionList = new List<NodeConnection>();
-            double currentY = 20;
-            double nodeWidth = 250;
-            double nodeHeight = 80;
-            double horizontalGap = 150; // 線が重なりにくいように間隔を拡大
-            
-            // ウィンドウの大きさを基に配置を変える
-            // ウィンドウの高さに応じて垂直方向の間隔を調整（最小40、最大150程度）
-            // これにより、ウィンドウが大きい場合はノードが密集せずに配置される
-            double verticalGap = Math.Max(40, Math.Min(150, ActualHeight / 10));
+            var heights = new Dictionary<ReferenceNode, double>();
 
+            var top = NodeMargin;
             foreach (var root in rootNodes)
             {
-                CalculatePositions(root, 0, ref currentY, flatList, connectionList, nodeWidth, nodeHeight, horizontalGap, verticalGap);
+                var height = MeasureSubtree(root, heights);
+                PlaceSubtree(root, 0, 0, top, height, flatList, connectionList, heights);
+                top += height + RowGap * 2;
             }
 
             FlatNodes = new ObservableCollection<ReferenceNode>(flatList);
             Connections = new ObservableCollection<NodeConnection>(connectionList);
 
-            if (flatList.Any())
+            if (flatList.Count > 0)
             {
-                CanvasWidth = flatList.Max(n => n.X) + nodeWidth + 50;
-                CanvasHeight = currentY + 50;
+                CanvasWidth = flatList.Max(n => n.X) + NodeWidth + NodeMargin;
+                CanvasHeight = flatList.Max(n => n.Y) + NodeHeight + NodeMargin;
             }
         }
 
-        private void CalculatePositions(ReferenceNode node, int depth, ref double currentY, List<ReferenceNode> flatList, List<NodeConnection> connections, double w, double h, double hGap, double vGap)
+        // 「+N assets」を含む、実際に描画する子ノードの数
+        private static int VisibleChildCount(ReferenceNode node)
         {
-            node.X = depth * (w + hGap) + 100;
-
-            if (node.Children.Count == 0)
-            {
-                node.Y = currentY;
-                currentY += h + vGap;
-            }
-            else
-            {
-                var childYs = new List<double>();
-                var visibleChildren = node.Children.Take(node.VisibleChildrenCount).ToList();
-
-                foreach (var child in visibleChildren)
-                {
-                    CalculatePositions(child, depth + 1, ref currentY, flatList, connections, w, h, hGap, vGap);
-                    childYs.Add(child.Y);
-                    connections.Add(new NodeConnection { Source = node, Target = child, X1 = node.X + w, Y1 = 0, X2 = child.X, Y2 = child.Y + h / 2 });
-                }
-
-                if (node.Children.Count > node.VisibleChildrenCount)
-                {
-                    var remaining = node.Children.Count - node.VisibleChildrenCount;
-                    var showMoreNode = new ReferenceNode
-                    {
-                        Name = $"+ {remaining} assets",
-                        Path = string.Empty,
-                        IsShowMore = true,
-                        ParentNode = node,
-                        X = (depth + 1) * (w + hGap) + 100,
-                        Y = currentY,
-                        Background = Brushes.DimGray
-                    };
-                    if (_iconCache.TryGetValue("Note", out var icon)) showMoreNode.IconData = icon;
-
-                    currentY += h + vGap;
-                    childYs.Add(showMoreNode.Y);
-                    flatList.Add(showMoreNode);
-                    connections.Add(new NodeConnection { Source = node, Target = showMoreNode, X1 = node.X + w, Y1 = 0, X2 = showMoreNode.X, Y2 = showMoreNode.Y + h / 2 });
-                }
-
-                node.Y = (childYs.First() + childYs.Last()) / 2;
-                // 親ノードのY座標が決まったので、接続線の始点を更新
-                foreach (var child in visibleChildren)
-                {
-                    var conn = connections.LastOrDefault(c => c.X2 == child.X && c.Y2 == child.Y + h / 2);
-                    if (conn != null) conn.Y1 = node.Y + h / 2;
-                }
-                if (node.Children.Count > node.VisibleChildrenCount)
-                {
-                    var conn = connections.LastOrDefault(c => c.Target != null && c.Target.IsShowMore && c.Target.ParentNode == node);
-                    if (conn != null) conn.Y1 = node.Y + h / 2;
-                }
-            }
-
-            flatList.Add(node);
+            var count = Math.Min(node.Children.Count, node.VisibleChildrenCount);
+            if (node.Children.Count > node.VisibleChildrenCount) count++;
+            return count;
         }
+
+        // サブツリーが必要とする高さを先に測っておく（親を子の中央に置くため）
+        private double MeasureSubtree(ReferenceNode node, Dictionary<ReferenceNode, double> heights)
+        {
+            if (heights.TryGetValue(node, out var cached)) return cached;
+
+            var height = NodeHeight;
+            if (VisibleChildCount(node) > 0)
+            {
+                var total = 0.0;
+                foreach (var child in node.Children.Take(node.VisibleChildrenCount))
+                    total += MeasureSubtree(child, heights) + RowGap;
+
+                // 「+N assets」のぶん
+                if (node.Children.Count > node.VisibleChildrenCount) total += NodeHeight + RowGap;
+
+                height = Math.Max(NodeHeight, total - RowGap);
+            }
+
+            heights[node] = height;
+            return height;
+        }
+
+        private void PlaceSubtree(ReferenceNode node, int depth, int indexInGroup, double top, double height,
+            List<ReferenceNode> flatList, List<NodeConnection> connections, Dictionary<ReferenceNode, double> heights)
+        {
+            // 列をきっちり揃えず互い違いにずらして、ぎっしり並んで見えないようにする
+            node.X = depth * (NodeWidth + ColumnGap) + NodeMargin + (indexInGroup % 2 == 1 ? ColumnStagger : 0);
+            node.Y = top + (height - NodeHeight) / 2;
+            flatList.Add(node);
+
+            var children = node.Children.Take(node.VisibleChildrenCount).ToList();
+            var hasShowMore = node.Children.Count > node.VisibleChildrenCount;
+            if (children.Count == 0 && !hasShowMore) return;
+
+            var childrenHeight = children.Sum(c => MeasureSubtree(c, heights) + RowGap)
+                                 + (hasShowMore ? NodeHeight + RowGap : 0) - RowGap;
+            var childTop = top + (height - childrenHeight) / 2;
+
+            for (var i = 0; i < children.Count; i++)
+            {
+                var child = children[i];
+                var childHeight = MeasureSubtree(child, heights);
+                PlaceSubtree(child, depth + 1, i, childTop, childHeight, flatList, connections, heights);
+                connections.Add(NewConnection(node, child));
+                childTop += childHeight + RowGap;
+            }
+
+            if (!hasShowMore) return;
+
+            var remaining = node.Children.Count - node.VisibleChildrenCount;
+            var showMoreNode = new ReferenceNode
+            {
+                Name = $"+ {remaining} assets",
+                Path = string.Empty,
+                IsShowMore = true,
+                ParentNode = node,
+                X = (depth + 1) * (NodeWidth + ColumnGap) + NodeMargin + (children.Count % 2 == 1 ? ColumnStagger : 0),
+                Y = childTop,
+                AccentBrush = TryFindResource(AdonisUI.Brushes.DisabledForegroundBrush) as Brush ?? Brushes.DimGray
+            };
+            if (_iconCache.TryGetValue("NoteIcon", out var icon)) showMoreNode.IconData = icon;
+
+            flatList.Add(showMoreNode);
+            connections.Add(NewConnection(node, showMoreNode));
+        }
+
+        private static NodeConnection NewConnection(ReferenceNode source, ReferenceNode target) => new()
+        {
+            Source = source,
+            Target = target,
+            X1 = source.X + NodeWidth,
+            Y1 = source.Y + NodeHeight / 2,
+            X2 = target.X,
+            Y2 = target.Y + NodeHeight / 2
+        };
 
         // Zooming
         private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -474,9 +611,22 @@ namespace FModel.Views
             return false;
         }
 
+        // スクロールバー上のクリックはビューのドラッグにしない（つまみの操作が反転してしまうため）
+        private static bool IsPointerOnScrollBar(object source)
+        {
+            var current = source as DependencyObject;
+            while (current != null)
+            {
+                if (current is System.Windows.Controls.Primitives.ScrollBar)
+                    return true;
+                current = current is Visual ? VisualTreeHelper.GetParent(current) : LogicalTreeHelper.GetParent(current);
+            }
+            return false;
+        }
+
         private void OnScrollViewerMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (IsPointerOnNode(e.OriginalSource)) return;
+            if (IsPointerOnNode(e.OriginalSource) || IsPointerOnScrollBar(e.OriginalSource)) return;
 
             _lastViewMousePosition = e.GetPosition(MainScrollViewer);
             _isDraggingView = true;
@@ -585,13 +735,13 @@ namespace FModel.Views
                 {
                     if (conn.Source == _draggingNode)
                     {
-                        conn.X1 = _draggingNode.X + 250; // Node Width
-                        conn.Y1 = _draggingNode.Y + 40;  // Node Height / 2
+                        conn.X1 = _draggingNode.X + NodeWidth;
+                        conn.Y1 = _draggingNode.Y + NodeHeight / 2;
                     }
                     else if (conn.Target == _draggingNode)
                     {
                         conn.X2 = _draggingNode.X;
-                        conn.Y2 = _draggingNode.Y + 40;
+                        conn.Y2 = _draggingNode.Y + NodeHeight / 2;
                     }
                 }
 
@@ -627,8 +777,9 @@ namespace FModel.Views
                 if (ipackage == null) return;
 
                 var className = GetPackageClassName(ipackage);
-                parentNode.Background = GetBrushForClass(className);
+                parentNode.AccentBrush = GetBrushForClass(className);
                 parentNode.IconData = GetIconForClass(className);
+                parentNode.TypeName = className;
                 if (className.Contains("Texture") || className.Contains("RenderTarget"))
                 {
                     parentNode.PreviewImage = GetTexturePreview(ipackage);
@@ -707,8 +858,9 @@ namespace FModel.Views
                 if (provider.TryLoadPackage(file.Path, out var ipackage))
                 {
                     var className = GetPackageClassName(ipackage);
-                    parentNode.Background = GetBrushForClass(className);
+                    parentNode.AccentBrush = GetBrushForClass(className);
                     parentNode.IconData = GetIconForClass(className);
+                    parentNode.TypeName = className;
                     if (className.Contains("Texture") || className.Contains("RenderTarget"))
                     {
                         parentNode.PreviewImage = GetTexturePreview(ipackage);
@@ -863,43 +1015,71 @@ namespace FModel.Views
             return null;
         }
 
-        private Brush GetBrushForClass(string className)
+        // アセットエクスプローラー（FileToGeometryConverter）と同じアイコン / 色を返す
+        private static (string Icon, string Brush) GetStyleForClass(string className)
         {
-            var colorCode = className switch
-            {
-                "Texture2D" or "TextureCube" or "TextureRenderTarget2D" => "#5D4037", // Brown
-                "Material" or "MaterialInstanceConstant" => "#2E7D32", // Green
-                "StaticMesh" => "#00838F", // Cyan
-                "SkeletalMesh" => "#6A1B9A", // Purple
-                "Blueprint" or "BlueprintGeneratedClass" => "#1565C0", // Blue
-                "SoundWave" or "SoundCue" => "#EF6C00", // Orange
-                "Font" or "FontFace" => "#616161", // Grey
-                "World" => "#C62828", // Red
-                _ => "#37474F" // Blue Grey (Default)
-            };
+            if (string.IsNullOrEmpty(className)) return ("AssetIcon", "NeutralBrush");
 
-            try
+            return className switch
             {
-                var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorCode));
-                brush.Freeze();
-                return brush;
-            }
-            catch { return Brushes.Transparent; }
+                "Texture2D" or "TextureCube" or "TextureCubeArray" or "Texture2DArray"
+                    or "VirtualTexture2D" or "TextureRenderTarget2D" => ("TextureIconAlt", "TextureBrush"),
+
+                "StaticMesh" => ("StaticMeshIconAlt", "NeutralBrush"),
+                "SkeletalMesh" => ("SkeletalMeshIconAlt", "NeutralBrush"),
+                "CustomizableObject" => ("StaticMeshIconAlt", "CustomizableObjectBrush"),
+                "NaniteDisplacedMesh" => ("StaticMeshIconAlt", "NaniteDisplacedMeshBrush"),
+
+                "Material" or "MaterialInstanceConstant" => ("MaterialIcon", "MaterialBrush"),
+                "MaterialFunction" => ("MaterialFunctionIcon", "MaterialBrush"),
+                "MaterialParameterCollection" => ("MaterialParameterCollectionIcon", "MaterialBrush"),
+                "PhysicalMaterial" => ("MaterialIcon", "NeutralBrush"),
+
+                "WidgetBlueprintGeneratedClass" => ("BlueprintIcon", "BlueprintWidgetBrush"),
+                "AnimBlueprintGeneratedClass" => ("BlueprintIcon", "BlueprintAnimBrush"),
+                "RigVMBlueprintGeneratedClass" => ("BlueprintIcon", "BlueprintRigVMBrush"),
+                "UserDefinedEnum" => ("BlueprintIcon", "UserDefinedEnumBrush"),
+                "UserDefinedStruct" => ("BlueprintIcon", "UserDefinedStructBrush"),
+
+                "Skeleton" => ("SkeletonIcon", "NeutralBrush"),
+                "PhysicsAsset" => ("PhysicsIcon", "NeutralBrush"),
+
+                "World" or "Level" => ("WorldIcon", "WorldBrush"),
+                "MapBuildDataRegistry" => ("MapIconAlt", "BuildDataBrush"),
+                "LevelSequence" => ("ClapperIcon", "LevelSequenceBrush"),
+                "FoliageType_InstancedStaticMesh" or "FoliageType" => ("FoliageIcon", "FoliageBrush"),
+
+                "ObjectRedirector" => ("RedirectorIcon", "ConfigBrush"),
+                "CurveFloat" or "CurveVector" or "CurveLinearColor" or "CurveTable" => ("CurveIcon", "CurveBrush"),
+                "DataTable" or "StringTable" or "DataAsset" => ("DataTableIcon", "NeutralBrush"),
+                "Font" or "FontFace" => ("FontIcon", "NeutralBrush"),
+                "FileMediaSource" => ("VideoIcon", "VideoBrush"),
+                "NiagaraSystem" or "ParticleSystem" => ("ParticleIcon", "ParticleBrush"),
+
+                _ when className.Contains("Blueprint") => ("BlueprintIcon", "BlueprintBrush"),
+                _ when className.Contains("Anim") || className.Contains("BlendSpace") => ("AnimationIconAlt", "AnimationBrush"),
+                _ when className.Contains("Sound") || className.Contains("Audio")
+                       || className.Contains("Wwise") || className.Contains("Ak") => ("AudioIconAlt", "AudioBrush"),
+                _ when className.Contains("Texture") || className.Contains("RenderTarget") => ("TextureIconAlt", "TextureBrush"),
+                _ when className.Contains("Material") => ("MaterialIcon", "MaterialBrush"),
+
+                _ => ("AssetIcon", "NeutralBrush")
+            };
+        }
+
+        private static Brush GetBrushForClass(string className)
+        {
+            var key = GetStyleForClass(className).Brush;
+            return Application.Current.TryFindResource(key) as Brush
+                   ?? Application.Current.TryFindResource("NeutralBrush") as Brush
+                   ?? Brushes.White;
         }
 
         private Geometry GetIconForClass(string className)
         {
-            var key = className switch
-            {
-                "Texture2D" or "TextureCube" or "TextureRenderTarget2D" => "Texture",
-                "Material" or "MaterialInstanceConstant" => "Texture",
-                "StaticMesh" or "SkeletalMesh" => "Model",
-                "Blueprint" or "BlueprintGeneratedClass" => "Note",
-                "SoundWave" or "SoundCue" => "Audio",
-                "AnimSequence" or "AnimMontage" or "BlendSpace" => "Animation",
-                _ => "Info"
-            };
-            return _iconCache.TryGetValue(key, out var g) ? g : _iconCache["Info"];
+            var key = GetStyleForClass(className).Icon;
+            if (_iconCache.TryGetValue(key, out var g)) return g;
+            return _iconCache.TryGetValue("AssetIcon", out var fallback) ? fallback : null;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -925,17 +1105,20 @@ namespace FModel.Views
         private double _y;
         public double Y { get => _y; set { _y = value; OnPropertyChanged(); } }
 
-        private static readonly Brush DefaultBackground;
+        private static readonly Brush DefaultAccent;
 
         static ReferenceNode()
         {
-            var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#37474F"));
-            brush.Freeze();
-            DefaultBackground = brush;
+            DefaultAccent = Application.Current?.TryFindResource("NeutralBrush") as Brush ?? Brushes.White;
         }
 
-        private Brush _background = DefaultBackground;
-        public Brush Background { get => _background; set { _background = value; OnPropertyChanged(); } }
+        // アセット種別を表す色（アイコンと左側のバーに使用）
+        private Brush _accentBrush = DefaultAccent;
+        public Brush AccentBrush { get => _accentBrush; set { _accentBrush = value; OnPropertyChanged(); } }
+
+        // アセットのクラス名（アセットエクスプローラーの Type 表示と同じ）
+        private string _typeName;
+        public string TypeName { get => _typeName; set { _typeName = value; OnPropertyChanged(); } }
 
         private Geometry _iconData;
         public Geometry IconData { get => _iconData; set { _iconData = value; OnPropertyChanged(); } }

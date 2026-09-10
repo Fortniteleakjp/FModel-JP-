@@ -203,6 +203,7 @@
     <system:String x:Key="UI_NoPackagesFoundInFolder">No packages found in folder</system:String>
     <system:String x:Key="UI_NoPackagesFoundMatchingTheQuery">No packages found matching the query</system:String>
     <system:String x:Key="UI_NoReferencesFoundInOtherPackages">No references found in other packages</system:String>
+    <system:String x:Key="UI_Nodes">Nodes</system:String>
     <system:String x:Key="UI_OK">OK</system:String>
     <system:String x:Key="UI_Offset">Offset</system:String>
     <system:String x:Key="UI_OnlineEvaluator">Online Evaluator</system:String>
@@ -243,6 +244,7 @@
     <system:String x:Key="UI_RawString">Raw string</system:String>
     <system:String x:Key="UI_ReadsOUassetPackagesAndMerges">Reads .o.uasset packages and merges their editor-only data into the parent asset. Useful for JSON-based asset export workflows</system:String>
     <system:String x:Key="UI_ReferenceViewer">Reference Viewer</system:String>
+    <system:String x:Key="UI_ReferenceViewerHint">Drag to pan, scroll to zoom, double-click a node to open the asset</system:String>
     <system:String x:Key="UI_Referencers">Referencers</system:String>
     <system:String x:Key="UI_References">References</system:String>
     <system:String x:Key="UI_Refresh">Refresh</system:String>
@@ -255,6 +257,7 @@
     <system:String x:Key="UI_RemoveSelectedAudio">Remove Selected Audio</system:String>
     <system:String x:Key="UI_Reset">Reset</system:String>
     <system:String x:Key="UI_ResetAllOptionsToDefaultSettings">Reset all options to default settings</system:String>
+    <system:String x:Key="UI_ResetView">Reset View</system:String>
     <system:String x:Key="UI_RightSwitchOnAssetTab">Right Switch on Asset Tab</system:String>
     <system:String x:Key="UI_RightSwitchOnDirectoryTab">Right Switch on Directory Tab</system:String>
     <system:String x:Key="UI_S3DViewer">3D Viewer</system:String>
@@ -267,6 +270,7 @@
     <system:String x:Key="UI_SavePropertiesDirectory">Save Properties Directory *</system:String>
     <system:String x:Key="UI_SaveTextureDirectory">Save Texture Directory *</system:String>
     <system:String x:Key="UI_Search">Search</system:String>
+    <system:String x:Key="UI_SearchByName">Search by name...</system:String>
     <system:String x:Key="UI_SearchUp">Search Up</system:String>
     <system:String x:Key="UI_Search_2">Search:</system:String>
     <system:String x:Key="UI_SelectFileForComparison">Select file for comparison</system:String>
@@ -309,4 +313,6 @@
     <system:String x:Key="UI_World">World</system:String>
     <system:String x:Key="UI_Worlds">Worlds</system:String>
     <system:String x:Key="UI_YouCanOnlyUseBackupFiles">You can only use backup files when loading new &amp; modified archives. FModel will compare your local archives with the backup file you selected to filter packages and only show what you asked. We provide pre-created backups for some popular games but you can still create your own that will store information about all the game's packages at time T, for later use.</system:String>
+    <system:String x:Key="UI_ZoomIn">Zoom In</system:String>
+    <system:String x:Key="UI_ZoomOut">Zoom Out</system:String>
 </ResourceDictionary>
