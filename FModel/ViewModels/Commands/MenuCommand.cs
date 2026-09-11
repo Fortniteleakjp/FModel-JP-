@@ -58,11 +58,10 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Help_Donate":
                 Process.Start(new ProcessStartInfo { FileName = Constants.DONATE_LINK, UseShellExecute = true });
                 break;
-            case "Help_ReleaseNotes":
-                Helper.OpenWindow<ReleaseNotesWindow>(() => new ReleaseNotesWindow().Show());
-                break;
             case "Help_Releases":
-                Helper.OpenWindow<AdonisWindow>("Releases", () => new UpdateView().Show());
+                // JP 版のリリースノート (同梱 + GitHub Releases) を表示する。
+                // upstream のコミット履歴を出す UpdateView は更新検知時のダイアログとしてのみ使う。
+                Helper.OpenWindow<ReleaseNotesWindow>(() => new ReleaseNotesWindow().Show());
                 break;
             case "Help_BugsReport":
                 Process.Start(new ProcessStartInfo { FileName = Constants.ISSUE_LINK, UseShellExecute = true });

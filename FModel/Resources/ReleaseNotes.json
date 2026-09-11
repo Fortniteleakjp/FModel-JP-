@@ -1,9 +1,9 @@
 {
   "releases": [
     {
-      "version": "4.4.4.0",
-      "tag": "v4.4.4.0-jp",
-      "date": "2026-09-11",
+      "version": "4.5",
+      "tag": "v4.5-jp",
+      "date": "2026-09-12",
       "title": {
         "en": "Reference Viewer, Diff Tool and Athena Profiles",
         "ja": "参照ビューア・Diff Tool・Athena プロファイル"
@@ -40,8 +40,22 @@
         {
           "type": "Added",
           "text": {
-            "en": "Release notes are now shown in the app (Help > Release Notes) and pop up once after an update.",
-            "ja": "リリースノートをアプリ内で表示できるようになりました (ヘルプ > リリースノート)。更新後の初回起動時に一度だけ自動で開きます。"
+            "en": "Create Athena Profile on a folder: right click a folder such as Athena/Items/Cosmetics to add every cosmetic under it at once.",
+            "ja": "フォルダの右クリックにも対応: Athena/Items/Cosmetics などを右クリックすると、配下のコスメティクスをまとめて追加できます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "The Athena profile name and battle pass level can be changed in the settings.",
+            "ja": "Athena プロファイル名とバトルパスレベルを設定画面から変更できます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Release notes are now shown in the app (Help > Releases) and pop up once after an update.",
+            "ja": "リリースノートをアプリ内で表示できるようになりました (ヘルプ > リリース)。更新後の初回起動時に一度だけ自動で開きます。"
           }
         },
         {

@@ -262,6 +262,12 @@ public static class AthenaItemTable
     public static bool IsValidPrefix(string itemId)
         => !string.IsNullOrEmpty(itemId) && Items.Any(item => item.Prefixes.Any(p => itemId.StartsWith(p, StringComparison.OrdinalIgnoreCase)));
 
+    /// <summary>
+    /// アセット名だけを見てコスメティクスの可能性があるか判定する。
+    /// フォルダを丸ごと指定されたときに、パッケージを読み込む前の足切りに使う。
+    /// </summary>
+    public static bool IsCosmeticName(string itemId) => IsValidPrefix(itemId) || IsValidItemId(itemId);
+
     public static string GetBackendTypeByClass(string exportClass)
         => Items.FirstOrDefault(item => item.ClassNames.Contains(exportClass, _comparer))?.BackendType ?? "TBD";
 

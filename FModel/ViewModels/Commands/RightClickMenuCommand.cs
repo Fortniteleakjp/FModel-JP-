@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -127,7 +128,12 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
 
                 if (showtype is EShowAssetType.AthenaProfile)
                 {
-                    AthenaProfileGenerator.Generate(assets, contextViewModel.CUE4Parse.Provider, cancellationToken);
+                    // 明示的に選ばれたアセットはそのまま、フォルダは配下のコスメティクスだけを拾う
+                    var cosmetics = assets.ToList();
+                    foreach (var folder in folders)
+                        CollectFolderCosmetics(folder, cosmetics, cancellationToken);
+
+                    AthenaProfileGenerator.Generate(cosmetics, contextViewModel.CUE4Parse.Provider, cancellationToken);
                     return;
                 }
 
@@ -242,6 +248,26 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         {
             await ExportSessionViewModel.Instance.ExportAutomaticallyAsync();
         }
+    }
+
+    /// <summary>
+    /// フォルダ配下を再帰的に辿り、名前からコスメティクスと判断できるパッケージだけを集める。
+    /// </summary>
+    private static void CollectFolderCosmetics(TreeItem folder, List<GameFile> cosmetics, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        foreach (var entry in folder.AssetsList.Assets)
+        {
+            var asset = entry.Asset;
+            if (asset is null || !asset.IsUePackage) continue;
+            if (!AthenaItemTable.IsCosmeticName(asset.NameWithoutExtension)) continue;
+
+            cosmetics.Add(asset);
+        }
+
+        foreach (var sub in folder.Folders)
+            CollectFolderCosmetics(sub, cosmetics, cancellationToken);
     }
 
     private void LogExport(ApplicationViewModel contextViewModel, string directory, string path, string basePath, string fileType, int queuedBefore = 0)

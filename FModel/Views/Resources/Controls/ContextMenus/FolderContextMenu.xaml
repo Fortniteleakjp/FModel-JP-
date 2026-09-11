@@ -192,6 +192,24 @@
                 </MenuItem.Icon>
             </MenuItem>
         </MenuItem>
+        <MenuItem Header="{DynamicResource UI_CreateAthenaProfile}" Command="{Binding RightClickMenuCommand}"
+                  Visibility="{Binding CUE4Parse.Provider.ProjectName,
+                               Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
+                               ConverterParameter='FortniteGame'}">
+            <MenuItem.CommandParameter>
+                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                    <Binding Source="Assets_Athena_Profile" />
+                    <Binding Path="Tag" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                </MultiBinding>
+            </MenuItem.CommandParameter>
+            <MenuItem.Icon>
+                <Viewbox Width="16" Height="16">
+                    <Canvas Width="24" Height="24">
+                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource JsonIcon}" />
+                    </Canvas>
+                </Viewbox>
+            </MenuItem.Icon>
+        </MenuItem>
         <Separator />
         <MenuItem Header="{DynamicResource UI_FavoriteDirectory}" Click="OnFavoriteDirectoryClick"
                   CommandParameter="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}">

@@ -17,6 +17,11 @@ public static class ReleaseNotesService
 {
     private const string RESOURCE_NAME = "Resources.ReleaseNotes.json";
 
+    /// <summary>
+    /// CI が push ごとに上書きする配布用リリース。中身は導入手順でノートではないため一覧に載せない。
+    /// </summary>
+    private static readonly string[] _excludedTags = ["qa"];
+
     private static ReleaseNote[] _bundled;
 
     /// <summary>同梱分だけを読む。オフラインでも必ず成功する。</summary>
@@ -60,6 +65,7 @@ public static class ReleaseNotesService
             foreach (var release in releases ?? [])
             {
                 if (release.Draft || string.IsNullOrEmpty(release.TagName)) continue;
+                if (_excludedTags.Contains(release.TagName, StringComparer.OrdinalIgnoreCase)) continue;
 
                 var note = ReleaseNote.FromGitHub(release.TagName, release.Name, release.Body, release.HtmlUrl, release.PublishedAt);
                 if (!known.Add(note.Key)) continue; // 同梱分が優先
