@@ -11,7 +11,9 @@ headers = {
 }
 data = {
     "changelogUrl": "https://fmodeljp.fljpapi.jp/view/1",
-    "downloadUrl": f"https://github.com/Fortniteleakjp/FModel-JP-/releases/download/qa/{sha}.zip",
+    "downloadUrl": f"https://github.com/Fortniteleakjp/FModel-JP-/releases/download/{version}/{version}-{sha}.zip",
+    # ↓↓ tagをバージョン毎に変更する場合用のurl
+    # "downloadUrl": f"https://github.com/Fortniteleakjp/FModel-JP-/releases/download/{version}/{version}-{sha}.zip",
     "version": f"{version}-{sha}"
 }
 
