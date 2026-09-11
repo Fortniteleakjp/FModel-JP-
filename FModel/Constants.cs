@@ -32,6 +32,8 @@ public static class Constants
     public const string GH_REPO = "https://api.github.com/repos/4sval/FModel";
     public const string GH_COMMITS_HISTORY = GH_REPO + "/commits";
     public const string GH_RELEASES = GH_REPO + "/releases";
+    public const string GH_JP_REPO = "https://api.github.com/repos/Fortniteleakjp/FModel-JP-";
+    public const string GH_JP_RELEASES = GH_JP_REPO + "/releases";
     public const string DONATE_LINK = "https://fmodel.app/donate";
     public const string DISCORD_LINK = "https://fmodel.app/discord";
 

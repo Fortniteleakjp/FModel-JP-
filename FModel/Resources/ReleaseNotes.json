@@ -1,0 +1,57 @@
+{
+  "releases": [
+    {
+      "version": "4.4.4.0",
+      "tag": "v4.4.4.0-jp",
+      "date": "2026-09-11",
+      "title": {
+        "en": "Reference Viewer, Diff Tool and Athena Profiles",
+        "ja": "参照ビューア・Diff Tool・Athena プロファイル"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Reference Viewer: shows how assets reference each other as a node graph (Ctrl+Shift+R, or the right click menu).",
+            "ja": "参照ビューア: アセット同士の参照関係をノードグラフで表示します (Ctrl+Shift+R または右クリックメニュー)。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Diff Tool: compare an asset with the previous version or with another build from the right click menu.",
+            "ja": "Diff Tool: 右クリックメニューから、一つ前のバージョンや別のビルドとアセットを比較できます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "The interface can now be switched between Japanese and English in the settings.",
+            "ja": "設定から UI の表示言語を日本語と英語で切り替えられるようになりました。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Create Athena Profile: builds a profile_athena.json from the selected cosmetics into the Profiles output folder.",
+            "ja": "Athena プロファイルを作成: 選択したコスメティクスから profile_athena.json を出力フォルダの Profiles に書き出します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Release notes are now shown in the app (Help > Release Notes) and pop up once after an update.",
+            "ja": "リリースノートをアプリ内で表示できるようになりました (ヘルプ > リリースノート)。更新後の初回起動時に一度だけ自動で開きます。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Reference Viewer: wider spacing between node columns and a wider default window.",
+            "ja": "参照ビューア: ノードの列間隔とウィンドウの初期幅を広げました。"
+          }
+        }
+      ]
+    }
+  ]
+}

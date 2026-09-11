@@ -75,6 +75,7 @@
     <None Remove="Resources\asset_psd.png" />
     <None Remove="Resources\asset_png.png" />
     <None Remove="Resources\athena.png" />
+    <None Remove="Resources\ReleaseNotes.json" />
     <None Remove="Resources\Json.xshd" />
     <None Remove="Resources\Ini.xshd" />
     <None Remove="Resources\Verse.xshd" />
@@ -127,6 +128,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\ReleaseNotes.json" />
     <EmbeddedResource Include="Resources\Json.xshd" />
     <EmbeddedResource Include="Resources\Ini.xshd" />
     <EmbeddedResource Include="Resources\spline.vert" />

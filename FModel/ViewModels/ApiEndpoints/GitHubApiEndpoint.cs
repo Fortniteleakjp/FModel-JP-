@@ -25,6 +25,17 @@ public class GitHubApiEndpoint(RestClient client) : AbstractApiProvider(client)
         return response.Data;
     }
 
+    /// <summary>
+    /// FModel-JP のリリース一覧を取得する。リリースノートの表示に使う。
+    /// </summary>
+    public async Task<GitHubRelease[]> GetJpReleasesAsync(int limit = 20)
+    {
+        var request = new FRestRequest(Constants.GH_JP_RELEASES);
+        request.AddParameter("per_page", limit);
+        var response = await _client.ExecuteAsync<GitHubRelease[]>(request).ConfigureAwait(false);
+        return response.Data;
+    }
+
     public async Task<Author> GetUserAsync(string username)
     {
         var request = new FRestRequest($"https://api.github.com/users/{Uri.EscapeDataString(username)}");

@@ -10,6 +10,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using FModel.Extensions;
 using FModel.Services;
+using FModel.Services.ReleaseNotes;
 using FModel.Settings;
 using FModel.ViewModels;
 using FModel.Views;
@@ -94,6 +95,8 @@ public partial class MainWindow
         ApplicationService.ApiEndpointView.FModelApi.CheckForUpdates(true);
 #endif
 
+        ShowReleaseNotesOnce();
+
         switch (UserSettings.Default.AesReload)
         {
             case EAesReload.Always:
@@ -137,6 +140,19 @@ public partial class MainWindow
         //     _applicationView.CUE4Parse.Extract(cancellationToken,
         //         _applicationView.CUE4Parse.Provider["Marvel/Content/Marvel/Wwise/Assets/Events/Music/music_new/event/Entry.uasset"]));
 #endif
+    }
+
+    /// <summary>
+    /// 同梱リリースノートの最新バージョンが未読なら、一度だけリリースノートを開く。
+    /// </summary>
+    private static void ShowReleaseNotesOnce()
+    {
+        var latest = ReleaseNotesService.LatestBundledVersion;
+        if (string.IsNullOrEmpty(latest) || UserSettings.Default.LastSeenReleaseNotes == latest)
+            return;
+
+        UserSettings.Default.LastSeenReleaseNotes = latest;
+        Helper.OpenWindow<ReleaseNotesWindow>(() => new ReleaseNotesWindow().Show());
     }
 
     private void OnGridSplitterDoubleClick(object sender, MouseButtonEventArgs e)

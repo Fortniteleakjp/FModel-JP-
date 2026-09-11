@@ -80,6 +80,28 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _showChangelog, value);
     }
 
+    private string _lastSeenReleaseNotes = string.Empty;
+    /// <summary>最後にリリースノートを表示したバージョン。更新後の初回起動で一度だけ開くために使う。</summary>
+    public string LastSeenReleaseNotes
+    {
+        get => _lastSeenReleaseNotes;
+        set => SetProperty(ref _lastSeenReleaseNotes, value);
+    }
+
+    private string _athenaProfileId = "AthenaProfile";
+    public string AthenaProfileId
+    {
+        get => _athenaProfileId;
+        set => SetProperty(ref _athenaProfileId, value);
+    }
+
+    private int _athenaBattlePassLevel = 1;
+    public int AthenaBattlePassLevel
+    {
+        get => _athenaBattlePassLevel;
+        set => SetProperty(ref _athenaBattlePassLevel, value);
+    }
+
     private string _outputDirectory;
     public string OutputDirectory
     {

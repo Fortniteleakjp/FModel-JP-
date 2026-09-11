@@ -61,6 +61,7 @@
     <system:String x:Key="UI_CosmeticShopIcon">Cosmetic Shop Icon</system:String>
     <system:String x:Key="UI_CosmeticStyle">Cosmetic Style</system:String>
     <system:String x:Key="UI_Create">Create</system:String>
+    <system:String x:Key="UI_CreateAthenaProfile">Create Athena Profile</system:String>
     <system:String x:Key="UI_Creator">Creator</system:String>
     <system:String x:Key="UI_CustomVersions">Custom Versions</system:String>
     <system:String x:Key="UI_CustomizeTheDirectoryOfMoreOutput">Customize the directory of more output folders</system:String>
@@ -203,6 +204,7 @@
     <system:String x:Key="UI_NoPackagesFoundInFolder">No packages found in folder</system:String>
     <system:String x:Key="UI_NoPackagesFoundMatchingTheQuery">No packages found matching the query</system:String>
     <system:String x:Key="UI_NoReferencesFoundInOtherPackages">No references found in other packages</system:String>
+    <system:String x:Key="UI_NoReleaseNotes">No release notes available</system:String>
     <system:String x:Key="UI_Nodes">Nodes</system:String>
     <system:String x:Key="UI_OK">OK</system:String>
     <system:String x:Key="UI_Offset">Offset</system:String>
@@ -249,6 +251,7 @@
     <system:String x:Key="UI_References">References</system:String>
     <system:String x:Key="UI_Refresh">Refresh</system:String>
     <system:String x:Key="UI_Regex">Regex</system:String>
+    <system:String x:Key="UI_ReleaseNotes">Release Notes</system:String>
     <system:String x:Key="UI_Releases">Releases</system:String>
     <system:String x:Key="UI_RemindMeNow">Remind Me Now ...</system:String>
     <system:String x:Key="UI_Remove">Remove</system:String>
@@ -303,7 +306,9 @@
     <system:String x:Key="UI_UEVersions_2">UE Versions *</system:String>
     <system:String x:Key="UI_UncheckedLevelsWillBeReferencedBut">Unchecked levels will be referenced but not exported.</system:String>
     <system:String x:Key="UI_Unluac">Unluac</system:String>
+    <system:String x:Key="UI_Version">Version</system:String>
     <system:String x:Key="UI_VersioningConfiguration">Versioning Configuration *</system:String>
+    <system:String x:Key="UI_ViewOnGitHub">View on GitHub</system:String>
     <system:String x:Key="UI_Views">Views</system:String>
     <system:String x:Key="UI_Volume">Volume</system:String>
     <system:String x:Key="UI_WeLikeToMakeThingsAs">We like to make things as simple as possible. Choose between the detected games or manually add your own. FModel will use this information to automatically find archives to load and decrypt if needed. Make sure to not skip this step!</system:String>

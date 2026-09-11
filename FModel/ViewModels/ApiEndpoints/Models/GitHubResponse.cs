@@ -16,6 +16,13 @@ namespace FModel.ViewModels.ApiEndpoints.Models;
 public class GitHubRelease
 {
     [J("assets")] public GitHubAsset[] Assets { get; private set; }
+    [J("tag_name")] public string TagName { get; private set; }
+    [J("name")] public string Name { get; private set; }
+    [J("body")] public string Body { get; private set; }
+    [J("html_url")] public string HtmlUrl { get; private set; }
+    [J("draft")] public bool Draft { get; private set; }
+    [J("prerelease")] public bool PreRelease { get; private set; }
+    [J("published_at")] public DateTime? PublishedAt { get; private set; }
 }
 
 public class GitHubAsset : ViewModel

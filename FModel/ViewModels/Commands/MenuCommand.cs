@@ -58,6 +58,9 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Help_Donate":
                 Process.Start(new ProcessStartInfo { FileName = Constants.DONATE_LINK, UseShellExecute = true });
                 break;
+            case "Help_ReleaseNotes":
+                Helper.OpenWindow<ReleaseNotesWindow>(() => new ReleaseNotesWindow().Show());
+                break;
             case "Help_Releases":
                 Helper.OpenWindow<AdonisWindow>("Releases", () => new UpdateView().Show());
                 break;

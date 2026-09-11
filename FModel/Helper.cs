@@ -44,6 +44,23 @@ public static class Helper
         }
     }
 
+    /// <summary>
+    /// タイトルではなく型で一意に扱うウィンドウ用。タイトルがローカライズされていても動く。
+    /// </summary>
+    public static void OpenWindow<T>(Action action) where T : Window
+    {
+        var opened = Application.Current.Windows.OfType<T>().FirstOrDefault();
+        if (opened is null)
+        {
+            action();
+            return;
+        }
+
+        if (opened.WindowState == WindowState.Minimized) opened.WindowState = WindowState.Normal;
+        opened.Focus();
+        opened.Activate();
+    }
+
     public static T GetWindow<T>(string windowName, Action action) where T : Window
     {
         if (!IsWindowOpen<T>(windowName))

@@ -8,6 +8,7 @@ using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.Utils;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Services.Athena;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
@@ -62,6 +63,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         Diff,
         DiffPickFolder,
         DiffPreviousVersion,
+        AthenaProfile,
     }
 
     public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
@@ -96,6 +98,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_Diff_Pick_Folder" => (EAction.Show, EShowAssetType.DiffPickFolder, EBulkType.None),
             "Assets_Diff_Previous_Version" => (EAction.Show, EShowAssetType.DiffPreviousVersion, EBulkType.None),
             "Assets_Decompile" => (EAction.Show, EShowAssetType.Decompile, EBulkType.Code),
+            "Assets_Athena_Profile" => (EAction.Show, EShowAssetType.AthenaProfile, EBulkType.None),
 
             "Save_Data" => (EAction.Export, EShowAssetType.None, EBulkType.Raw),
             "Save_Properties" => (EAction.Export, EShowAssetType.None, EBulkType.Properties),
@@ -119,6 +122,12 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 {
                     var roots = assets.ToList();
                     System.Windows.Application.Current.Dispatcher.Invoke(() => new ReferenceChainWindow(roots).Show());
+                    return;
+                }
+
+                if (showtype is EShowAssetType.AthenaProfile)
+                {
+                    AthenaProfileGenerator.Generate(assets, contextViewModel.CUE4Parse.Provider, cancellationToken);
                     return;
                 }
 
