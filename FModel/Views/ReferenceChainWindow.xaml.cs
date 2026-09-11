@@ -58,7 +58,7 @@ namespace FModel.Views
         // ノードのカードと配置に関する寸法
         private const double NodeWidth = 250;
         private const double NodeHeight = 80;
-        private const double ColumnGap = 190;      // 深さ方向（列と列）の間隔
+        private const double ColumnGap = 320;      // 深さ方向（列と列）の間隔
         private const double RowGap = 48;          // 同じ列に並ぶノード同士の間隔
         private const double ColumnStagger = 36;   // 列内で互い違いにずらす量
         private const double NodeMargin = 60;      // グラフ全体の余白
