@@ -70,24 +70,25 @@ jobs:
           filename: ${{ github.sha }}.zip
           path: ./FModel/bin/Publish/
 
-      - name: Add Release
-        uses: ncipollo/release-action@v1.14.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: 'FModel-JP- Release'
-          body: |
-            初回の場合、FModel.exe をダウンロードしてください。
-            実行した際にアップデート情報が表示されたら、アップデートを実行してください。
-          tag: 'qa'
-          artifacts: |
-           ${{ github.sha }}.zip
-          allowUpdates: true
-
       - name: Get App Version
         id: package_version
         uses: kzrnm/get-net-sdk-project-versions-action@v2
         with:
           proj-path: ./FModel/FModel.csproj
+
+      - name: Add Release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: "${{ steps.package_version.outputs.version }}"
+          body: |
+            初回の場合、FModel.exe をダウンロードしてください。
+            実行した際にアップデート情報が表示されたら、アップデートを実行してください。
+          tag: '${{ steps.package_version.outputs.version }}'
+          artifacts: |
+            "${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip"
+            ./FModel/bin/Publish/FModel.exe
+          allowUpdates: true
 
       - name: Install Requests
         run: |
