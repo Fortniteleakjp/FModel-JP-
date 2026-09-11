@@ -19,6 +19,12 @@ public partial class ReleaseNotesWindow
         _ = viewModel.LoadAsync();
     }
 
+    private void OnDownloadLatestClick(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not ReleaseNotesViewModel viewModel) return;
+        viewModel.DownloadLatestBuild();
+    }
+
     private void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
     {
         if (string.IsNullOrEmpty(e.Uri?.AbsoluteUri)) return;

@@ -89,6 +89,7 @@
     <system:String x:Key="UI_Donate">寄付</system:String>
     <system:String x:Key="UI_Donators">寄付者</system:String>
     <system:String x:Key="UI_Download">ダウンロード</system:String>
+    <system:String x:Key="UI_DownloadLatestBuild">最新版をダウンロード</system:String>
     <system:String x:Key="UI_DragAmpDropFolderToQuickly">フォルダをドラッグ＆ドロップすると新しいゲームをすぐに設定できます</system:String>
     <system:String x:Key="UI_DropUsmapToImport">.usmap をドロップして読み込み</system:String>
     <system:String x:Key="UI_ETA">残り時間</system:String>
@@ -321,6 +322,7 @@
     <system:String x:Key="UI_WhenExportingAMeshAlsoFind">メッシュのエクスポート時に、付随するマテリアルも探してエクスポートします。</system:String>
     <system:String x:Key="UI_World">ワールド</system:String>
     <system:String x:Key="UI_Worlds">ワールド</system:String>
+    <system:String x:Key="UI_YouAreUpToDate">最新版です</system:String>
     <system:String x:Key="UI_YouCanOnlyUseBackupFiles">バックアップファイルは、新規・変更されたアーカイブを読み込むときにのみ使用できます。FModel はローカルのアーカイブと選択したバックアップを比較し、必要なパッケージだけを表示します。主要なゲーム向けには作成済みのバックアップを提供していますが、ある時点のパッケージ情報を保存した独自のバックアップを作ることもできます。</system:String>
     <system:String x:Key="UI_ZoomIn">拡大</system:String>
     <system:String x:Key="UI_ZoomOut">縮小</system:String>

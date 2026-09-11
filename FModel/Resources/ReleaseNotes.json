@@ -59,6 +59,13 @@
           }
         },
         {
+          "type": "Added",
+          "text": {
+            "en": "Download Latest Build: grabs the newest FModel-JP build straight from the release notes window.",
+            "ja": "最新版をダウンロード: リリースノートの画面から最新の FModel-JP ビルドをそのまま取得できます。"
+          }
+        },
+        {
           "type": "Changed",
           "text": {
             "en": "Reference Viewer: wider spacing between node columns and a wider default window.",

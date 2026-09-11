@@ -53,13 +53,17 @@
     </adonisControls:AdonisWindow.Resources>
 
     <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="230" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <!-- バージョン一覧 -->
-        <GroupBox Grid.Column="0" Header="{DynamicResource UI_Version}" Padding="{adonisUi:Space 0}"
+        <GroupBox Grid.Row="0" Grid.Column="0" Header="{DynamicResource UI_Version}" Padding="{adonisUi:Space 0}"
                   adonisExtensions:LayerExtension.IncreaseLayer="True">
             <ListBox ItemsSource="{Binding Releases}" SelectedItem="{Binding SelectedRelease}"
                      HorizontalContentAlignment="Stretch" BorderThickness="0"
@@ -84,7 +88,7 @@
         </GroupBox>
 
         <!-- 選択されたリリースの内容 -->
-        <GroupBox Grid.Column="1" Margin="10 0 0 0" Header="{DynamicResource UI_ReleaseNotes}"
+        <GroupBox Grid.Row="0" Grid.Column="1" Margin="10 0 0 0" Header="{DynamicResource UI_ReleaseNotes}"
                   adonisExtensions:LayerExtension.IncreaseLayer="True">
             <Grid>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
@@ -143,5 +147,25 @@
                            Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibilityConverter}}" />
             </Grid>
         </GroupBox>
+
+        <!-- 最新ビルドのダウンロード -->
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 10 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Padding="12 4"
+                    Content="{DynamicResource UI_DownloadLatestBuild}"
+                    IsEnabled="{Binding CanDownload}"
+                    Click="OnDownloadLatestClick"
+                    Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}" />
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <TextBlock Text="{DynamicResource UI_YouAreUpToDate}" Style="{StaticResource SubText}" Margin="0 0 8 0"
+                           Visibility="{Binding IsUpToDate, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <TextBlock Text="{Binding LatestBuildInfo}" Style="{StaticResource SubText}" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </adonisControls:AdonisWindow>

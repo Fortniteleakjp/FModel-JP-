@@ -89,6 +89,7 @@
     <system:String x:Key="UI_Donate">Donate</system:String>
     <system:String x:Key="UI_Donators">Donators</system:String>
     <system:String x:Key="UI_Download">Download</system:String>
+    <system:String x:Key="UI_DownloadLatestBuild">Download Latest Build</system:String>
     <system:String x:Key="UI_DragAmpDropFolderToQuickly">Drag &amp; drop folder to quickly configure new game</system:String>
     <system:String x:Key="UI_DropUsmapToImport">Drop .usmap to import</system:String>
     <system:String x:Key="UI_ETA">ETA</system:String>
@@ -321,6 +322,7 @@
     <system:String x:Key="UI_WhenExportingAMeshAlsoFind">When exporting a mesh, also find and export its attached materials.</system:String>
     <system:String x:Key="UI_World">World</system:String>
     <system:String x:Key="UI_Worlds">Worlds</system:String>
+    <system:String x:Key="UI_YouAreUpToDate">You are up to date</system:String>
     <system:String x:Key="UI_YouCanOnlyUseBackupFiles">You can only use backup files when loading new &amp; modified archives. FModel will compare your local archives with the backup file you selected to filter packages and only show what you asked. We provide pre-created backups for some popular games but you can still create your own that will store information about all the game's packages at time T, for later use.</system:String>
     <system:String x:Key="UI_ZoomIn">Zoom In</system:String>
     <system:String x:Key="UI_ZoomOut">Zoom Out</system:String>

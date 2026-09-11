@@ -36,6 +36,16 @@ public class GitHubApiEndpoint(RestClient client) : AbstractApiProvider(client)
         return response.Data;
     }
 
+    /// <summary>
+    /// FModel-JP の指定タグのリリースを取得する。CI は "qa" タグにビルド成果物 (&lt;sha&gt;.zip) を積んでいく。
+    /// </summary>
+    public async Task<GitHubRelease> GetJpReleaseAsync(string tag = "qa")
+    {
+        var request = new FRestRequest($"{Constants.GH_JP_RELEASES}/tags/{tag}");
+        var response = await _client.ExecuteAsync<GitHubRelease>(request).ConfigureAwait(false);
+        return response.Data;
+    }
+
     public async Task<Author> GetUserAsync(string username)
     {
         var request = new FRestRequest($"https://api.github.com/users/{Uri.EscapeDataString(username)}");
