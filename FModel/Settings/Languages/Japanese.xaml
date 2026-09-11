@@ -20,6 +20,8 @@
     <system:String x:Key="UI_Archives">アーカイブ</system:String>
     <system:String x:Key="UI_ArchivesInfo">アーカイブ情報</system:String>
     <system:String x:Key="UI_AssetsSharingTheSameNameAcross">このビューでは、異なるパッケージにある同名のアセットをまとめて表示します。エクスポートには影響しません。</system:String>
+    <system:String x:Key="UI_AthenaBattlePassLevel">Athena バトルパスレベル</system:String>
+    <system:String x:Key="UI_AthenaProfileName">Athena プロファイル名</system:String>
     <system:String x:Key="UI_Audio">音声</system:String>
     <system:String x:Key="UI_AudioPlayer">オーディオプレイヤー</system:String>
     <system:String x:Key="UI_AutoExportAttachedMaterials">付随するマテリアルも自動でエクスポート</system:String>
@@ -300,6 +302,8 @@
     <system:String x:Key="UI_TexturePlatform">テクスチャのプラットフォーム</system:String>
     <system:String x:Key="UI_TextureQuality">テクスチャの品質</system:String>
     <system:String x:Key="UI_Textures">テクスチャ</system:String>
+    <system:String x:Key="UI_TheAccountIdAndLockerNameUsed">生成される profile_athena.json の accountId とロッカー名に使われます</system:String>
+    <system:String x:Key="UI_TheBattlePassAndAccountLevelWritten">生成される profile_athena.json に書き込まれるバトルパス／アカウントレベルです</system:String>
     <system:String x:Key="UI_Themes">テーマ</system:String>
     <system:String x:Key="UI_ThisFileIsIdenticalInBoth">このファイルは両方のビルドで同一です</system:String>
     <system:String x:Key="UI_UEVersions">UE バージョン</system:String>

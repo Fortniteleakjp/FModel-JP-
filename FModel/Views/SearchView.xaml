@@ -223,7 +223,10 @@
                                             </Binding>
                                         </MenuItem.IsEnabled>
                                     </MenuItem>
-                                    <MenuItem Header="{DynamicResource UI_CreateAthenaProfile}" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}">
+                                    <MenuItem Header="{DynamicResource UI_CreateAthenaProfile}" Command="{Binding DataContext.mainApplication.RightClickMenuCommand}"
+                                              Visibility="{Binding DataContext.mainApplication.CUE4Parse.Provider.ProjectName,
+                                                           Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
+                                                           ConverterParameter='FortniteGame'}">
                                         <MenuItem.CommandParameter>
                                             <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                 <Binding Source="Assets_Athena_Profile" />

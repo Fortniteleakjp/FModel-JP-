@@ -20,6 +20,8 @@
     <system:String x:Key="UI_Archives">Archives</system:String>
     <system:String x:Key="UI_ArchivesInfo">Archives Info</system:String>
     <system:String x:Key="UI_AssetsSharingTheSameNameAcross">Assets sharing the same name across different packages are grouped together in this view. Exports are not affected.</system:String>
+    <system:String x:Key="UI_AthenaBattlePassLevel">Athena Battle Pass Level</system:String>
+    <system:String x:Key="UI_AthenaProfileName">Athena Profile Name</system:String>
     <system:String x:Key="UI_Audio">Audio</system:String>
     <system:String x:Key="UI_AudioPlayer">Audio Player</system:String>
     <system:String x:Key="UI_AutoExportAttachedMaterials">Auto-Export Attached Materials</system:String>
@@ -300,6 +302,8 @@
     <system:String x:Key="UI_TexturePlatform">Texture Platform</system:String>
     <system:String x:Key="UI_TextureQuality">Texture Quality</system:String>
     <system:String x:Key="UI_Textures">Textures</system:String>
+    <system:String x:Key="UI_TheAccountIdAndLockerNameUsed">The account id and locker name used in the generated profile_athena.json</system:String>
+    <system:String x:Key="UI_TheBattlePassAndAccountLevelWritten">The battle pass and account level written into the generated profile_athena.json</system:String>
     <system:String x:Key="UI_Themes">Themes</system:String>
     <system:String x:Key="UI_ThisFileIsIdenticalInBoth">This file is identical in both builds</system:String>
     <system:String x:Key="UI_UEVersions">UE Versions</system:String>

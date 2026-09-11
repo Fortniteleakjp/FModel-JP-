@@ -47,6 +47,8 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -295,6 +297,36 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
+
+                    <TextBlock Grid.Row="23" Grid.Column="0" Text="{DynamicResource UI_AthenaProfileName}" VerticalAlignment="Center" Margin="0 0 0 5"
+                               ToolTip="{DynamicResource UI_TheAccountIdAndLockerNameUsed}"
+                               Visibility="{Binding DataContext.CUE4Parse.Provider.ProjectName,
+                                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}},
+                                            Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
+                                            ConverterParameter='FortniteGame'}" />
+                    <TextBox Grid.Row="23" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                             VerticalContentAlignment="Center" MaxLength="64"
+                             ToolTip="{DynamicResource UI_TheAccountIdAndLockerNameUsed}"
+                             Text="{Binding AthenaProfileId, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Visibility="{Binding DataContext.CUE4Parse.Provider.ProjectName,
+                                          RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}},
+                                          Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
+                                          ConverterParameter='FortniteGame'}" />
+
+                    <TextBlock Grid.Row="24" Grid.Column="0" Text="{DynamicResource UI_AthenaBattlePassLevel}" VerticalAlignment="Center" Margin="0 0 0 5"
+                               ToolTip="{DynamicResource UI_TheBattlePassAndAccountLevelWritten}"
+                               Visibility="{Binding DataContext.CUE4Parse.Provider.ProjectName,
+                                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}},
+                                            Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
+                                            ConverterParameter='FortniteGame'}" />
+                    <TextBox Grid.Row="24" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                             VerticalContentAlignment="Center" MaxLength="4" TextAlignment="Right"
+                             ToolTip="{DynamicResource UI_TheBattlePassAndAccountLevelWritten}"
+                             Text="{Binding AthenaBattlePassLevel, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                             Visibility="{Binding DataContext.CUE4Parse.Provider.ProjectName,
+                                          RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}},
+                                          Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
+                                          ConverterParameter='FortniteGame'}" />
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">
