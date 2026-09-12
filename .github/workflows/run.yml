@@ -93,6 +93,20 @@ jobs:
           allowUpdates: true
           makeLatest: true
 
+      # 旧バージョンのアプリはリリースノート画面が "qa" タグを決め打ちで見ているため、
+      # 同じ ZIP を qa リリースにも積んで最新版へ更新できるようにする
+      - name: Mirror Build To qa Tag
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: 'qa'
+          artifacts: |
+            ${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip
+          allowUpdates: true
+          makeLatest: false
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+
       - name: Install Requests
         run: |
           python -m pip install --upgrade pip
