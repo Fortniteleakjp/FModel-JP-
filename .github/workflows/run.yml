@@ -63,32 +63,35 @@ jobs:
           Copy-Item $dll (Join-Path $publishDir "CUE4Parse-Natives.dll") -Force
           Write-Host "Bundled native DLL from: $dll"
 
-      - name: Create ZIP File
-        uses: thedoctor0/zip-release@0.7.6
-        with:
-          type: zip
-          filename: ${{ github.sha }}.zip
-          path: ./FModel/bin/Publish/
-
       - name: Get App Version
         id: package_version
         uses: kzrnm/get-net-sdk-project-versions-action@v2
         with:
           proj-path: ./FModel/FModel.csproj
 
+      - name: Create ZIP File
+        uses: thedoctor0/zip-release@0.7.6
+        with:
+          type: zip
+          filename: ${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip
+          path: ./FModel/bin/Publish/
+
       - name: Add Release
         uses: ncipollo/release-action@v1.14.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: "${{ steps.package_version.outputs.version }}"
+          name: 'FModel-JP- v${{ steps.package_version.outputs.version }}'
           body: |
-            初回の場合、FModel.exe をダウンロードしてください。
+            初回の場合、下の ZIP をダウンロードして展開してください。
             実行した際にアップデート情報が表示されたら、アップデートを実行してください。
+
+            Version: `${{ steps.package_version.outputs.version }}`
+            Build: `${{ github.sha }}`
           tag: '${{ steps.package_version.outputs.version }}'
           artifacts: |
-            "${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip"
-            ./FModel/bin/Publish/FModel.exe
+            ${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip
           allowUpdates: true
+          makeLatest: true
 
       - name: Install Requests
         run: |

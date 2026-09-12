@@ -43,7 +43,7 @@ public class ReleaseNotesViewModel : ViewModel
     }
 
     private GitHubAsset _latestBuild;
-    /// <summary>FModel-JP の "qa" リリースにある一番新しいビルド。</summary>
+    /// <summary>FModel-JP の最新リリースにある一番新しいビルド。</summary>
     public GitHubAsset LatestBuild
     {
         get => _latestBuild;
@@ -71,7 +71,34 @@ public class ReleaseNotesViewModel : ViewModel
 
     public bool CanDownload => LatestBuild is not null && !IsDownloading && !IsUpToDate;
 
-    private string LatestBuildSha => LatestBuild is null ? string.Empty : Path.GetFileNameWithoutExtension(LatestBuild.Name);
+    /// <summary>
+    /// 成果物名 "&lt;version&gt;-&lt;sha&gt;.zip" から sha を取り出す。
+    /// 旧形式の "&lt;sha&gt;.zip" もそのまま扱えるようにしている。
+    /// </summary>
+    private string LatestBuildSha
+    {
+        get
+        {
+            if (LatestBuild is null) return string.Empty;
+
+            var name = Path.GetFileNameWithoutExtension(LatestBuild.Name);
+            var separator = name.LastIndexOf('-');
+            return separator < 0 ? name : name[(separator + 1)..];
+        }
+    }
+
+    /// <summary>成果物名 "&lt;version&gt;-&lt;sha&gt;.zip" から version を取り出す。旧形式なら空。</summary>
+    private string LatestBuildVersion
+    {
+        get
+        {
+            if (LatestBuild is null) return string.Empty;
+
+            var name = Path.GetFileNameWithoutExtension(LatestBuild.Name);
+            var separator = name.LastIndexOf('-');
+            return separator < 0 ? string.Empty : name[..separator];
+        }
+    }
 
     public string LatestBuildInfo
     {
@@ -82,8 +109,10 @@ public class ReleaseNotesViewModel : ViewModel
             var sha = LatestBuildSha;
             if (sha.Length > 7) sha = sha[..7];
 
+            var version = LatestBuildVersion;
             var size = $"{LatestBuild.Size / 1024d / 1024d:0.0} MB";
-            return $"{sha} · {LatestBuild.CreatedAt.ToLocalTime():yyyy/MM/dd} · {size}";
+            var info = $"{sha} · {LatestBuild.CreatedAt.ToLocalTime():yyyy/MM/dd} · {size}";
+            return string.IsNullOrEmpty(version) ? info : $"v{version} · {info}";
         }
     }
 
@@ -121,10 +150,14 @@ public class ReleaseNotesViewModel : ViewModel
     {
         try
         {
-            var release = await ApplicationService.ApiEndpointView.GitHubApi.GetJpReleaseAsync();
+            var release = await ApplicationService.ApiEndpointView.GitHubApi.GetJpLatestReleaseAsync();
             if (release?.Assets is not { Length: > 0 }) return;
 
-            LatestBuild = release.Assets.MaxBy(a => a.CreatedAt);
+            // 同じリリースに複数ビルドの zip が積まれるため、一番新しい zip を選ぶ
+            var zips = release.Assets.Where(a => a.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)).ToArray();
+            if (zips.Length == 0) return;
+
+            LatestBuild = zips.MaxBy(a => a.CreatedAt);
             RaisePropertyChanged(nameof(IsUpToDate));
         }
         catch (Exception e)
