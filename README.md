@@ -1,222 +1,30 @@
-﻿# FModel 日本語版 🇯🇵
-
-**FModel 日本語版**は、Unreal Engine 4 / 5 製ゲームのファイルを解析・抽出できる
-オープンソースツール **[FModel](https://github.com/4sval/FModel)** をベースにした
-**非公式の日本語翻訳・改良版**です。
-
-FModel-JPは、オリジナルのFModelに日本語化と独自の機能を追加したバージョンです。
-
----
-
-## ✨ 特徴
-
-- 🈶 **UI完全日本語化**
-- メニュー / 設定画面  / 右クリックメニュー
-- 🔄 **最新のFModel本体をベースに変更**
-- 🧩 **独自機能・改善を追加**
-- **ファイルの比較機能** (Diff Tool)
-- **高度な検索** (ファイル内検索)
-- **閲覧履歴** (History)
-- **ダメージ値の表示** (ユーザーが追加)
-- **クリエイティブマップのAES取得機能**
-- **参照ビューア**
-- **Animation Blueprint グラフビューア**（AnimGraph / Function / StateMachine のレイヤー、ノード接続、プロパティ確認）
-- **新エクスプローラーを標準 UI に変更**（Windows 10 Explorer 風の戻る／進む／上へ、アドレスバー、検索、クラス絞り込み、フォルダーとファイルの統合詳細表示）
-- **大規模マニフェスト向け高速表示**（フォルダツリーの遅延構築、検索・Go To の高速化、プレビュー負荷の制御）
-- **アーカイブ読み込みの応答性改善**（一覧更新のバッチ化、同一 Reader 単位の状態管理）
-- **キャッシュ整理**（チャンク、マニフェスト、マッピングを専用ディレクトリへ整理し、旧配置から自動移行）
-
----
-
-## 🛠 Test Edit Asset 機能について
-
-FModel-JPでは、Test Edit Asset 機能の実装に  
-オープンソースツール **UAssetAPI** を使用しています。
-
-- `.uasset` の編集処理をサポート
-- テスト用途でのアセット編集機能を提供
-
-UAssetAPI は、Unreal Engine アセットを解析・編集できる高機能なツールです。  
-本プロジェクトでは、その機能を Test Edit Asset 機能として活用しています。
-
----
-
-## 📥 ダウンロード
-
-最新版は **GitHub Releases** から入手できます。
-
-👉 **[ダウンロードはこちら](https://github.com/Fortniteleakjp/FModel-JP-/releases/download/qa/FModel.exe)**
-
----
-
-## 🚀 使い方
-
-1. `FModel.exe` をダウンロード
-2. 実行（インストール不要）
-3. 初回起動時に **「ゲームを追加」** を選択
-4. 対象のゲームフォルダを指定
-5. 暗号化されている場合は **AESキー** を設定
-6. アセットの閲覧・抽出が可能になります
-
-🎥 **[使い方動画はこちら](https://www.youtube.com/watch?v=6B96mvfnuMo)**
-
-### 💡 独自機能の活用方法
-
-#### 📂 ファイルの比較機能 (Diff Tool)
-2つのアセットを選択（`Ctrl` + クリック）し、右クリックメニューから **「比較」** を選択すると、専用のDiffビューアが起動します。
-- プロパティの差異を色分けして表示
-- 変更された値、追加・削除された項目を一目で確認可能
-- バージョン間のデータ変更調査に最適
-
-#### 🔍 高度な検索 (Deep Search)
-ファイル名だけでなく、アセット内部のデータを対象に検索できます。
-- **検索対象**: 文字列、数値、プロパティ名など
-- **使い方**: 検索バーのオプションから「ファイル内検索」を有効にするか、専用メニューから実行
-- 特定のパラメータを持つアイテムを探す際に便利です
-
-#### 🕒 閲覧履歴 (History)
-最近開いたアセットやフォルダの履歴を自動保存します。
-- 「履歴」タブから過去にアクセスしたファイルへ即座にジャンプ
-- 作業中断後の再開がスムーズになります
-
-#### 🔑 クリエイティブマップのAES取得
-Fortnite等のクリエイティブマップコードを入力するだけで、必要なAESキーを自動取得・適用します。
-- 手動でのキー検索・入力の手間を省略
-- ツールメニュー > 「マップキー取得」から利用可能
-
-#### 🎞 Animation Blueprint グラフビューア
-Animation Blueprint の `UAnimBlueprintGeneratedClass` を解析し、AnimGraph の出力層、Function 層、統合グラフ、StateMachine の概要と各 State のサブグラフを確認できます。
-
-- ノードの接続、入力ピン、コメント、主要プロパティを表示
-- StateMachine の State / Conduit / 遷移をグラフとして確認
-- ノードを選択してプロパティを確認し、グラフをズーム・移動
-
-#### ⚡ 大規模ゲームデータの閲覧
-大量のパッケージを含むゲームでは、ファイル一覧をバックグラウンドで構築し、UI にはまとまった単位で公開します。フォルダ検索と Go To は構築済みパスのインデックスを利用し、アーカイブ登録・マウント状態の更新も UI スレッドへ集約します。
-
-#### 🗂 新エクスプローラー
-起動時から新エクスプローラーを表示します。ファイル名検索、アセットクラス絞り込み、アドレスバーによるパス移動、戻る・進む・親フォルダ移動、グリッド表示に対応しています。
-
-解析・アニメーション表示に使用する CUE4Parse は、[指定コミット `a098f0b6`](https://github.com/FabianFG/CUE4Parse/tree/a098f0b6f87372e95d42701216159961eb691948) に固定しています。これに合わせて PR #656 の AnimBlueprint 新 API を利用しています。
-
-### ファイル名形式のカスタマイズ
-
-`設定` > `一般` > `プロパティ保存時のファイル名形式` から、アセットのプロパティ(.json, .cpp)やプロファイル(.json)を保存する際のファイル名をカスタマイズできます。
-
-#### 使用可能なプレースホルダー
-
-| プレースホルダー | 説明 | 例 |
-|:---|:---|:---|
-| `{FileName}` | 元のファイル名 | `MyAsset` |
-| `{yyyy}` | 年 (4桁) | `2023` |
-| `{yy}` | 年 (下2桁) | `23` |
-| `{MM}` | 月 (0埋め) | `09` |
-| `{dd}` | 日 (0埋め) | `05` |
-| `{HH}` | 時 (24時間表記) | `14` |
-| `{mm}` | 分 (0埋め) | `30` |
-| `{ss}` | 秒 (0埋め) | `59` |
-
-#### 設定例
-- **形式**: `{FileName}-{yyyy}{MM}{dd}`
-- **出力例**: `MyAsset-20230905.json`
-
-#### 注意事項
-- 設定欄を空にすると、タイムスタンプなどを付与せず、元のファイル名（例: `MyAsset.json`）で保存されます。
-- ファイル名として使用できない文字 (`<`, `>`, `:`, `"`, `/`, `\`, `|`, `?`, `*`) は、自動的にアンダースコア `_` に置換されます。
----
-
-## ❓ トラブルシューティング
-
-うまく動作しない場合は、以下をご確認ください。
-
-### Q. 起動しない / エラーが出る
-- **.NET ランタイム**: 最新の .NET Desktop Runtime 6.0 がインストールされているか確認してください。
-- **セキュリティソフト**: 未署名のツールのため、ウイルス対策ソフトに誤検知される場合があります。例外設定に追加してください。
-
-### Q. アセットの中身が見れない
-- **AESキー**: ゲームのバージョンに対応した正しいAESキーが設定されているか確認してください。キーはアップデートごとに変わる可能性があります。
-- **マッピングファイル**: `.usmap` ファイルが必要なゲームの場合、設定から正しいマッピングファイルを読み込ませてください。
-
-### Q. 日本語が表示されない / 文字化けする
-- 設定画面で言語が「Japanese」になっているか確認してください。
-
----
-
-## 🛠 日本語化・改良内容
-
-### 日本語化範囲
-
-- ✅ メインウィンドウ
-- ✅ メニューバー（ファイル / 表示 / ツール 等）
-- ✅ 設定画面
-- ✅ アセット詳細ウィンドウ
-- ✅ エラーメッセージ・通知
-- ✅ 右クリックメニュー
-
-### 独自機能・改良
-
-- ファイルの比較機能の追加
-- 高度な検索(ファイル内検索)の追加
-- 閲覧履歴の追加
-- ダメージ値の表示(ユーザーが追加)機能の追加
-- クリエイティブマップのAES取得機能の追加
-- 日本語環境向けのUI調整
-- 一部機能の挙動改善
-- 利便性向上のための細かな修正
-
----
-
-## 🔧 ベースにした主なプルリクエスト
-
-以下の公式FModelのPRを元に改良を行っています。
-
-- [PR #623](https://github.com/4sval/FModel/pull/623)
-- [PR #617](https://github.com/4sval/FModel/pull/617)
-- [PR #580](https://github.com/4sval/FModel/pull/580)
-- [PR #693](https://github.com/4sval/FModel/pull/693)
-- [PR #689](https://github.com/4sval/FModel/pull/689)
-- [PR #656](https://github.com/4sval/FModel/pull/656)
-
----
-
-
-## リプレイ解析機能について
-
-リプレイ解析機能は、以下のツールを使用して実装しています。
-
-- [FortniteReplayDecompressor](https://github.com/Shiqan/FortniteReplayDecompressor)
-
-## .ufontから.ttfへの変換機能は、ランドマークのツールを使用して実装しています。
-
----
-
-
-## ⚠ 注意事項
-
-- 本プロジェクトは **非公式版** です
-- オリジナルFModelとは挙動が異なる場合があります
-- 日本語化・独自機能による不具合の可能性があります
-- **自己責任でご利用ください**
-
----
-
-## 📝 ライセンス
-
-本リポジトリは **[FModel](https://github.com/4sval/FModel)** を元にしています。
-ライセンスの詳細は **LICENSE** ファイルをご確認ください。
-
----
-
-## 💬 コミュニティ / サポート
-
-質問やバグ報告、要望などはDiscordサーバーまでお願いします。
-
-👉 **[Discordに参加する](https://discord.gg/EFvQSnte2a)**
-
----
-
-## クレジット
-
-- Original Tool: **4sval / FModel**
-- Japaneseization: **qKuafn**
-- Modifications: **Fortniteleakjp** & **Landmark1218**
+FModel - An Unreal Engine Archives Explorer in C#
+------------------------------------------
+
+[![CI Status](https://img.shields.io/github/actions/workflow/status/4sval/FModel/qa.yml?label=CI)](https://github.com/4sval/FModel/actions)
+[![Latest](https://img.shields.io/github/v/release/4sval/FModel?color=yellow)](https://fmodel.app/download)
+[![Donate](https://img.shields.io/badge/sponsor-DB61A2?logo=GitHub-Sponsors&logoColor=white)](https://fmodel.app/donate)
+[![Discord](https://discord.com/api/guilds/637265123144237061/widget.png?style=shield)](https://fmodel.app/discord)
+***
+
+### Description:
+FModel is an archive explorer for [Unreal Engine](https://www.unrealengine.com/en-US/) games that uses [CUE4Parse](https://github.com/FabianFG/CUE4Parse) as its core parsing library, providing robust support for the latest UE4 and UE5 archive formats. It aims to deliver a modern and intuitive user interface, powerful features, and a comprehensive set of tools for previewing and converting game packages, empowering YOU to understand games' inner workings with ease.
+
+FModel is actively maintained and developed by a dedicated community of contributors, and welcomes all new contributions and feedback.
+
+### Installation:
+For installation, follow the instructions from [here](https://github.com/4sval/FModel/wiki/Installing-FModel)
+
+### Sponsorship:
+<p>
+  <a href="https://1password.com/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://cdn.fmodel.app/i/svg/1password-light.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://cdn.fmodel.app/i/svg/1password-dark.svg">
+      <img src="https://cdn.fmodel.app/i/svg/1password-light.svg" width="256px">
+    </picture>
+  </a>
+</p>
+
+### License:
+FModel is licensed under [GPL-3](https://github.com/4sval/FModel/blob/dev/LICENSE), and licenses of third-party libraries used are listed [here](https://github.com/4sval/FModel/blob/dev/NOTICE).

@@ -1,0 +1,1817 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using AdonisUI.Controls;
+using CUE4Parse_Conversion.Exporters;
+using CUE4Parse_Conversion.Sounds;
+using CUE4Parse;
+using CUE4Parse.Compression;
+using CUE4Parse.Encryption.Aes;
+using CUE4Parse.FileProvider;
+using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.GameTypes.Aion2.Objects;
+using CUE4Parse.GameTypes.AoC.Objects;
+using CUE4Parse.GameTypes.AshEchoes.FileProvider;
+using CUE4Parse.GameTypes.Borderlands3.Assets.Exports;
+using CUE4Parse.GameTypes.Borderlands4.Assets.Exports;
+using CUE4Parse.GameTypes.Borderlands4.Wwise;
+using CUE4Parse.GameTypes.Dawnwalker.Assets.Exports;
+using CUE4Parse.GameTypes.DFHO.Assets.Objects;
+using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
+using CUE4Parse.GameTypes.KRD.Assets.Exports;
+using CUE4Parse.GameTypes.LegoBatman.Assets;
+using CUE4Parse.GameTypes.LordOfMysteries.FileProvider;
+using CUE4Parse.GameTypes.RocoKingdomWorld.Assets.Objects;
+using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
+using CUE4Parse.GameTypes.SquareEnix.UE4.Assets.Exports;
+using CUE4Parse.GameTypes.Theia.FileProvider;
+using CUE4Parse.GameTypes.WarnerBros.GothamKnights.Assets.Exports.Wwise;
+using CUE4Parse.MappingsProvider;
+using CUE4Parse.MappingsProvider.Jmap;
+using CUE4Parse.MappingsProvider.Usmap;
+using CUE4Parse.UE4.AssetRegistry;
+using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Animation;
+using CUE4Parse.UE4.Assets.Exports.CriWare;
+using CUE4Parse.UE4.Assets.Exports.Engine;
+using CUE4Parse.UE4.Assets.Exports.Fmod;
+using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Sound;
+using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.Assets.Exports.Verse;
+using CUE4Parse.UE4.Assets.Exports.Wwise;
+using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.BinaryConfig;
+using CUE4Parse.UE4.CriWare;
+using CUE4Parse.UE4.CriWare.Readers;
+using CUE4Parse.UE4.FMod;
+using CUE4Parse.UE4.GameFeatures;
+using CUE4Parse.UE4.IO;
+using CUE4Parse.UE4.Localization;
+using CUE4Parse.UE4.Lua.unluac;
+using CUE4Parse.UE4.Objects.Core.Serialization;
+using CUE4Parse.UE4.Objects.Engine;
+using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.UE4.Objects.UObject.Editor;
+using CUE4Parse.UE4.Oodle.Objects;
+using CUE4Parse.UE4.Readers;
+using CUE4Parse.UE4.Shaders;
+using CUE4Parse.UE4.Versions;
+using CUE4Parse.UE4.Wwise;
+using CUE4Parse.Utils;
+using EpicManifestParser;
+using EpicManifestParser.UE;
+using FModel.Creator;
+using FModel.Extensions;
+using FModel.Framework;
+using FModel.Services;
+using FModel.Settings;
+using FModel.Views;
+using FModel.Views.Resources.Controls;
+using FModel.Views.Snooper;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
+using Serilog;
+using SkiaSharp;
+using Svg.Skia;
+using UE4Config.Parsing;
+using static CUE4Parse.UE4.Versions.EGame;
+using Application = System.Windows.Application;
+using FGuid = CUE4Parse.UE4.Objects.Core.Misc.FGuid;
+
+namespace FModel.ViewModels;
+
+public partial class CUE4ParseViewModel : ViewModel
+{
+    private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
+    private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
+    private readonly Regex _fnLiveRegex = new(@"^FortniteGame[/\\]Content[/\\]Paks[/\\]",
+        RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    private static readonly HttpClient _chunkClient = ManifestParseOptions.CreateDefaultClient();
+
+    private bool _modelIsOverwritingMaterial;
+    public bool ModelIsOverwritingMaterial
+    {
+        get => _modelIsOverwritingMaterial;
+        set => SetProperty(ref _modelIsOverwritingMaterial, value);
+    }
+
+    private bool _modelIsWaitingAnimation;
+    public bool ModelIsWaitingAnimation
+    {
+        get => _modelIsWaitingAnimation;
+        set => SetProperty(ref _modelIsWaitingAnimation, value);
+    }
+
+    public bool IsSnooperOpen => _snooper is { Exists: true, IsVisible: true };
+    private Snooper _snooper;
+    public Snooper SnooperViewer
+    {
+        get
+        {
+            if (_snooper != null) return _snooper;
+
+            return Application.Current.Dispatcher.Invoke(delegate
+            {
+                var scale = ImGuiController.GetDpiScale();
+                var htz = Snooper.GetMaxRefreshFrequency();
+                return _snooper = new Snooper(
+                    new GameWindowSettings { UpdateFrequency = htz },
+                    new NativeWindowSettings
+                    {
+                        ClientSize = new OpenTK.Mathematics.Vector2i(
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75 * scale),
+                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85 * scale)),
+                        NumberOfSamples = Constants.SAMPLES_COUNT,
+                        WindowBorder = WindowBorder.Resizable,
+                        Flags = ContextFlags.ForwardCompatible,
+                        Profile = ContextProfile.Core,
+                        Vsync = VSyncMode.Adaptive,
+                        APIVersion = new Version(4, 6),
+                        StartVisible = false,
+                        StartFocused = false,
+                        Title = "3D Viewer"
+                    });
+            });
+        }
+    }
+
+    public AbstractVfsFileProvider Provider { get; }
+    public GameDirectoryViewModel GameDirectory { get; }
+    public AssetsFolderViewModel AssetsFolder { get; }
+    public SearchViewModel SearchVm { get; }
+    public SearchViewModel RefVm { get; }
+    public TabControlViewModel TabControl { get; }
+    public ConfigIni IoStoreOnDemand { get; }
+    private Lazy<WwiseProvider> _wwiseProviderLazy;
+    public WwiseProvider WwiseProvider => _wwiseProviderLazy.Value;
+    private Lazy<FModProvider> _fmodProviderLazy;
+    public FModProvider FmodProvider => _fmodProviderLazy?.Value;
+    private Lazy<CriWareProvider> _criWareProviderLazy;
+    public CriWareProvider CriWareProvider => _criWareProviderLazy?.Value;
+    public ConcurrentBag<string> UnknownExtensions = [];
+
+    public int ExportedCount;
+    public int FailedExportCount;
+
+    public CUE4ParseViewModel()
+    {
+        var currentDir = UserSettings.Default.CurrentDir;
+        var gameDirectory = currentDir.GameDirectory;
+        var versionContainer = new VersionContainer(
+            game: currentDir.UeVersion, platform: currentDir.TexturePlatform,
+            customVersions: new FCustomVersionContainer(currentDir.Versioning.CustomVersions),
+            optionOverrides: currentDir.Versioning.Options,
+            mapStructTypesOverrides: currentDir.Versioning.MapStructTypes);
+        var pathComparer = StringComparer.OrdinalIgnoreCase;
+
+        switch (gameDirectory)
+        {
+            case Constants._FN_LIVE_TRIGGER:
+            {
+                Provider = new StreamedFileProvider("FortniteLive", versionContainer, pathComparer);
+                break;
+            }
+            case Constants._VAL_LIVE_TRIGGER:
+            {
+                Provider = new StreamedFileProvider("ValorantLive", versionContainer, pathComparer);
+                break;
+            }
+            default:
+            {
+                Provider = versionContainer.Game switch
+                {
+                    GAME_StateOfDecay2 => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                    [
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
+                    GAME_eFootball => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                    [
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
+                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
+                    GAME_DeadByDaylight => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+                    [
+                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\DeadByDaylight\\Saved\\PersistentDownloadDir\\DynamicContent")
+                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
+                    GAME_AshEchoes => new AEDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+                    GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
+                    GAME_HonorofKingsWorld => new HoKWDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+                    GAME_LordOfMysteries => new LoMDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+                    GAME_ArcRaiders or GAME_Highguard or GAME_MARVELTokonFightingSouls => new TheiaFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
+                };
+
+                break;
+            }
+        }
+
+        Provider.ReadScriptData = UserSettings.Default.ReadScriptData;
+        Provider.ReadShaderMaps = UserSettings.Default.ReadShaderMaps;
+        Provider.ReadNaniteData = true;
+        PropertyUtil.SearchPropertyInTemplate = true; // search template properties when looking for a prop via GetOrDefault and cie
+
+        GameDirectory = new GameDirectoryViewModel();
+        AssetsFolder = new AssetsFolderViewModel();
+        SearchVm = new SearchViewModel();
+        RefVm = new SearchViewModel();
+        TabControl = new TabControlViewModel();
+        IoStoreOnDemand = new ConfigIni(nameof(IoStoreOnDemand));
+    }
+
+    public async Task Initialize()
+    {
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            Provider.OnDemandOptions = new IoStoreOnDemandOptions
+            {
+                ChunkHostUri = new Uri("https://egdownload.fastly-edge.com/", UriKind.Absolute),
+                ChunkCacheDirectory = new DirectoryInfo(CacheManager.ChunksDirectory),
+                DownloaderClient = _chunkClient
+            };
+
+            switch (Provider)
+            {
+                case StreamedFileProvider p:
+                    switch (p.LiveGame)
+                    {
+                        case "FortniteLive":
+                        {
+                            var manifestInfo = _apiEndpointView.EpicApi.GetManifest(cancellationToken);
+                            if (manifestInfo is null)
+                            {
+                                throw new FileLoadException("Could not load latest Fortnite manifest, you may have to switch to your local installation.");
+                            }
+
+                            var manifestOptions = new ManifestParseOptions
+                            {
+                                ChunkCacheDirectory = CacheManager.ChunksDirectory,
+                                ManifestCacheDirectory = CacheManager.ManifestsDirectory,
+                                ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
+                                Decompressor = Compression.Decompressor,
+                                Client = _chunkClient,
+                                CacheChunksAsIs = false
+                            };
+
+                            var startTs = Stopwatch.GetTimestamp();
+                            FBuildPatchAppManifest manifest;
+
+                            try
+                            {
+                                (manifest, _) = manifestInfo.DownloadAndParseAsync(manifestOptions,
+                                    cancellationToken: cancellationToken,
+                                    elementDownloadPredicate: static x => x.Uri.Host is "egdownload.fastly-edge.com" or "epicgames-download1.akamaized.net" or "download.epicgames.com"
+                                ).GetAwaiter().GetResult();
+                            }
+                            catch (HttpRequestException ex)
+                            {
+                                Log.Error("Failed to download manifest ({ManifestUri})", ex.Data["ManifestUri"]?.ToString() ?? "");
+                                throw;
+                            }
+
+                            if (manifest.TryFindFile("Cloud/IoStoreOnDemand.ini", out var ioStoreOnDemandFile))
+                            {
+                                IoStoreOnDemand.Read(new StreamReader(ioStoreOnDemandFile.GetStream()));
+                            }
+
+                            RegisterFortniteLiveArchives(p, manifest, cancellationToken);
+
+                            var manifests = _apiEndpointView.DillyApi.GetManifests(cancellationToken);
+                            var downloadUrl = manifests.First(x => x.AppName == "Fortnite_Studio").DownloadUrl;
+
+                            var manifestBytes = _chunkClient.GetByteArrayAsync(downloadUrl, cancellationToken).GetAwaiter().GetResult();
+
+                            var uefnManifest = FBuildPatchAppManifest.Deserialize(manifestBytes, manifestOptions);
+
+                            RegisterFortniteLiveArchives(p, uefnManifest, cancellationToken);
+
+                            var elapsedTime = Stopwatch.GetElapsedTime(startTs);
+                            FLogger.Append(ELog.Information, () =>
+                                FLogger.Text($"Fortnite [LIVE] has been loaded successfully in {elapsedTime.TotalMilliseconds:F1}ms", Constants.WHITE, true));
+                            break;
+                        }
+                        case "ValorantLive":
+                        {
+                            var manifest = _apiEndpointView.ValorantApi.GetManifest(cancellationToken);
+                            if (manifest == null)
+                            {
+                                throw new Exception("Could not load latest Valorant manifest, you may have to switch to your local installation.");
+                            }
+
+                            Parallel.ForEach(manifest.Paks, pak =>
+                            {
+                                p.RegisterVfs(pak.GetFullName(), [pak.GetStream(manifest)]);
+                            });
+
+                            FLogger.Append(ELog.Information, () =>
+                                FLogger.Text($"Valorant '{manifest.Header.GameVersion}' has been loaded successfully", Constants.WHITE, true));
+                            break;
+                        }
+                    }
+
+                    break;
+                case DefaultFileProvider:
+                {
+                    var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud\\IoStoreOnDemand.ini");
+                    if (File.Exists(ioStoreOnDemandPath))
+                    {
+                        using var s = new StreamReader(ioStoreOnDemandPath);
+                        IoStoreOnDemand.Read(s);
+                    }
+                    break;
+                }
+            }
+
+            Provider.Initialize();
+            GameDirectory.AddLooseFiles(Provider.LooseFileCount);
+            _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.GameDirectory));
+            _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
+            _criWareProviderLazy = new Lazy<CriWareProvider>(() => new CriWareProvider(Provider, UserSettings.Default.GameDirectory));
+            Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");
+        });
+    }
+
+    private void RegisterFortniteLiveArchives(StreamedFileProvider provider, FBuildPatchAppManifest manifest,
+        CancellationToken cancellationToken)
+    {
+        var archiveFiles = manifest.Files.Where(x =>
+            _fnLiveRegex.IsMatch(x.FileName) &&
+            (x.FileName.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) ||
+             x.FileName.EndsWith(".utoc", StringComparison.OrdinalIgnoreCase) ||
+             x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase))).ToList();
+        var parallelOptions = new ParallelOptions { CancellationToken = cancellationToken };
+
+        Parallel.ForEach(archiveFiles.Where(x => !x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase)),
+            parallelOptions, fileManifest =>
+            {
+                provider.RegisterVfs(fileManifest.FileName, [fileManifest.GetStream()],
+                    it => new FRandomAccessStreamArchive(it, manifest.FindFile(it)!.GetStream(), provider.Versions));
+            });
+
+        // V2 on-demand TOCs are large and span many BuildPatch chunks. Reading them through CUE4Parse's synchronous
+        // archive interface downloads those chunks one at a time. Materialize each TOC through EpicManifestParser's
+        // parallel path first, then register it normally so the on-demand containers remain available.
+        foreach (var fileManifest in archiveFiles.Where(x => x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase)))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            using var stream = fileManifest.GetStream();
+            var data = stream.SaveBytesAsync(8, cancellationToken).GetAwaiter().GetResult();
+            using var archive = new FByteArchive(fileManifest.FileName, data, provider.Versions);
+            provider.RegisterVfs(new IoChunkToc(archive));
+        }
+    }
+
+    /// <summary>
+    /// load virtual files system from GameDirectory
+    /// </summary>
+    /// <returns></returns>
+    public void LoadVfs(IEnumerable<KeyValuePair<FGuid, FAesKey>> aesKeys)
+    {
+        Provider.SubmitKeys(aesKeys);
+        Provider.PostMount();
+
+        var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;
+        var archiveMax = Provider.UnloadedVfs.Count + Provider.MountedVfs.Count;
+        Log.Information($"Project: {Provider.ProjectName} | Mounted: {Provider.MountedVfs.Count}/{archiveMax} | AES: {Provider.Keys.Count}/{aesMax} | Files: x{Provider.Files.Count}");
+    }
+
+    public void ClearProvider()
+    {
+        if (Provider == null) return;
+
+        AssetsFolder.Folders.Clear();
+        SearchVm.SearchResults.Clear();
+        Helper.CloseWindow<AdonisWindow>("Search For Packages");
+        UnloadDiffProvider();
+        Provider.UnloadNonStreamedVfs();
+        GC.Collect();
+    }
+
+    public async Task RefreshAes()
+    {
+        // game directory dependent, we don't have the provider game name yet since we don't have aes keys
+        // except when this comes from the AES Manager
+        if (!UserSettings.IsEndpointValid(EEndpointType.Aes, out var endpoint))
+            return;
+
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            // deprecated values
+            if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/aes") endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/aes";
+
+            var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url, endpoint.Path);
+            if (aes is not { IsValid: true }) return;
+
+            UserSettings.Default.CurrentDir.AesKeys = aes;
+        });
+    }
+
+    public async Task InitInformation()
+    {
+        await _threadWorkerView.Begin(cancellationToken =>
+        {
+            var info = _apiEndpointView.FModelApi.GetNews(cancellationToken, Provider.ProjectName);
+            if (info == null) return;
+
+            FLogger.Append(ELog.None, () =>
+            {
+                for (var i = 0; i < info.Messages.Length; i++)
+                {
+                    FLogger.Text(info.Messages[i], info.Colors[i], bool.Parse(info.NewLines[i]));
+                }
+            });
+        });
+    }
+
+    private ITypeMappingsProvider SelectMappingsProvider(string path)
+    {
+        if (path.EndsWith(".jmap.gz", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".jmap", StringComparison.OrdinalIgnoreCase))
+        {
+            return new JmapTypeMappingsProvider(path);
+        }
+
+        return new FileUsmapTypeMappingsProvider(path);
+    }
+
+    public Task InitMappings(bool force = false)
+    {
+        if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
+        {
+            Provider.MappingsContainer = null;
+            return Task.CompletedTask;
+        }
+
+        return Task.Run(() =>
+        {
+            var l = ELog.Information;
+            if (endpoint.Overwrite && File.Exists(endpoint.FilePath))
+            {
+                Provider.MappingsContainer = SelectMappingsProvider(endpoint.FilePath);
+            }
+            else if (endpoint.IsValid)
+            {
+                // deprecated values
+                if (endpoint.Path == "$.[?(@.meta.compressionMethod=='Oodle')].['url','fileName']") endpoint.Path = "$.[0].['url','fileName']";
+                if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/mappings")
+                {
+                    endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/mappings";
+                    endpoint.Path = "$.mappings.ZStandard";
+                }
+
+                var mappingsFolder = CacheManager.MappingsDirectory;
+                var mappings = _apiEndpointView.DynamicApi.GetMappings(CancellationToken.None, endpoint.Url, endpoint.Path);
+                if (mappings is { Length: > 0 })
+                {
+                    foreach (var mapping in mappings)
+                    {
+                        if (!mapping.IsValid) continue;
+
+                        var mappingPath = Path.Combine(mappingsFolder, mapping.FileName);
+                        if (force || !File.Exists(mappingPath) || new FileInfo(mappingPath).Length == 0)
+                        {
+                            _apiEndpointView.DownloadFile(mapping.Url, mappingPath);
+                        }
+
+                        Provider.MappingsContainer = SelectMappingsProvider(mappingPath);
+                        break;
+                    }
+                }
+
+                if (Provider.MappingsContainer == null)
+                {
+                    var latestUsmaps = new DirectoryInfo(mappingsFolder).GetFiles("*_oo.usmap");
+                    if (latestUsmaps.Length <= 0) return;
+
+                    var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
+                    Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+                    l = ELog.Warning;
+                }
+            }
+
+            if (Provider.MappingsContainer is FileUsmapTypeMappingsProvider m)
+            {
+                Log.Information($"Mappings pulled from '{m.FileName}'");
+                FLogger.Append(l, () => FLogger.Text($"Mappings pulled from '{m.FileName}'", Constants.WHITE, true));
+            }
+        });
+    }
+
+    public Task VerifyConsoleVariables()
+    {
+        if (Provider.Versions["StripAdditiveRefPose"])
+        {
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text("Additive animations have their reference pose stripped, which will lead to inaccurate preview and export", Constants.WHITE, true));
+        }
+
+        if (Provider.Versions.Game is GAME_UE4_LATEST or GAME_UE5_LATEST && !Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase)) // ignore fortnite globally
+        {
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text($"Experimental UE version selected, likely unsuitable for '{Provider.GameDisplayName ?? Provider.ProjectName}'", Constants.WHITE, true));
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task VerifyOnDemandArchives()
+    {
+        // only local fortnite
+        if (Provider is not DefaultFileProvider || !Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase))
+            return Task.CompletedTask;
+
+        // scuffed but working
+        var persistentDownloadDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FortniteGame/Saved/PersistentDownloadDir");
+        var iasFileInfo = new FileInfo(Path.Combine(persistentDownloadDir, "ias", "ias.cache.0"));
+        if (!iasFileInfo.Exists || iasFileInfo.Length == 0)
+            return Task.CompletedTask;
+
+        return Task.Run(async () =>
+        {
+            var inst = new List<InstructionToken>();
+            IoStoreOnDemand.FindPropertyInstructions("Endpoint", "TocPath", inst);
+            if (inst.Count <= 0) return;
+
+            var ioStoreOnDemandPath = Path.Combine(UserSettings.Default.GameDirectory, "..\\..\\..\\Cloud", inst[0].Value.SubstringAfterLast("/").SubstringBefore("\""));
+            if (!File.Exists(ioStoreOnDemandPath)) return;
+
+            await Provider.RegisterVfsAsync(new IoChunkToc(ioStoreOnDemandPath, Provider.Versions));
+            var onDemandCount = await Provider.MountAsync();
+            FLogger.Append(ELog.Information, () =>
+                FLogger.Text($"{onDemandCount} on-demand archive{(onDemandCount > 1 ? "s" : "")} streamed via epicgames.com", Constants.WHITE, true));
+        });
+    }
+
+    public int LocalizedResourcesCount { get; set; }
+    public bool LocalResourcesDone { get; set; }
+    public bool HotfixedResourcesDone { get; set; }
+
+    public async Task LoadLocalizedResources()
+    {
+        var snapshot = LocalizedResourcesCount;
+        await Task.WhenAll(LoadGameLocalizedResources(), LoadHotfixedLocalizedResources()).ConfigureAwait(false);
+
+        LocalizedResourcesCount = Provider.Internationalization.Count;
+        if (snapshot != LocalizedResourcesCount)
+        {
+            FLogger.Append(ELog.Information, () =>
+                FLogger.Text($"{LocalizedResourcesCount} localized resources loaded for '{UserSettings.Default.AssetLanguage.GetDescription()}'", Constants.WHITE, true));
+            Utils.Typefaces = new Typefaces(this);
+        }
+    }
+
+    private Task LoadGameLocalizedResources()
+    {
+        if (LocalResourcesDone) return Task.CompletedTask;
+        return Task.Run(() =>
+        {
+            LocalResourcesDone = Provider.TryChangeCulture(Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+        });
+    }
+
+    private Task LoadHotfixedLocalizedResources()
+    {
+        if (!Provider.ProjectName.Equals("fortnitegame", StringComparison.OrdinalIgnoreCase) || HotfixedResourcesDone) return Task.CompletedTask;
+        return Task.Run(() =>
+        {
+            var hotfixes = ApplicationService.ApiEndpointView.DillyApi.GetHotfixes(CancellationToken.None, Provider.GetLanguageCode(UserSettings.Default.AssetLanguage));
+            if (hotfixes == null) return;
+
+            Provider.Internationalization.Override(hotfixes);
+            HotfixedResourcesDone = true;
+        });
+    }
+
+    private int _virtualPathCount { get; set; }
+    public Task LoadVirtualPaths()
+    {
+        if (_virtualPathCount > 0) return Task.CompletedTask;
+        return Task.Run(() =>
+        {
+            _virtualPathCount = Provider.LoadVirtualPaths(UserSettings.Default.CurrentDir.UeVersion.GetVersion());
+            if (_virtualPathCount > 0)
+            {
+                FLogger.Append(ELog.Information, () =>
+                    FLogger.Text($"{_virtualPathCount} virtual paths loaded", Constants.WHITE, true));
+            }
+            else
+            {
+                FLogger.Append(ELog.Warning, () =>
+                    FLogger.Text("Could not load virtual paths, plugin manifest may not exist", Constants.WHITE, true));
+            }
+        });
+    }
+
+    public void ExtractSelected(CancellationToken cancellationToken, IEnumerable<GameFile> assetItems)
+    {
+        foreach (var entry in assetItems)
+        {
+            Thread.Yield();
+            cancellationToken.ThrowIfCancellationRequested();
+            Extract(cancellationToken, entry, TabControl.HasNoTabs);
+        }
+    }
+
+    private void BulkFolder(CancellationToken cancellationToken, TreeItem folder, Action<GameFile> action)
+    {
+        foreach (var entry in folder.AssetsList.Assets)
+        {
+            Thread.Yield();
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                action(entry.Asset);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        foreach (var f in folder.Folders) BulkFolder(cancellationToken, f, action);
+    }
+
+    public void ExportFolder(CancellationToken cancellationToken, TreeItem folder)
+    {
+        Parallel.ForEach(folder.AssetsList.Assets, entry =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ExportData(entry.Asset);
+        });
+
+        foreach (var f in folder.Folders) ExportFolder(cancellationToken, f);
+    }
+
+    public void ExtractFolder(CancellationToken cancellationToken, TreeItem folder, EBulkType bulk)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset, TabControl.HasNoTabs, bulk));
+
+    public void Extract(CancellationToken cancellationToken, GameFile entry, bool addNewTab = false, EBulkType bulk = EBulkType.None)
+    {
+        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+        Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", entry.Path);
+
+        if (addNewTab && TabControl.CanAddTabs) TabControl.AddTab(entry);
+        else TabControl.SelectedTab.SoftReset(entry);
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(entry.Extension);
+
+        var updateUi = !HasFlag(bulk, EBulkType.Auto);
+        var saveProperties = HasFlag(bulk, EBulkType.Properties);
+        var saveTextures = HasFlag(bulk, EBulkType.Textures);
+        var saveAudio = HasFlag(bulk, EBulkType.Audio);
+        var saveDecompiled = HasFlag(bulk, EBulkType.Code);
+        switch (entry.Extension)
+        {
+            case "uasset":
+            case "umap":
+            {
+                var result = Provider.GetLoadPackageResult(entry);
+                TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
+
+                if (saveProperties || updateUi)
+                {
+                    var displayData = result.GetDisplayData(saveProperties);
+
+                    if (UserSettings.Default.MergeEditorOnlyDataExports && Provider.TryLoadPackage(entry.Path.SubstringBefore('.') + ".o.uasset", out var editorAsset))
+                    {
+                        var pkg = Provider.LoadPackage(entry.Path);
+                        var exports = pkg.GetExports().ToArray();
+                        var finalExports = new List<UObject>(exports);
+                        var editorOnlyDataExports = new HashSet<UObject>();
+
+                        foreach (var export in exports)
+                        {
+                            var editorData = editorAsset.GetExportOrNull(export.Name + "EditorOnlyData");
+                            if (editorData == null)
+                                continue;
+
+                            export.Properties.AddRange(editorData.Properties);
+                            editorOnlyDataExports.Add(editorData);
+                        }
+
+                        if (editorOnlyDataExports.Count > 0)
+                        {
+                            finalExports.AddRange(editorAsset.GetExports().Where(editorExport => !editorOnlyDataExports.Contains(editorExport)));
+                        }
+
+                        displayData = finalExports;
+                    }
+
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(displayData, Formatting.Indented), saveProperties, updateUi);
+                    if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
+                }
+
+                if (saveDecompiled)
+                {
+                    if (Decompile(entry, false))
+                        TabControl.SelectedTab.SaveDecompiled(updateUi);
+                    break;
+                }
+
+                for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
+                {
+                    if (CheckExport(cancellationToken, result.Package, i, bulk))
+                        break;
+                }
+
+                break;
+            }
+            case "ini" when entry.Name.Contains("BinaryConfig"):
+            {
+                var ar = entry.CreateReader();
+                var configCache = new FConfigCacheIni(ar);
+
+                TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(configCache, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "dat" when Provider.Versions.Game is GAME_Aion2:
+            {
+                ProcessAion2DatFile(entry, updateUi, saveProperties);
+                break;
+            }
+            case "bytes" when Provider.Versions.Game is GAME_RocoKingdomWorld:
+            {
+                ProcessRocoBinFile(entry, updateUi, saveProperties);
+                break;
+            }
+            case "dbc" when Provider.Versions.Game is GAME_AshesOfCreation:
+            {
+                ProcessCacheDBFile(entry, updateUi, saveProperties);
+                break;
+            }
+            case "luac":
+            case "lua":
+            {
+                var data = Provider.SaveAsset(entry);
+                byte[] decompiled = ProcessLuaFile(data);
+
+                using var stream = new MemoryStream(decompiled);
+                using var reader = new StreamReader(stream);
+                TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
+
+                break;
+            }
+            case "upluginmanifest":
+            case "code-workspace":
+            case "projectstore":
+            case "uefnproject":
+            case "uproject":
+            case "manifest":
+            case "uplugin":
+            case "archive":
+            case "dnearchive": // Banishers: Ghosts of New Eden
+            case "gitignore":
+            case "gitattributes":
+            case "LICENSE":
+            case "playstats": // Dispatch
+            case "template":
+            case "stUMeta": // LIS: Double Exposure
+            case "vmodule":
+            case "glslfx":
+            case "cptake":
+            case "uparam": // Steel Hunters
+            case "spi1d":
+            case "verse":
+            case "html":
+            case "json5":
+            case "uref":
+            case "cube":
+            case "usda":
+            case "ocio":
+            case "data" when Provider.ProjectName is "OakGame":
+            case "scss":
+            case "yaml":
+            case "ini":
+            case "txt":
+            case "log":
+            case "lsd": // Days Gone
+            case "bat":
+            case "dat":
+            case "cfg":
+            case "ddr":
+            case "ide":
+            case "ipl":
+            case "zon":
+            case "xml":
+            case "css":
+            case "csv":
+            case "pem":
+            case "tsv":
+            case "tps":
+            case "tgc": // State of Decay 2
+            case "cpp":
+            case "apx":
+            case "udn":
+            case "doc":
+            case "vdf":
+            case "yml":
+            case "js":
+            case "po":
+            case "py":
+            case "md":
+            case "h":
+            case "non" when Provider.Versions.Game is GAME_RocoKingdomWorld:
+            case "cam" when Provider.Versions.Game is GAME_RocoKingdomWorld:
+            // Uncharted Waters Origin
+            case "crn":
+            case "uwt":
+            case "wvh":
+            case "bf":
+            case "bl":
+            case "bm":
+            case "br":
+            case "sql":
+            case "cs":
+            {
+                var data = Provider.SaveAsset(entry);
+                using var stream = new MemoryStream(data) { Position = 0 };
+                using var reader = new StreamReader(stream);
+
+                TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
+
+                break;
+            }
+            case "ebd" when Provider.Versions.Game is GAME_ArcRaiders:
+            case "json":
+            case "Json":
+            {
+                var data = Provider.SaveAsset(entry);
+                using var stream = new MemoryStream(data) { Position = 0 };
+                using var reader = new StreamReader(stream);
+
+                var parsedJson = JsonConvert.DeserializeObject(reader.ReadToEnd());
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(parsedJson, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "locmeta":
+            {
+                var archive = entry.CreateReader();
+                var metadata = new FTextLocalizationMetaDataResource(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(metadata, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "locres":
+            {
+                var archive = entry.CreateReader();
+                var locres = new FTextLocalizationResource(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locres, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "bin" when entry.Name.Contains("AssetRegistry", StringComparison.OrdinalIgnoreCase):
+            {
+                var archive = entry.CreateReader();
+                var registry = new FAssetRegistryState(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "bin" when entry.Name.Contains("GlobalShaderCache", StringComparison.OrdinalIgnoreCase):
+            {
+                var archive = entry.CreateReader();
+                var registry = new FGlobalShaderCache(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(registry, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "bin" when entry.Name.Contains("GameFeatureVersePaths", StringComparison.OrdinalIgnoreCase):
+            {
+                var archive = entry.CreateReader();
+                var versePathLookup = new FGameFeatureVersePathLookup(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(versePathLookup, Formatting.Indented), saveProperties, updateUi);
+                break;
+            }
+            case "bank":
+            {
+                var archive = entry.CreateReader();
+                if (!FmodProvider.TryLoadBank(archive, entry.NameWithoutExtension, out var fmodReader))
+                {
+                    Log.Error($"Failed to load FMOD bank {entry.Path}");
+                    break;
+                }
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(fmodReader, Formatting.Indented, converters: [new FmodSoundBankConverter(), new StringEnumConverter()]), saveProperties, updateUi);
+
+                var extractedSounds = FmodProvider.ExtractBankSounds(fmodReader);
+                var directory = Path.GetDirectoryName(entry.Path) ?? "/FMOD/Desktop/";
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
+                }
+
+                break;
+            }
+            case "bnk":
+            case "pck":
+            {
+                var archive = entry.CreateReader();
+                var wwise = new WwiseReader(new FWwiseArchive(archive), new WwiseGameFileSource(entry));
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
+
+                var medias = WwiseProvider.ExtractBankSounds(wwise);
+                foreach (var media in medias)
+                {
+                    SaveAndPlaySound(cancellationToken, media.OutputPath, media.Extension, media.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+
+                break;
+            }
+            case "awb":
+            {
+                var archive = entry.CreateReader();
+                var awbReader = new AwbReader(archive);
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(awbReader, Formatting.Indented), saveProperties, updateUi);
+
+                var directory = Path.GetDirectoryName(archive.Name) ?? "/Criware/";
+                var extractedSounds = CriWareProvider.ExtractCriWareSounds(awbReader, archive.Name);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
+                }
+
+                break;
+            }
+            case "acb":
+            {
+                var archive = entry.CreateReader();
+                var acbReader = new AcbReader(archive);
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(acbReader, Formatting.Indented), saveProperties, updateUi);
+
+                var directory = Path.GetDirectoryName(archive.Name) ?? "/Criware/";
+                var extractedSounds = CriWareProvider.ExtractCriWareSounds(acbReader, archive.Name);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, Path.Combine(directory, sound.Name), sound.Extension, sound.Data, saveAudio, updateUi);
+                }
+
+                break;
+            }
+            case "xvag":
+            case "flac":
+            case "at9":
+            case "wem":
+            case "wav":
+            case "WAV":
+            case "ogg":
+                // todo: CSCore.MediaFoundation.MediaFoundationException The byte stream type of the given URL is unsupported. case "aif":
+            {
+                var data = Provider.SaveAsset(entry);
+                SaveAndPlaySound(cancellationToken, entry.PathWithoutExtension, entry.Extension, data, saveAudio, updateUi);
+
+                break;
+            }
+            case "udic":
+            {
+                var archive = entry.CreateReader();
+                var header = new FOodleDictionaryArchive(archive).Header;
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(header, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "ustbin" when Provider.Versions.Game is GAME_DeltaForce:
+            {
+                var archive = entry.CreateReader();
+                var ustbin = new FDeltaStringTable(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ustbin, Formatting.Indented), saveProperties, updateUi);
+                break;
+            }
+            case "png":
+            case "jpg":
+            case "bmp":
+            {
+                var data = Provider.SaveAsset(entry);
+                using var stream = new MemoryStream(data) { Position = 0 };
+                TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, SKBitmap.Decode(stream), saveTextures, updateUi);
+
+                break;
+            }
+            case "svg":
+            {
+                var data = Provider.SaveAsset(entry);
+                using var stream = new MemoryStream(data) { Position = 0 };
+                var svg = new SKSvg();
+                svg.Load(stream);
+
+                int size = 512;
+                var bitmap = new SKBitmap(size, size);
+                using var canvas = new SKCanvas(bitmap);
+                canvas.Clear(SKColors.Transparent);
+
+                if (svg.Picture == null)
+                    break;
+
+                var bounds = svg.Picture.CullRect;
+                float scale = Math.Min(size / bounds.Width, size / bounds.Height);
+                canvas.Scale(scale);
+                canvas.Translate(-bounds.Left, -bounds.Top);
+                canvas.DrawPicture(svg.Picture);
+
+                TabControl.SelectedTab.AddImage(entry.NameWithoutExtension, false, bitmap, saveTextures, updateUi);
+
+                break;
+            }
+            case "ufont":
+            case "otf":
+            case "ttf":
+                FLogger.Append(ELog.Warning, () =>
+                    FLogger.Text($"Export '{entry.Name}' raw data and change its extension if you want it to be an installable font file", Constants.WHITE, true));
+                break;
+            case "ushaderbytecode":
+            case "ushadercode":
+            {
+                var archive = entry.CreateReader();
+                var ar = new FShaderCodeArchive(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "upipelinecache":
+            {
+                var archive = entry.CreateReader();
+                var ar = new FPipelineCacheFile(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "stinfo":
+            {
+                var archive = entry.CreateReader();
+                var ar = new FShaderTypeHashes(archive);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ar, Formatting.Indented), saveProperties, updateUi);
+
+                break;
+            }
+            case "res": // just skip
+            case "bytes": // wuthering waves
+                break;
+            default:
+            {
+                Log.Warning($"The package '{entry.Name}' is of an unknown type.");
+                if (!UnknownExtensions.Contains(entry.Extension))
+                {
+                    UnknownExtensions.Add(entry.Extension);
+                FLogger.Append(ELog.Warning, () =>
+                        FLogger.Text($"There are some packages with an unknown type {entry.Extension}. Check Log file for a full list.", Constants.WHITE, true));
+                }
+                break;
+            }
+        }
+
+        // Roco Kingdom: World
+        void ProcessRocoBinFile(GameFile entry, bool updateUi, bool saveProperties)
+        {
+            TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+            var nonFileName = "/" + entry.NameWithoutExtension + ".non";
+            var nonPath = Provider.Files.Keys.FirstOrDefault(k => k.EndsWith(nonFileName, StringComparison.OrdinalIgnoreCase));
+
+            // I will only get one localization file because they did not translate any languages, lol
+            var locPathKey = entry.Path.Replace("/BinData/", "/BinLocalize/zh_Hans/").Replace("/BinDataCompressed/", "/BinLocalize/zh_Hans/");
+            var locFileFound = Provider.Files.TryGetValue(locPathKey, out var locEntry);
+
+            if (entry.Path is "NRC/Content/ScriptC/Data/Audio/dataconfig_audio.bytes")
+            {
+                var descFound = Provider.Files.TryGetValue("NRC/Content/ScriptC/Data/Audio/dataconfig_audiodesc.bytes", out var descEntry);
+                var typeDescFound = Provider.Files.TryGetValue("NRC/Content/ScriptC/Data/Audio/typeDesc.bytes", out var typeDescEntry);
+
+                if (!descFound || !typeDescFound)
+                {
+                    Log.Warning("Could not find associated dataconfig_audiodesc.bytes or typeDesc.bytes, cannot parse audio config");
+                    return;
+                }
+
+                var data = new FRocoAudioConfig(entry.CreateReader(), descEntry.CreateReader(), typeDescEntry.CreateReader());
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(data, Formatting.Indented), saveProperties, updateUi);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(nonPath) && Provider.Files.TryGetValue(nonPath, out var nonEntry))
+            {
+                string json = Encoding.UTF8.GetString(nonEntry.Read());
+                var schema = JsonConvert.DeserializeObject<FRocoSchema>(json);
+                var archive = entry.CreateReader();
+                var locArchive = locFileFound ? new FRocoBinData(locEntry.CreateReader(), null, ERocoBinDataType.BinLocalize) : null;
+
+                var data = entry.PathWithoutExtension switch
+                {
+                    var p when p.Contains("BinDataCompressed") => new FRocoBinData(archive, schema, ERocoBinDataType.BinDataCompressed, locArchive),
+                    var p when p.Contains("BinData") => new FRocoBinData(archive, schema, ERocoBinDataType.BinData, locArchive),
+                    var p when p.Contains("BinLocalize") => new FRocoBinData(archive, null, ERocoBinDataType.BinLocalize),
+                    _ => null
+                };
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(data, Formatting.Indented), saveProperties, updateUi);
+            }
+            else if (entry.PathWithoutExtension.Contains("/Bin/"))
+            {
+                throw new Exception($"Could not find associated .non file for {entry.Name}");
+            }
+        }
+
+        void ProcessAion2DatFile(GameFile entry, bool updateUi, bool saveProperties)
+        {
+            TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+            if (entry.NameWithoutExtension.EndsWith("_MapEvent"))
+            {
+                var data = Provider.SaveAsset(entry);
+                FAion2DatFileArchive.DecryptData(data);
+                using var stream = new MemoryStream(data) { Position = 0 };
+                using var reader = new StreamReader(stream);
+
+                TabControl.SelectedTab.SetDocumentText(reader.ReadToEnd(), saveProperties, updateUi);
+            }
+            else if (entry.NameWithoutExtension.Equals("L10NString"))
+            {
+                var l10nData = new FAion2L10NFile(entry, Provider);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(l10nData, Formatting.Indented), saveProperties, updateUi);
+            }
+            else if (entry.NameWithoutExtension.Equals("key_manifest"))
+            {
+                var keymanifest = new FAion2KeyManifestFile(entry);
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(keymanifest, Formatting.Indented), saveProperties, updateUi);
+            }
+            else
+            {
+                FAion2DataFile datfile = entry.NameWithoutExtension switch
+                {
+                    "MapDataHierarchy" => new FAion2MapHierarchyFile(entry),
+                    "MapData" => new FAion2MapDataFile(entry, Provider),
+                    _ when entry.Directory.EndsWith("Data/WorldMap", StringComparison.OrdinalIgnoreCase) => new FAion2MapDataFile(entry, Provider),
+                    _ => new FAion2DataTableFile(entry, Provider)
+                };
+
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(datfile, Formatting.Indented), saveProperties, updateUi);
+            }
+        }
+
+        // Ashhes of Creation
+        void ProcessCacheDBFile(GameFile entry, bool updateUi, bool saveProperties)
+        {
+            var data = entry.Read();
+            var dbc = new FAoCDBCReader(data, Provider.MappingsForGame, Provider.Versions);
+            for (var i = 0; i < dbc.Chunks.Length; i++)
+            {
+                if (!dbc.TryReadChunk(i, out var category, out var files))
+                {
+                    Log.Warning("Couldn't read {i} chuck in AoC CacheDB", i);
+                    continue;
+                }
+                var fileName = Path.ChangeExtension(category, ".json");
+                var directory = Path.Combine(UserSettings.Default.PropertiesDirectory,
+                    UserSettings.Default.KeepDirectoryStructure ? entry.Directory : "", entry.Name, fileName).Replace('\\', '/');
+
+                Directory.CreateDirectory(directory.SubstringBeforeLast('/'));
+
+                File.WriteAllText(directory, JsonConvert.SerializeObject(files, Formatting.Indented));
+            }
+
+            TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(dbc, Formatting.Indented), saveProperties, updateUi);
+        }
+    }
+
+    private byte[] ProcessLuaFile(byte[] data)
+    {
+        var result = EUnluacErrorCode.Ok;
+        byte[] output = [];
+        if (BitConverter.ToUInt32(data) == UnluacHelper.LuaMagic && UnluacHelper.Instance is not null)
+        {
+            // opcodemap patch
+            byte[] opmapData = Provider.Versions.Game switch
+            {
+                _ => [],
+            };
+
+            var flags = UserSettings.Default.UnluacFlags;
+            var opcodemap = UserSettings.Default.CurrentDir.UnluacOpCodeMap;
+            if (!string.IsNullOrWhiteSpace(opcodemap))
+            {
+                opmapData = Encoding.UTF8.GetBytes(opcodemap);
+                flags |= EUnluacFlags.OpCodeMap;
+            }
+            else if (opmapData is { Length: > 12 })
+            {
+                flags |= EUnluacFlags.OpCodeMapPatch;
+            }
+
+            result = UnluacHelper.Decompile(data, opmapData, (uint)flags, out output, out var log);
+            if (result != EUnluacErrorCode.Ok && log.Length > 0)
+            {
+                Log.Error(Encoding.UTF8.GetString(log));
+            }
+        }
+        else
+        {
+            result = EUnluacErrorCode.Error;
+        }
+
+        var decompiled = result switch
+        {
+            EUnluacErrorCode.Ok => output,
+#if DEBUG
+            EUnluacErrorCode.PartialDecompile => output,
+#endif
+            _ => data,
+        };
+
+        return decompiled;
+    }
+
+    public void ExtractAndScroll(CancellationToken cancellationToken, string fullPath, string objectName)
+    {
+        Log.Information("User CTRL-CLICKED to extract '{FullPath}'", fullPath);
+
+        var entry = Provider[fullPath];
+        TabControl.AddTab(entry);
+        TabControl.SelectedTab.ScrollTrigger = objectName;
+
+        var result = Provider.GetLoadPackageResult(entry, objectName);
+
+        TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
+        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
+
+        for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
+        {
+            if (CheckExport(cancellationToken, result.Package, i))
+                break;
+        }
+    }
+
+    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, EBulkType bulk = EBulkType.None) // return true once you want to stop searching for exports
+    {
+        var isNone = bulk == EBulkType.None;
+        var updateUi = !HasFlag(bulk, EBulkType.Auto);
+        var saveTextures = HasFlag(bulk, EBulkType.Textures);
+        var saveAudio = HasFlag(bulk, EBulkType.Audio);
+
+        var pointer = new FPackageIndex(pkg, index + 1).ResolvedObject;
+        if (pointer?.Object is null) return false;
+
+        var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
+        switch (dummy)
+        {
+            case UVerseDigest when isNone && pointer.Object.Value is UVerseDigest verseDigest:
+            {
+                if (!TabControl.CanAddTabs) return false;
+
+                TabControl.AddTab($"{verseDigest.Name}.verse");
+                TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
+                TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
+                return true;
+            }
+            case UTexture when (isNone || saveTextures) && pointer.Object.Value is UTexture texture:
+            {
+                if (saveTextures)
+                {
+                    SaveExport(texture);
+                }
+
+                if (updateUi)
+                {
+                    TabControl.SelectedTab.AddImage(texture, false, true);
+                }
+
+                return false;
+            }
+            case USvgAsset when (isNone || saveTextures) && pointer.Object.Value is USvgAsset svgasset:
+            {
+                const int size = 512;
+                var data = svgasset.GetOrDefault<byte[]>("SvgData");
+                var sourceFile = svgasset.GetOrDefault<string>("SourceFile");
+                using var stream = new MemoryStream(data) { Position = 0 };
+
+                var svg = new SKSvg();
+                svg.Load(stream);
+
+                if (svg.Picture == null)
+                    return false;
+
+                var b = svg.Picture.CullRect;
+                float s = Math.Min(size / b.Width, size / b.Height);
+
+                var bitmap = new SKBitmap(size, size);
+                using var canvas = new SKCanvas(bitmap);
+                using var paint = new SKPaint { IsAntialias = true, FilterQuality = SKFilterQuality.Medium };
+
+                canvas.Scale(s);
+                canvas.Translate(-b.Left, -b.Top);
+                canvas.DrawPicture(svg.Picture, paint);
+
+                if (saveTextures)
+                {
+                    var fileName = sourceFile.SubstringAfterLast('/');
+                    var path = Path.Combine(UserSettings.Default.TextureDirectory,
+                        UserSettings.Default.KeepDirectoryStructure ? TabControl.SelectedTab.Entry.Directory : "", fileName!).Replace('\\', '/');
+
+                    Directory.CreateDirectory(path.SubstringBeforeLast('/'));
+
+                    using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
+                    fs.Write(data, 0, data.Length);
+                    if (File.Exists(path))
+                    {
+                        Log.Information("{FileName} successfully saved", fileName);
+                        if (updateUi)
+                        {
+                            FLogger.Append(ELog.Information, () =>
+                            {
+                                FLogger.Text("Successfully saved ", Constants.WHITE);
+                                FLogger.Link(fileName, path, true);
+                            });
+                        }
+                    }
+                    else
+                    {
+                        Log.Error("{FileName} could not be saved", fileName);
+                        if (updateUi)
+                            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not save '{fileName}'", Constants.WHITE, true));
+                    }
+                }
+
+                TabControl.SelectedTab.AddImage(sourceFile.SubstringAfterLast('/'), false, bitmap, false, updateUi);
+                return false;
+            }
+            case UBiomesMaskTextureData when (isNone || saveTextures) && pointer.Object.Value is UBiomesMaskTextureData biomes && biomes.MaskData is { } maskData:
+            {
+                TabControl.SelectedTab.AddImage(biomes.Name, false, SKBitmap.Decode(maskData.Value), false, updateUi);
+                return false;
+            }
+            // Supermassive Games (for example - The Dark Pictures Anthology: House of Ashes etc.)
+            case UExternalSource when (isNone || saveAudio) && pointer.Object.Value is UExternalSource externalSource:
+            {
+                var audioName = Path.GetFileNameWithoutExtension(externalSource.ExternalSourcePath);
+                var outputPath = Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/').SubstringBeforeLast('/'), audioName);
+                SaveAndPlaySound(cancellationToken, outputPath, "wem", externalSource.Data?.WemFile?.GetData() ?? [], saveAudio, updateUi);
+                return false;
+            }
+            case UAkAudioBank when (isNone || saveAudio) && pointer.Object.Value is UAkAudioBank soundBank:
+            {
+                var extractedSounds = WwiseProvider.ExtractBankSounds(soundBank);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+                return false;
+            }
+            case UAkAudioEvent when (isNone || saveAudio) && pointer.Object.Value is UAkAudioEvent audioEvent:
+            {
+                var extractedSounds = WwiseProvider.ExtractAudioEventSounds(audioEvent);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+                return false;
+            }
+            case UFMODEvent when (isNone || saveAudio) && pointer.Object.Value is UFMODEvent fmodEvent:
+            {
+                var extractedSounds = FmodProvider.ExtractEventSounds(fmodEvent);
+                var directory = Path.GetDirectoryName(Provider.FixPath(fmodEvent.Owner?.Name ?? "/FMOD/Desktop/"));
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio, updateUi);
+                }
+                return false;
+            }
+            case UFMODBank when (isNone || saveAudio) && pointer.Object.Value is UFMODBank fmodBank:
+            {
+                var extractedSounds = FmodProvider.ExtractBankSounds(fmodBank);
+                var directory = Path.GetDirectoryName(Provider.FixPath(fmodBank.Owner?.Name ?? "/FMOD/Desktop/"));
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio, updateUi);
+                }
+                return false;
+            }
+            case USoundAtomCueSheet or UAtomCueSheet or USoundAtomCue or UAtomWaveBank when (isNone || saveAudio) && pointer.Object.Value is UObject atomObject:
+            {
+                var extractedSounds = atomObject switch
+                {
+                    USoundAtomCueSheet cueSheet => CriWareProvider.ExtractCriWareSounds(cueSheet),
+                    UAtomCueSheet cueSheet => CriWareProvider.ExtractCriWareSounds(cueSheet),
+                    USoundAtomCue cue => CriWareProvider.ExtractCriWareSounds(cue),
+                    UAtomWaveBank awb => CriWareProvider.ExtractCriWareSounds(awb),
+                    _ => []
+                };
+
+                var directory = Path.GetDirectoryName(Provider.FixPath(atomObject.Owner?.Name ?? "/Criware/"));
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, Path.Combine(directory, sound.Name).Replace("\\", "/"), sound.Extension, sound.Data, saveAudio, updateUi);
+                }
+                return false;
+            }
+            case USQEXSEADSoundBank or USQEXSEADSound when (isNone || saveAudio) && pointer.Object.Value is UObject squareEnixObject:
+            {
+                var data = squareEnixObject switch
+                {
+                    USQEXSEADSoundBank sqexSoundBank => sqexSoundBank.SQEXSoundBankData?.ReadDataOnce() ?? [],
+                    USQEXSEADSound sqexSound => sqexSound.SQEXSoundData?.ReadDataOnce() ?? [],
+                    _ => [],
+                };
+                var sabPath = Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/').SubstringBeforeLast('/'), squareEnixObject.Name);
+                var extractedSounds = AudioPlayerViewModel.ExtractSquareEnixAudio(sabPath, data);
+                foreach (var soundPath in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, soundPath, "wav", File.ReadAllBytes(soundPath), saveAudio, updateUi);
+                }
+                return false;
+            }
+            case UAkMediaAssetData when isNone || saveAudio:
+            case USoundWave when isNone || saveAudio:
+            {
+                // If UAkMediaAsset exists in the same package it should be used to handle the audio instead (because it contains actual audio name)
+                if (pointer.Object.Value is UAkMediaAssetData dataObj && dataObj.Outer.Object.Value is UAkMediaAsset)
+                    return false;
+
+                var shouldDecompress = UserSettings.Default.CompressedAudioMode == ECompressedAudio.PlayDecompressed;
+                pointer.Object.Value.Decode(shouldDecompress, out var audioFormat, out var data);
+                var hasAf = !string.IsNullOrEmpty(audioFormat);
+                if (data == null || !hasAf)
+                {
+                    if (hasAf) FLogger.Append(ELog.Warning, () => FLogger.Text($"Unsupported audio format '{audioFormat}'", Constants.WHITE, true));
+                    return false;
+                }
+
+                SaveAndPlaySound(cancellationToken, TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/'), audioFormat, data, saveAudio, updateUi);
+                return false;
+            }
+            case UAkMediaAsset when (isNone || saveAudio) && pointer.Object.Value is UAkMediaAsset akMediaAsset:
+            {
+                var audioName = akMediaAsset.MediaName ?? akMediaAsset.Name;
+                var outputPath = Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/').SubstringBeforeLast('/'), audioName);
+                if (akMediaAsset.CurrentMediaAssetData?.ResolvedObject?.Object?.Value is UAkMediaAssetData akMediaAssetData)
+                {
+                    var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
+                    akMediaAssetData.Decode(shouldDecompress, out var audioFormat, out var data);
+
+                    SaveAndPlaySound(cancellationToken, outputPath, audioFormat, data, saveAudio, updateUi);
+                }
+                if (Provider.Versions.Game is GAME_GearsofWarEDay && akMediaAsset.CustomGameData is FByteBulkData bulkData)
+                {
+                    var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
+                    SaveAndPlaySound(cancellationToken, outputPath, "WEM", bulkData.Data, saveAudio, updateUi);
+                }
+                return false;
+            }
+            case UAkAudioEventData when (isNone || saveAudio) && pointer.Object.Value is UAkAudioEventData akAudioEventData:
+            {
+                var shouldDecompress = UserSettings.Default.CompressedAudioMode is ECompressedAudio.PlayDecompressed;
+                foreach (var mediaIndex in akAudioEventData.MediaList)
+                {
+                    if (mediaIndex?.Object?.Value is UAkMediaAsset akMediaAsset)
+                    {
+                        if (akMediaAsset.CurrentMediaAssetData?.ResolvedObject?.Object?.Value is UAkMediaAssetData akMediaAssetData)
+                        {
+                            var audioName = akMediaAsset.MediaName ?? $"{akAudioEventData.Outer.Name} ({akMediaAsset.ID})";
+                            var outputPath = Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/').SubstringBeforeLast('/'), audioName);
+                            akMediaAssetData.Decode(shouldDecompress, out var audioFormat, out var data);
+
+                            SaveAndPlaySound(cancellationToken, outputPath, audioFormat, data, saveAudio, updateUi);
+                        }
+                        if (Provider.Versions.Game is GAME_GearsofWarEDay && akMediaAsset.CustomGameData is FByteBulkData bulkData)
+                        {
+                            var audioName = akMediaAsset.MediaName ?? $"{akAudioEventData.Outer.Name} ({akMediaAsset.ID})";
+                            var outputPath = Path.Combine(TabControl.SelectedTab.Entry.PathWithoutExtension.Replace('\\', '/').SubstringBeforeLast('/'), audioName);
+                            SaveAndPlaySound(cancellationToken, outputPath, "WEM", bulkData.Data, saveAudio, updateUi);
+                        }
+                    }
+                }
+                return false;
+            }
+            // Borderlands 3
+            case UDialogPerformanceData when (isNone || saveAudio) && pointer.Object.Value is UDialogPerformanceData dialogPerformanceData:
+            {
+                var extractedSounds = WwiseProvider.ExtractDialogBorderlands3(dialogPerformanceData);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+                return false;
+            }
+            // Borderlands 4
+            case UFaceFXAnimSet when (isNone || saveAudio) && pointer.Object.Value is UFaceFXAnimSet faceFXAnimSet:
+            {
+                if (Provider.Versions.Game is not GAME_Borderlands4)
+                    return false;
+
+                var ownerDirectory = WwiseProvider.GetOwnerDirectory(faceFXAnimSet);
+                foreach (var faceFXAnimData in faceFXAnimSet.FaceFXAnimDataList)
+                {
+                    var extractedSounds = WwiseProvider.ExtractAudioEventBorderlands4(ownerDirectory, faceFXAnimData.ID.Name, false);
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                    }
+                }
+
+                return false;
+            }
+            // Borderlands 4
+            case UGbxGraphAsset when (isNone || saveAudio) && pointer.Object.Value is UGbxGraphAsset gbxGraphAsset:
+            {
+                var ownerDirectory = WwiseProvider.GetOwnerDirectory(gbxGraphAsset);
+                foreach (var (eventName, useSoundTag) in GbxAudioUtil.GetAndClearEvents())
+                {
+                    var extractedSounds = WwiseProvider.ExtractAudioEventBorderlands4(ownerDirectory, eventName, useSoundTag);
+                    foreach (var sound in extractedSounds)
+                    {
+                        SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                    }
+                }
+
+                return false;
+            }
+            // LEGO® Batman™: Legacy of the Dark Knight
+            case UWubAudioEvent when (isNone || saveAudio) && pointer.Object.Value is UWubAudioEvent wubAudioEvent:
+            {
+                var extractedSounds = WwiseProvider.ExtractWubAudioEventSounds(wubAudioEvent);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+                return false;
+            }
+            case UWubDialogueEvent when (isNone || saveAudio) && pointer.Object.Value is UWubDialogueEvent wubDialogueEvent:
+            {
+                var files = wubDialogueEvent.Wems
+                    .SelectMany(wem => Provider.Files.Values.Where(file => file.Path.EndsWith(wem.Text + ".wem", StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+                foreach (var entry in files)
+                {
+                    SaveAndPlaySound(cancellationToken, entry.PathWithoutExtension, entry.Extension, entry.Read(), saveAudio, updateUi);
+                }
+                return false;
+            }
+            // Gotham Knights
+            case UOrpheusBank when (isNone || saveAudio) && pointer.Object.Value is UOrpheusBank orpheusBank:
+            {
+                if (orpheusBank.SoundBank is null)
+                    return false;
+
+                var extractedSounds = WwiseProvider.ExtractBankSounds(orpheusBank.SoundBank);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+
+                return false;
+            }
+            // Gotham Knights
+            case UOrpheusEvent when (isNone || saveAudio) && pointer.Object.Value is UOrpheusEvent orpheusEvent:
+            {
+                var extractedSounds = WwiseProvider.ExtractGothamKnightsAudioEventSounds(orpheusEvent);
+                foreach (var sound in extractedSounds)
+                {
+                    SaveAndPlaySound(cancellationToken, sound.OutputPath, sound.Extension, sound.Data?.GetData() ?? [], saveAudio, updateUi);
+                }
+
+                return false;
+            }
+            case UWorld when isNone && UserSettings.Default.PreviewWorlds:
+            // case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
+            // {
+            //     "JunoBuildInstructionsItemDefinition" => true,
+            //     "JunoBuildingSetAccountItemDefinition" => true,
+            //     "JunoBuildingPropAccountItemDefinition" => true,
+            //     _ => false
+            // }:
+            case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
+            case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case UGeometryCollection when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case USkinnedAsset when isNone && UserSettings.Default.PreviewSkeletalMeshes:
+            case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
+            case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
+                                        !(Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) &&
+                                          (pkg.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
+                                           pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
+                                           pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
+            {
+                if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
+                    SnooperViewer.Run();
+                return true;
+            }
+            case UMaterialInstance when isNone && ModelIsOverwritingMaterial && pointer.Object.Value is UMaterialInstance m:
+            {
+                SnooperViewer.Renderer.Swap(m);
+                SnooperViewer.Run();
+                return true;
+            }
+            case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || ModelIsWaitingAnimation:
+            {
+                // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
+                SnooperViewer.Renderer.Animate(pointer.Object.Value);
+                SnooperViewer.Run();
+                return true;
+            }
+            case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
+            case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
+            case USkinnedAsset when HasFlag(bulk, EBulkType.Meshes):
+            case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):
+            // case UMaterialInterface when HasFlag(bulk, EBulkType.Materials):
+            case UAnimationAsset when HasFlag(bulk, EBulkType.Animations):
+            case UWorld when HasFlag(bulk, EBulkType.Worlds):
+            {
+                SaveExport(pointer.Object.Value);
+                return true;
+            }
+            default:
+            {
+                if (!isNone && !saveTextures) return false;
+
+                using var cPackage = new CreatorPackage(pkg.Name, dummy.ExportType, pointer.Object, UserSettings.Default.CosmeticStyle);
+                if (!cPackage.TryConstructCreator(out var creator))
+                    return false;
+
+                creator.ParseForInfo();
+                TabControl.SelectedTab.AddImage(pointer.Object.Value.Name, false, creator.Draw(), saveTextures, updateUi);
+                return true;
+
+            }
+        }
+    }
+
+    public void ShowMetadata(GameFile entry)
+    {
+        ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+
+        var package = Provider.LoadPackage(entry);
+
+        if (TabControl.CanAddTabs) TabControl.AddTab(entry);
+        else TabControl.SelectedTab.SoftReset(entry);
+
+        TabControl.SelectedTab.TitleExtra = "Metadata";
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("");
+
+        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(package, Formatting.Indented), false, false);
+    }
+
+    public void FindReferences(GameFile entry)
+    {
+        var refs = Provider.ScanForPackageRefs(entry);
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            var refView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView().Show());
+            refView.ChangeCollection(ESearchViewTab.RefView, refs, entry);
+            refView.FocusTab(ESearchViewTab.RefView);
+        });
+    }
+
+
+    public bool Decompile(GameFile entry, bool AddTab = true)
+    {
+        if (TabControl.CanAddTabs && AddTab)
+        {
+            ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+            TabControl.AddTab(entry);
+        }
+        else TabControl.SelectedTab.SoftReset(entry);
+
+        TabControl.SelectedTab.TitleExtra = "Decompiled";
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
+
+        UClassCookedMetaData cookedMetaData = null;
+        try
+        {
+            var editorPkg = Provider.LoadPackage(entry.Path.Replace(".uasset", ".o.uasset"));
+            cookedMetaData = editorPkg.GetExport<UClassCookedMetaData>("CookedClassMetaData");
+        }
+        catch
+        {
+            // ignored
+        }
+
+        var cppList = new List<string>();
+        var pkg = Provider.LoadPackage(entry);
+        for (var i = 0; i < pkg.ExportMapLength; i++)
+        {
+            var pointer = new FPackageIndex(pkg, i + 1).ResolvedObject;
+            if (pointer?.Object is null && pointer.Class?.Object?.Value is null)
+                continue;
+
+            var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
+            if (dummy is not UClass || pointer.Object.Value is not UClass blueprint)
+                continue;
+
+            cppList.Add(blueprint.DecompileBlueprintToPseudo(cookedMetaData));
+        }
+
+        if (cppList.Count == 0) return false;
+        var cpp = cppList.Count > 1 ? string.Join("\n\n", cppList) : cppList.FirstOrDefault() ?? string.Empty;
+        if (entry.Path.Contains("_Verse.uasset"))
+        {
+            cpp = Regex.Replace(cpp, "__verse_0x[a-fA-F0-9]{8}_", ""); // UnmangleCasedName
+        }
+        cpp = Regex.Replace(cpp, @"CallFunc_([A-Za-z0-9_]+)_ReturnValue", "$1");
+        cpp = Regex.Replace(cpp, @"K2Node_DynamicCast_([A-Za-z0-9_]+)", "$1");
+        cpp = Regex.Replace(cpp, @"K2Node_([A-Za-z0-9_]+)", "$1");
+
+        TabControl.SelectedTab.SetDocumentText(cpp, false, false);
+        return true;
+    }
+
+    private void SaveAndPlaySound(CancellationToken cancellationToken, string fullPath, string ext, byte[] data, bool saveAudio, bool updateUi)
+    {
+        if (fullPath.StartsWith('/')) fullPath = fullPath[1..];
+        var extLower = ext.ToLowerInvariant();
+        var baseFilePath = UserSettings.Default.KeepDirectoryStructure ? fullPath : fullPath.SubstringAfterLast('/');
+        var combinedPath = Path.Combine(UserSettings.Default.AudioDirectory, baseFilePath);
+        var savedAudioPath = Path.ChangeExtension(combinedPath, extLower).Replace('\\', '/');
+
+        if (saveAudio)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var directory = Path.GetDirectoryName(savedAudioPath);
+            Directory.CreateDirectory(directory);
+
+            bool conversionSuccess = true;
+            if (UserSettings.Default.ConvertAudioOnBulkExport && extLower is not "wav")
+            {
+                if (AudioPlayerViewModel.TryConvert(savedAudioPath, data, extLower, out string wavFilePath))
+                    savedAudioPath = wavFilePath;
+                else
+                {
+                    Interlocked.Increment(ref FailedExportCount);
+                    return;
+                }
+            }
+            else
+            {
+                using var stream = new FileStream(savedAudioPath, FileMode.Create, FileAccess.Write);
+                stream.Write(data);
+            }
+
+            Interlocked.Increment(ref ExportedCount);
+            Log.Information("Successfully saved {FilePath}", savedAudioPath);
+            if (updateUi && conversionSuccess)
+            {
+                FLogger.Append(ELog.Information, () =>
+                {
+                    FLogger.Text("Successfully saved ", Constants.WHITE);
+                    FLogger.Link(Path.GetFileName(savedAudioPath), savedAudioPath, true);
+                });
+            }
+
+            return;
+        }
+
+        if (!updateUi)
+            return;
+
+        // TODO
+        // since we are currently in a thread, the audio player's lifetime (memory-wise) will keep the current thread up and running until fmodel itself closes
+        // the solution would be to kill the current thread at this line and then open the audio player without "Application.Current.Dispatcher.Invoke"
+        // but the ThreadWorkerViewModel is an idiot and doesn't understand we want to kill the current thread inside the current thread and continue the code
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            var audioPlayer = Helper.GetWindow<AudioPlayer>("Audio Player", () => new AudioPlayer().Show());
+            audioPlayer.Load(data, savedAudioPath);
+        });
+    }
+
+    private void SaveExport(UObject export)
+    {
+        try
+        {
+            ExportSessionViewModel.Instance.Session.Add(export);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Could not add to export session");
+        }
+    }
+
+    public void ExportData(GameFile entry)
+    {
+        try
+        {
+            ExportSessionViewModel.Instance.Session.Add(new RawDataExporter(entry, Provider));
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Could not add to export session");
+        }
+    }
+
+    private static bool HasFlag(EBulkType a, EBulkType b)
+    {
+        return (a & b) == b;
+    }
+}
