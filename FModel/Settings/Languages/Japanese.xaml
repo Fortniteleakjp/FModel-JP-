@@ -1,8 +1,9 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <system:String x:Key="UI_AES">AESキー</system:String>
     <system:String x:Key="UI_AESReloadAtLaunch">起動時にAESキーを再取得</system:String>
+    <system:String x:Key="UI_ANewVersionOfFModel">FModel の新しいバージョンがあります。クリックして表示します。</system:String>
     <system:String x:Key="UI_AboutFModel">FModel について</system:String>
     <system:String x:Key="UI_Add">追加</system:String>
     <system:String x:Key="UI_AddAssetTab">アセットタブを追加</system:String>
@@ -259,6 +260,7 @@
     <system:String x:Key="UI_RemindMeNow">今すぐ通知 ...</system:String>
     <system:String x:Key="UI_Remove">削除</system:String>
     <system:String x:Key="UI_RemoveFromQueue">キューから削除</system:String>
+    <system:String x:Key="UI_RemoveGameDirectoriesThatNo">存在しないゲームディレクトリを削除</system:String>
     <system:String x:Key="UI_RemoveSelectedAssetTab">選択中のアセットタブを削除</system:String>
     <system:String x:Key="UI_RemoveSelectedAudio">選択した音声を削除</system:String>
     <system:String x:Key="UI_Reset">リセット</system:String>
@@ -309,6 +311,7 @@
     <system:String x:Key="UI_ThisFileIsIdenticalInBoth">このファイルは両方のビルドで同一です</system:String>
     <system:String x:Key="UI_UEVersions">UE バージョン</system:String>
     <system:String x:Key="UI_UEVersions_2">UE バージョン *</system:String>
+    <system:String x:Key="UI_UpdateAvailable">更新があります</system:String>
     <system:String x:Key="UI_UncheckedLevelsWillBeReferencedBut">チェックを外したレベルは参照されますが、エクスポートはされません。</system:String>
     <system:String x:Key="UI_Unluac">Unluac</system:String>
     <system:String x:Key="UI_Version">バージョン</system:String>
