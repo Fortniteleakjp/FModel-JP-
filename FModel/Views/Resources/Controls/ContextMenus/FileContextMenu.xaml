@@ -153,11 +153,8 @@
                 </Binding>
             </MenuItem.IsEnabled>
             <MenuItem.Icon>
-                <Viewbox Width="16" Height="16">
-                    <Canvas Width="24" Height="24">
-                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DataTableIcon}" />
-                    </Canvas>
-                </Viewbox>
+                <Path Width="16" Height="16" Stretch="Uniform"
+                      Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DataTableIcon}" />
             </MenuItem.Icon>
         </MenuItem>
         <MenuItem Header="{DynamicResource UI_OpenWorldOutliner}" Command="{Binding RightClickMenuCommand}">
@@ -179,11 +176,8 @@
                 </Binding>
             </MenuItem.IsEnabled>
             <MenuItem.Icon>
-                <Viewbox Width="16" Height="16">
-                    <Canvas Width="24" Height="24">
-                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource WorldIcon}" />
-                    </Canvas>
-                </Viewbox>
+                <Path Width="16" Height="16" Stretch="Uniform"
+                      Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource WorldIcon}" />
             </MenuItem.Icon>
         </MenuItem>
         <MenuItem Header="{DynamicResource UI_OpenMaterialGraph}" Command="{Binding RightClickMenuCommand}">
@@ -205,11 +199,8 @@
                 </Binding>
             </MenuItem.IsEnabled>
             <MenuItem.Icon>
-                <Viewbox Width="16" Height="16">
-                    <Canvas Width="24" Height="24">
-                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MaterialIcon}" />
-                    </Canvas>
-                </Viewbox>
+                <Path Width="16" Height="16" Stretch="Uniform"
+                      Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MaterialIcon}" />
             </MenuItem.Icon>
         </MenuItem>
         <MenuItem Header="{DynamicResource UI_CreateAthenaProfile}" Command="{Binding RightClickMenuCommand}"
