@@ -90,6 +90,7 @@ jobs:
             Build: `${{ github.sha }}`
           artifacts: |
             ${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip
+            ./FModel/bin/Publish/FModel.exe
           allowUpdates: true
           makeLatest: true
           replacesArtifacts: true
