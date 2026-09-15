@@ -81,17 +81,18 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: 'FModel-JP- v${{ steps.package_version.outputs.version }}'
+          tag: '${{ steps.package_version.outputs.version }}'
           body: |
             初回の場合、下の ZIP をダウンロードして展開してください。
             実行した際にアップデート情報が表示されたら、アップデートを実行してください。
 
             Version: `${{ steps.package_version.outputs.version }}`
             Build: `${{ github.sha }}`
-          tag: '${{ steps.package_version.outputs.version }}'
           artifacts: |
             ${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip
           allowUpdates: true
           makeLatest: true
+          replacesArtifacts: true
 
       - name: Install Requests
         run: |
