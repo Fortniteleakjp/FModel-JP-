@@ -79,7 +79,7 @@
             <TextBlock Text=", "
                        FontSize="12"
                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
-            <TextBlock Text="{Binding AssetsList.Assets.Count, StringFormat={}{0} assets}"
+            <TextBlock Text="{Binding AssetsList.Count, StringFormat={}{0} assets}"
                        FontSize="12"
                        Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
         </StackPanel>

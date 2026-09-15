@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -259,17 +259,22 @@ public partial class CUE4ParseViewModel : ViewModel
                                 throw new FileLoadException("Could not load latest Fortnite manifest, you may have to switch to your local installation.");
                             }
 
-                            var manifestOptions = new ManifestParseOptions
-                            {
-                                ChunkCacheDirectory = CacheManager.ChunksDirectory,
-                                ManifestCacheDirectory = CacheManager.ManifestsDirectory,
-                                ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
-                                Decompressor = Compression.Decompressor,
-                                Client = _chunkClient,
-                                CacheChunksAsIs = false
-                            };
+                            var manifestOptions = CreateFortniteLiveManifestOptions();
 
                             var startTs = Stopwatch.GetTimestamp();
+
+                            // The UEFN manifest is served by a different endpoint and is unrelated to the Fortnite
+                            // one, so fetch it while the (far larger) Fortnite manifest is downloaded, parsed and
+                            // its archives are registered. It gets its own options instance because a manifest keeps
+                            // using them to stream chunks long after parsing.
+                            var uefnManifestTask = Task.Run(async () =>
+                            {
+                                var manifests = await _apiEndpointView.DillyApi.GetManifestsAsync(cancellationToken).ConfigureAwait(false);
+                                var downloadUrl = manifests.First(x => x.AppName == "Fortnite_Studio").DownloadUrl;
+                                var manifestBytes = await _chunkClient.GetByteArrayAsync(downloadUrl, cancellationToken).ConfigureAwait(false);
+                                return FBuildPatchAppManifest.Deserialize(manifestBytes, CreateFortniteLiveManifestOptions());
+                            }, cancellationToken);
+
                             FBuildPatchAppManifest manifest;
 
                             try
@@ -282,26 +287,42 @@ public partial class CUE4ParseViewModel : ViewModel
                             catch (HttpRequestException ex)
                             {
                                 Log.Error("Failed to download manifest ({ManifestUri})", ex.Data["ManifestUri"]?.ToString() ?? "");
+                                ObserveFaultedTask(uefnManifestTask);
                                 throw;
                             }
+                            catch
+                            {
+                                ObserveFaultedTask(uefnManifestTask);
+                                throw;
+                            }
+
+                            var manifestTs = Stopwatch.GetElapsedTime(startTs);
 
                             if (manifest.TryFindFile("Cloud/IoStoreOnDemand.ini", out var ioStoreOnDemandFile))
                             {
                                 IoStoreOnDemand.Read(new StreamReader(ioStoreOnDemandFile.GetStream()));
                             }
 
-                            RegisterFortniteLiveArchives(p, manifest, cancellationToken);
+                            try
+                            {
+                                RegisterFortniteLiveArchives(p, manifest, cancellationToken);
+                            }
+                            catch
+                            {
+                                ObserveFaultedTask(uefnManifestTask);
+                                throw;
+                            }
 
-                            var manifests = _apiEndpointView.DillyApi.GetManifests(cancellationToken);
-                            var downloadUrl = manifests.First(x => x.AppName == "Fortnite_Studio").DownloadUrl;
+                            var archivesTs = Stopwatch.GetElapsedTime(startTs);
 
-                            var manifestBytes = _chunkClient.GetByteArrayAsync(downloadUrl, cancellationToken).GetAwaiter().GetResult();
-
-                            var uefnManifest = FBuildPatchAppManifest.Deserialize(manifestBytes, manifestOptions);
-
+                            var uefnManifest = uefnManifestTask.GetAwaiter().GetResult();
                             RegisterFortniteLiveArchives(p, uefnManifest, cancellationToken);
 
                             var elapsedTime = Stopwatch.GetElapsedTime(startTs);
+                            Log.Information(
+                                "Fortnite [LIVE] timings: manifest {Manifest:F1}ms, archives {Archives:F1}ms, UEFN {Uefn:F1}ms, total {Total:F1}ms",
+                                manifestTs.TotalMilliseconds, (archivesTs - manifestTs).TotalMilliseconds,
+                                (elapsedTime - archivesTs).TotalMilliseconds, elapsedTime.TotalMilliseconds);
                             FLogger.Append(ELog.Information, () =>
                                 FLogger.Text($"Fortnite [LIVE] has been loaded successfully in {elapsedTime.TotalMilliseconds:F1}ms", Constants.WHITE, true));
                             break;
@@ -340,12 +361,31 @@ public partial class CUE4ParseViewModel : ViewModel
 
             Provider.Initialize();
             GameDirectory.AddLooseFiles(Provider.LooseFileCount);
+            GameDirectory.FlushPendingChanges();
             _wwiseProviderLazy = new Lazy<WwiseProvider>(() => new WwiseProvider(Provider, UserSettings.Default.GameDirectory));
             _fmodProviderLazy = new Lazy<FModProvider>(() => new FModProvider(Provider, UserSettings.Default.GameDirectory));
             _criWareProviderLazy = new Lazy<CriWareProvider>(() => new CriWareProvider(Provider, UserSettings.Default.GameDirectory));
             Log.Information($"{Provider.Versions.Game} ({Provider.Versions.Platform}) | Archives: x{Provider.UnloadedVfs.Count} | AES: x{Provider.RequiredKeys.Count} | Loose Files: x{Provider.Files.Count}");
         });
     }
+
+    private ManifestParseOptions CreateFortniteLiveManifestOptions() => new()
+    {
+        ChunkCacheDirectory = CacheManager.ChunksDirectory,
+        ManifestCacheDirectory = CacheManager.ManifestsDirectory,
+        ChunkBaseUrl = "https://egdownload.fastly-edge.com/Builds/Fortnite/CloudDir/",
+        Decompressor = Compression.Decompressor,
+        Client = _chunkClient,
+        CacheChunksAsIs = false
+    };
+
+    /// <summary>
+    /// Keeps a background task's exception from resurfacing as an unobserved task exception when the
+    /// caller already failed for another reason.
+    /// </summary>
+    private static void ObserveFaultedTask(Task task)
+        => task.ContinueWith(static t => Log.Debug(t.Exception, "Background manifest task failed"),
+            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
 
     private void RegisterFortniteLiveArchives(StreamedFileProvider provider, FBuildPatchAppManifest manifest,
         CancellationToken cancellationToken)
@@ -355,7 +395,14 @@ public partial class CUE4ParseViewModel : ViewModel
             (x.FileName.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) ||
              x.FileName.EndsWith(".utoc", StringComparison.OrdinalIgnoreCase) ||
              x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase))).ToList();
-        var parallelOptions = new ParallelOptions { CancellationToken = cancellationToken };
+
+        // Registering an archive is dominated by waiting on BuildPatch chunk downloads rather than by CPU work,
+        // so allow more concurrency than the default degree of parallelism (the core count).
+        var parallelOptions = new ParallelOptions
+        {
+            CancellationToken = cancellationToken,
+            MaxDegreeOfParallelism = Math.Max(Environment.ProcessorCount, 16)
+        };
 
         Parallel.ForEach(archiveFiles.Where(x => !x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase)),
             parallelOptions, fileManifest =>
@@ -367,14 +414,25 @@ public partial class CUE4ParseViewModel : ViewModel
         // V2 on-demand TOCs are large and span many BuildPatch chunks. Reading them through CUE4Parse's synchronous
         // archive interface downloads those chunks one at a time. Materialize each TOC through EpicManifestParser's
         // parallel path first, then register it normally so the on-demand containers remain available.
-        foreach (var fileManifest in archiveFiles.Where(x => x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase)))
+        var onDemandTocs = archiveFiles
+            .Where(x => x.FileName.EndsWith(".uondemandtoc", StringComparison.OrdinalIgnoreCase)).ToList();
+        if (onDemandTocs.Count == 0)
+            return;
+
+        // Each TOC already downloads its own chunks in parallel, so only overlap a couple of them at a time.
+        var tocParallelOptions = new ParallelOptions
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            CancellationToken = cancellationToken,
+            MaxDegreeOfParallelism = Math.Min(onDemandTocs.Count, 4)
+        };
+
+        Parallel.ForEach(onDemandTocs, tocParallelOptions, fileManifest =>
+        {
             using var stream = fileManifest.GetStream();
             var data = stream.SaveBytesAsync(8, cancellationToken).GetAwaiter().GetResult();
             using var archive = new FByteArchive(fileManifest.FileName, data, provider.Versions);
             provider.RegisterVfs(new IoChunkToc(archive));
-        }
+        });
     }
 
     /// <summary>
@@ -385,6 +443,7 @@ public partial class CUE4ParseViewModel : ViewModel
     {
         Provider.SubmitKeys(aesKeys);
         Provider.PostMount();
+        GameDirectory.FlushPendingChanges();
 
         var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;
         var archiveMax = Provider.UnloadedVfs.Count + Provider.MountedVfs.Count;
@@ -395,8 +454,8 @@ public partial class CUE4ParseViewModel : ViewModel
     {
         if (Provider == null) return;
 
-        AssetsFolder.Folders.Clear();
-        SearchVm.SearchResults.Clear();
+        AssetsFolder.Clear();
+        SearchVm.Clear();
         Helper.CloseWindow<AdonisWindow>("Search For Packages");
         UnloadDiffProvider();
         Provider.UnloadNonStreamedVfs();
