@@ -242,6 +242,19 @@ public partial class MainWindow
         searchView.FocusTab(ESearchViewTab.SearchView);
     }
 
+    /// <summary>
+    /// The output folder button acts as a drop-down listing every export folder.
+    /// </summary>
+    private void OnOpenOutputFolderClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { ContextMenu: { } menu } button)
+            return;
+
+        menu.PlacementTarget = button;
+        menu.Placement = PlacementMode.Top;
+        menu.IsOpen = true;
+    }
+
     private void OnRefViewClick(object sender, RoutedEventArgs e)
     {
         var searchView = Helper.GetWindow<SearchView>("Search For Packages", () => new SearchView().Show());

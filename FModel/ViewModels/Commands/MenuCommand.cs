@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using AdonisUI.Controls;
 using FModel.Extensions;
@@ -46,6 +48,9 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Views_AudioPlayer":
                 Helper.OpenWindow<AdonisWindow>("Audio Player", () => new AudioPlayer().Show());
                 break;
+            case "Views_GameplayTags":
+                Helper.OpenWindow<AdonisWindow>("Gameplay Tags", () => new GameplayTagBrowserWindow().Show());
+                break;
             case "Views_ImageMerger":
                 Helper.OpenWindow<AdonisWindow>("Image Merger", () => new ImageMerger().Show());
                 break;
@@ -73,7 +78,34 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 FLogger.ClearLogs();
                 break;
             case "ToolBox_Open_Output_Directory":
-                Process.Start(new ProcessStartInfo { FileName = UserSettings.Default.OutputDirectory, UseShellExecute = true });
+                OpenDirectorySafe(UserSettings.Default.OutputDirectory, "Output");
+                break;
+            case "ToolBox_Open_Exports_Directory":
+                OpenDirectorySafe(Path.Combine(UserSettings.Default.OutputDirectory, "Exports"), "Exports");
+                break;
+            case "ToolBox_Open_Textures_Directory":
+                OpenDirectorySafe(UserSettings.Default.TextureDirectory, "Textures");
+                break;
+            case "ToolBox_Open_Models_Directory":
+                OpenDirectorySafe(UserSettings.Default.ModelDirectory, "Models");
+                break;
+            case "ToolBox_Open_Audios_Directory":
+                OpenDirectorySafe(UserSettings.Default.AudioDirectory, "Audios");
+                break;
+            case "ToolBox_Open_Properties_Directory":
+                OpenDirectorySafe(UserSettings.Default.PropertiesDirectory, "Properties");
+                break;
+            case "ToolBox_Open_RawData_Directory":
+                OpenDirectorySafe(UserSettings.Default.RawDataDirectory, "Raw Data");
+                break;
+            case "ToolBox_Open_Code_Directory":
+                OpenDirectorySafe(UserSettings.Default.CodeDirectory, "Code");
+                break;
+            case "ToolBox_Open_Backups_Directory":
+                OpenDirectorySafe(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"), "Backups");
+                break;
+            case "ToolBox_Open_Logs_Directory":
+                OpenDirectorySafe(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"), "Logs");
                 break;
             // case "ToolBox_Expand_All":
             //     await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
@@ -91,6 +123,31 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 selectedFolder.IsSelected = false;
                 selectedFolder.IsSelected = true;
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Opens a folder in the file explorer, creating it when it does not exist yet.
+    /// Falls back to the output directory if the setting is empty or unreachable.
+    /// </summary>
+    private static void OpenDirectorySafe(string directory, string label)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(directory))
+                directory = UserSettings.Default.OutputDirectory;
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                FLogger.Append(ELog.Warning, () => FLogger.Text($"No directory configured for \"{label}\"", Constants.WHITE, true));
+                return;
+            }
+
+            Directory.CreateDirectory(directory);
+            Process.Start(new ProcessStartInfo { FileName = directory, UseShellExecute = true });
+        }
+        catch (Exception e)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not open the \"{label}\" directory: {e.Message}", Constants.WHITE, true));
         }
     }
 

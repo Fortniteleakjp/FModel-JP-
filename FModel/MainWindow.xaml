@@ -173,6 +173,15 @@
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="{DynamicResource UI_GameplayTags}" Command="{Binding MenuCommand}" CommandParameter="Views_GameplayTags">
+                        <MenuItem.Icon>
+                            <Viewbox Width="16" Height="16">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" Data="{StaticResource ListIcon}" />
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <MenuItem Header="{DynamicResource UI_ImageMerger}" Command="{Binding MenuCommand}" CommandParameter="Views_ImageMerger">
                         <MenuItem.Icon>
                             <Viewbox Width="16" Height="16">
@@ -688,7 +697,23 @@
                             <controls:CustomRichTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="LogRtbName" Style="{StaticResource CustomRichTextBox}" />
                             <StackPanel Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="-5 -5 5 5">
                                 <Button Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarButton}}" ToolTip="{DynamicResource UI_OpenOutputFolder}" Padding="0,4,0,4"
-                                        Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory" Focusable="False">
+                                        Click="OnOpenOutputFolderClick" Focusable="False">
+                                    <Button.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="{DynamicResource UI_OpenOutputFolder}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Output_Directory" />
+                                            <Separator />
+                                            <MenuItem Header="{DynamicResource UI_Folder_Exports}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Exports_Directory" />
+                                            <MenuItem Header="{DynamicResource UI_Folder_Textures}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Textures_Directory" />
+                                            <MenuItem Header="{DynamicResource UI_Folder_Models}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Models_Directory" />
+                                            <MenuItem Header="{DynamicResource UI_Folder_Audios}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Audios_Directory" />
+                                            <MenuItem Header="{DynamicResource UI_Folder_Properties}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Properties_Directory" />
+                                            <MenuItem Header="{DynamicResource UI_Folder_RawData}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_RawData_Directory" />
+                                            <MenuItem Header="{DynamicResource UI_Folder_Code}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Code_Directory" />
+                                            <Separator />
+                                            <MenuItem Header="{DynamicResource UI_Folder_Backups}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Backups_Directory" />
+                                            <MenuItem Header="{DynamicResource UI_Folder_Logs}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Logs_Directory" />
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
                                             <Path StrokeThickness="2" Stroke="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6" />

@@ -61,6 +61,9 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         References,
         ReferenceViewer,
         Decompile,
+        TableViewer,
+        WorldOutliner,
+        MaterialGraph,
         Diff,
         DiffPickFolder,
         DiffPreviousVersion,
@@ -99,6 +102,9 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_Diff_Pick_Folder" => (EAction.Show, EShowAssetType.DiffPickFolder, EBulkType.None),
             "Assets_Diff_Previous_Version" => (EAction.Show, EShowAssetType.DiffPreviousVersion, EBulkType.None),
             "Assets_Decompile" => (EAction.Show, EShowAssetType.Decompile, EBulkType.Code),
+            "Assets_Table_Viewer" => (EAction.Show, EShowAssetType.TableViewer, EBulkType.None),
+            "Assets_World_Outliner" => (EAction.Show, EShowAssetType.WorldOutliner, EBulkType.None),
+            "Assets_Material_Graph" => (EAction.Show, EShowAssetType.MaterialGraph, EBulkType.None),
             "Assets_Athena_Profile" => (EAction.Show, EShowAssetType.AthenaProfile, EBulkType.None),
 
             "Save_Data" => (EAction.Export, EShowAssetType.None, EBulkType.Raw),
@@ -123,6 +129,57 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 {
                     var roots = assets.ToList();
                     System.Windows.Application.Current.Dispatcher.Invoke(() => new ReferenceChainWindow(roots).Show());
+                    return;
+                }
+
+                if (showtype is EShowAssetType.TableViewer)
+                {
+                    var entry = assets.FirstOrDefault();
+                    if (entry is null) return;
+
+                    var documents = TableViewerWindow.Load(entry, null, cancellationToken);
+                    if (documents is null)
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text($"{entry.Name} does not contain any data table or curve table", Constants.WHITE, true));
+                        return;
+                    }
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => new TableViewerWindow(documents, entry.NameWithoutExtension).Show());
+                    return;
+                }
+
+                if (showtype is EShowAssetType.WorldOutliner)
+                {
+                    var entry = assets.FirstOrDefault();
+                    if (entry is null) return;
+
+                    var outline = WorldOutlinerWindow.Load(entry, null, cancellationToken);
+                    if (outline is null)
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text($"{entry.Name} is not a level", Constants.WHITE, true));
+                        return;
+                    }
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => new WorldOutlinerWindow(outline).Show());
+                    return;
+                }
+
+                if (showtype is EShowAssetType.MaterialGraph)
+                {
+                    var entry = assets.FirstOrDefault();
+                    if (entry is null) return;
+
+                    var graph = MaterialGraphWindow.Load(entry, cancellationToken);
+                    if (graph is null)
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text($"{entry.Name} is not a material", Constants.WHITE, true));
+                        return;
+                    }
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => new MaterialGraphWindow(graph).Show());
                     return;
                 }
 
