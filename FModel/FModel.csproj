@@ -287,4 +287,24 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!--
+    CI が先にビルドした CUE4Parse-Natives.dll を publish 出力に差し込む。
+    AssetType を native にしておくと、単一ファイル発行時に FModel.exe へ埋め込まれるので
+    exe 単体でもネイティブ機能 (ACL/Oodle など) が使える。
+    CUE4Parse.csproj のビルド内 cmake は失敗しても警告止まりなので、CI ではこちらで明示的に渡す。
+  -->
+  <Target Name="BundleCUE4ParseNatives" AfterTargets="ComputeResolvedFilesToPublishList"
+          Condition="'$(CUE4ParseNativeDll)' != ''">
+    <Error Condition="!Exists('$(CUE4ParseNativeDll)')"
+           Text="CUE4ParseNativeDll not found: $(CUE4ParseNativeDll)" />
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish->WithMetadataValue('Filename','CUE4Parse-Natives'))" />
+      <ResolvedFileToPublish Include="$(CUE4ParseNativeDll)">
+        <RelativePath>CUE4Parse-Natives.dll</RelativePath>
+        <AssetType>native</AssetType>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
 </Project>

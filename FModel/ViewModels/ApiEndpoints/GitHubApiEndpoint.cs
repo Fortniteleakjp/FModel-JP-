@@ -27,6 +27,20 @@ public class GitHubApiEndpoint(RestClient client) : AbstractApiProvider(client)
     }
 
     /// <summary>
+    /// FModel-JP のコミット履歴を取得する。ブランチ名ではなくコミット sha を渡せば、
+    /// そのコミットを起点にした履歴が返るため、ビルド元のブランチ名に依存しない。
+    /// </summary>
+    public async Task<GitHubCommit[]> GetJpCommitHistoryAsync(string sha = null, int page = 1, int limit = 30)
+    {
+        var request = new FRestRequest(Constants.GH_JP_COMMITS_HISTORY);
+        if (!string.IsNullOrEmpty(sha)) request.AddParameter("sha", sha);
+        request.AddParameter("page", page);
+        request.AddParameter("per_page", limit);
+        var response = await _client.ExecuteAsync<GitHubCommit[]>(request).ConfigureAwait(false);
+        return response.Data;
+    }
+
+    /// <summary>
     /// FModel-JP のリリース一覧を取得する。リリースノートの表示に使う。
     /// </summary>
     public async Task<GitHubRelease[]> GetJpReleasesAsync(int limit = 20)

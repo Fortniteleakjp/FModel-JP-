@@ -22,22 +22,14 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: .NET Restore
-        run: dotnet restore "./FModel/FModel.slnx" -r win-x64
-
-      - name: .NET Publish
-        run: dotnet publish "./FModel/FModel.csproj" -c Release --no-restore --self-contained true -r win-x64 -f net10.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false
-
+      # publish より先にネイティブを作る。ここで作った DLL を publish に渡して exe へ埋め込む。
       - name: Build CUE4Parse-Natives
+        id: natives
         shell: pwsh
         run: |
           cmake -S "./CUE4Parse/CUE4Parse-Natives" -B "./CUE4Parse/CUE4Parse-Natives/build-gha"
           cmake --build "./CUE4Parse/CUE4Parse-Natives/build-gha" --config Release
 
-      - name: Bundle CUE4Parse-Natives.dll
-        shell: pwsh
-        run: |
-          $publishDir = "./FModel/bin/Publish"
           $candidates = @(
             "./CUE4Parse/CUE4Parse-Natives/build-gha/Release/CUE4Parse-Natives.dll",
             "./CUE4Parse/CUE4Parse-Natives/build-gha/CUE4Parse-Natives.dll",
@@ -59,9 +51,46 @@ jobs:
             throw "CUE4Parse-Natives.dll was not produced by CI build."
           }
 
-          New-Item -ItemType Directory -Path $publishDir -Force | Out-Null
-          Copy-Item $dll (Join-Path $publishDir "CUE4Parse-Natives.dll") -Force
-          Write-Host "Bundled native DLL from: $dll"
+          Write-Host "Built native DLL: $dll"
+          "dll=$dll" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: .NET Restore
+        run: dotnet restore "./FModel/FModel.slnx" -r win-x64
+
+      # CUE4PARSE_SKIP_NATIVE: ビルド中の cmake は上で作った DLL と重複するので走らせない
+      - name: .NET Publish
+        env:
+          CUE4PARSE_SKIP_NATIVE: 'true'
+        run: dotnet publish "./FModel/FModel.csproj" -c Release --no-restore --self-contained true -r win-x64 -f net10.0-windows -o "./FModel/bin/Publish/" -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -p:GenerateDocumentationFile=false -p:DebugSymbols=false -p:CUE4ParseNativeDll="${{ steps.natives.outputs.dll }}"
+
+      # exe 単体で配布しても動くよう、ネイティブが本当に埋め込まれたかを確認する
+      # (単一ファイルバンドルのマニフェストはファイル末尾側に置かれる)
+      - name: Verify CUE4Parse-Natives.dll Is Embedded
+        shell: pwsh
+        run: |
+          $exe = (Resolve-Path "./FModel/bin/Publish/FModel.exe").Path
+          $stream = [IO.File]::OpenRead($exe)
+          try {
+            $length = [Math]::Min(32MB, $stream.Length)
+            $stream.Seek(-$length, [IO.SeekOrigin]::End) | Out-Null
+            $buffer = New-Object byte[] $length
+            $read = $stream.Read($buffer, 0, $length)
+          } finally {
+            $stream.Dispose()
+          }
+
+          $manifest = [Text.Encoding]::UTF8.GetString($buffer, 0, $read)
+          if (-not $manifest.Contains("CUE4Parse-Natives.dll")) {
+            throw "CUE4Parse-Natives.dll is not embedded in FModel.exe."
+          }
+
+          Write-Host "CUE4Parse-Natives.dll is embedded in FModel.exe."
+
+      # exe には埋め込み済みだが、旧バージョンから更新した環境に残る古い DLL を上書きするため ZIP にも入れる
+      - name: Bundle CUE4Parse-Natives.dll
+        shell: pwsh
+        run: |
+          Copy-Item "${{ steps.natives.outputs.dll }}" "./FModel/bin/Publish/CUE4Parse-Natives.dll" -Force
 
       - name: Get App Version
         id: package_version
@@ -69,12 +98,30 @@ jobs:
         with:
           proj-path: ./FModel/FModel.csproj
 
+      # ZipExtractor (AutoUpdater.NET) は ZIP の中身をそのままアプリのフォルダへ展開するため、
+      # FModel.exe を必ずルート直下に置く。親フォルダを含めると本体が更新されない。
       - name: Create ZIP File
-        uses: thedoctor0/zip-release@0.7.6
-        with:
-          type: zip
-          filename: ${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip
-          path: ./FModel/bin/Publish/
+        shell: pwsh
+        run: |
+          $publishDir = (Resolve-Path "./FModel/bin/Publish").Path
+          Get-ChildItem -Path $publishDir -Filter "*.pdb" -Recurse | Remove-Item -Force
+
+          $zip = Join-Path (Get-Location).Path "${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip"
+          if (Test-Path $zip) { Remove-Item $zip -Force }
+
+          [IO.Compression.ZipFile]::CreateFromDirectory($publishDir, $zip, [IO.Compression.CompressionLevel]::Optimal, $false)
+
+          $archive = [IO.Compression.ZipFile]::OpenRead($zip)
+          try {
+            $entries = @($archive.Entries.FullName)
+          } finally {
+            $archive.Dispose()
+          }
+
+          Write-Host ("ZIP entries:`n" + ($entries -join "`n"))
+          if ($entries -notcontains "FModel.exe") {
+            throw "FModel.exe must be at the root of the ZIP."
+          }
 
       - name: Add Release
         uses: ncipollo/release-action@v1.14.0
@@ -83,7 +130,7 @@ jobs:
           name: 'FModel-JP- v${{ steps.package_version.outputs.version }}'
           tag: '${{ steps.package_version.outputs.version }}'
           body: |
-            初回の場合、下の ZIP をダウンロードして展開してください。
+            初回の場合、下の ZIP をダウンロードして展開するか、FModel.exe を直接ダウンロードしてください。
             実行した際にアップデート情報が表示されたら、アップデートを実行してください。
 
             Version: `${{ steps.package_version.outputs.version }}`

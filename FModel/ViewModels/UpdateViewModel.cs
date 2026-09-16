@@ -39,16 +39,22 @@ public partial class UpdateViewModel : ViewModel
 
     public async Task LoadAsync()
     {
-        var commits = await _apiEndpointView.GitHubApi.GetCommitHistoryAsync();
-        if (commits == null || commits.Length == 0)
-            return;
+        // 本家ではなく FModel-JP のリリースを見る。CI が積む資産名は "<version>-<sha>.zip"。
+        var release = await _apiEndpointView.GitHubApi.GetJpLatestReleaseAsync();
+        var assets = release?.Assets?
+            .Where(x => x.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(x => x.CreatedAt)
+            .ToArray() ?? [];
 
-        Commits.AddRange(commits);
+        // 一番新しいビルドの sha を起点に履歴を引くことで、ビルド元のブランチ名に依存しない
+        var commits = await _apiEndpointView.GitHubApi.GetJpCommitHistoryAsync(assets.Length > 0 ? GetAssetSha(assets[0].Name) : null);
+        if (commits is { Length: > 0 })
+            Commits.AddRange(commits);
 
         try
         {
             _ = LoadCoAuthors();
-            _ = LoadAssets();
+            LinkAssets(assets);
         }
         catch
         {
@@ -121,40 +127,47 @@ public partial class UpdateViewModel : ViewModel
         });
     }
 
-    private Task LoadAssets()
+    /// <summary>
+    /// リリース資産を対応するコミットに紐付ける。履歴に無いビルドは資産だけの項目として足す。
+    /// </summary>
+    private void LinkAssets(GitHubAsset[] assets)
     {
-        return Task.Run(async () =>
+        for (var i = 0; i < assets.Length; i++)
         {
-            var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
-            var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
+            var asset = assets[i];
+            asset.IsLatest = i == 0;
 
-            for (var i = 0; i < assets.Count; i++)
+            var sha = GetAssetSha(asset.Name);
+            if (string.IsNullOrEmpty(sha)) continue;
+
+            var commit = Commits.FirstOrDefault(x => x.Sha == sha);
+            if (commit != null)
             {
-                var asset = assets[i];
-                asset.IsLatest = i == 0;
-
-                var commitSha = asset.Name.SubstringBeforeLast(".zip");
-                var commit = Commits.FirstOrDefault(x => x.Sha == commitSha);
-                if (commit != null)
-                {
-                    commit.Asset = asset;
-                }
-                else
-                {
-                    Commits.Add(new GitHubCommit
-                    {
-                        Sha = commitSha,
-                        Commit = new Commit
-                        {
-                            Message = $"FModel ({commitSha[..7]})",
-                            Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
-                        },
-                        Author = asset.Uploader,
-                        Asset = asset
-                    });
-                }
+                commit.Asset = asset;
+                continue;
             }
-        });
+
+            Commits.Add(new GitHubCommit
+            {
+                Sha = sha,
+                Commit = new Commit
+                {
+                    Message = $"FModel-JP ({sha[..Math.Min(7, sha.Length)]})",
+                    Author = new Author { Name = asset.Uploader?.Login, Date = asset.CreatedAt }
+                },
+                Author = asset.Uploader,
+                Asset = asset
+            });
+        }
+    }
+
+    /// <summary>
+    /// CI が積む資産名 "&lt;version&gt;-&lt;sha&gt;.zip" から sha を取り出す。
+    /// </summary>
+    private static string GetAssetSha(string assetName)
+    {
+        var name = assetName.SubstringBeforeLast(".zip");
+        return name.Contains('-') ? name.SubstringAfterLast('-') : name;
     }
 
     public void DownloadLatest()
