@@ -193,8 +193,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
 
         return RunResolverAsync(() =>
         {
-            // TODO: cache and reuse packages
-            var pkg = _applicationView.CUE4Parse?.Provider.LoadPackage(Asset);
+            var pkg = _applicationView.CUE4Parse?.LoadPackageCached(Asset);
             if (pkg is null)
                 throw new InvalidOperationException($"Failed to load {Asset.Path} as UE package.");
 

@@ -99,8 +99,11 @@ namespace FModel.ViewModels;
 
 public partial class CUE4ParseViewModel : ViewModel
 {
+    private const int PackageCacheCapacity = 128;
+
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApiEndpointViewModel _apiEndpointView => ApplicationService.ApiEndpointView;
+    private readonly UePackageCache _packageCache = new(PackageCacheCapacity);
     private readonly Regex _fnLiveRegex = new(@"^FortniteGame[/\\]Content[/\\]Paks[/\\]",
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
@@ -442,6 +445,7 @@ public partial class CUE4ParseViewModel : ViewModel
     /// <returns></returns>
     public void LoadVfs(IEnumerable<KeyValuePair<FGuid, FAesKey>> aesKeys)
     {
+        _packageCache.Clear();
         Provider.SubmitKeys(aesKeys);
         Provider.PostMount();
         GameDirectory.FlushPendingChanges();
@@ -453,6 +457,7 @@ public partial class CUE4ParseViewModel : ViewModel
 
     public void ClearProvider()
     {
+        _packageCache.Clear();
         if (Provider == null) return;
 
         AssetsFolder.Clear();
@@ -462,6 +467,11 @@ public partial class CUE4ParseViewModel : ViewModel
         UnloadDiffProvider();
         Provider.UnloadNonStreamedVfs();
         GC.Collect();
+    }
+
+    public IPackage LoadPackageCached(GameFile file)
+    {
+        return _packageCache.GetOrLoad(file, Provider.LoadPackage);
     }
 
     public async Task RefreshAes()
