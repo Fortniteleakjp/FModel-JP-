@@ -25,6 +25,7 @@
     <system:String x:Key="UI_Athena">Athena</system:String>
     <system:String x:Key="UI_AthenaBattlePassLevel">Athena Battle Pass Level</system:String>
     <system:String x:Key="UI_AthenaProfileName">Athena Profile Name</system:String>
+    <system:String x:Key="UI_AthenaQueueCount">Queued: </system:String>
     <system:String x:Key="UI_Audio">Audio</system:String>
     <system:String x:Key="UI_AudioPlayer">Audio Player</system:String>
     <system:String x:Key="UI_AutoExportAttachedMaterials">Auto-Export Attached Materials</system:String>

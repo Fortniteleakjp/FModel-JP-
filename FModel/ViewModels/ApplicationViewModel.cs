@@ -16,6 +16,7 @@ using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Services.Athena;
 using FModel.Settings;
 using FModel.ViewModels.Commands;
 using FModel.Views;
@@ -75,6 +76,13 @@ public class ApplicationViewModel : ViewModel
 
     public bool IsAssetPreviewLoadingSuspended { get; set; }
 
+    private int _athenaQueueCount;
+    public int AthenaQueueCount
+    {
+        get => _athenaQueueCount;
+        private set => SetProperty(ref _athenaQueueCount, value);
+    }
+
     private int _selectedLeftTabIndex;
     public int SelectedLeftTabIndex
     {
@@ -107,6 +115,8 @@ public class ApplicationViewModel : ViewModel
     public ApplicationViewModel()
     {
         Status = new FStatus();
+        _athenaQueueCount = AthenaExportQueue.Count;
+        AthenaExportQueue.CountChanged += OnAthenaQueueCountChanged;
 #if DEBUG
         Build = EBuildKind.Debug;
 #elif RELEASE
@@ -148,6 +158,18 @@ public class ApplicationViewModel : ViewModel
         AudioPlayer = new AudioPlayerViewModel();
 
         Status.SetStatus(EStatusKind.Ready);
+    }
+
+    private void OnAthenaQueueCountChanged(int count)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is not null && !dispatcher.CheckAccess())
+        {
+            _ = dispatcher.BeginInvoke(() => AthenaQueueCount = count, DispatcherPriority.DataBind);
+            return;
+        }
+
+        AthenaQueueCount = count;
     }
 
     private void QueueProviderStatus(string label, string prefix)

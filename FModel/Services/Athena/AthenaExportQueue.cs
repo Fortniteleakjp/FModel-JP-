@@ -12,6 +12,7 @@ namespace FModel.Services.Athena;
 public static class AthenaExportQueue
 {
     private static readonly object _lock = new();
+    public static event Action<int> CountChanged;
 
     /// <summary>キーはアセットのフルパス。同じアセットを二重に積まないための辞書。</summary>
     private static readonly Dictionary<string, GameFile> _entries = new(StringComparer.OrdinalIgnoreCase);
@@ -30,6 +31,7 @@ public static class AthenaExportQueue
         if (entries is null) return 0;
 
         var added = 0;
+        int count;
         lock (_lock)
         {
             foreach (var entry in entries)
@@ -38,7 +40,12 @@ public static class AthenaExportQueue
                 if (_entries.TryAdd(entry.Path, entry))
                     added++;
             }
+
+            count = _entries.Count;
         }
+
+        if (added > 0)
+            CountChanged?.Invoke(count);
 
         return added;
     }
@@ -53,11 +60,29 @@ public static class AthenaExportQueue
     public static bool Remove(GameFile entry)
     {
         if (entry is null) return false;
-        lock (_lock) return _entries.Remove(entry.Path);
+
+        bool removed;
+        int count;
+        lock (_lock)
+        {
+            removed = _entries.Remove(entry.Path);
+            count = _entries.Count;
+        }
+
+        if (removed)
+            CountChanged?.Invoke(count);
+
+        return removed;
     }
 
     public static void Clear()
     {
-        lock (_lock) _entries.Clear();
+        lock (_lock)
+        {
+            if (_entries.Count == 0) return;
+            _entries.Clear();
+        }
+
+        CountChanged?.Invoke(0);
     }
 }

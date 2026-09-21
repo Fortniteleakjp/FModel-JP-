@@ -225,10 +225,17 @@
                                             </Binding>
                                         </MenuItem.IsEnabled>
                                     </MenuItem>
-                                    <MenuItem Header="{DynamicResource UI_Athena}"
-                                              Visibility="{Binding DataContext.mainApplication.CUE4Parse.Provider.ProjectName,
+                                    <MenuItem Visibility="{Binding DataContext.mainApplication.CUE4Parse.Provider.ProjectName,
                                                            Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
                                                            ConverterParameter='FortniteGame'}">
+                                        <MenuItem.Header>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{DynamicResource UI_Athena}" />
+                                                <TextBlock Text=" (" />
+                                                <TextBlock Text="{Binding DataContext.mainApplication.AthenaQueueCount}" />
+                                                <TextBlock Text=")" />
+                                            </StackPanel>
+                                        </MenuItem.Header>
                                         <MenuItem.Icon>
                                             <Viewbox Width="16" Height="16">
                                                 <Canvas Width="24" Height="24">

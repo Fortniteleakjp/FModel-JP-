@@ -13,6 +13,7 @@ public class AthenaQueueManagerViewModel : ViewModel
 {
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    public ApplicationViewModel Application => _applicationView;
 
     private GameFile _selectedItem;
     public GameFile SelectedItem

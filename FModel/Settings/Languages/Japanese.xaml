@@ -25,6 +25,7 @@
     <system:String x:Key="UI_Athena">Athena</system:String>
     <system:String x:Key="UI_AthenaBattlePassLevel">Athena バトルパスレベル</system:String>
     <system:String x:Key="UI_AthenaProfileName">Athena プロファイル名</system:String>
+    <system:String x:Key="UI_AthenaQueueCount">キュー件数: </system:String>
     <system:String x:Key="UI_Audio">音声</system:String>
     <system:String x:Key="UI_AudioPlayer">オーディオプレイヤー</system:String>
     <system:String x:Key="UI_AutoExportAttachedMaterials">付随するマテリアルも自動でエクスポート</system:String>

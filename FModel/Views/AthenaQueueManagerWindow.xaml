@@ -20,12 +20,19 @@
 
     <Grid Margin="10" adonisExtensions:LayerExtension.Layer="2">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="8" />
             <RowDefinition Height="*" />
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ListView Grid.Row="0"
+        <TextBlock Grid.Row="0" FontWeight="SemiBold">
+            <Run Text="{DynamicResource UI_AthenaQueueCount}" />
+            <Run Text="{Binding Application.AthenaQueueCount, Mode=OneWay}" />
+        </TextBlock>
+
+        <ListView Grid.Row="2"
                   ItemsSource="{Binding Items}"
                   SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                   SelectionMode="Single"
@@ -46,7 +53,7 @@
             </ListView.View>
         </ListView>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="8" />
