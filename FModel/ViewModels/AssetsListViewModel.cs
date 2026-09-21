@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Framework;
@@ -31,6 +32,22 @@ public class AssetsListViewModel
     }
 
     public int Count => _assets?.Count ?? _pendingAssets?.Count ?? 0;
+
+    /// <summary>
+    /// GameFileViewModel を生成せずに元の GameFile だけを列挙する。
+    /// UI スレッド以外からフォルダ配下を走査するときに使う。
+    /// </summary>
+    public IEnumerable<GameFile> RawAssets
+    {
+        get
+        {
+            var assets = _assets;
+            if (assets != null)
+                return assets.Select(static asset => asset.Asset);
+
+            return _pendingAssets ?? Enumerable.Empty<GameFile>();
+        }
+    }
 
     private ICollectionView _assetsView;
     private Predicate<object> _filter;

@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.Utils;
 using FModel.Framework;
@@ -68,6 +69,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         DiffPickFolder,
         DiffPreviousVersion,
         AthenaProfile,
+        AthenaQueueAdd,
     }
 
     public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
@@ -75,7 +77,11 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         if (parameter is not object[] parameters || parameters[0] is not string trigger)
             return;
 
-        var param = (parameters[1] as IEnumerable)?.OfType<object>().ToArray() ?? [];
+        // キュー操作は選択内容に依存しないので、選択を解決する前に処理する
+        if (await TryExecuteAthenaQueueAction(contextViewModel, trigger))
+            return;
+
+        var param = (parameters.Length > 1 ? parameters[1] as IEnumerable : null)?.OfType<object>().ToArray() ?? [];
         if (param.Length == 0) return;
 
         var folders = param.OfType<TreeItem>().ToArray();
@@ -106,6 +112,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_World_Outliner" => (EAction.Show, EShowAssetType.WorldOutliner, EBulkType.None),
             "Assets_Material_Graph" => (EAction.Show, EShowAssetType.MaterialGraph, EBulkType.None),
             "Assets_Athena_Profile" => (EAction.Show, EShowAssetType.AthenaProfile, EBulkType.None),
+            "Assets_Athena_Queue_Add" => (EAction.Show, EShowAssetType.AthenaQueueAdd, EBulkType.None),
 
             "Save_Data" => (EAction.Export, EShowAssetType.None, EBulkType.Raw),
             "Save_Properties" => (EAction.Export, EShowAssetType.None, EBulkType.Properties),
@@ -183,14 +190,24 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     return;
                 }
 
-                if (showtype is EShowAssetType.AthenaProfile)
+                if (showtype is EShowAssetType.AthenaProfile or EShowAssetType.AthenaQueueAdd)
                 {
-                    // 明示的に選ばれたアセットはそのまま、フォルダは配下のコスメティクスだけを拾う
-                    var cosmetics = assets.ToList();
-                    foreach (var folder in folders)
-                        CollectFolderCosmetics(folder, cosmetics, cancellationToken);
+                    var cosmetics = CollectAthenaCosmetics(assets, folders, cancellationToken);
+                    switch (showtype)
+                    {
+                        case EShowAssetType.AthenaProfile:
+                            AthenaProfileGenerator.Generate(cosmetics, contextViewModel.CUE4Parse.Provider, cancellationToken);
+                            break;
+                        case EShowAssetType.AthenaQueueAdd:
+                            var added = AthenaExportQueue.Add(cosmetics);
+                            var queued = AthenaExportQueue.Count;
+                            FLogger.Append(added > 0 ? ELog.Information : ELog.Warning, () =>
+                                FLogger.Text(added > 0
+                                    ? $"Added {added} cosmetics to the athena queue ({queued} queued)"
+                                    : $"No new cosmetics to add to the athena queue ({queued} queued)", Constants.WHITE, true));
+                            break;
+                    }
 
-                    AthenaProfileGenerator.Generate(cosmetics, contextViewModel.CUE4Parse.Provider, cancellationToken);
                     return;
                 }
 
@@ -308,23 +325,81 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
     }
 
     /// <summary>
-    /// フォルダ配下を再帰的に辿り、名前からコスメティクスと判断できるパッケージだけを集める。
+    /// 明示的に選ばれたアセットと、選ばれたフォルダ(直下 + サブフォルダ)のコスメティクスをまとめて集める。
+    /// 親子フォルダを同時に選んでも同じアセットは 1 回しか入らない。
     /// </summary>
-    private static void CollectFolderCosmetics(TreeItem folder, List<GameFile> cosmetics, CancellationToken cancellationToken)
+    private static List<GameFile> CollectAthenaCosmetics(IEnumerable<GameFile> assets, IEnumerable<TreeItem> folders, CancellationToken cancellationToken)
+    {
+        var cosmetics = new List<GameFile>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var asset in assets)
+        {
+            if (asset is null || !seen.Add(asset.Path)) continue;
+            cosmetics.Add(asset);
+        }
+
+        foreach (var folder in folders)
+            CollectFolderCosmetics(folder, cosmetics, seen, cancellationToken);
+
+        return cosmetics;
+    }
+
+    /// <summary>
+    /// フォルダ直下のパッケージを拾ったうえで、サブフォルダも再帰的に辿り、
+    /// 名前からコスメティクスと判断できるものだけを集める。
+    /// </summary>
+    private static void CollectFolderCosmetics(TreeItem folder, List<GameFile> cosmetics, HashSet<string> seen, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        foreach (var entry in folder.AssetsList.Assets)
+        // AssetsList.Assets はビューモデルを生成してしまうため、ワーカースレッドからは生の GameFile を見る
+        foreach (var asset in folder.AssetsList.RawAssets)
         {
-            var asset = entry.Asset;
             if (asset is null || !asset.IsUePackage) continue;
             if (!AthenaItemTable.IsCosmeticName(asset.NameWithoutExtension)) continue;
+            if (!seen.Add(asset.Path)) continue;
 
             cosmetics.Add(asset);
         }
 
         foreach (var sub in folder.Folders)
-            CollectFolderCosmetics(sub, cosmetics, cancellationToken);
+            CollectFolderCosmetics(sub, cosmetics, seen, cancellationToken);
+    }
+
+    /// <summary>
+    /// キューに溜めたコスメティクスをまとめて出力する系のトリガーを処理する。
+    /// 処理したときだけ true を返す。
+    /// </summary>
+    private async Task<bool> TryExecuteAthenaQueueAction(ApplicationViewModel contextViewModel, string trigger)
+    {
+        switch (trigger)
+        {
+            case "Assets_Athena_Queue_Clear":
+            {
+                var queued = AthenaExportQueue.Count;
+                AthenaExportQueue.Clear();
+                FLogger.Append(ELog.Information, () =>
+                    FLogger.Text($"Cleared the athena queue ({queued} cosmetics)", Constants.WHITE, true));
+                return true;
+            }
+            case "Assets_Athena_Queue_Profile":
+            {
+                var queue = AthenaExportQueue.Snapshot();
+                if (queue.Length == 0)
+                {
+                    FLogger.Append(ELog.Warning, () =>
+                        FLogger.Text("The athena queue is empty, add cosmetics to it first", Constants.WHITE, true));
+                    return true;
+                }
+
+                await _threadWorkerView.Begin(cancellationToken =>
+                    AthenaProfileGenerator.Generate(queue, contextViewModel.CUE4Parse.Provider, cancellationToken));
+                return true;
+            }
+            default:
+                return false;
+        }
     }
 
     private void LogExport(ApplicationViewModel contextViewModel, string directory, string path, string basePath, string fileType, int queuedBefore = 0)

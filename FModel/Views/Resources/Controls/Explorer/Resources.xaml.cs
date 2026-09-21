@@ -56,10 +56,23 @@ public partial class ResourcesDictionary
     {
         if (sender is not ListBoxItem item)
             return;
-        if (item.DataContext is not GameFileViewModel)
+        if (ItemsControl.ItemsControlFromItemContainer(item) is not ListBox listBox)
             return;
-        var listBox = ItemsControl.ItemsControlFromItemContainer(item) as ListBox;
-        if (listBox == null)
+
+        if (item.DataContext is TreeItem)
+        {
+            // フォルダは DataTemplate 側の FolderContextMenu が開くので、選択だけ合わせて任せる。
+            // 複数選択済みのフォルダを右クリックした場合はその選択を維持する。
+            if (!item.IsSelected)
+            {
+                listBox.UnselectAll();
+                item.IsSelected = true;
+            }
+            item.Focus();
+            return;
+        }
+
+        if (item.DataContext is not GameFileViewModel)
             return;
 
         if (!item.IsSelected)

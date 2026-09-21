@@ -28,7 +28,14 @@ public partial class FolderContextMenuDictionary
         if (listBox != null)
         {
             menu.DataContext = listBox.DataContext;
-            menu.Tag = listBox.SelectedItems;
+
+            // 複数選択されていればそれを全部使う。選択外のフォルダを右クリックした場合は、
+            // エクスプローラーと同じようにそのフォルダだけを対象にする。
+            var selection = listBox.SelectedItems.OfType<object>().ToList();
+            if (fe.DataContext is TreeItem clicked && !selection.Contains(clicked))
+                selection = [clicked];
+
+            menu.Tag = selection;
             return;
         }
 
@@ -36,7 +43,10 @@ public partial class FolderContextMenuDictionary
         if (treeView != null)
         {
             menu.DataContext = treeView.DataContext;
-            menu.Tag = new[] { treeView.SelectedItem }.ToList();
+
+            // ツリーは単一選択。右クリックしただけでは選択が移らないので、
+            // 選択中のフォルダではなく実際に右クリックされたフォルダを対象にする。
+            menu.Tag = new List<object> { fe.DataContext as TreeItem ?? treeView.SelectedItem };
         }
     }
 

@@ -78,6 +78,7 @@ using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Services.Athena;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
@@ -456,6 +457,7 @@ public partial class CUE4ParseViewModel : ViewModel
 
         AssetsFolder.Clear();
         SearchVm.Clear();
+        AthenaExportQueue.Clear(); // 古いプロバイダのアセットが残らないように
         Helper.CloseWindow<AdonisWindow>("Search For Packages");
         UnloadDiffProvider();
         Provider.UnloadNonStreamedVfs();

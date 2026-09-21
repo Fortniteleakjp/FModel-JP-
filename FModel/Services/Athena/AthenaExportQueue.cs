@@ -1,0 +1,56 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using CUE4Parse.FileProvider.Objects;
+
+namespace FModel.Services.Athena;
+
+/// <summary>
+/// Athena プロファイルの出力対象を溜めておくキュー。
+/// 複数のフォルダを何回かに分けて右クリックしても、最後にまとめて 1 ファイルに出力できる。
+/// </summary>
+public static class AthenaExportQueue
+{
+    private static readonly object _lock = new();
+
+    /// <summary>キーはアセットのフルパス。同じアセットを二重に積まないための辞書。</summary>
+    private static readonly Dictionary<string, GameFile> _entries = new(StringComparer.OrdinalIgnoreCase);
+
+    public static int Count
+    {
+        get
+        {
+            lock (_lock) return _entries.Count;
+        }
+    }
+
+    /// <summary>キューに追加し、実際に新しく積まれた件数を返す。</summary>
+    public static int Add(IEnumerable<GameFile> entries)
+    {
+        if (entries is null) return 0;
+
+        var added = 0;
+        lock (_lock)
+        {
+            foreach (var entry in entries)
+            {
+                if (entry is null) continue;
+                if (_entries.TryAdd(entry.Path, entry))
+                    added++;
+            }
+        }
+
+        return added;
+    }
+
+    /// <summary>ワーカースレッドから安全に読めるよう、追加順のコピーを返す。</summary>
+    public static GameFile[] Snapshot()
+    {
+        lock (_lock) return _entries.Values.ToArray();
+    }
+
+    public static void Clear()
+    {
+        lock (_lock) _entries.Clear();
+    }
+}

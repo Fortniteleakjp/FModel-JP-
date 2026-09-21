@@ -15,6 +15,7 @@ using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Services.Athena;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
 using K4os.Compression.LZ4.Streams;
@@ -55,6 +56,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 #endif
         _applicationView.CUE4Parse.AssetsFolder.Clear();
         _applicationView.CUE4Parse.SearchVm.Clear();
+        AthenaExportQueue.Clear(); // 古いプロバイダのアセットが残らないように
         _applicationView.SelectedLeftTabIndex = 1; // folders tab
         _applicationView.IsAssetsExplorerVisible = true;
         Helper.CloseWindow<AdonisWindow>("Search For Packages"); // close search window if opened
