@@ -12,6 +12,21 @@ namespace FModel.ViewModels;
 
 public class SearchViewModel : ViewModel
 {
+    private sealed class SortCache
+    {
+        public required int CollectionVersion { get; init; }
+        public required List<GameFile> Default { get; init; }
+        public required List<GameFile> Ascending { get; init; }
+        public required List<GameFile> Descending { get; init; }
+
+        public List<GameFile> Get(ESortSizeMode mode) => mode switch
+        {
+            ESortSizeMode.Ascending => Ascending,
+            ESortSizeMode.Descending => Descending,
+            _ => Default
+        };
+    }
+
     public enum ESortSizeMode
     {
         None,
@@ -71,6 +86,8 @@ public class SearchViewModel : ViewModel
     private string[] _filters = [];
     private Regex _filterRegex;
     private bool _isRegexValid = true;
+    private int _collectionVersion;
+    private SortCache _sortCache;
 
     public ListCollectionView SearchResultsView
     {
@@ -104,6 +121,13 @@ public class SearchViewModel : ViewModel
     public void ChangeCollection(IEnumerable<GameFile> files, GameFile refFile = null)
     {
         var results = files as List<GameFile> ?? files.ToList();
+        _collectionVersion++;
+        _sortCache = null;
+        ApplyCollection(results, refFile);
+    }
+
+    private void ApplyCollection(List<GameFile> results, GameFile refFile)
+    {
         _searchResultsView = null;
         SearchResults = results;
         RaisePropertyChanged(nameof(SearchResultsView));
@@ -122,36 +146,50 @@ public class SearchViewModel : ViewModel
             _ => ESortSizeMode.None
         };
 
-        var sorted = await Task.Run(() =>
-        {
-            var archiveDict = SearchResults
-                .OfType<VfsEntry>()
-                .Select(f => f.Vfs.Name)
-                .Distinct()
-                .Select((name, idx) => (name, idx))
-                .ToDictionary(x => x.name, x => x.idx);
+        var collectionVersion = _collectionVersion;
+        var refFile = RefFile;
+        var sortCache = _sortCache;
 
-            var keyed = SearchResults.Select(f =>
+        if (sortCache is null || sortCache.CollectionVersion != collectionVersion)
+        {
+            var source = SearchResults.ToArray();
+            sortCache = await Task.Run(() =>
             {
-                int archiveKey = f is VfsEntry ve && archiveDict.TryGetValue(ve.Vfs.Name, out var key) ? key : -1;
-                return (File: f, f.Size, ArchiveKey: archiveKey);
+                var archiveDict = source
+                    .OfType<VfsEntry>()
+                    .Select(f => f.Vfs.Name)
+                    .Distinct()
+                    .Select((name, idx) => (name, idx))
+                    .ToDictionary(x => x.name, x => x.idx);
+
+                var keyed = source.Select(f =>
+                {
+                    var archiveKey = f is VfsEntry ve && archiveDict.TryGetValue(ve.Vfs.Name, out var key) ? key : -1;
+                    return (File: f, f.Size, ArchiveKey: archiveKey);
+                }).ToArray();
+
+                return new SortCache
+                {
+                    CollectionVersion = collectionVersion,
+                    Ascending = keyed
+                        .OrderBy(x => x.Size).ThenBy(x => x.ArchiveKey)
+                        .Select(x => x.File).ToList(),
+                    Descending = keyed
+                        .OrderByDescending(x => x.Size).ThenBy(x => x.ArchiveKey)
+                        .Select(x => x.File).ToList(),
+                    Default = keyed
+                        .OrderBy(x => x.ArchiveKey).ThenBy(x => x.File.Path, StringComparer.OrdinalIgnoreCase)
+                        .Select(x => x.File).ToList()
+                };
             });
 
-            return CurrentSortSizeMode switch
-            {
-                ESortSizeMode.Ascending => keyed
-                    .OrderBy(x => x.Size).ThenBy(x => x.ArchiveKey)
-                    .Select(x => x.File).ToList(),
-                ESortSizeMode.Descending => keyed
-                    .OrderByDescending(x => x.Size).ThenBy(x => x.ArchiveKey)
-                    .Select(x => x.File).ToList(),
-                _ => keyed
-                    .OrderBy(x => x.ArchiveKey).ThenBy(x => x.File.Path, StringComparer.OrdinalIgnoreCase)
-                    .Select(x => x.File).ToList()
-            };
-        });
+            if (collectionVersion != _collectionVersion)
+                return;
 
-        ChangeCollection(sorted, RefFile);
+            _sortCache = sortCache;
+        }
+
+        ApplyCollection(sortCache.Get(CurrentSortSizeMode), refFile);
     }
 
     private void PrepareFilter()
