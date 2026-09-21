@@ -40,15 +40,23 @@ public class ThreadWorkerViewModel : ViewModel
     public bool CanBeCanceled => CurrentCancellationTokenSource != null;
 
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
-    private readonly AsyncQueue<Action<CancellationToken>> _jobs;
+    private readonly AsyncQueue<Func<CancellationToken, Task>> _jobs;
 
     public ThreadWorkerViewModel()
     {
-        _jobs = new AsyncQueue<Action<CancellationToken>>();
+        _jobs = new AsyncQueue<Func<CancellationToken, Task>>();
     }
 
-    public async Task Begin(Action<CancellationToken> action)
+    public Task Begin(Action<CancellationToken> action)
     {
+        ArgumentNullException.ThrowIfNull(action);
+        return Begin(cancellationToken => Task.Run(() => action(cancellationToken), cancellationToken));
+    }
+
+    public async Task Begin(Func<CancellationToken, Task> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
         if (_applicationView.CUE4Parse.IsSnooperOpen)
             _applicationView.CUE4Parse.SnooperViewer.Close();
         else if (!_applicationView.Status.IsReady)
@@ -83,7 +91,7 @@ public class ThreadWorkerViewModel : ViewModel
                 try
                 {
                     // will end in "catch" if canceled
-                    await Task.Run(() => job(CurrentCancellationTokenSource.Token));
+                    await job(CurrentCancellationTokenSource.Token);
                 }
                 catch (OperationCanceledException)
                 {

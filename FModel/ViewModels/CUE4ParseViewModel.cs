@@ -481,12 +481,12 @@ public partial class CUE4ParseViewModel : ViewModel
         if (!UserSettings.IsEndpointValid(EEndpointType.Aes, out var endpoint))
             return;
 
-        await _threadWorkerView.Begin(cancellationToken =>
+        await _threadWorkerView.Begin(async cancellationToken =>
         {
             // deprecated values
             if (endpoint.Url == "https://fortnitecentral.genxgames.gg/api/v1/aes") endpoint.Url = "https://uedb.dev/svc/api/v1/fortnite/aes";
 
-            var aes = _apiEndpointView.DynamicApi.GetAesKeys(cancellationToken, endpoint.Url, endpoint.Path);
+            var aes = await _apiEndpointView.DynamicApi.GetAesKeysAsync(cancellationToken, endpoint.Url, endpoint.Path).ConfigureAwait(false);
             if (aes is not { IsValid: true }) return;
 
             UserSettings.Default.CurrentDir.AesKeys = aes;
