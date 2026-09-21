@@ -49,6 +49,13 @@ public static class AthenaExportQueue
         lock (_lock) return _entries.Values.ToArray();
     }
 
+    /// <summary>指定したアセットをキューから削除する。</summary>
+    public static bool Remove(GameFile entry)
+    {
+        if (entry is null) return false;
+        lock (_lock) return _entries.Remove(entry.Path);
+    }
+
     public static void Clear()
     {
         lock (_lock) _entries.Clear();

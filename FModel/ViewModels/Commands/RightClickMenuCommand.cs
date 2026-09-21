@@ -375,6 +375,11 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
     {
         switch (trigger)
         {
+            case "Assets_Athena_Queue_Manage":
+            {
+                new AthenaQueueManagerWindow().ShowDialog();
+                return true;
+            }
             case "Assets_Athena_Queue_Clear":
             {
                 var queued = AthenaExportQueue.Count;

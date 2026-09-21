@@ -192,6 +192,7 @@
     <system:String x:Key="UI_Luaj">Luaj</system:String>
     <system:String x:Key="UI_MadeWithX2665ByAsval">Made with &#x2665; by Asval</system:String>
     <system:String x:Key="UI_MapStructTypes">MapStructTypes</system:String>
+    <system:String x:Key="UI_ManageAthenaQueue">Manage Athena Queue</system:String>
     <system:String x:Key="UI_Mapping">Mapping</system:String>
     <system:String x:Key="UI_MappingFilePath">Mapping File Path</system:String>
     <system:String x:Key="UI_MappingFileWillBeAppliedImmediately">Mapping file will be applied immediately</system:String>
