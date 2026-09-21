@@ -7,6 +7,12 @@ on:
 permissions:
   contents: write
 
+# main と FModelJP-Renewal が同時に push された場合でも、同じ Release / 更新 API を
+# 同時更新しないよう直列化する。
+concurrency:
+  group: fmodel-jp-release
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: windows-latest
@@ -124,23 +130,56 @@ jobs:
           }
 
       - name: Add Release
-        uses: ncipollo/release-action@v1.14.0
+        id: release
+        uses: ncipollo/release-action@v1.20.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: 'FModel-JP- v${{ steps.package_version.outputs.version }}'
           tag: '${{ steps.package_version.outputs.version }}'
+          commit: ${{ github.sha }}
           body: |
             初回の場合、下の ZIP をダウンロードして展開するか、FModel.exe を直接ダウンロードしてください。
             実行した際にアップデート情報が表示されたら、アップデートを実行してください。
 
             Version: `${{ steps.package_version.outputs.version }}`
             Build: `${{ github.sha }}`
-          artifacts: |
-            ${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip
-            ./FModel/bin/Publish/FModel.exe
+          # release-action の artifacts はカンマ区切り。改行区切りだと成果物を
+          # 正しく解釈できないバージョンがあるため、明示的に1行で指定する。
+          artifacts: '${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip,./FModel/bin/Publish/FModel.exe'
+          artifactErrorsFailBuild: true
           allowUpdates: true
           makeLatest: true
           replacesArtifacts: true
+
+      # Release 作成が success でも asset が欠けた状態では更新 API を変更しない。
+      - name: Verify Release Assets
+        id: release_assets
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = "${{ steps.package_version.outputs.version }}"
+          $expectedZip = "${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip"
+
+          $releaseJson = gh api "repos/${{ github.repository }}/releases/tags/$tag"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to read GitHub Release '$tag'."
+          }
+
+          $release = $releaseJson | ConvertFrom-Json
+          $zipAsset = $release.assets | Where-Object { $_.name -eq $expectedZip } | Select-Object -First 1
+          $exeAsset = $release.assets | Where-Object { $_.name -eq "FModel.exe" } | Select-Object -First 1
+
+          if (-not $zipAsset -or $zipAsset.size -le 0) {
+            throw "Release asset '$expectedZip' is missing or empty."
+          }
+          if (-not $exeAsset -or $exeAsset.size -le 0) {
+            throw "Release asset 'FModel.exe' is missing or empty."
+          }
+
+          Write-Host "Verified ZIP: $($zipAsset.browser_download_url) ($($zipAsset.size) bytes)"
+          Write-Host "Verified EXE: $($exeAsset.browser_download_url) ($($exeAsset.size) bytes)"
+          "download_url=$($zipAsset.browser_download_url)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
       - name: Install Requests
         run: |
@@ -153,4 +192,4 @@ jobs:
 
       - name: Update Download Url
         run: |
-          python Update_DownloadUrl.py "${{ github.sha }}" "${{ steps.package_version.outputs.version }}"
+          python Update_DownloadUrl.py "${{ github.sha }}" "${{ steps.package_version.outputs.version }}" "${{ steps.release_assets.outputs.download_url }}"

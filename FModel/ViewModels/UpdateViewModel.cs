@@ -39,38 +39,22 @@ public partial class UpdateViewModel : ViewModel
 
     public async Task LoadAsync()
     {
-        // 更新サーバーの情報を優先する。main と同じく Version / DownloadUrl が更新元の基準。
-        var assets = new List<GitHubAsset>();
-        var info = _apiEndpointView.FModelApi.CurrentUpdateInfo;
-        var apiCommitSha = ExtractCommitSha(info?.Version);
-        if (!string.IsNullOrWhiteSpace(info?.DownloadUrl) && apiCommitSha != null)
-        {
-            assets.Add(GitHubAsset.CreateDirect(
-                $"{apiCommitSha}.zip",
-                info.DownloadUrl,
-                DateTime.UtcNow));
-        }
-
-        // 更新 API の情報が無い場合だけ GitHub Releases をフォールバックとして使う。
-        if (assets.Count == 0)
-        {
-            var release = await _apiEndpointView.GitHubApi.GetJpLatestReleaseAsync();
-            var releaseAssets = release?.Assets?
-                .Where(x => x.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(x => x.CreatedAt)
-                .ToArray() ?? [];
-            assets.AddRange(releaseAssets);
-        }
+        // 本家ではなく FModel-JP のリリースを見る。CI が積む資産名は "<version>-<sha>.zip"。
+        var release = await _apiEndpointView.GitHubApi.GetJpLatestReleaseAsync();
+        var assets = release?.Assets?
+            .Where(x => x.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(x => x.CreatedAt)
+            .ToArray() ?? [];
 
         // 一番新しいビルドの sha を起点に履歴を引くことで、ビルド元のブランチ名に依存しない
-        var commits = await _apiEndpointView.GitHubApi.GetJpCommitHistoryAsync(assets.Count > 0 ? GetAssetSha(assets[0].Name) : null);
+        var commits = await _apiEndpointView.GitHubApi.GetJpCommitHistoryAsync(assets.Length > 0 ? GetAssetSha(assets[0].Name) : null);
         if (commits is { Length: > 0 })
             Commits.AddRange(commits);
 
         try
         {
             _ = LoadCoAuthors();
-            LinkAssets(assets.ToArray());
+            LinkAssets(assets);
         }
         catch
         {
@@ -184,19 +168,6 @@ public partial class UpdateViewModel : ViewModel
     {
         var name = assetName.SubstringBeforeLast(".zip");
         return name.Contains('-') ? name.SubstringAfterLast('-') : name;
-    }
-
-    private static string ExtractCommitSha(string version)
-    {
-        if (string.IsNullOrWhiteSpace(version))
-            return null;
-
-        var separator = version.LastIndexOf('-');
-        if (separator < 0 || separator >= version.Length - 1)
-            return null;
-
-        var commitSha = version[(separator + 1)..].Trim();
-        return commitSha.Length >= 7 ? commitSha : null;
     }
 
     public void DownloadLatest()
