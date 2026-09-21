@@ -29,6 +29,7 @@ public class FModelApiEndpoint : AbstractApiProvider
     private Game _game;
     private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    public Info CurrentUpdateInfo => _infos;
 
     public FModelApiEndpoint(RestClient client) : base(client) { }
 
@@ -108,42 +109,49 @@ public class FModelApiEndpoint : AbstractApiProvider
 
     private void ParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
     {
-        _infos = JsonConvert.DeserializeObject<Info>(args.RemoteData);
-        if (_infos == null)
+        try
         {
-            Log.Error("Failed to deserialize update info: RemoteData is null or invalid JSON");
-            return;
+            _infos = JsonConvert.DeserializeObject<Info>(args.RemoteData);
+            if (_infos == null)
+            {
+                Log.Error("Failed to deserialize update info: RemoteData is null or invalid JSON");
+                return;
+            }
+
+            // the JP build pipeline publishes the version as "<version>-<sha>"
+            var version = _infos.Version;
+            var currentVersion = version;
+            var commitHash = string.Empty;
+
+            if (!string.IsNullOrEmpty(version))
+            {
+                if (version.Contains('-'))
+                {
+                    currentVersion = version.SubstringBefore('-');
+                    commitHash = version.SubstringAfter('-');
+                }
+                else if (version.LastIndexOf('.') is var lastDot && lastDot > 0 && version.Length - lastDot - 1 >= 7)
+                {
+                    currentVersion = version[..lastDot];
+                    commitHash = version[(lastDot + 1)..];
+                }
+            }
+
+            args.UpdateInfo = new UpdateInfoEventArgs
+            {
+                CurrentVersion = currentVersion,
+                ChangelogURL = _infos.ChangelogUrl,
+                DownloadURL = _infos.DownloadUrl,
+                Mandatory = new CustomMandatory
+                {
+                    CommitHash = commitHash
+                }
+            };
         }
-
-        // the JP build pipeline publishes the version as "<version>-<sha>"
-        var version = _infos.Version;
-        var currentVersion = version;
-        var commitHash = string.Empty;
-
-        if (!string.IsNullOrEmpty(version))
+        catch (Exception ex)
         {
-            if (version.Contains('-'))
-            {
-                currentVersion = version.SubstringBefore('-');
-                commitHash = version.SubstringAfter('-');
-            }
-            else if (version.LastIndexOf('.') is var lastDot && lastDot > 0 && version.Length - lastDot - 1 >= 7)
-            {
-                currentVersion = version[..lastDot];
-                commitHash = version[(lastDot + 1)..];
-            }
+            Log.Error(ex, "Exception during update info parsing: {Message}", ex.Message);
         }
-
-        args.UpdateInfo = new UpdateInfoEventArgs
-        {
-            CurrentVersion = currentVersion,
-            ChangelogURL = _infos.ChangelogUrl,
-            DownloadURL = _infos.DownloadUrl,
-            Mandatory = new CustomMandatory
-            {
-                CommitHash = commitHash
-            }
-        };
     }
 
     private void CheckForUpdateEvent(UpdateInfoEventArgs args)
@@ -153,6 +161,17 @@ public class FModelApiEndpoint : AbstractApiProvider
             UserSettings.Default.LastUpdateCheck = DateTime.Now;
 
             var targetHash = ((CustomMandatory) args.Mandatory).CommitHash;
+            if (System.Version.TryParse(args.CurrentVersion, out var remoteVersion) &&
+                System.Version.TryParse(Constants.APP_VERSION, out var installedVersion) &&
+                remoteVersion < installedVersion)
+            {
+                _applicationView.IsUpdateAvailable = false;
+                Log.Warning(
+                    "Ignoring stale update metadata. Installed version {InstalledVersion} is newer than remote version {RemoteVersion}",
+                    installedVersion, remoteVersion);
+                return;
+            }
+
             var isUpToDate = string.Equals(targetHash, Constants.APP_COMMIT_ID, StringComparison.OrdinalIgnoreCase) ||
                              (!string.IsNullOrEmpty(Constants.APP_COMMIT_ID) && !string.IsNullOrEmpty(targetHash) &&
                               Constants.APP_COMMIT_ID.StartsWith(targetHash, StringComparison.OrdinalIgnoreCase));
@@ -165,11 +184,9 @@ public class FModelApiEndpoint : AbstractApiProvider
                 return;
             }
 
-            var currentVersion = new System.Version(args.CurrentVersion);
-            UserSettings.Default.ShowChangelog = currentVersion != args.InstalledVersion;
-
+            UserSettings.Default.ShowChangelog = true;
             const string message = "A new update is available!";
-            Log.Warning("{message} Version {CurrentVersion} ({Hash})", message, currentVersion, targetHash);
+            Log.Warning("{message} Version {CurrentVersion} ({Hash})", message, args.CurrentVersion, targetHash);
             Helper.OpenWindow<AdonisWindow>(message, () => new UpdateView { Title = message, ResizeMode = ResizeMode.NoResize }.ShowDialog());
         }
         else

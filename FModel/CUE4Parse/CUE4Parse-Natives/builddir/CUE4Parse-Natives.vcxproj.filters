@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\FModel-JP\FModel\CUE4Parse\CUE4Parse-Natives\Features.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\FModel-JP\FModel\CUE4Parse\CUE4Parse-Natives\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{58749459-3980-3070-8E55-4E0C9B7449AD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
