@@ -70,6 +70,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         DiffPreviousVersion,
         AthenaProfile,
         AthenaQueueAdd,
+        AthenaQueueRemove,
     }
 
     public override async void Execute(ApplicationViewModel contextViewModel, object parameter)
@@ -113,6 +114,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_Material_Graph" => (EAction.Show, EShowAssetType.MaterialGraph, EBulkType.None),
             "Assets_Athena_Profile" => (EAction.Show, EShowAssetType.AthenaProfile, EBulkType.None),
             "Assets_Athena_Queue_Add" => (EAction.Show, EShowAssetType.AthenaQueueAdd, EBulkType.None),
+            "Assets_Athena_Queue_Remove" => (EAction.Show, EShowAssetType.AthenaQueueRemove, EBulkType.None),
 
             "Save_Data" => (EAction.Export, EShowAssetType.None, EBulkType.Raw),
             "Save_Properties" => (EAction.Export, EShowAssetType.None, EBulkType.Properties),
@@ -190,7 +192,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     return;
                 }
 
-                if (showtype is EShowAssetType.AthenaProfile or EShowAssetType.AthenaQueueAdd)
+                if (showtype is EShowAssetType.AthenaProfile or EShowAssetType.AthenaQueueAdd or EShowAssetType.AthenaQueueRemove)
                 {
                     var cosmetics = CollectAthenaCosmetics(assets, folders, cancellationToken);
                     switch (showtype)
@@ -205,6 +207,14 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                                 FLogger.Text(added > 0
                                     ? $"Added {added} cosmetics to the athena queue ({queued} queued)"
                                     : $"No new cosmetics to add to the athena queue ({queued} queued)", Constants.WHITE, true));
+                            break;
+                        case EShowAssetType.AthenaQueueRemove:
+                            var removed = AthenaExportQueue.Remove(cosmetics);
+                            var remaining = AthenaExportQueue.Count;
+                            FLogger.Append(removed > 0 ? ELog.Information : ELog.Warning, () =>
+                                FLogger.Text(removed > 0
+                                    ? $"Removed {removed} cosmetics from the athena queue ({remaining} queued)"
+                                    : $"None of the selected cosmetics are in the athena queue ({remaining} queued)", Constants.WHITE, true));
                             break;
                     }
 

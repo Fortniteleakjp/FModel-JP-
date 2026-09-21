@@ -75,6 +75,31 @@ public static class AthenaExportQueue
         return removed;
     }
 
+    /// <summary>指定したアセットをまとめてキューから削除し、削除件数を返す。</summary>
+    public static int Remove(IEnumerable<GameFile> entries)
+    {
+        if (entries is null) return 0;
+
+        var removed = 0;
+        int count;
+        lock (_lock)
+        {
+            foreach (var entry in entries)
+            {
+                if (entry is null) continue;
+                if (_entries.Remove(entry.Path))
+                    removed++;
+            }
+
+            count = _entries.Count;
+        }
+
+        if (removed > 0)
+            CountChanged?.Invoke(count);
+
+        return removed;
+    }
+
     public static void Clear()
     {
         lock (_lock)
