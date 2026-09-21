@@ -33,6 +33,7 @@ public class FModelApiEndpoint : AbstractApiProvider
     private readonly IDictionary<string, CommunityDesign> _communityDesigns = new Dictionary<string, CommunityDesign>();
     private string _remoteData; // 保存用
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
+    public Info CurrentUpdateInfo => _infos;
 
     public FModelApiEndpoint(RestClient client) : base(client) { }
 
@@ -191,6 +192,16 @@ public class FModelApiEndpoint : AbstractApiProvider
             UserSettings.Default.LastUpdateCheck = DateTime.Now;
 
             var targetHash = ((CustomMandatory) args.Mandatory).CommitHash;
+            if (System.Version.TryParse(args.CurrentVersion, out var remoteVersion) &&
+                System.Version.TryParse(Constants.APP_VERSION, out var installedVersion) &&
+                remoteVersion < installedVersion)
+            {
+                Log.Warning(
+                    "Ignoring stale update metadata. Installed version {InstalledVersion} is newer than remote version {RemoteVersion}",
+                    installedVersion, remoteVersion);
+                return;
+            }
+
             if (string.Equals(targetHash, Constants.APP_COMMIT_ID, StringComparison.OrdinalIgnoreCase) || 
                 (!string.IsNullOrEmpty(Constants.APP_COMMIT_ID) && !string.IsNullOrEmpty(targetHash) && Constants.APP_COMMIT_ID.StartsWith(targetHash, StringComparison.OrdinalIgnoreCase)))
             {

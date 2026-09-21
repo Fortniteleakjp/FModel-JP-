@@ -41,6 +41,17 @@ public class GitHubAsset : ViewModel
         get => _isLatest;
         set => SetProperty(ref _isLatest, value);
     }
+
+    public static GitHubAsset CreateDirect(string name, string browserDownloadUrl, DateTime createdAt)
+    {
+        return new GitHubAsset
+        {
+            Name = name,
+            BrowserDownloadUrl = browserDownloadUrl,
+            CreatedAt = createdAt,
+            Uploader = new Author { Name = "FModel-JP", Login = "FModel-JP" }
+        };
+    }
 }
 
 public class GitHubCommit : ViewModel

@@ -42,9 +42,25 @@ public class UpdateViewModel : ViewModel
             Commits.AddRange(commits);
 
         var qa = await _apiEndpointView.GitHubApi.GetReleaseAsync("qa");
-        if (qa == null) return;
+        var assets = qa?.Assets?
+            .Where(x => x != null)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToList() ?? [];
 
-        var assets = qa.Assets.OrderByDescending(x => x.CreatedAt).ToList();
+        if (assets.Count == 0)
+        {
+            var info = _apiEndpointView.FModelApi.CurrentUpdateInfo;
+            var commitSha = ExtractCommitSha(info?.Version);
+            if (!string.IsNullOrWhiteSpace(info?.DownloadUrl) && commitSha != null)
+            {
+                assets.Add(GitHubAsset.CreateDirect(
+                    $"{commitSha}.zip",
+                    info.DownloadUrl,
+                    DateTime.UtcNow));
+            }
+        }
+
+        if (assets.Count == 0) return;
 
         for (var i = 0; i < assets.Count; i++)
         {
@@ -72,6 +88,19 @@ public class UpdateViewModel : ViewModel
                 });
             }
         }
+    }
+
+    private static string ExtractCommitSha(string version)
+    {
+        if (string.IsNullOrWhiteSpace(version))
+            return null;
+
+        var separator = version.LastIndexOf('-');
+        if (separator < 0 || separator >= version.Length - 1)
+            return null;
+
+        var commitSha = version[(separator + 1)..].Trim();
+        return commitSha.Length >= 7 ? commitSha : null;
     }
 
     public void DownloadLatest()
