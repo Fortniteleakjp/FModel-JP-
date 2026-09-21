@@ -69,6 +69,7 @@ public class AthenaQueueManagerViewModel : ViewModel
         }
 
         await _threadWorkerView.Begin(cancellationToken =>
-            AthenaProfileGenerator.Generate(queue, _applicationView.CUE4Parse.Provider, cancellationToken));
+            AthenaProfileGenerator.Generate(queue, _applicationView.CUE4Parse.Provider, cancellationToken,
+                _applicationView.ReportAthenaProfileProgress));
     }
 }

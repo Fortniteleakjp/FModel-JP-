@@ -201,7 +201,8 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     switch (showtype)
                     {
                         case EShowAssetType.AthenaProfile:
-                            AthenaProfileGenerator.Generate(cosmetics, contextViewModel.CUE4Parse.Provider, cancellationToken);
+                            AthenaProfileGenerator.Generate(cosmetics, contextViewModel.CUE4Parse.Provider, cancellationToken,
+                                contextViewModel.ReportAthenaProfileProgress);
                             break;
                         case EShowAssetType.AthenaQueueAdd:
                             var added = AthenaExportQueue.Add(cosmetics, out var duplicateCount);
@@ -425,7 +426,8 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                 }
 
                 await _threadWorkerView.Begin(cancellationToken =>
-                    AthenaProfileGenerator.Generate(queue, contextViewModel.CUE4Parse.Provider, cancellationToken));
+                    AthenaProfileGenerator.Generate(queue, contextViewModel.CUE4Parse.Provider, cancellationToken,
+                        contextViewModel.ReportAthenaProfileProgress));
                 return true;
             }
             default:

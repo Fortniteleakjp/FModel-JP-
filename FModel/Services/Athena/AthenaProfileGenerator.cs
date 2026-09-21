@@ -20,18 +20,23 @@ public static class AthenaProfileGenerator
 
     public static string ProfilesDirectory => Path.Combine(UserSettings.Default.OutputDirectory, "Profiles");
 
-    public static void Generate(IEnumerable<GameFile> entries, AbstractFileProvider provider, CancellationToken cancellationToken)
+    public static void Generate(IEnumerable<GameFile> entries, AbstractFileProvider provider, CancellationToken cancellationToken,
+        Action<int, int, string> progress = null)
     {
         var builder = new AthenaProfileBuilder();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var skipped = new List<string>();
+        var entryList = entries?.Where(static entry => entry is not null).ToArray() ?? [];
+        var total = entryList.Length;
 
-        foreach (var entry in entries)
+        for (var i = 0; i < entryList.Length; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             Thread.Yield();
 
+            var entry = entryList[i];
             var itemId = entry.NameWithoutExtension;
+            progress?.Invoke(i + 1, total, itemId);
             if (!seen.Add(itemId))
                 continue;
 

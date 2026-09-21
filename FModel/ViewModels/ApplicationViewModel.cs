@@ -200,6 +200,11 @@ public class ApplicationViewModel : ViewModel
             Status.UpdateStatusLabel(status.Label, status.Prefix);
     }
 
+    public void ReportAthenaProfileProgress(int current, int total, string itemId)
+    {
+        QueueProviderStatus($"{current:N0}/{total:N0} - {itemId}", "Athena Profile");
+    }
+
     public DirectorySettings AvoidEmptyGameDirectory(bool bAlreadyLaunched)
     {
         var gameDirectory = UserSettings.Default.GameDirectory;
