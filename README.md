@@ -1,222 +1,212 @@
-﻿# FModel 日本語版 🇯🇵
+# FModel-JP
 
-**FModel 日本語版**は、Unreal Engine 4 / 5 製ゲームのファイルを解析・抽出できる
-オープンソースツール **[FModel](https://github.com/4sval/FModel)** をベースにした
-**非公式の日本語翻訳・改良版**です。
+[![Build](https://github.com/Fortniteleakjp/FModel-JP-/actions/workflows/run.yml/badge.svg)](https://github.com/Fortniteleakjp/FModel-JP-/actions/workflows/run.yml)
+[![Latest Release](https://img.shields.io/github/v/release/Fortniteleakjp/FModel-JP-?label=release)](https://github.com/Fortniteleakjp/FModel-JP-/releases/latest)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
-FModel-JPは、オリジナルのFModelに日本語化と独自の機能を追加したバージョンです。
+**FModel-JP** は、[FModel](https://github.com/4sval/FModel) をベースに、日本語環境での利用や Fortnite 向けのワークフローを強化した Windows 向け Unreal Engine アーカイブエクスプローラーです。
 
----
+コアの Unreal Engine 解析には [CUE4Parse](https://github.com/FabianFG/CUE4Parse) を使用し、FModel が持つ UE4 / UE5 アーカイブの閲覧・検索・解析・エクスポート機能をベースに、FModel-JP 独自の機能追加とパフォーマンス改善を行っています。
 
-## ✨ 特徴
+> [!NOTE]
+> FModel-JP は FModel の派生プロジェクトです。FModel および CUE4Parse の開発者・コントリビューターに感謝します。
 
-- 🈶 **UI完全日本語化**
-- メニュー / 設定画面  / 右クリックメニュー
-- 🔄 **最新のFModel本体をベースに変更**
-- 🧩 **独自機能・改善を追加**
-- **ファイルの比較機能** (Diff Tool)
-- **高度な検索** (ファイル内検索)
-- **閲覧履歴** (History)
-- **ダメージ値の表示** (ユーザーが追加)
-- **クリエイティブマップのAES取得機能**
-- **参照ビューア**
-- **Animation Blueprint グラフビューア**（AnimGraph / Function / StateMachine のレイヤー、ノード接続、プロパティ確認）
-- **新エクスプローラーを標準 UI に変更**（Windows 10 Explorer 風の戻る／進む／上へ、アドレスバー、検索、クラス絞り込み、フォルダーとファイルの統合詳細表示）
-- **大規模マニフェスト向け高速表示**（フォルダツリーの遅延構築、検索・Go To の高速化、プレビュー負荷の制御）
-- **アーカイブ読み込みの応答性改善**（一覧更新のバッチ化、同一 Reader 単位の状態管理）
-- **キャッシュ整理**（チャンク、マニフェスト、マッピングを専用ディレクトリへ整理し、旧配置から自動移行）
+## 主な機能
 
----
+### FModel ベースの機能
 
-## 🛠 Test Edit Asset 機能について
+- Unreal Engine 4 / 5 のゲームアーカイブを閲覧
+- AES キーを使用した暗号化アーカイブの読み込み
+- アセット・パッケージの検索、フィルター、参照
+- テクスチャ、モデル、アニメーション、音声などのプレビュー・エクスポート
+- Blueprint / UClass などの解析・表示
+- ゲームごとのカスタムディレクトリ
+- IoStore / Pak を含む CUE4Parse 対応フォーマットの読み込み
 
-FModel-JPでは、Test Edit Asset 機能の実装に  
-オープンソースツール **UAssetAPI** を使用しています。
+### FModel-JP の追加・改善
 
-- `.uasset` の編集処理をサポート
-- テスト用途でのアセット編集機能を提供
+- **日本語 / English UI**
+  - 設定画面からインターフェース言語を切り替え可能
+  - リリースノートも表示言語に追従
+- **Reference Viewer**
+  - アセット間の参照関係をノードグラフで表示
+  - 右クリックメニューまたはショートカットから利用可能
+- **Diff Tool**
+  - アセットを以前のバージョンや別ビルドと比較
+- **Athena Profile**
+  - 選択した Fortnite コスメティックから `profile_athena.json` を生成
+  - フォルダ単位でコスメティックを収集
+  - プロファイル名、バトルパスレベルなどを設定可能
+- **Athena キュー**
+  - コスメティックを一時キューへ追加
+  - キュー管理画面から個別削除・全削除・プロファイル生成
+  - キュー件数をリアルタイム表示
+  - 重複追加時の警告
+  - プロファイル生成中の進捗表示
+- **パフォーマンス改善**
+  - UE パッケージの LRU キャッシュ
+  - AES 更新時の差分キー適用
+  - `ThreadWorker` の async ジョブ対応
+  - 検索結果のサイズソートキャッシュ
+- **アプリ内リリース情報**
+  - リリースノート表示
+  - 最新ビルドのダウンロード
 
-UAssetAPI は、Unreal Engine アセットを解析・編集できる高機能なツールです。  
-本プロジェクトでは、その機能を Test Edit Asset 機能として活用しています。
+## ダウンロード
 
----
+ビルド済みの最新版は [GitHub Releases](https://github.com/Fortniteleakjp/FModel-JP-/releases/latest) から入手できます。
 
-## 📥 ダウンロード
+初回利用時は、Release にある ZIP を展開するか `FModel.exe` を直接ダウンロードしてください。
 
-最新版は **GitHub Releases** から入手できます。
+GitHub Actions で作成される Release ビルドは **Windows x64 / self-contained** で発行されるため、通常は .NET Runtime を別途インストールする必要はありません。
 
-👉 **[ダウンロードはこちら](https://github.com/Fortniteleakjp/FModel-JP-/releases/download/qa/FModel.exe)**
+## Athena Profile の出力
 
----
+Athena Profile を生成すると、設定されている出力ディレクトリの次の場所へ保存されます。
 
-## 🚀 使い方
+```text
+<OutputDirectory>\Profiles\profile_athena.json
+```
 
-1. `FModel.exe` をダウンロード
-2. 実行（インストール不要）
-3. 初回起動時に **「ゲームを追加」** を選択
-4. 対象のゲームフォルダを指定
-5. 暗号化されている場合は **AESキー** を設定
-6. アセットの閲覧・抽出が可能になります
+右クリックメニューから直接生成するほか、複数のコスメティックを Athena キューへ追加してまとめて生成できます。
 
-🎥 **[使い方動画はこちら](https://www.youtube.com/watch?v=6B96mvfnuMo)**
+## ソースコードからビルド
 
-### 💡 独自機能の活用方法
+### 必要な環境
 
-#### 📂 ファイルの比較機能 (Diff Tool)
-2つのアセットを選択（`Ctrl` + クリック）し、右クリックメニューから **「比較」** を選択すると、専用のDiffビューアが起動します。
-- プロパティの差異を色分けして表示
-- 変更された値、追加・削除された項目を一目で確認可能
-- バージョン間のデータ変更調査に最適
+- Windows x64
+- Git
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [CMake](https://cmake.org/)
+- CMake から利用できる Windows C++ ツールチェーン
+  - Visual Studio / Visual Studio Build Tools の MSVC 環境を推奨
 
-#### 🔍 高度な検索 (Deep Search)
-ファイル名だけでなく、アセット内部のデータを対象に検索できます。
-- **検索対象**: 文字列、数値、プロパティ名など
-- **使い方**: 検索バーのオプションから「ファイル内検索」を有効にするか、専用メニューから実行
-- 特定のパラメータを持つアイテムを探す際に便利です
+### リポジトリを取得
 
-#### 🕒 閲覧履歴 (History)
-最近開いたアセットやフォルダの履歴を自動保存します。
-- 「履歴」タブから過去にアクセスしたファイルへ即座にジャンプ
-- 作業中断後の再開がスムーズになります
+CUE4Parse は Git submodule として含まれているため、`--recurse-submodules` を付けて clone してください。
 
-#### 🔑 クリエイティブマップのAES取得
-Fortnite等のクリエイティブマップコードを入力するだけで、必要なAESキーを自動取得・適用します。
-- 手動でのキー検索・入力の手間を省略
-- ツールメニュー > 「マップキー取得」から利用可能
+```powershell
+git clone --recurse-submodules https://github.com/Fortniteleakjp/FModel-JP-.git
+cd FModel-JP-
+```
 
-#### 🎞 Animation Blueprint グラフビューア
-Animation Blueprint の `UAnimBlueprintGeneratedClass` を解析し、AnimGraph の出力層、Function 層、統合グラフ、StateMachine の概要と各 State のサブグラフを確認できます。
+すでに clone 済みの場合は、次のコマンドで submodule を初期化できます。
 
-- ノードの接続、入力ピン、コメント、主要プロパティを表示
-- StateMachine の State / Conduit / 遷移をグラフとして確認
-- ノードを選択してプロパティを確認し、グラフをズーム・移動
+```powershell
+git submodule update --init --recursive
+```
 
-#### ⚡ 大規模ゲームデータの閲覧
-大量のパッケージを含むゲームでは、ファイル一覧をバックグラウンドで構築し、UI にはまとまった単位で公開します。フォルダ検索と Go To は構築済みパスのインデックスを利用し、アーカイブ登録・マウント状態の更新も UI スレッドへ集約します。
+### Restore
 
-#### 🗂 新エクスプローラー
-起動時から新エクスプローラーを表示します。ファイル名検索、アセットクラス絞り込み、アドレスバーによるパス移動、戻る・進む・親フォルダ移動、グリッド表示に対応しています。
+```powershell
+dotnet restore .\FModel\FModel.slnx -r win-x64
+```
 
-解析・アニメーション表示に使用する CUE4Parse は、[指定コミット `a098f0b6`](https://github.com/FabianFG/CUE4Parse/tree/a098f0b6f87372e95d42701216159961eb691948) に固定しています。これに合わせて PR #656 の AnimBlueprint 新 API を利用しています。
+### 通常の Release ビルド
 
-### ファイル名形式のカスタマイズ
+```powershell
+dotnet build .\FModel\FModel.csproj -c Release --no-restore
+```
 
-`設定` > `一般` > `プロパティ保存時のファイル名形式` から、アセットのプロパティ(.json, .cpp)やプロファイル(.json)を保存する際のファイル名をカスタマイズできます。
+通常のビルド出力は次のディレクトリ以下に生成されます。
 
-#### 使用可能なプレースホルダー
+```text
+FModel\bin\Release\net10.0-windows\win-x64\
+```
 
-| プレースホルダー | 説明 | 例 |
-|:---|:---|:---|
-| `{FileName}` | 元のファイル名 | `MyAsset` |
-| `{yyyy}` | 年 (4桁) | `2023` |
-| `{yy}` | 年 (下2桁) | `23` |
-| `{MM}` | 月 (0埋め) | `09` |
-| `{dd}` | 日 (0埋め) | `05` |
-| `{HH}` | 時 (24時間表記) | `14` |
-| `{mm}` | 分 (0埋め) | `30` |
-| `{ss}` | 秒 (0埋め) | `59` |
+## 配布用 Single-file Publish
 
-#### 設定例
-- **形式**: `{FileName}-{yyyy}{MM}{dd}`
-- **出力例**: `MyAsset-20230905.json`
+CI では、先に `CUE4Parse-Natives.dll` を CMake でビルドし、その DLL を `FModel.exe` に埋め込んだ self-contained single-file を作成しています。
 
-#### 注意事項
-- 設定欄を空にすると、タイムスタンプなどを付与せず、元のファイル名（例: `MyAsset.json`）で保存されます。
-- ファイル名として使用できない文字 (`<`, `>`, `:`, `"`, `/`, `\`, `|`, `?`, `*`) は、自動的にアンダースコア `_` に置換されます。
----
+ローカルで CI と同等の publish を行う場合の例:
 
-## ❓ トラブルシューティング
+```powershell
+cmake -S ".\CUE4Parse\CUE4Parse-Natives" -B ".\CUE4Parse\CUE4Parse-Natives\build-local"
+cmake --build ".\CUE4Parse\CUE4Parse-Natives\build-local" --config Release
 
-うまく動作しない場合は、以下をご確認ください。
+$native = (Resolve-Path ".\CUE4Parse\CUE4Parse-Natives\build-local\Release\CUE4Parse-Natives.dll").Path
+$env:CUE4PARSE_SKIP_NATIVE = "true"
 
-### Q. 起動しない / エラーが出る
-- **.NET ランタイム**: 最新の .NET Desktop Runtime 6.0 がインストールされているか確認してください。
-- **セキュリティソフト**: 未署名のツールのため、ウイルス対策ソフトに誤検知される場合があります。例外設定に追加してください。
+dotnet restore ".\FModel\FModel.slnx" -r win-x64
+dotnet publish ".\FModel\FModel.csproj" `
+  -c Release `
+  --no-restore `
+  --self-contained true `
+  -r win-x64 `
+  -f net10.0-windows `
+  -o ".\FModel\bin\Publish\" `
+  -p:PublishReadyToRun=false `
+  -p:PublishSingleFile=true `
+  -p:IncludeNativeLibrariesForSelfExtract=true `
+  -p:DebugType=None `
+  -p:DebugSymbols=false `
+  -p:CUE4ParseNativeDll="$native"
+```
 
-### Q. アセットの中身が見れない
-- **AESキー**: ゲームのバージョンに対応した正しいAESキーが設定されているか確認してください。キーはアップデートごとに変わる可能性があります。
-- **マッピングファイル**: `.usmap` ファイルが必要なゲームの場合、設定から正しいマッピングファイルを読み込ませてください。
+publish 後の実行ファイル:
 
-### Q. 日本語が表示されない / 文字化けする
-- 設定画面で言語が「Japanese」になっているか確認してください。
+```text
+FModel\bin\Publish\FModel.exe
+```
 
----
+## CUE4Parse
 
-## 🛠 日本語化・改良内容
+`CUE4Parse/` は [FabianFG/CUE4Parse](https://github.com/FabianFG/CUE4Parse) を参照する Git submodule です。
 
-### 日本語化範囲
+通常は親リポジトリに記録されたコミットを使用してください。
 
-- ✅ メインウィンドウ
-- ✅ メニューバー（ファイル / 表示 / ツール 等）
-- ✅ 設定画面
-- ✅ アセット詳細ウィンドウ
-- ✅ エラーメッセージ・通知
-- ✅ 右クリックメニュー
+```powershell
+git submodule update --init --recursive
+```
 
-### 独自機能・改良
+CUE4Parse を upstream の最新 `master` へ更新する場合は、互換性を確認した上で更新し、親リポジトリ側でも submodule のコミット変更を記録してください。
 
-- ファイルの比較機能の追加
-- 高度な検索(ファイル内検索)の追加
-- 閲覧履歴の追加
-- ダメージ値の表示(ユーザーが追加)機能の追加
-- クリエイティブマップのAES取得機能の追加
-- 日本語環境向けのUI調整
-- 一部機能の挙動改善
-- 利便性向上のための細かな修正
+```powershell
+git -C CUE4Parse fetch origin
+git -C CUE4Parse switch master
+git -C CUE4Parse merge --ff-only origin/master
 
----
+git add CUE4Parse
+```
 
-## 🔧 ベースにした主なプルリクエスト
+## プロジェクト構成
 
-以下の公式FModelのPRを元に改良を行っています。
+```text
+FModel-JP-/
+├─ FModel/                  FModel-JP 本体
+├─ CUE4Parse/               Unreal Engine 解析ライブラリ (submodule)
+├─ .github/workflows/       GitHub Actions / Release ビルド
+├─ LICENSE                  GPL-3.0
+├─ NOTICE                   サードパーティーライセンス・表記
+└─ README.md
+```
 
-- [PR #623](https://github.com/4sval/FModel/pull/623)
-- [PR #617](https://github.com/4sval/FModel/pull/617)
-- [PR #580](https://github.com/4sval/FModel/pull/580)
-- [PR #693](https://github.com/4sval/FModel/pull/693)
-- [PR #689](https://github.com/4sval/FModel/pull/689)
-- [PR #656](https://github.com/4sval/FModel/pull/656)
+## 開発について
 
----
+現在のアプリケーションターゲットは次の通りです。
 
+- Target Framework: `net10.0-windows`
+- Runtime Identifier: `win-x64`
+- Platform Target: `x64`
+- UI: WPF
+- FModel-JP Version: `4.5`
 
-## リプレイ解析機能について
+変更を加えた場合は、少なくとも Release ビルドが通ることを確認してください。
 
-リプレイ解析機能は、以下のツールを使用して実装しています。
+```powershell
+dotnet build .\FModel\FModel.csproj -c Release --no-restore
+```
 
-- [FortniteReplayDecompressor](https://github.com/Shiqan/FortniteReplayDecompressor)
+## Upstream / Credits
 
-## .ufontから.ttfへの変換機能は、ランドマークのツールを使用して実装しています。
+- [4sval/FModel](https://github.com/4sval/FModel) — FModel upstream
+- [FabianFG/CUE4Parse](https://github.com/FabianFG/CUE4Parse) — Unreal Engine archive / asset parsing
+- FModel / CUE4Parse および各依存ライブラリのすべてのコントリビューター
 
----
+FModel-JP は upstream の成果を尊重しつつ、日本語対応と独自機能を追加している派生版です。
 
+## License
 
-## ⚠ 注意事項
+FModel-JP は **GNU General Public License v3.0 (GPL-3.0)** の下で提供されています。
 
-- 本プロジェクトは **非公式版** です
-- オリジナルFModelとは挙動が異なる場合があります
-- 日本語化・独自機能による不具合の可能性があります
-- **自己責任でご利用ください**
-
----
-
-## 📝 ライセンス
-
-本リポジトリは **[FModel](https://github.com/4sval/FModel)** を元にしています。
-ライセンスの詳細は **LICENSE** ファイルをご確認ください。
-
----
-
-## 💬 コミュニティ / サポート
-
-質問やバグ報告、要望などはDiscordサーバーまでお願いします。
-
-👉 **[Discordに参加する](https://discord.gg/EFvQSnte2a)**
-
----
-
-## クレジット
-
-- Original Tool: **4sval / FModel**
-- Japaneseization: **qKuafn**
-- Modifications: **Fortniteleakjp** & **Landmark1218**
+詳細は [LICENSE](LICENSE) を確認してください。サードパーティーライブラリのライセンス・表記については [NOTICE](NOTICE) を確認してください。

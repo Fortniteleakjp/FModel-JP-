@@ -1,5 +1,0 @@
-﻿builddir
-build
-*.log
-Oodle/external/oodle2/*
-!.gitkeep

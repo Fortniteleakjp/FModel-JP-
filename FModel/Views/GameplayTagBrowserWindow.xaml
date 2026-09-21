@@ -1,0 +1,124 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.GameplayTagBrowserWindow"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="720"
+
+                             xmlns:viewModels="clr-namespace:FModel.ViewModels"
+                             xmlns:controls="clr-namespace:FModel.Views.Resources.Controls"
+                             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+
+                             WindowStartupLocation="CenterScreen" ResizeMode="CanResize" IconVisibility="Collapsed"
+                             Loaded="OnLoaded" Closing="OnClosing"
+                             Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.7'}"
+                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.65'}">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
+            <Setter Property="Title" Value="{DynamicResource UI_GameplayTags}" />
+        </Style>
+    </adonisControls:AdonisWindow.Style>
+
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0 0 0 6">
+            <Button x:Name="RescanButton" DockPanel.Dock="Right" Padding="10 3" Margin="8 0 0 0" Click="OnRescanClick"
+                    Content="{DynamicResource UI_GameplayTags_Rescan}" />
+            <TextBox x:Name="FilterBox" Padding="4 2" TextChanged="OnFilterTextChanged"
+                     adonisExtensions:WatermarkExtension.Watermark="{DynamicResource UI_GameplayTags_Filter}" />
+        </DockPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="220" />
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="340" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <TreeView x:Name="TagTree" Grid.Column="0" BorderThickness="1" SelectedItemChanged="OnTagSelected"
+                      BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                      VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <TreeView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </TreeView.ItemsPanel>
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem" BasedOn="{StaticResource TreeViewItemStyle}">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                        <Setter Property="controls:TreeViewItemBehavior.IsBroughtIntoViewWhenSelected" Value="True" />
+                    </Style>
+                </TreeView.ItemContainerStyle>
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type viewModels:GameplayTagNode}" ItemsSource="{Binding Children}">
+                        <StackPanel Orientation="Horizontal" Margin="0 1" ToolTip="{Binding FullTag}">
+                            <TextBlock Text="{Binding Segment}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDeclared}" Value="False">
+                                                <Setter Property="Opacity" Value=".6" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="{Binding Hint}" Margin="6 0 0 0" Opacity=".45" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.Resources>
+            </TreeView>
+
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch" ResizeDirection="Columns"
+                          Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
+
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <DockPanel Grid.Row="0" Margin="0 0 0 6">
+                    <Button x:Name="CopyTagButton" DockPanel.Dock="Right" Padding="8 2" Margin="6 0 0 0" Click="OnCopyTagClick"
+                            Content="{DynamicResource UI_GameplayTags_Copy}" />
+                    <TextBox x:Name="SelectedTagBox" IsReadOnly="True" Padding="4 2" TextWrapping="Wrap" />
+                </DockPanel>
+
+                <TextBlock x:Name="CommentText" Grid.Row="1" Margin="2 0 2 6" TextWrapping="Wrap" Opacity=".75" />
+
+                <TextBlock Grid.Row="2" Margin="2 0 2 4" Opacity=".55" Text="{DynamicResource UI_GameplayTags_Sources}" />
+                <ListBox x:Name="SourceList" Grid.Row="3" BorderThickness="1"
+                         MouseDoubleClick="OnSourceDoubleClick"
+                         BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                         Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                         ToolTip="{DynamicResource UI_GameplayTags_OpenSource}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" ToolTip="{Binding}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Grid>
+
+        <TextBlock x:Name="Status" Grid.Row="2" Margin="2 6 2 0" Opacity=".7" TextTrimming="CharacterEllipsis" />
+    </Grid>
+</adonisControls:AdonisWindow>
