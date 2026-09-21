@@ -31,6 +31,7 @@ namespace FModel.ViewModels;
 public class ApplicationViewModel : ViewModel
 {
     private readonly object _providerStatusLock = new();
+    private readonly Dictionary<FGuid, string> _appliedAesKeys = new();
     private (string Label, string Prefix)? _pendingProviderStatus;
     private bool _providerStatusScheduled;
 
@@ -302,21 +303,43 @@ public class ApplicationViewModel : ViewModel
     {
         if (!isLaunch && !AesManager.HasChange) return;
 
-        CUE4Parse.ClearProvider();
+        var allAes = AesManager.AesKeys.Select(x =>
+        {
+            var k = x.Key.Trim();
+            if (k.Length != 66) k = Constants.ZERO_64_CHAR;
+            return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
+        }).ToArray();
+
+        var changedAes = isLaunch
+            ? allAes
+            : allAes.Where(x =>
+                !_appliedAesKeys.TryGetValue(x.Key, out var applied) ||
+                !string.Equals(applied, x.Value.KeyString, StringComparison.OrdinalIgnoreCase)).ToArray();
+
+        if (!isLaunch && changedAes.Length == 0)
+        {
+            AesManager.SetAesKeys();
+            AesManager.HasChange = false;
+            return;
+        }
+
+        // A changed key for an already mounted GUID must be remounted to take effect.
+        // New/corrected keys for still-unmounted archives can be submitted incrementally.
+        var requiresFullReload = isLaunch || changedAes.Any(x => CUE4Parse.Provider.Keys.ContainsKey(x.Key));
+        if (requiresFullReload)
+            CUE4Parse.ClearProvider();
+
         await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
         {
-            // TODO: refactor after release, select updated keys only
-            var aes = AesManager.AesKeys.Select(x =>
-            {
-                cancellationToken.ThrowIfCancellationRequested(); // cancel if needed
-
-                var k = x.Key.Trim();
-                if (k.Length != 66) k = Constants.ZERO_64_CHAR;
-                return new KeyValuePair<FGuid, FAesKey>(x.Guid, new FAesKey(k));
-            });
-
-            CUE4Parse.LoadVfs(aes);
+            cancellationToken.ThrowIfCancellationRequested();
+            CUE4Parse.LoadVfs(requiresFullReload ? allAes : changedAes);
             AesManager.SetAesKeys();
+
+            _appliedAesKeys.Clear();
+            foreach (var (guid, key) in allAes)
+                _appliedAesKeys[guid] = key.KeyString;
+
+            AesManager.HasChange = false;
         });
         RaisePropertyChanged(nameof(GameDisplayName));
     }
