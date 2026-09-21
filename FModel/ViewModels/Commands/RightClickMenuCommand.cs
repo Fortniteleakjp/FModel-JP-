@@ -15,6 +15,9 @@ using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
 using Ookii.Dialogs.Wpf;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace FModel.ViewModels.Commands;
 
@@ -201,12 +204,25 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                             AthenaProfileGenerator.Generate(cosmetics, contextViewModel.CUE4Parse.Provider, cancellationToken);
                             break;
                         case EShowAssetType.AthenaQueueAdd:
-                            var added = AthenaExportQueue.Add(cosmetics);
+                            var added = AthenaExportQueue.Add(cosmetics, out var duplicateCount);
                             var queued = AthenaExportQueue.Count;
                             FLogger.Append(added > 0 ? ELog.Information : ELog.Warning, () =>
                                 FLogger.Text(added > 0
                                     ? $"Added {added} cosmetics to the athena queue ({queued} queued)"
                                     : $"No new cosmetics to add to the athena queue ({queued} queued)", Constants.WHITE, true));
+
+                            if (duplicateCount > 0)
+                            {
+                                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    var title = System.Windows.Application.Current.TryFindResource("UI_AthenaQueueDuplicateTitle") as string
+                                                ?? "Already in Athena Queue";
+                                    var messageTemplate = System.Windows.Application.Current.TryFindResource("UI_AthenaQueueDuplicateMessage") as string
+                                                          ?? "{0} selected cosmetics are already in the Athena queue and were not added.";
+                                    MessageBox.Show(string.Format(messageTemplate, duplicateCount), title,
+                                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                                });
+                            }
                             break;
                         case EShowAssetType.AthenaQueueRemove:
                             var removed = AthenaExportQueue.Remove(cosmetics);

@@ -26,6 +26,8 @@
     <system:String x:Key="UI_AthenaBattlePassLevel">Athena Battle Pass Level</system:String>
     <system:String x:Key="UI_AthenaProfileName">Athena Profile Name</system:String>
     <system:String x:Key="UI_AthenaQueueCount">Queued: </system:String>
+    <system:String x:Key="UI_AthenaQueueDuplicateMessage">{0} selected cosmetics are already in the Athena queue and were not added.</system:String>
+    <system:String x:Key="UI_AthenaQueueDuplicateTitle">Already in Athena Queue</system:String>
     <system:String x:Key="UI_Audio">Audio</system:String>
     <system:String x:Key="UI_AudioPlayer">Audio Player</system:String>
     <system:String x:Key="UI_AutoExportAttachedMaterials">Auto-Export Attached Materials</system:String>

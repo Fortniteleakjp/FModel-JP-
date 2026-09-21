@@ -25,9 +25,10 @@ public static class AthenaExportQueue
         }
     }
 
-    /// <summary>キューに追加し、実際に新しく積まれた件数を返す。</summary>
-    public static int Add(IEnumerable<GameFile> entries)
+    /// <summary>キューに追加し、実際に新しく積まれた件数を返す。既存項目数は duplicateCount に返す。</summary>
+    public static int Add(IEnumerable<GameFile> entries, out int duplicateCount)
     {
+        duplicateCount = 0;
         if (entries is null) return 0;
 
         var added = 0;
@@ -39,6 +40,8 @@ public static class AthenaExportQueue
                 if (entry is null) continue;
                 if (_entries.TryAdd(entry.Path, entry))
                     added++;
+                else
+                    duplicateCount++;
             }
 
             count = _entries.Count;

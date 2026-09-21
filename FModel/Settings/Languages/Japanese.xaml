@@ -26,6 +26,8 @@
     <system:String x:Key="UI_AthenaBattlePassLevel">Athena バトルパスレベル</system:String>
     <system:String x:Key="UI_AthenaProfileName">Athena プロファイル名</system:String>
     <system:String x:Key="UI_AthenaQueueCount">キュー件数: </system:String>
+    <system:String x:Key="UI_AthenaQueueDuplicateMessage">選択したコスメティックのうち {0} 件はすでに Athena キューに存在するため、追加されませんでした。</system:String>
+    <system:String x:Key="UI_AthenaQueueDuplicateTitle">すでにキューに存在します</system:String>
     <system:String x:Key="UI_Audio">音声</system:String>
     <system:String x:Key="UI_AudioPlayer">オーディオプレイヤー</system:String>
     <system:String x:Key="UI_AutoExportAttachedMaterials">付随するマテリアルも自動でエクスポート</system:String>
