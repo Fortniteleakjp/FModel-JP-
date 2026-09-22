@@ -1,0 +1,120 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.MaterialGraphWindow"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+
+                             xmlns:viewModels="clr-namespace:FModel.ViewModels"
+                             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+
+                             WindowStartupLocation="CenterScreen" ResizeMode="CanResize" IconVisibility="Collapsed"
+                             Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.75'}"
+                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.85'}">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
+            <Setter Property="Title" Value="{DynamicResource UI_MaterialGraph}" />
+        </Style>
+    </adonisControls:AdonisWindow.Style>
+
+    <adonisControls:AdonisWindow.Resources>
+        <Style x:Key="NodeCard" TargetType="Border">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="8 5" />
+            <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer4BackgroundBrush}}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Kind}" Value="BaseMaterial">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                    <Setter Property="BorderThickness" Value="2" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="Instance">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentInteractionBrush}}" />
+                    <Setter Property="BorderThickness" Value="2" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="Texture">
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding CanOpen}" Value="True">
+                    <Setter Property="Cursor" Value="Hand" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </adonisControls:AdonisWindow.Resources>
+
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0 0 0 6">
+            <Button x:Name="ResetZoomButton" DockPanel.Dock="Right" Padding="10 3" Margin="6 0 0 0" Click="OnResetZoomClick"
+                    Content="{DynamicResource UI_MaterialGraph_ResetZoom}" />
+            <Button x:Name="ZoomInButton" DockPanel.Dock="Right" Padding="10 3" Margin="6 0 0 0" Click="OnZoomInClick" Content="+" />
+            <Button x:Name="ZoomOutButton" DockPanel.Dock="Right" Padding="10 3" Margin="6 0 0 0" Click="OnZoomOutClick" Content="-" />
+            <TextBlock x:Name="NoteText" VerticalAlignment="Center" Opacity=".75" TextTrimming="CharacterEllipsis" />
+        </DockPanel>
+
+        <ScrollViewer x:Name="GraphScroll" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                      PreviewMouseWheel="OnGraphMouseWheel" BorderThickness="1"
+                      BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
+                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
+            <Grid x:Name="GraphRoot">
+                <Grid.LayoutTransform>
+                    <ScaleTransform x:Name="GraphScale" ScaleX="1" ScaleY="1" />
+                </Grid.LayoutTransform>
+
+                <ItemsControl x:Name="EdgeItems">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewModels:MaterialGraphEdge}">
+                            <Canvas>
+                                <Path Data="{Binding Geometry}" StrokeThickness="1.5" Opacity=".7"
+                                      Stroke="{DynamicResource {x:Static adonisUi:Brushes.AccentInteractionBrush}}" />
+                                <TextBlock Text="{Binding Label}" FontSize="9" Opacity=".5"
+                                           Canvas.Left="{Binding LabelX}" Canvas.Top="{Binding LabelY}" />
+                            </Canvas>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <ItemsControl x:Name="NodeItems">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding X}" />
+                            <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewModels:MaterialGraphNode}">
+                            <Border Style="{StaticResource NodeCard}" Width="{Binding Width}" Height="{Binding Height}"
+                                    MouseLeftButtonDown="OnNodeClick" ToolTip="{Binding AssetPath}">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Subtitle}" FontSize="10" Opacity=".55" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Detail}" FontSize="10" Opacity=".8" TextTrimming="CharacterEllipsis" Margin="0 2 0 0" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </ScrollViewer>
+
+        <TextBlock x:Name="Status" Grid.Row="2" Margin="2 6 2 0" Opacity=".7" TextTrimming="CharacterEllipsis" />
+    </Grid>
+</adonisControls:AdonisWindow>

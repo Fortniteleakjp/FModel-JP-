@@ -4,6 +4,11 @@ import secrets
 
 sha = sys.argv[1]
 version = sys.argv[2]
+download_url = (
+    sys.argv[3]
+    if len(sys.argv) >= 4 and sys.argv[3].strip()
+    else f"https://github.com/Fortniteleakjp/FModel-JP-/releases/download/{version}/{version}-{sha}.zip"
+)
 
 url = "https://fmodeljpbigbackup.fljpapi.jp/qa/upload"
 headers = {
@@ -11,7 +16,7 @@ headers = {
 }
 data = {
     "changelogUrl": "https://fmodeljp.fljpapi.jp/view/1",
-    "downloadUrl": f"https://github.com/Fortniteleakjp/FModel-JP-/releases/download/qa/{sha}.zip",
+    "downloadUrl": download_url,
     "version": f"{version}-{sha}"
 }
 
@@ -23,3 +28,4 @@ if response.status_code == 200:
     print("completely updated Download Url for API")
 else:
     print(f"updating Download Url for API failed : {response.status_code} - {response.text}")
+    sys.exit(1)

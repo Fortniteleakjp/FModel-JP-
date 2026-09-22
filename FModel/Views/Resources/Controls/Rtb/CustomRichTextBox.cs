@@ -1,0 +1,319 @@
+﻿using System;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
+
+namespace FModel.Views.Resources.Controls;
+
+/// <summary>
+/// https://github.com/xceedsoftware/wpftoolkit/tree/master/ExtendedWPFToolkitSolution/Src/Xceed.Wpf.Toolkit/RichTextBox
+/// </summary>
+public interface ITextFormatter
+{
+    string GetText(FlowDocument document);
+    void SetText(FlowDocument document, string text);
+}
+
+public enum ELog
+{
+    Information,
+    Warning,
+    Error,
+    Debug,
+    None
+}
+
+/// <summary>
+/// this whole thing needs a refactor
+/// TODO: source of truth for logs should be Serilog
+/// a custom sink to reroute some of these logs to the UI
+/// the ui should be an ObservableCollection of things
+/// the things displayed in ListBox (virtualized) should use a custom template
+/// see how logs work in ExportSessionViewModel
+/// </summary>
+public class FLogger : ITextFormatter
+{
+    public static CustomRichTextBox Logger;
+    private static readonly BrushConverter _brushConverter = new();
+    private static int _previous;
+
+    private const string _at = "   at ";
+    private const char _dot = '.';
+    private const char _colon = ':';
+    private const string _gray = "#999";
+
+    public static void Append(ELog type, Action job)
+    {
+        Application.Current.Dispatcher.Invoke(delegate
+        {
+            switch (type)
+            {
+                case ELog.Information:
+                    Text("[INF] ", Constants.BLUE);
+                    break;
+                case ELog.Warning:
+                    Text("[WRN] ", Constants.YELLOW);
+                    break;
+                case ELog.Error:
+                    Text("[ERR] ", Constants.RED);
+                    break;
+                case ELog.Debug:
+                    Text("[DBG] ", Constants.GREEN);
+                    break;
+            }
+
+            job();
+        }, DispatcherPriority.Background);
+    }
+
+    public static void Append(Exception e)
+    {
+        Append(ELog.Error, () =>
+        {
+            if ((e.InnerException ?? e) is { TargetSite.DeclaringType: not null } exception)
+            {
+                if (exception.TargetSite.ToString() == "CUE4Parse.FileProvider.GameFile get_Item(System.String)")
+                {
+                    Text(e.Message, Constants.WHITE, true);
+                }
+                else
+                {
+                    var t = exception.GetType();
+                    Text(t.Namespace + _dot, Constants.GRAY);
+                    Text(t.Name, Constants.WHITE);
+                    Text(_colon + " ", Constants.GRAY);
+                    Text(exception.Message, Constants.RED, true);
+
+                    Text(_at, _gray);
+                    Text(exception.TargetSite.DeclaringType.FullName + _dot, Constants.GRAY);
+                    Text(exception.TargetSite.Name, Constants.YELLOW);
+
+                    var p = exception.TargetSite.GetParameters();
+                    var parameters = new string[p.Length];
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        parameters[i] = p[i].ParameterType.Name + " " + p[i].Name;
+                    }
+
+                    Text("(" + string.Join(", ", parameters) + ")", Constants.GRAY, true);
+                }
+            }
+            else
+            {
+                Text(e.Message, Constants.WHITE, true);
+            }
+        });
+    }
+
+    public static void Text(string message, string color, bool newLine = false)
+    {
+        try
+        {
+            Logger.Document.ContentEnd.InsertTextInRun(message);
+            Logger.Selection.Select(Logger.Document.ContentStart.GetPositionAtOffset(_previous), Logger.Document.ContentEnd);
+            Logger.Selection.ApplyPropertyValue(TextElement.ForegroundProperty, _brushConverter.ConvertFromString(color));
+        }
+        finally
+        {
+            Finally(newLine);
+        }
+    }
+
+    public static void Link(string message, string url, bool newLine = false)
+    {
+        try
+        {
+            new Hyperlink(new Run(message), Logger.Document.ContentEnd)
+            {
+                NavigateUri = new Uri(url),
+                OverridesDefaultStyle = true,
+                Style = new Style(typeof(Hyperlink))
+                {
+                    Setters =
+                    {
+                        new Setter(FrameworkContentElement.CursorProperty, Cursors.Hand),
+                        new Setter(TextElement.ForegroundProperty, Brushes.Goldenrod),
+                        new Setter(TextElement.FontWeightProperty, FontWeights.Bold)
+                    },
+                    Triggers =
+                    {
+                        new Trigger
+                        {
+                            Property = UIElement.IsMouseOverProperty,
+                            Value = true,
+                            Setters =
+                            {
+                                new Setter(TextElement.ForegroundProperty, Brushes.Gold),
+                                new Setter(TextBlock.TextDecorationsProperty, TextDecorations.Underline)
+                            }
+                        }
+                    }
+                }
+            }.Click += (sender, _) =>
+            {
+                var uri = ((Hyperlink) sender).NavigateUri;
+                if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+                {
+                    Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
+                }
+                else
+                {
+                    Process.Start("explorer.exe", $"/select, \"{uri.AbsoluteUri}\"");
+                }
+            };
+        }
+        finally
+        {
+            Finally(newLine);
+        }
+    }
+
+    private const int MaxBlocks = 250; // in the meantime
+
+    private static void Finally(bool newLine)
+    {
+        if (newLine) Logger.Document.Blocks.Add(new Paragraph { Margin = new Thickness(0) });
+
+        while (Logger.Document.Blocks.Count > MaxBlocks)
+        {
+            Logger.Document.Blocks.Remove(Logger.Document.Blocks.FirstBlock);
+        }
+
+        Logger.ScrollToEnd();
+        _previous = Math.Abs(Logger.Document.ContentEnd.GetOffsetToPosition(Logger.Document.ContentStart)) - 2;
+    }
+
+    public string GetText(FlowDocument document)
+    {
+        return new TextRange(document.ContentStart, document.ContentEnd).Text;
+    }
+
+    public void SetText(FlowDocument document, string text)
+    {
+        new TextRange(document.ContentStart, document.ContentEnd).Text = text;
+    }
+
+    public static void ClearLogs()
+    {
+        Logger.Document.Blocks.Clear();
+        _previous = 0;
+    }
+}
+
+public class CustomRichTextBox : RichTextBox
+{
+    private bool _preventDocumentUpdate;
+    private bool _preventTextUpdate;
+
+    public CustomRichTextBox()
+    {
+    }
+
+    public CustomRichTextBox(FlowDocument document) : base(document)
+    {
+    }
+
+    public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
+        "Text", typeof(string), typeof(CustomRichTextBox),
+        new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+            OnTextPropertyChanged, CoerceTextProperty, true, UpdateSourceTrigger.LostFocus));
+
+    public string Text
+    {
+        get => (string) GetValue(TextProperty);
+        set => SetValue(TextProperty, value);
+    }
+
+    private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        ((CustomRichTextBox) d).UpdateDocumentFromText();
+    }
+
+    private static object CoerceTextProperty(DependencyObject d, object value)
+    {
+        return value ?? "";
+    }
+
+    public static readonly DependencyProperty TextFormatterProperty =
+        DependencyProperty.Register(
+            "TextFormatter", typeof(ITextFormatter), typeof(CustomRichTextBox),
+            new FrameworkPropertyMetadata(new FLogger(), OnTextFormatterPropertyChanged));
+
+    public ITextFormatter TextFormatter
+    {
+        get => (ITextFormatter) GetValue(TextFormatterProperty);
+        set => SetValue(TextFormatterProperty, value);
+    }
+
+    private static void OnTextFormatterPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is CustomRichTextBox richTextBox)
+        {
+            richTextBox.OnTextFormatterPropertyChanged((ITextFormatter) e.OldValue, (ITextFormatter) e.NewValue);
+        }
+    }
+
+    protected virtual void OnTextFormatterPropertyChanged(ITextFormatter oldValue, ITextFormatter newValue)
+    {
+        UpdateTextFromDocument();
+    }
+
+    protected override void OnTextChanged(TextChangedEventArgs e)
+    {
+        UpdateTextFromDocument();
+        base.OnTextChanged(e);
+    }
+
+    private void UpdateTextFromDocument()
+    {
+        if (_preventTextUpdate)
+            return;
+
+        _preventDocumentUpdate = true;
+        SetCurrentValue(TextProperty, TextFormatter.GetText(Document));
+        _preventDocumentUpdate = false;
+    }
+
+    private void UpdateDocumentFromText()
+    {
+        if (_preventDocumentUpdate)
+            return;
+
+        _preventTextUpdate = true;
+        TextFormatter.SetText(Document, Text);
+        _preventTextUpdate = false;
+    }
+
+    public void Clear()
+    {
+        Document.Blocks.Clear();
+    }
+
+    public override void BeginInit()
+    {
+        base.BeginInit();
+        _preventTextUpdate = true;
+        _preventDocumentUpdate = true;
+    }
+
+    public override void EndInit()
+    {
+        base.EndInit();
+        _preventTextUpdate = false;
+        _preventDocumentUpdate = false;
+
+        if (!string.IsNullOrEmpty(Text))
+        {
+            UpdateDocumentFromText();
+        }
+        else
+        {
+            UpdateTextFromDocument();
+        }
+    }
+}
