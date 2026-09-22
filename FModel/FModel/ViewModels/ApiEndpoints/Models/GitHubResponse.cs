@@ -42,6 +42,22 @@ public class GitHubAsset : ViewModel
         set => SetProperty(ref _isLatest, value);
     }
 
+    /// <summary>
+    /// 資産名からビルド元のコミット sha を取り出す。CI が積む名前は main が "&lt;sha&gt;.zip"、
+    /// リリースタグ付きのラインが "&lt;version&gt;-&lt;sha&gt;.zip" と揺れているため両方に対応する。
+    /// </summary>
+    public static string GetCommitSha(string assetName)
+    {
+        if (string.IsNullOrEmpty(assetName) || !assetName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        var name = assetName[..^4];
+        var separator = name.LastIndexOf('-');
+        if (separator >= 0) name = name[(separator + 1)..];
+
+        return name.Length >= 7 && name.All(Uri.IsHexDigit) ? name : null;
+    }
+
     public static GitHubAsset CreateDirect(string name, string browserDownloadUrl, DateTime createdAt)
     {
         return new GitHubAsset

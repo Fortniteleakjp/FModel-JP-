@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ using FModel.Settings;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.ViewModels.Commands;
 using FModel.Views.Resources.Converters;
+using Serilog;
 
 namespace FModel.ViewModels;
 
@@ -49,6 +50,8 @@ public class UpdateViewModel : ViewModel
 
         if (assets.Count == 0)
         {
+            Log.Warning("リリース 'qa' から資産を取得できなかったため、更新 API の情報にフォールバックします");
+
             var info = _apiEndpointView.FModelApi.CurrentUpdateInfo;
             var commitSha = ExtractCommitSha(info?.Version);
             if (!string.IsNullOrWhiteSpace(info?.DownloadUrl) && commitSha != null)
@@ -81,7 +84,7 @@ public class UpdateViewModel : ViewModel
                     Commit = new Commit
                     {
                         Message = $"FModel ({commitSha[..7]})",
-                        Author = new Author { Name = asset.Uploader.Login, Date = asset.CreatedAt }
+                        Author = new Author { Name = asset.Uploader?.Login, Date = asset.CreatedAt }
                     },
                     Author = asset.Uploader,
                     Asset = asset

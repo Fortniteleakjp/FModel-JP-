@@ -196,10 +196,21 @@ public class FModelApiEndpoint : AbstractApiProvider
                 System.Version.TryParse(Constants.APP_VERSION, out var installedVersion) &&
                 remoteVersion < installedVersion)
             {
+                // 更新 API は 1 つしかないため、別ライン (例: FModelJP-Renewal の 4.5) の CI に
+                // 上書きされることがある。その場合は 'qa' リリースの最新ビルドを直接見に行く。
                 Log.Warning(
-                    "Ignoring stale update metadata. Installed version {InstalledVersion} is newer than remote version {RemoteVersion}",
-                    installedVersion, remoteVersion);
-                return;
+                    "更新 API のバージョン {RemoteVersion} はインストール済みの {InstalledVersion} より古いため、'qa' リリースを参照します",
+                    remoteVersion, installedVersion);
+
+                var latest = ApplicationService.ApiEndpointView.GitHubApi.GetLatestBuildAsset();
+                var latestHash = GitHubAsset.GetCommitSha(latest?.Name);
+                if (latestHash == null)
+                {
+                    Log.Warning("'qa' リリースからビルド資産を取得できませんでした。更新の確認を中止します");
+                    return;
+                }
+
+                targetHash = latestHash;
             }
 
             if (string.Equals(targetHash, Constants.APP_COMMIT_ID, StringComparison.OrdinalIgnoreCase) || 
