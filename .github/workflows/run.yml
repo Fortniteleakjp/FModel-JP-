@@ -181,6 +181,30 @@ jobs:
           Write-Host "Verified EXE: $($exeAsset.browser_download_url) ($($exeAsset.size) bytes)"
           "download_url=$($zipAsset.browser_download_url)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
+      # 旧 5.7.0.0 系の exe は「バージョン管理」でリリースタグ 'qa' の "<sha>.zip" しか
+      # 参照しないため、新しいタグに積むだけでは更新を提示できない。同じ ZIP を 'qa' にも
+      # レガシー名で積んで橋渡しする。旧バージョンの利用者がいなくなったら削除してよい。
+      - name: Create Legacy QA Asset
+        shell: pwsh
+        run: |
+          $source = "${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip"
+          $legacy = "${{ github.sha }}.zip"
+          if (Test-Path $legacy) { Remove-Item $legacy -Force }
+          Copy-Item $source $legacy -Force
+
+      - name: Add Legacy QA Release Asset
+        uses: ncipollo/release-action@v1.20.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: 'qa'
+          artifacts: '${{ github.sha }}.zip'
+          artifactErrorsFailBuild: true
+          allowUpdates: true
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          makeLatest: false
+          replacesArtifacts: true
+
       - name: Install Requests
         run: |
           python -m pip install --upgrade pip
