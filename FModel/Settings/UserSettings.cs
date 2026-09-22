@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -303,6 +303,17 @@ public sealed class UserSettings : ViewModel
     {
         get => _convertAudioOnBulkExport;
         set => SetProperty(ref _convertAudioOnBulkExport, value);
+    }
+
+    private int _maxExportPerPage = 1;
+    /// <summary>
+    /// how many exports get displayed at once for packages big enough to be paginated
+    /// (see <see cref="Extensions.CUE4ParseExtensions.LoadPackageResult"/>)
+    /// </summary>
+    public int MaxExportPerPage
+    {
+        get => _maxExportPerPage;
+        set => SetProperty(ref _maxExportPerPage, Math.Clamp(value, 1, 1000));
     }
 
     private bool _mergeEditorOnlyDataExports = false;

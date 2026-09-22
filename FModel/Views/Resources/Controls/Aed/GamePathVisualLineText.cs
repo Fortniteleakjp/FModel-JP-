@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -74,7 +74,8 @@ public class GamePathVisualLineText : VisualLineText
             if (a.ParentVisualLine.Document.FileName.Equals(fullPath.SubstringBeforeLast('.'), StringComparison.OrdinalIgnoreCase) &&
                 !a.ParentVisualLine.Document.GetText(firstLine.Offset, firstLine.Length).Equals("  \"Summary\": {")) // Show Metadata case
             {
-                var lineNumber = a.ParentVisualLine.Document.Text.GetNameLineNumber(obj);
+                var pageStart = _applicationView.CUE4Parse.TabControl.SelectedTab?.ExportPageStart ?? 0;
+                var lineNumber = a.ParentVisualLine.Document.Text.GetNameLineNumber(obj, pageStart);
                 if (lineNumber > -1)
                 {
                     var line = a.ParentVisualLine.Document.GetLineByNumber(lineNumber);

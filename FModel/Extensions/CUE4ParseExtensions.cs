@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets;
@@ -11,14 +11,12 @@ public static class CUE4ParseExtensions
 {
     public class LoadPackageResult
     {
-        // more than 1 export per page currently break the inner package navigation feature
-        // if you have 1k exports per page, at page 2, you click on export index 932
-        // it will find the export index 932 in the current page, which would realistically be 1932
-        // fix would be to use InclusiveStart and ExclusiveEnd to determine the page the export index is in
-        // giving the document access to this would fix the issue and we could re-use Package instead of reloading it but it's quite a bit of work atm
+        // export indexes found in the document are relative to the page being displayed, the tab keeps
+        // InclusiveStart around (TabItem.ExportPageStart) so inner package navigation can offset them back
+        // we still reload the package on every page change instead of re-using it, which could be improved
 
         private const int PaginationThreshold = 5000;
-        private const int MaxExportPerPage = 1;
+        private static int MaxExportPerPage => UserSettings.Default.MaxExportPerPage;
 
         public IPackage Package;
         public int RequestedIndex;
@@ -40,6 +38,21 @@ public static class CUE4ParseExtensions
             ? Math.Min(InclusiveStart + MaxExportPerPage, Package.ExportMapLength)
             : Package.ExportMapLength;
         public int PageSize => ExclusiveEnd - InclusiveStart;
+
+        /// <summary>
+        /// zero based index of the page <see cref="InclusiveStart"/> belongs to
+        /// </summary>
+        public int PageIndex => IsPaginated ? InclusiveStart / MaxExportPerPage : 0;
+        /// <summary>
+        /// how many pages the package is split into
+        /// </summary>
+        public int PageCount => IsPaginated ? (Package.ExportMapLength + MaxExportPerPage - 1) / MaxExportPerPage : 1;
+
+        /// <summary>
+        /// index the first export of <see cref="GetDisplayData"/> has in the package
+        /// 0 when the whole export map is displayed, since indexes are then already absolute
+        /// </summary>
+        public int DocumentExportStart => IsPaginated ? InclusiveStart : 0;
 
         public string TabTitleExtra => IsPaginated ? $"Export{(PageSize > 1 ? "s" : "")} {InclusiveStart}{(PageSize > 1 ? $"-{ExclusiveEnd - 1}" : "")} of {Package.ExportMapLength - 1}" : null;
 

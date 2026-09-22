@@ -752,6 +752,8 @@ public partial class CUE4ParseViewModel : ViewModel
             {
                 var result = Provider.GetLoadPackageResult(entry);
                 TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
+                if (saveProperties) TabControl.SelectedTab.SetExportPagination(0, 1, 0);
+                else TabControl.SelectedTab.SetExportPagination(result.PageIndex, result.PageCount, result.DocumentExportStart);
 
                 if (saveProperties || updateUi)
                 {
@@ -1317,7 +1319,32 @@ public partial class CUE4ParseViewModel : ViewModel
         var result = Provider.GetLoadPackageResult(entry, objectName);
 
         TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
+        TabControl.SelectedTab.SetExportPagination(result.PageIndex, result.PageCount, result.DocumentExportStart);
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
+        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
+
+        for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
+        {
+            if (CheckExport(cancellationToken, result.Package, i))
+                break;
+        }
+    }
+
+    /// <summary>
+    /// reloads the selected tab on the page holding <paramref name="exportIndex"/>
+    /// only makes sense for packages big enough to be paginated
+    /// </summary>
+    public void ExtractExportPage(CancellationToken cancellationToken, GameFile entry, int exportIndex)
+    {
+        Log.Information("User moved to export '{ExportIndex}' of '{FullPath}'", exportIndex, entry.Path);
+
+        TabControl.SelectedTab.SoftReset(entry);
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(entry.Extension);
+
+        var result = Provider.GetLoadPackageResult(entry, exportIndex.ToString());
+
+        TabControl.SelectedTab.TitleExtra = result.TabTitleExtra;
+        TabControl.SelectedTab.SetExportPagination(result.PageIndex, result.PageCount, result.DocumentExportStart);
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
 
         for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
@@ -1344,9 +1371,18 @@ public partial class CUE4ParseViewModel : ViewModel
             {
                 if (!TabControl.CanAddTabs) return false;
 
+                var readableCode = verseDigest.ReadableCode;
+                if (string.IsNullOrEmpty(readableCode))
+                {
+                    // the digest code is stripped from some cooked packages, keep looking for
+                    // viewable exports and leave the properties json we already displayed
+                    Log.Warning("'{Name}' has no digest code, falling back to its properties", verseDigest.Name);
+                    return false;
+                }
+
                 TabControl.AddTab($"{verseDigest.Name}.verse");
                 TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
-                TabControl.SelectedTab.SetDocumentText(verseDigest.ReadableCode, false, false);
+                TabControl.SelectedTab.SetDocumentText(readableCode, false, false);
                 return true;
             }
             case UTexture when (isNone || saveTextures) && pointer.Object.Value is UTexture texture:

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Windows;
 using AdonisUI.Controls;
 using FModel.Framework;
@@ -32,6 +32,18 @@ public class TabCommand : ViewModelCommand<TabItem>
             case "Close_Other_Tabs":
                 _applicationView.CUE4Parse.TabControl.RemoveOtherTabs(tabViewModel);
                 break;
+            case "Previous_Export_Page":
+            case "Next_Export_Page":
+            {
+                var exportIndex = tabViewModel.GetExportPageStart(Equals(parameter, "Next_Export_Page") ? 1 : -1);
+                if (exportIndex < 0) break;
+
+                await _threadWorkerView.Begin(cancellationToken =>
+                {
+                    _applicationView.CUE4Parse.ExtractExportPage(cancellationToken, tabViewModel.Entry, exportIndex);
+                });
+                break;
+            }
             case "Assets_Show_Metadata":
                 _applicationView.CUE4Parse.ShowMetadata(tabViewModel.Entry);
                 break;

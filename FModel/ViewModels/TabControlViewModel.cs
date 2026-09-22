@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -317,6 +317,38 @@ public class TabItem : ViewModel
 
     public string Header => $"{Entry.Name}{(string.IsNullOrEmpty(TitleExtra) ? "" : $" ({TitleExtra})")}";
 
+    private int _exportPageIndex;
+    private int _exportPageCount = 1;
+    /// <summary>
+    /// packages with too many exports are displayed one page at a time, see <see cref="CUE4ParseExtensions.LoadPackageResult"/>
+    /// </summary>
+    public bool HasExportPages => _exportPageCount > 1;
+    public bool CanGoPreviousExportPage => _exportPageIndex > 0;
+    public bool CanGoNextExportPage => _exportPageIndex < _exportPageCount - 1;
+    public string ExportPage => $"{_exportPageIndex + 1} / {_exportPageCount}";
+    /// <summary>
+    /// index of the first export displayed in this tab, export indexes found in the document are relative to it
+    /// </summary>
+    public int ExportPageStart { get; private set; }
+
+    public void SetExportPagination(int pageIndex, int pageCount, int pageStart)
+    {
+        _exportPageIndex = pageIndex;
+        _exportPageCount = pageCount;
+        ExportPageStart = pageStart;
+        RaisePropertyChanged(nameof(HasExportPages));
+        RaisePropertyChanged(nameof(CanGoPreviousExportPage));
+        RaisePropertyChanged(nameof(CanGoNextExportPage));
+        RaisePropertyChanged(nameof(ExportPage));
+    }
+
+    /// <returns>the first export index of the page next to the current one, -1 if there is none</returns>
+    public int GetExportPageStart(int offset)
+    {
+        var page = _exportPageIndex + offset;
+        return page < 0 || page >= _exportPageCount ? -1 : page * UserSettings.Default.MaxExportPerPage;
+    }
+
     public bool HasImage => SelectedImage != null;
     public bool HasMultipleImages => _images.Count > 1;
     public string Page => $"{_images.IndexOf(_selectedImage) + 1} / {_images.Count}";
@@ -350,6 +382,7 @@ public class TabItem : ViewModel
         ParentExportType = string.Empty;
         DiffContent = null;
         ScrollTrigger = null;
+        SetExportPagination(0, 1, 0);
         Application.Current.Dispatcher.Invoke(() =>
         {
             _images.Clear();

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -25,13 +25,19 @@ public static partial class StringExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int GetNameLineNumber(this string s, string lineToFind)
+    /// <param name="exportIndexOffset">
+    /// index of the first export of the page currently displayed, export indexes are looked up relative to it
+    /// </param>
+    public static int GetNameLineNumber(this string s, string lineToFind, int exportIndexOffset = 0)
     {
         if (KismetRegex().IsMatch(lineToFind))
             return s.GetKismetLineNumber(lineToFind);
 
         if (int.TryParse(lineToFind, out var index))
-            return s.GetLineNumber(index);
+        {
+            index -= exportIndexOffset;
+            return index < 0 ? -1 : s.GetLineNumber(index);
+        }
 
         return s.GetNameLineNumberText($"    \"Name\": \"{lineToFind}\",");
     }

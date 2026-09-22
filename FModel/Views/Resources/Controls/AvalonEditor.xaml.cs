@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -127,7 +127,7 @@ public partial class AvalonEditor
 
         if (!tabItem.ShouldScroll) return;
 
-        var lineNumber = avalonEditor.Document.Text.GetNameLineNumber(tabItem.ScrollTrigger);
+        var lineNumber = avalonEditor.Document.Text.GetNameLineNumber(tabItem.ScrollTrigger, tabItem.ExportPageStart);
         if (lineNumber == -1) lineNumber = 1;
 
         var line = avalonEditor.Document.GetLineByNumber(lineNumber);

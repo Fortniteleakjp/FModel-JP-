@@ -49,6 +49,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -327,6 +328,13 @@
                                           RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}},
                                           Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
                                           ConverterParameter='FortniteGame'}" />
+
+                    <TextBlock Grid.Row="25" Grid.Column="0" Text="{DynamicResource UI_MaxExportPerPage}" VerticalAlignment="Center" Margin="0 0 0 5"
+                               ToolTip="{DynamicResource UI_HowManyExportsAreDisplayedAtOnce}" />
+                    <TextBox Grid.Row="25" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5"
+                             VerticalContentAlignment="Center" MaxLength="4" TextAlignment="Right"
+                             ToolTip="{DynamicResource UI_HowManyExportsAreDisplayedAtOnce}"
+                             Text="{Binding MaxExportPerPage, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">

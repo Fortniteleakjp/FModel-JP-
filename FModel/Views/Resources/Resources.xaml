@@ -761,7 +761,38 @@
                             <ColumnDefinition Width="{Binding AvalonImageSize, Source={x:Static settings:UserSettings.Default}, Mode=TwoWay}" />
                         </Grid.ColumnDefinitions>
 
-                        <controls:AvalonEditor x:Name="DynamicArea" Grid.Column="0" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
+                        <Grid x:Name="DynamicArea" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <controls:AvalonEditor Grid.Row="0" DataContext="{Binding SelectedItem, ElementName=TabControlName}" />
+
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 2 0 2"
+                                        Visibility="{Binding SelectedItem.HasExportPages, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Button Width="24" Height="20" ToolTip="{DynamicResource UI_PreviousExportPage}"
+                                        Command="{Binding SelectedItem.TabCommand, ElementName=TabControlName}" CommandParameter="Previous_Export_Page"
+                                        IsEnabled="{Binding SelectedItem.CanGoPreviousExportPage, ElementName=TabControlName}">
+                                    <Viewbox Width="14" Height="14">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SkipPreviousIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Button>
+                                <TextBlock VerticalAlignment="Center" Margin="8 0 8 0" FontSize="11"
+                                           Text="{Binding SelectedItem.ExportPage, ElementName=TabControlName}" />
+                                <Button Width="24" Height="20" ToolTip="{DynamicResource UI_NextExportPage}"
+                                        Command="{Binding SelectedItem.TabCommand, ElementName=TabControlName}" CommandParameter="Next_Export_Page"
+                                        IsEnabled="{Binding SelectedItem.CanGoNextExportPage, ElementName=TabControlName}">
+                                    <Viewbox Width="14" Height="14">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SkipNextIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
                         <GridSplitter Grid.Column="1" Width="4" VerticalAlignment="Stretch" ResizeDirection="Columns" KeyboardIncrement="0"
                                       Visibility="{Binding SelectedItem.HasImage, ElementName=TabControlName, Converter={StaticResource BoolToVisibilityConverter}}"
                                       Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" />
