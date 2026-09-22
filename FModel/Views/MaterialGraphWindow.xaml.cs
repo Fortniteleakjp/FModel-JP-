@@ -1,10 +1,14 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.Assets.Exports;
 using FModel.Services;
 using FModel.ViewModels;
 using FModel.Views.Resources.Controls;
@@ -18,6 +22,7 @@ namespace FModel.Views;
 /// </summary>
 public partial class MaterialGraphWindow : AdonisWindow
 {
+    private const string _EDITOR_ONLY_EXTENSION = ".o.uasset";
     private const double _MIN_ZOOM = 0.3;
     private const double _MAX_ZOOM = 2.5;
 
@@ -38,7 +43,8 @@ public partial class MaterialGraphWindow : AdonisWindow
         NodeItems.ItemsSource = graph.Nodes;
 
         SetStatus($"{graph.Nodes.Count} nodes, {graph.Edges.Count} links" +
-                  (graph.HasExpressions ? " - expression graph" : " - instance chain"));
+                  (graph.HasExpressions ? " - expression graph" : " - instance chain") +
+                  (graph.UsesEditorOnlyData ? " - editor only data" : string.Empty));
     }
 
     /// <summary>
@@ -48,10 +54,46 @@ public partial class MaterialGraphWindow : AdonisWindow
     public static MaterialGraph Load(GameFile entry, CancellationToken cancellationToken)
     {
         var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
+
+        // a .o.uasset holds only the editor side of the material, the graph is built from its regular twin
+        if (entry.Path.EndsWith(_EDITOR_ONLY_EXTENSION, StringComparison.OrdinalIgnoreCase) &&
+            provider.Files.TryGetValue($"{entry.PathWithoutExtension[..^2]}.uasset", out var runtimeTwin))
+            entry = runtimeTwin;
+
         var package = provider.LoadPackage(entry);
         if (!MaterialGraphBuilder.IsMaterial(package)) return null;
 
-        return MaterialGraphBuilder.Build(package, entry.Path, cancellationToken);
+        return MaterialGraphBuilder.Build(package, entry.Path, EditorOnlyDataResolver(provider), cancellationToken);
+    }
+
+    /// <summary>
+    /// Every material of the chain gets looked up in its own .o.uasset, so the resolver caches the
+    /// optional packages it opens, a miss included.
+    /// </summary>
+    private static MaterialEditorOnlyDataResolver EditorOnlyDataResolver(AbstractVfsFileProvider provider)
+    {
+        var packages = new Dictionary<string, IPackage>();
+        return export =>
+        {
+            var owner = export.Owner?.Name;
+            if (string.IsNullOrEmpty(owner)) return null;
+
+            if (!packages.TryGetValue(owner, out var editorPackage))
+            {
+                try
+                {
+                    provider.TryLoadPackage($"{owner}{_EDITOR_ONLY_EXTENSION}", out editorPackage);
+                }
+                catch (Exception)
+                {
+                    editorPackage = null;
+                }
+
+                packages[owner] = editorPackage;
+            }
+
+            return editorPackage?.GetExportOrNull($"{export.Name}EditorOnlyData");
+        };
     }
 
     /// <summary>

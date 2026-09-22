@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Threading;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
+using CUE4Parse.UE4.Assets.Exports.Material.Editor;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.UE4.Objects.Core.Math;
@@ -21,6 +22,7 @@ public enum EMaterialNodeKind
     Vector,
     Texture,
     Switch,
+    Mask,
     Expression
 }
 
@@ -43,7 +45,7 @@ public class MaterialGraphNode
     public double Width { get; set; } = 260;
     public double Height { get; set; } = 62;
 
-    public bool IsParameter => Kind is EMaterialNodeKind.Scalar or EMaterialNodeKind.Vector or EMaterialNodeKind.Texture or EMaterialNodeKind.Switch;
+    public bool IsParameter => Kind is EMaterialNodeKind.Scalar or EMaterialNodeKind.Vector or EMaterialNodeKind.Texture or EMaterialNodeKind.Switch or EMaterialNodeKind.Mask;
     public bool CanOpen => !string.IsNullOrEmpty(AssetPath);
 }
 
@@ -70,13 +72,24 @@ public class MaterialGraph
     /// <summary>True when the asset still carries editor expression data, which cooked builds normally strip.</summary>
     public bool HasExpressions { get; init; }
 
+    /// <summary>True when part of the graph was read from the sibling .o.uasset of a material.</summary>
+    public bool UsesEditorOnlyData { get; init; }
+
     public string Note { get; init; }
 }
 
 /// <summary>
-/// Builds a material graph out of what a cooked package actually holds.
-/// Expression graphs only survive in uncooked assets, so the inheritance chain and its parameter
-/// overrides are what gets drawn otherwise, which is the part the editor shows in the instance editor.
+/// Resolves the editor only twin of a material export, the &lt;name&gt;EditorOnlyData export of its
+/// sibling .o.uasset. Returns null when the build ships no optional segment for that package.
+/// </summary>
+public delegate UObject MaterialEditorOnlyDataResolver(UObject export);
+
+/// <summary>
+/// Builds a material graph out of what a package holds.
+/// The runtime export of a cooked material keeps no expression graph and only a trimmed parameter set,
+/// both live in the optional segment next to it, so the .o.uasset is read whenever the build ships one.
+/// Without it the inheritance chain and its parameter overrides are drawn instead, which is the part
+/// the editor shows in the instance editor.
 /// </summary>
 public static class MaterialGraphBuilder
 {
@@ -89,22 +102,44 @@ public static class MaterialGraphBuilder
     public static bool IsMaterial(IPackage package) =>
         package.GetExports().Any(export => export is UUnrealMaterial);
 
-    public static MaterialGraph Build(IPackage package, string packagePath, CancellationToken cancellationToken)
+    public static MaterialGraph Build(IPackage package, string packagePath, MaterialEditorOnlyDataResolver editorOnlyData,
+        CancellationToken cancellationToken)
     {
         var material = package.GetExports().OfType<UUnrealMaterial>().FirstOrDefault();
         if (material == null) return null;
 
-        var expressions = (material as UMaterial)?.Expressions ?? [];
+        editorOnlyData ??= static _ => null;
+
+        var expressions = ReadExpressions(material, editorOnlyData(material));
         return expressions.Length > 0
-            ? BuildExpressionGraph(material, expressions, packagePath, cancellationToken)
-            : BuildChainGraph(material, packagePath, cancellationToken);
+            ? BuildExpressionGraph(material, expressions, packagePath, editorOnlyData, cancellationToken)
+            : BuildChainGraph(material, packagePath, editorOnlyData, cancellationToken);
+    }
+
+    /// <summary>
+    /// The expression graph is editor only data. A cooked package keeps it in its .o.uasset, laid out flat
+    /// under 5.0 and moved into the ExpressionCollection struct from 5.1 on.
+    /// </summary>
+    private static FPackageIndex[] ReadExpressions(UUnrealMaterial material, UObject editorOnly)
+    {
+        if (material is UMaterial { Expressions.Length: > 0 } uncooked) return uncooked.Expressions;
+        if (editorOnly == null) return [];
+
+        if (editorOnly.TryGetValue(out FPackageIndex[] expressions, "Expressions") && expressions.Length > 0)
+            return expressions;
+
+        return editorOnly.TryGetValue(out FStructFallback collection, "ExpressionCollection") &&
+               collection.TryGetValue(out expressions, "Expressions")
+            ? expressions
+            : [];
     }
 
     /// <summary>
     /// Instance chain: base material on the left, each child instance to its right, with the
     /// parameters that instance overrides stacked underneath it.
     /// </summary>
-    private static MaterialGraph BuildChainGraph(UUnrealMaterial material, string packagePath, CancellationToken cancellationToken)
+    private static MaterialGraph BuildChainGraph(UUnrealMaterial material, string packagePath,
+        MaterialEditorOnlyDataResolver editorOnlyData, CancellationToken cancellationToken)
     {
         var chain = new List<UUnrealMaterial>();
         var current = material;
@@ -119,6 +154,7 @@ public static class MaterialGraphBuilder
         var nodes = new List<MaterialGraphNode>();
         var edges = new List<MaterialGraphEdge>();
         var maxRows = 0;
+        var usesEditorOnlyData = false;
 
         MaterialGraphNode previous = null;
         for (var column = 0; column < chain.Count; column++)
@@ -126,6 +162,9 @@ public static class MaterialGraphBuilder
             cancellationToken.ThrowIfCancellationRequested();
 
             var entry = chain[column];
+            var editorOnly = editorOnlyData(entry);
+            usesEditorOnlyData |= editorOnly != null;
+
             var node = new MaterialGraphNode
             {
                 Id = $"mat{column}",
@@ -144,7 +183,7 @@ public static class MaterialGraphBuilder
             previous = node;
 
             var row = 1;
-            foreach (var parameter in ReadParameters(entry))
+            foreach (var parameter in ReadParameters(entry, editorOnly))
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -168,6 +207,11 @@ public static class MaterialGraphBuilder
             maxRows = Math.Max(maxRows, row);
         }
 
+        var note = chain.Count > 1
+            ? $"{chain.Count} materials in the inheritance chain"
+            : "no expression graph in this package";
+        if (usesEditorOnlyData) note += "  |  editor only data merged from .o.uasset";
+
         var graph = new MaterialGraph
         {
             Name = material.Name,
@@ -175,9 +219,8 @@ public static class MaterialGraphBuilder
             Nodes = nodes,
             Edges = edges,
             HasExpressions = false,
-            Note = chain.Count > 1
-                ? $"{chain.Count} materials in the inheritance chain"
-                : "This material carries no expression graph, cooked builds strip it"
+            UsesEditorOnlyData = usesEditorOnlyData,
+            Note = note
         };
 
         graph.CanvasWidth = _MARGIN * 2 + Math.Max(1, chain.Count) * _COLUMN_WIDTH;
@@ -189,8 +232,11 @@ public static class MaterialGraphBuilder
     /// Real expression graph, only reachable on assets that kept their editor data.
     /// Links are found by following every object reference an expression holds.
     /// </summary>
-    private static MaterialGraph BuildExpressionGraph(UUnrealMaterial material, FPackageIndex[] expressions, string packagePath, CancellationToken cancellationToken)
+    private static MaterialGraph BuildExpressionGraph(UUnrealMaterial material, FPackageIndex[] expressions, string packagePath,
+        MaterialEditorOnlyDataResolver editorOnlyData, CancellationToken cancellationToken)
     {
+        var fromEditorOnlyData = material is not UMaterial { Expressions.Length: > 0 };
+
         var loaded = new Dictionary<UObject, MaterialGraphNode>();
         var nodes = new List<MaterialGraphNode>();
         var edges = new List<MaterialGraphEdge>();
@@ -246,7 +292,10 @@ public static class MaterialGraphBuilder
             Nodes = nodes,
             Edges = edges,
             HasExpressions = true,
-            Note = $"{loaded.Count} expressions"
+            UsesEditorOnlyData = fromEditorOnlyData,
+            Note = fromEditorOnlyData
+                ? $"{loaded.Count} expressions read from .o.uasset"
+                : $"{loaded.Count} expressions"
         };
 
         graph.CanvasWidth = nodes.Count == 0 ? 600 : nodes.Max(n => n.X + n.Width) + _MARGIN;
@@ -316,17 +365,17 @@ public static class MaterialGraphBuilder
 
     private readonly record struct MaterialParameter(string Name, string Value, EMaterialNodeKind Kind, string AssetPath);
 
-    private static IEnumerable<MaterialParameter> ReadParameters(UUnrealMaterial material)
+    private static IEnumerable<MaterialParameter> ReadParameters(UUnrealMaterial material, UObject editorOnly)
     {
         var parameters = new List<MaterialParameter>();
 
-        foreach (var entry in ReadParameterArray(material, "ScalarParameterValues"))
+        foreach (var entry in ReadParameterArray(material, editorOnly, "ScalarParameterValues"))
         {
             var value = entry.Struct.GetOrDefault<float>("ParameterValue");
             parameters.Add(new MaterialParameter(entry.Name, value.ToString("0.###", CultureInfo.InvariantCulture), EMaterialNodeKind.Scalar, null));
         }
 
-        foreach (var entry in ReadParameterArray(material, "VectorParameterValues"))
+        foreach (var entry in ReadParameterArray(material, editorOnly, "VectorParameterValues"))
         {
             var value = entry.Struct.GetOrDefault<FLinearColor>("ParameterValue");
             parameters.Add(new MaterialParameter(entry.Name,
@@ -334,7 +383,7 @@ public static class MaterialGraphBuilder
                 EMaterialNodeKind.Vector, null));
         }
 
-        foreach (var entry in ReadParameterArray(material, "TextureParameterValues"))
+        foreach (var entry in ReadParameterArray(material, editorOnly, "TextureParameterValues"))
         {
             string name = null, path = null;
             if (entry.Struct.TryGetValue(out FPackageIndex texture, "ParameterValue") && !texture.IsNull)
@@ -346,10 +395,23 @@ public static class MaterialGraphBuilder
             parameters.Add(new MaterialParameter(entry.Name, name ?? "None", EMaterialNodeKind.Texture, path));
         }
 
-        if (material is UMaterialInstance { StaticParameters: not null } instance)
+        var staticParameters = ReadStaticParameters(material, editorOnly);
+        if (staticParameters != null)
         {
-            foreach (var (name, value) in ReadStaticSwitches(instance))
-                parameters.Add(new MaterialParameter(name, value ? "true" : "false", EMaterialNodeKind.Switch, null));
+            foreach (var entry in staticParameters.StaticSwitchParameters ?? [])
+            {
+                if (string.IsNullOrEmpty(entry.Name) || entry.Name == "None") continue;
+
+                parameters.Add(new MaterialParameter(entry.Name, entry.Value ? "true" : "false", EMaterialNodeKind.Switch, null));
+            }
+
+            foreach (var entry in staticParameters.StaticComponentMaskParameters ?? [])
+            {
+                if (string.IsNullOrEmpty(entry.Name) || entry.Name == "None") continue;
+
+                var mask = $"{(entry.R ? 'R' : '-')}{(entry.G ? 'G' : '-')}{(entry.B ? 'B' : '-')}{(entry.A ? 'A' : '-')}";
+                parameters.Add(new MaterialParameter(entry.Name, mask, EMaterialNodeKind.Mask, null));
+            }
         }
 
         return parameters.OrderBy(parameter => parameter.Kind).ThenBy(parameter => parameter.Name, StringComparer.OrdinalIgnoreCase);
@@ -357,10 +419,12 @@ public static class MaterialGraphBuilder
 
     private readonly record struct ParameterEntry(string Name, FStructFallback Struct);
 
-    private static IEnumerable<ParameterEntry> ReadParameterArray(UUnrealMaterial material, string propertyName)
+    private static IEnumerable<ParameterEntry> ReadParameterArray(UUnrealMaterial material, UObject editorOnly, string propertyName)
     {
         var entries = new List<ParameterEntry>();
-        if (!material.TryGetValue(out FStructFallback[] values, propertyName)) return entries;
+        if (!material.TryGetValue(out FStructFallback[] values, propertyName) &&
+            (editorOnly == null || !editorOnly.TryGetValue(out values, propertyName)))
+            return entries;
 
         foreach (var value in values)
         {
@@ -376,27 +440,13 @@ public static class MaterialGraphBuilder
         return entries;
     }
 
-    private static IEnumerable<(string Name, bool Value)> ReadStaticSwitches(UMaterialInstance instance)
+    private static FStaticParameterSet ReadStaticParameters(UUnrealMaterial material, UObject editorOnly)
     {
-        var switches = new List<(string, bool)>();
-        var staticParameters = instance.GetOrDefault<FStructFallback>("StaticParameters") ??
-                               instance.GetOrDefault<FStructFallback>("StaticParametersRuntime");
+        if (editorOnly is UMaterialInstanceEditorOnlyData { StaticParameters: not null } data) return data.StaticParameters;
+        if (editorOnly != null && editorOnly.TryGetValue(out FStructFallback fallback, "StaticParameters"))
+            return new FStaticParameterSet(fallback);
 
-        if (staticParameters == null || !staticParameters.TryGetValue(out FStructFallback[] entries, "StaticSwitchParameters"))
-            return switches;
-
-        foreach (var entry in entries)
-        {
-            var name = entry.TryGetValue(out FStructFallback info, "ParameterInfo")
-                ? info.GetOrDefault<FName>("Name").Text
-                : entry.GetOrDefault<FName>("ParameterName").Text;
-
-            if (string.IsNullOrEmpty(name) || name == "None") continue;
-
-            switches.Add((name, entry.GetOrDefault<bool>("Value")));
-        }
-
-        return switches;
+        return (material as UMaterialInstance)?.StaticParameters;
     }
 
     /// <summary>
