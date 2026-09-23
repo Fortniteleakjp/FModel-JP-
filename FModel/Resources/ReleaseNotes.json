@@ -1,6 +1,31 @@
 {
   "releases": [
     {
+      "version": "5.9.1",
+      "tag": "5.9.1.0",
+      "date": "2026-09-24",
+      "title": {
+        "en": "Search Fix and More Detailed Logs",
+        "ja": "検索の不具合修正・ログの強化"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "The log now records the main settings at startup, the settings changed when the settings window closes, and each search (text, options, number of results and time taken). Keys, tokens and endpoints are hidden and the user folder is left out of paths, so the log can be shared with a bug report.",
+            "ja": "ログに、起動時の主な設定、設定画面で変更した項目、検索の内容 (検索語・オプション・ヒット件数・かかった時間) を記録するようにしました。AES キー・トークン・エンドポイントは伏せ、パスのユーザーフォルダも除いているので、不具合報告にそのまま添付できます。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Search could list every file whatever was typed (unrelated results for \"BP_\", all files for a word that matches nothing) when typing right after opening the search window.",
+            "ja": "検索ウィンドウを開いた直後に入力すると、何を検索しても全ファイルが表示されることがある問題を修正しました (「BP_」で関係ないものが出る、存在しない語でも全ファイルが出る)。"
+          }
+        }
+      ]
+    },
+    {
       "version": "5.9.0",
       "tag": "5.9.0.0",
       "date": "2026-09-24",
