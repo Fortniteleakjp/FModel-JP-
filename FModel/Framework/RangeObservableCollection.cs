@@ -20,8 +20,7 @@ public sealed class RangeObservableCollection<T> : ObservableCollection<T>
 
     public void AddRange(IEnumerable<T> list)
     {
-        if (list == null)
-            throw new ArgumentNullException(nameof(list));
+        ArgumentNullException.ThrowIfNull(list);
 
         var changed = false;
         foreach (var item in list)
@@ -42,6 +41,24 @@ public sealed class RangeObservableCollection<T> : ObservableCollection<T>
     /// Adds an item while constructing a collection that has not been published to a binding yet.
     /// </summary>
     public void AddWithoutNotification(T item) => Items.Add(item);
+
+    public void ReplaceRange(IEnumerable<T> collection)
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+
+        var items = collection as IList<T> ?? [.. collection];
+
+        CheckReentrancy();
+
+        Items.Clear();
+
+        foreach (var item in items)
+            Items.Add(item);
+
+        OnPropertyChanged(new PropertyChangedEventArgs(nameof(Count)));
+        OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+    }
 
     public void SetSuppressionState(bool state)
     {

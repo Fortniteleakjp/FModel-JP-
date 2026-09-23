@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Views.Resources.Controls;
@@ -7,47 +6,61 @@ using Serilog;
 
 namespace FModel.ViewModels.Commands;
 
-public class GoToCommand : ViewModelCommand<CustomDirectoriesViewModel>
+public class GoToCommand(CustomDirectoriesViewModel contextViewModel) : ViewModelCommand<CustomDirectoriesViewModel>(contextViewModel)
 {
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
 
-    public GoToCommand(CustomDirectoriesViewModel contextViewModel) : base(contextViewModel)
-    {
-    }
-
-    public override async void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
+    public override void Execute(CustomDirectoriesViewModel contextViewModel, object parameter)
     {
         if (parameter is not string s || string.IsNullOrEmpty(s)) return;
 
-        await JumpToAsync(s);
+        var folder = JumpTo(s);
+        if (folder != null)
+        {
+            MainWindow.Instance.SelectFolder(folder);
+        }
     }
 
-    public async Task<TreeItem> JumpToAsync(string directory)
+    public TreeItem JumpTo(string directory)
     {
-        _applicationView.SelectedLeftTabIndex = 1; // folders tab
-        if (!_applicationView.CUE4Parse.AssetsFolder.TryGetFolder(directory, out var folder))
-        {
-            Log.Warning("Go To: folder {Directory} was not found", directory);
-            FLogger.Append(ELog.Warning, () =>
-                FLogger.Text($"Folder '{directory}' was not found in the loaded archives", Constants.WHITE, true));
+        _applicationView.SelectedLeftTabIndex = 1;
+
+        var current = _applicationView.CUE4Parse.AssetsFolder.Folders;
+        if (current.Count == 0)
             return null;
+
+        var folders = directory.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        TreeItem result = null;
+        for (var i = 0; i < folders.Length; i++)
+        {
+            result = null;
+
+            foreach (var folder in current)
+            {
+                if (!folder.Header.Equals(folders[i], i == 0 ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+                    continue;
+
+                result = folder;
+                break;
+            }
+
+            if (result == null)
+            {
+                Log.Warning("Go To: folder {Directory} was not found", directory);
+                FLogger.Append(ELog.Warning, () =>
+                    FLogger.Text($"Folder '{directory}' was not found in the loaded archives", Constants.WHITE, true));
+                return null;
+            }
+
+            current = result.Folders;
         }
 
-        // Always walk the realized containers. Setting IsSelected on the model alone does nothing
-        // while the container is virtualized, and the selection then fires later, whenever WPF
-        // happens to realize it (the "sudden jump" after an unrelated action).
-        var ancestors = new Stack<TreeItem>();
-        for (var ancestor = folder; ancestor != null; ancestor = ancestor.Parent)
-            ancestors.Push(ancestor);
+        if (result != null)
+        {
+            _applicationView.CUE4Parse.AssetsFolder.Reveal(result);
+        }
 
-        var path = new List<TreeItem>(ancestors.Count);
-        while (ancestors.TryPop(out var ancestor))
-            path.Add(ancestor);
-
-        if (await MainWindow.YesWeCats.SelectFolderAsync(path))
-            return folder;
-
-        Log.Warning("Go To: could not select {Directory} (cancelled or timed out)", directory);
-        return null;
+        return result;
     }
 }

@@ -107,21 +107,11 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "ToolBox_Open_Logs_Directory":
                 OpenDirectorySafe(Path.Combine(UserSettings.Default.OutputDirectory, "Logs"), "Logs");
                 break;
-            // case "ToolBox_Expand_All":
-            //     await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
-            //     {
-            //         SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, true, cancellationToken);
-            //     });
-            //     break;
             case "ToolBox_Collapse_All":
-                await ApplicationService.ThreadWorkerView.Begin(cancellationToken =>
-                {
-                    SetFoldersIsExpanded(contextViewModel.CUE4Parse.AssetsFolder, false, cancellationToken);
-                });
+                contextViewModel.CUE4Parse.AssetsFolder.CollapseAll();
                 break;
             case TreeItem selectedFolder:
-                selectedFolder.IsSelected = false;
-                selectedFolder.IsSelected = true;
+                MainWindow.Instance.SelectFolder(selectedFolder);
                 break;
         }
     }
@@ -148,44 +138,6 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
         catch (Exception e)
         {
             FLogger.Append(ELog.Error, () => FLogger.Text($"Could not open the \"{label}\" directory: {e.Message}", Constants.WHITE, true));
-        }
-    }
-
-    private void SetFoldersIsExpanded(AssetsFolderViewModel root, bool expand, CancellationToken cancellationToken)
-    {
-        var nodes = new LinkedList<TreeItem>();
-        foreach (TreeItem folder in root.Folders)
-            nodes.AddLast(folder);
-
-        var current = nodes.First;
-        while (current != null)
-        {
-            var folder = current.Value;
-
-            // Collapse top-down (reduce layout updates)
-            if (!expand && folder.IsExpanded)
-            {
-                folder.IsExpanded = false;
-                Thread.Yield();
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-
-            foreach (var child in folder.Folders)
-            {
-                nodes.AddLast(child);
-            }
-
-            current = current.Next;
-        }
-
-        if (!expand) return;
-
-        // Expand bottom-up (reduce layout updates)
-        for (var node = nodes.Last; node != null; node = node.Previous)
-        {
-            node.Value.IsExpanded = true;
-            Thread.Yield();
-            cancellationToken.ThrowIfCancellationRequested();
         }
     }
 }

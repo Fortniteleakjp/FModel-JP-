@@ -27,7 +27,7 @@ namespace FModel;
 /// </summary>
 public partial class MainWindow
 {
-    public static MainWindow YesWeCats;
+    public static MainWindow Instance => (MainWindow) Application.Current.MainWindow;
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
@@ -52,7 +52,7 @@ public partial class MainWindow
             else if (LeftTabControl.SelectedIndex == 1 && AssetsFolderName.SelectedItem is TreeItem { Parent: TreeItem parent })
             {
                 AssetsFolderName.Focus();
-                parent.IsSelected = true;
+                SelectFolder(parent);
             }
         }));
 
@@ -67,7 +67,6 @@ public partial class MainWindow
         AssetsListName.SelectionChanged += (_, e) => SyncSelection(AssetsExplorer, e);
 
         FLogger.Logger = LogRtbName;
-        YesWeCats = this;
     }
 
     // Hack to sync selection between packages tab and explorer
@@ -272,7 +271,7 @@ public partial class MainWindow
                 DirectoryFilesListBox.Focus();
                 break;
             case 1:
-                AssetsFolderName.Focus();
+                AssetsFolderName.FocusSelection();
                 break;
             case 2:
                 AssetsListName.Focus();
@@ -300,12 +299,7 @@ public partial class MainWindow
         }
     }
 
-    private void OnAssetsTreeMouseDoubleClick(object sender, MouseButtonEventArgs e)
-    {
-        if (sender is not TreeView { SelectedItem: TreeItem treeItem } || treeItem.Folders.Count > 0) return;
-
-        _applicationView.SelectedLeftTabIndex++;
-    }
+    private void OnFolderOpenAssets(object sender, EventArgs e) => _applicationView.SelectedLeftTabIndex = 2;
 
     private void OnPreviewTexturesToggled(object sender, RoutedEventArgs e) => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
     private void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
@@ -316,133 +310,56 @@ public partial class MainWindow
         if (sender is not ItemContainerGenerator { Status: GeneratorStatus.ContainersGenerated } generator)
             return;
 
-        var foundVisibleItem = false;
-        var itemCount = generator.Items.Count;
+        var list = ReferenceEquals(generator, AssetsExplorer.ItemContainerGenerator) ? AssetsExplorer
+            : ReferenceEquals(generator, AssetsListExplorer.ItemContainerGenerator) ? AssetsListExplorer
+            : AssetsListName;
 
-        for (var i = 0; i < itemCount; i++)
+        if (!list.IsVisible || list.FindVisualChild<VirtualizingPanel>() is not { } panel)
+            return;
+
+        foreach (var container in panel.Children.OfType<ListBoxItem>())
         {
-            var container = generator.ContainerFromIndex(i);
-            if (container == null)
+            if (container is FrameworkElement { IsVisible: true, DataContext: GameFileViewModel file })
             {
-                if (foundVisibleItem) break; // we're past the visible range already
-                continue; // keep scrolling to find visible items
-            }
-
-            if (container is FrameworkElement { IsVisible: true } && generator.Items[i] is GameFileViewModel file)
-            {
-                foundVisibleItem = true;
                 file.OnIsVisible();
             }
         }
     }
 
-    public void RefreshVisibleAssetPreviews()
-        => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
-
-    private int _folderNavigationId;
-
-    public async Task<bool> SelectFolderAsync(IReadOnlyList<TreeItem> path)
+    private void OnAssetsTreeSelectedItemChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (path.Count == 0)
-            return false;
-
-        // A newer navigation, or the user selecting another folder while this one is still
-        // waiting for containers, supersedes it. Without this a slow navigation could finish
-        // seconds later and suddenly steal the selection from whatever the user did meanwhile.
-        var navigationId = ++_folderNavigationId;
-        var selectedAtStart = AssetsFolderName.SelectedItem;
-        bool IsStale() => navigationId != _folderNavigationId || !ReferenceEquals(AssetsFolderName.SelectedItem, selectedAtStart);
-
-        // Set the complete model path first. A virtualized container will pick up the
-        // expansion state whenever WPF realizes it, independently of UI timing.
-        for (var i = 0; i < path.Count - 1; i++)
-            path[i].IsExpanded = true;
-
-        ItemsControl parent = AssetsFolderName;
-        TreeViewItem container = null;
-
-        for (var i = 0; i < path.Count; i++)
-        {
-            container = await GetTreeViewItemAsync(parent, path[i], IsStale);
-            if (container == null)
-                return false;
-
-            // Only ancestors must be expanded. Expanding the target itself can realize a
-            // large child subtree even though Go To never needs to display those children.
-            // SetCurrentValue keeps the style's TwoWay binding alive: a local value would detach
-            // the container from its TreeItem and travel with it when the container is recycled.
-            if (i < path.Count - 1)
-            {
-                container.SetCurrentValue(TreeViewItem.IsExpandedProperty, true);
-            }
-
-            parent = container;
-        }
-
-        // Toggle so a stale IsSelected=true left on the model still raises a selection change.
-        container.SetCurrentValue(TreeViewItem.IsSelectedProperty, false);
-        container.SetCurrentValue(TreeViewItem.IsSelectedProperty, true);
-        TreeViewItemBehavior.BringHeaderIntoView(container);
-        await Dispatcher.InvokeAsync(static () => { }, DispatcherPriority.Background);
-        return ReferenceEquals(AssetsFolderName.SelectedItem, path[^1]);
-    }
-
-    private async Task<TreeViewItem> GetTreeViewItemAsync(ItemsControl parent, TreeItem item, Func<bool> isStale)
-    {
-        // FoldersView is bound with IsAsync=True. For large sibling collections its sorted
-        // view can take substantially longer than a fixed number of dispatcher turns.
-        var timeoutAt = DateTime.UtcNow + TimeSpan.FromSeconds(15);
-        while (DateTime.UtcNow < timeoutAt && !isStale())
-        {
-            parent.ApplyTemplate();
-            var presenter = parent.Template.FindName("ItemsHost", parent) as ItemsPresenter ??
-                            FindVisualChild<ItemsPresenter>(parent);
-            if (presenter == null)
-            {
-                parent.UpdateLayout();
-                presenter = FindVisualChild<ItemsPresenter>(parent);
-            }
-
-            presenter?.ApplyTemplate();
-            var index = parent.Items.IndexOf(item);
-            if (index >= 0 && presenter != null && VisualTreeHelper.GetChildrenCount(presenter) > 0 &&
-                VisualTreeHelper.GetChild(presenter, 0) is NavigableVirtualizingStackPanel panel)
-            {
-                _ = panel.Children; // Ensure that the item generator is connected.
-                panel.BringItemIntoView(index);
-                parent.UpdateLayout();
-
-                if (parent.ItemContainerGenerator.ContainerFromIndex(index) is TreeViewItem container)
-                    return container;
-            }
-
-            await Task.Delay(1);
-        }
-
-        return null;
-    }
-
-    private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
-    {
-        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
-        {
-            var child = VisualTreeHelper.GetChild(parent, i);
-            if (child is T match)
-                return match;
-
-            if (FindVisualChild<T>(child) is { } descendant)
-                return descendant;
-        }
-
-        return null;
-    }
-
-    private void OnAssetsTreeSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-    {
-        if (sender is not TreeView { SelectedItem: TreeItem }) return;
+        if (sender is not ListBox { SelectedItem: TreeItem })
+            return;
 
         _applicationView.IsAssetsExplorerVisible = true;
         _applicationView.SelectedLeftTabIndex = 1;
+    }
+
+    public void SelectFolder(TreeItem folder)
+    {
+        _applicationView.SelectedLeftTabIndex = 1;
+        AssetsFolderName.SelectFolder(folder);
+        AssetsFolderName.FocusSelection();
+    }
+
+    public void SelectAsset(GameFileViewModel asset)
+    {
+        var useExplorer = UserSettings.Default.FeaturePreviewNewAssetExplorer;
+
+        _applicationView.SelectedLeftTabIndex = useExplorer ? 1 : 2;
+        if (useExplorer)
+        {
+            _applicationView.IsAssetsExplorerVisible = true;
+        }
+
+        var list = useExplorer ? UserSettings.Default.ExplorerViewMode == EExplorerViewMode.List ? AssetsListExplorer : AssetsExplorer : AssetsListName;
+        list.GetBindingExpression(ItemsControl.ItemsSourceProperty)?.UpdateTarget();
+        list.UnselectAll();
+        list.SelectedItem = asset;
+        UpdateLayout();
+        var container = list.RevealItem(asset);
+        Activate();
+        container?.Focus();
     }
 
     private async void OnAssetsListMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -488,24 +405,18 @@ public partial class MainWindow
                 await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.ExtractSelected(cancellationToken, [file.Asset]));
                 break;
             case TreeItem folder:
+                e.Handled = true;
                 ApplicationService.ApplicationView.SelectedLeftTabIndex = 1;
-
-                var parent = folder.Parent;
-                while (parent != null)
-                {
-                    parent.IsExpanded = true;
-                    parent = parent.Parent;
-                }
 
                 var childFolder = folder;
                 while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Count == 0)
                 {
-                    childFolder.IsExpanded = true;
+                    _applicationView.CUE4Parse.AssetsFolder.Expand(childFolder);
                     childFolder = childFolder.Folders[0];
                 }
 
-                childFolder.IsExpanded = true;
-                childFolder.IsSelected = true;
+                _applicationView.CUE4Parse.AssetsFolder.Expand(childFolder);
+                SelectFolder(childFolder);
                 break;
         }
     }
@@ -515,34 +426,12 @@ public partial class MainWindow
         _applicationView.IsAssetsExplorerVisible = false;
     }
 
-    private async void OnFoldersPreviewKeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Key != Key.Enter || sender is not TreeView treeView || treeView.SelectedItem is not TreeItem folder)
-            return;
-
-        if ((folder.IsExpanded || folder.Folders.Count == 0) && folder.AssetsList.Count > 0)
-        {
-            _applicationView.SelectedLeftTabIndex++;
-            return;
-        }
-
-        var childFolder = folder;
-        while (childFolder.Folders.Count == 1 && childFolder.AssetsList.Count == 0)
-        {
-            childFolder.IsExpanded = true;
-            childFolder = childFolder.Folders[0];
-        }
-
-        childFolder.IsExpanded = true;
-        childFolder.IsSelected = true;
-    }
-
     private void OnExportHotkey(string trigger)
     {
         if (!_applicationView.Status.IsReady || Keyboard.FocusedElement is not DependencyObject focused)
             return;
 
-        IList selection = focused.FindAncestor<TreeView>() == AssetsFolderName
+        IList selection = focused.FindAncestor<ListBox>() == AssetsFolderName
             ? new[] { AssetsFolderName.SelectedItem }
             : focused.FindAncestor<ListBox>()?.SelectedItems;
 

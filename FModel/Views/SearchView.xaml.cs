@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -161,52 +160,41 @@ public partial class SearchView
         await CurrentViewModel?.CycleSortSizeMode();
     }
 
-    private async void OnAssetDoubleClick(object sender, RoutedEventArgs e)
+    private void OnAssetDoubleClick(object sender, RoutedEventArgs e)
     {
         if (CurrentListView?.SelectedItem is not GameFile entry)
             return;
 
-        await NavigateToAssetAndSelect(entry);
+        NavigateToAssetAndSelect(entry);
     }
-    private async void OnGoToRefPackage(object sender, RoutedEventArgs e)
+    private void OnGoToRefPackage(object sender, RoutedEventArgs e)
     {
         if (_refViewModel.RefFile is not GameFile entry)
             return;
 
-        await NavigateToAssetAndSelect(entry);
+        NavigateToAssetAndSelect(entry);
     }
 
-    private async Task NavigateToAssetAndSelect(GameFile entry)
+    private void NavigateToAssetAndSelect(GameFile entry)
     {
-        _applicationView.IsAssetPreviewLoadingSuspended = true;
-        try
-        {
-            WindowState = WindowState.Minimized;
-            MainWindow.YesWeCats.AssetsListName.ClearValue(ItemsControl.ItemsSourceProperty);
-            var folder = await _applicationView.CustomDirectories.GoToCommand.JumpToAsync(entry.Directory);
-            if (folder == null)
-                return;
+        WindowState = WindowState.Minimized;
 
-            MainWindow.YesWeCats.Activate();
+        var folder = _applicationView.CustomDirectories.GoToCommand.JumpTo(entry.Directory);
+        if (folder == null)
+            return;
 
-            while (MainWindow.YesWeCats.AssetsListName.Items.Count < folder.AssetsList.Count)
-                await Task.Delay(10);
+        folder.SearchText = string.Empty;
+        folder.SelectedCategory = EAssetCategory.All;
 
-            ApplicationService.ApplicationView.SelectedLeftTabIndex = 2; // assets tab
-            GameFileViewModel vm;
-            while ((vm = MainWindow.YesWeCats.AssetsListName.Items
-                    .OfType<GameFileViewModel>()
-                    .FirstOrDefault(x => x.Asset == entry)) == null)
-                await Task.Delay(10);
+        var mainWindow = MainWindow.Instance;
+        mainWindow.Activate();
+        mainWindow.SelectFolder(folder);
 
-            MainWindow.YesWeCats.AssetsListName.SelectedItem = vm;
-            MainWindow.YesWeCats.AssetsListName.ScrollIntoView(vm);
-        }
-        finally
-        {
-            _applicationView.IsAssetPreviewLoadingSuspended = false;
-            MainWindow.YesWeCats.RefreshVisibleAssetPreviews();
-        }
+        var vm = folder.AssetsList.Assets.FirstOrDefault(x => x.Asset == entry);
+        if (vm == null)
+            return;
+
+        mainWindow.SelectAsset(vm);
     }
 
     private async void OnAssetExtract(object sender, RoutedEventArgs e)
@@ -217,7 +205,7 @@ public partial class SearchView
         WindowState = WindowState.Minimized;
         await _threadWorkerView.Begin(cancellationToken => _applicationView.CUE4Parse.Extract(cancellationToken, entry, true));
 
-        MainWindow.YesWeCats.Activate();
+        MainWindow.Instance.Activate();
     }
 
     private void OnWindowKeyDown(object sender, KeyEventArgs e)

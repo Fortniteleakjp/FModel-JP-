@@ -146,7 +146,7 @@ public static class MaterialGraphBuilder
         while (current != null && chain.Count < _MAX_CHAIN)
         {
             chain.Add(current);
-            current = (current as UMaterialInstance)?.Parent;
+            current = (current as UMaterialInstance)?.Parent?.Load<UUnrealMaterial>();
         }
 
         chain.Reverse(); // base material first

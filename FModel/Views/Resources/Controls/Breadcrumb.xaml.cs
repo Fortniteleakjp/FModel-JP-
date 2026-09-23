@@ -89,13 +89,13 @@ public partial class Breadcrumb
         }
     }
 
-    private async void OnMouseClick(object sender, MouseButtonEventArgs e)
+    private void OnMouseClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is not Border { DataContext: string pathAtThisPoint, Tag: int index }) return;
 
         var directory = string.Join('/', pathAtThisPoint.Split('/').Take(index));
         if (pathAtThisPoint.Equals(directory)) return;
 
-        await ApplicationService.ApplicationView.CustomDirectories.GoToCommand.JumpToAsync(directory);
+        ApplicationService.ApplicationView.CustomDirectories.GoToCommand.Execute(directory);
     }
 }
