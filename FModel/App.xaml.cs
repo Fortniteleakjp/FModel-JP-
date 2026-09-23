@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using CUE4Parse;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Services.Verse;
 using FModel.Settings;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
@@ -79,6 +80,7 @@ public partial class App
         AttachConsole(-1);
 #endif
         base.OnStartup(e);
+        VerseExportOverrides.Register();
 
         try
         {

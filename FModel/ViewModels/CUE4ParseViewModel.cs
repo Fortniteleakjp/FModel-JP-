@@ -1381,7 +1381,9 @@ public partial class CUE4ParseViewModel : ViewModel
             {
                 if (!TabControl.CanAddTabs) return false;
 
-                var readableCode = verseDigest.ReadableCode;
+                // not verseDigest.ReadableCode: it throws when the digest code was stripped
+                var digestCode = verseDigest.GetOrDefault<byte[]>("DigestCode");
+                var readableCode = digestCode is { Length: > 0 } ? Encoding.UTF8.GetString(digestCode) : string.Empty;
                 if (string.IsNullOrEmpty(readableCode))
                 {
                     // the digest code is stripped from some cooked packages, keep looking for

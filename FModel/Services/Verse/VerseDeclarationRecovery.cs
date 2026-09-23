@@ -445,7 +445,7 @@ public static class VerseDeclarationRecovery
 
             try
             {
-                if (pointer.Object?.Value is UVerseDebugData { DebugData: not null } debug)
+                if (pointer.Object?.Value is FixedVerseDebugData { DebugData: not null } debug)
                     return Snapshot(debug.DebugData);
             }
             catch
