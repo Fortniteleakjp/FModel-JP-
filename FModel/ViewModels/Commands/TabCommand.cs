@@ -53,6 +53,9 @@ public class TabCommand : ViewModelCommand<TabItem>
             case "Assets_Decompile":
                 _applicationView.CUE4Parse.Decompile(tabViewModel.Entry);
                 break;
+            case "Assets_Verse_Declarations":
+                await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.RecoverVerseDeclarations(tabViewModel.Entry));
+                break;
             case "Save_Data":
                 await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.ExportData(tabViewModel.Entry));
                 break;

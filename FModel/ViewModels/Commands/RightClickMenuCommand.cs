@@ -65,6 +65,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         References,
         ReferenceViewer,
         Decompile,
+        VerseDeclarations,
         TableViewer,
         WorldOutliner,
         MaterialGraph,
@@ -112,6 +113,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_Diff_Pick_Folder" => (EAction.Show, EShowAssetType.DiffPickFolder, EBulkType.None),
             "Assets_Diff_Previous_Version" => (EAction.Show, EShowAssetType.DiffPreviousVersion, EBulkType.None),
             "Assets_Decompile" => (EAction.Show, EShowAssetType.Decompile, EBulkType.Code),
+            "Assets_Verse_Declarations" => (EAction.Show, EShowAssetType.VerseDeclarations, EBulkType.None),
             "Assets_Table_Viewer" => (EAction.Show, EShowAssetType.TableViewer, EBulkType.None),
             "Assets_World_Outliner" => (EAction.Show, EShowAssetType.WorldOutliner, EBulkType.None),
             "Assets_Material_Graph" => (EAction.Show, EShowAssetType.MaterialGraph, EBulkType.None),
@@ -271,6 +273,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     EShowAssetType.JSON => entry => contextViewModel.CUE4Parse.Extract(cancellationToken, entry, true),
                     EShowAssetType.Metadata => entry => contextViewModel.CUE4Parse.ShowMetadata(entry),
                     EShowAssetType.Decompile => entry => contextViewModel.CUE4Parse.Decompile(entry),
+                    EShowAssetType.VerseDeclarations => entry => contextViewModel.CUE4Parse.RecoverVerseDeclarations(entry),
                     EShowAssetType.References => entry => contextViewModel.CUE4Parse.FindReferences(entry),
                     _ => throw new ArgumentOutOfRangeException("Unsupported asset action type."),
                 };

@@ -77,6 +77,7 @@
     <system:String x:Key="UI_CustomizeTheDirectoryOfMoreOutput">Customize the directory of more output folders</system:String>
     <system:String x:Key="UI_Decompile">Decompile</system:String>
     <system:String x:Key="UI_DecompileBlueprint">Decompile Blueprint</system:String>
+    <system:String x:Key="UI_RecoverVerseDeclarations">Recover Verse Declarations</system:String>
     <system:String x:Key="UI_DecompileBlueprintToPseudoC">Decompile Blueprint to Pseudo C++</system:String>
     <system:String x:Key="UI_DecompileDisassembleCompiledLuaFilesWith">Decompile/Disassemble compiled lua files with an unluac.</system:String>
     <system:String x:Key="UI_DecompileLua">Decompile Lua</system:String>

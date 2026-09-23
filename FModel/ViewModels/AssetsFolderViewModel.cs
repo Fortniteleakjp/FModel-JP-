@@ -12,6 +12,7 @@ using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Services.Verse;
 
 namespace FModel.ViewModels;
 
@@ -225,12 +226,15 @@ public class AssetsFolderViewModel
         if (entries == null || entries.Count == 0)
             return;
 
+        var displayEntries = RecoveredVerseGameFile.AddRecoveredFiles(
+            entries, ApplicationService.ApplicationView.CUE4Parse.Provider);
+
         var treeItems = new List<TreeItem>();
         var foldersByPath = new Dictionary<string, TreeItem>(StringComparer.Ordinal);
         var folderLookup = foldersByPath.GetAlternateLookup<ReadOnlySpan<char>>();
         TreeItem previousFolder = null;
 
-        foreach (var entry in entries)
+        foreach (var entry in displayEntries)
         {
             var path = entry.Path.AsSpan();
             var pathEnd = path.Length;
@@ -318,7 +322,7 @@ public class AssetsFolderViewModel
                 (treeItems.FirstOrDefault(x => x.Header.Equals(projectName, StringComparison.OrdinalIgnoreCase)) ?? treeItems[0]).IsSelected = true;
             }
 
-            ApplicationService.ApplicationView.CUE4Parse.SearchVm.ChangeCollection(entries);
+            ApplicationService.ApplicationView.CUE4Parse.SearchVm.ChangeCollection(displayEntries);
         });
     }
 

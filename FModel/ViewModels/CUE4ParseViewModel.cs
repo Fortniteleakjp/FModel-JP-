@@ -78,6 +78,7 @@ using FModel.Creator;
 using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Services.Verse;
 using FModel.Services.Athena;
 using FModel.Settings;
 using FModel.Views;
@@ -747,6 +748,15 @@ public partial class CUE4ParseViewModel : ViewModel
         var saveDecompiled = HasFlag(bulk, EBulkType.Code);
         switch (entry.Extension)
         {
+            case "verse" when entry is RecoveredVerseGameFile:
+            {
+                // Recovered Verse files are virtual files backed by the cooked _Verse package.
+                // Opening one must run its lazy reconstruction instead of falling through the
+                // ordinary asset switch, which otherwise leaves the editor document empty.
+                TabControl.SelectedTab.TitleExtra = "Verse";
+                TabControl.SelectedTab.SetDocumentText(Encoding.UTF8.GetString(entry.Read()), saveProperties, updateUi);
+                break;
+            }
             case "uasset":
             case "umap":
             {
@@ -1781,6 +1791,43 @@ public partial class CUE4ParseViewModel : ViewModel
         });
     }
 
+
+    /// <summary>
+    /// recovers the Verse declarations cooked into a package and shows them in a new tab
+    /// </summary>
+    public bool RecoverVerseDeclarations(GameFile entry, bool addTab = true)
+    {
+        if (TabControl.CanAddTabs && addTab)
+        {
+            ApplicationService.ApplicationView.IsAssetsExplorerVisible = false;
+            TabControl.AddTab(entry);
+        }
+        else TabControl.SelectedTab.SoftReset(entry);
+
+        TabControl.SelectedTab.TitleExtra = "Verse";
+        TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
+
+        // RecoveredVerseGameFile is a virtual text file backed by the cooked _Verse.uasset.
+        // It is intentionally not a UE package itself, so passing it to Provider.LoadPackage()
+        // throws "cannot load non-UE package". Its Read() method already performs the source-file
+        // specific Verse reconstruction; show that result directly instead.
+        if (entry is RecoveredVerseGameFile)
+        {
+            TabControl.SelectedTab.SetDocumentText(Encoding.UTF8.GetString(entry.Read()), false, false);
+            return true;
+        }
+
+        var package = Provider.LoadPackage(entry);
+        if (!VerseDeclarationRecovery.HasVerseTypes(package))
+        {
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text($"{entry.Name} does not hold any cooked Verse type", Constants.WHITE, true));
+            return false;
+        }
+
+        TabControl.SelectedTab.SetDocumentText(VerseDeclarationRecovery.FromPackage(package), false, false);
+        return true;
+    }
 
     public bool Decompile(GameFile entry, bool AddTab = true)
     {

@@ -77,6 +77,7 @@
     <system:String x:Key="UI_CustomizeTheDirectoryOfMoreOutput">Customize the directory of more output folders</system:String>
     <system:String x:Key="UI_Decompile">逆コンパイル</system:String>
     <system:String x:Key="UI_DecompileBlueprint">ブループリントを逆コンパイル</system:String>
+    <system:String x:Key="UI_RecoverVerseDeclarations">Verse 宣言を復元</system:String>
     <system:String x:Key="UI_DecompileBlueprintToPseudoC">ブループリントを擬似C++に逆コンパイル</system:String>
     <system:String x:Key="UI_DecompileDisassembleCompiledLuaFilesWith">コンパイル済み Lua ファイルを unluac で逆コンパイル／逆アセンブルします。</system:String>
     <system:String x:Key="UI_DecompileLua">Lua を逆コンパイル</system:String>
