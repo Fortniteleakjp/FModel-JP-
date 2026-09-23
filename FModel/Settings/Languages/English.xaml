@@ -246,6 +246,7 @@
     <system:String x:Key="UI_OnlineEvaluator">Online Evaluator</system:String>
     <system:String x:Key="UI_OpenAsTable">Open as Table</system:String>
     <system:String x:Key="UI_OpenMaterialGraph">Open Material Graph</system:String>
+    <system:String x:Key="UI_OpenBlueprintGraph">Open Blueprint Graph</system:String>
     <system:String x:Key="UI_OpenWorldOutliner">Open World Outliner</system:String>
     <system:String x:Key="UI_OpenAsset">Open Asset</system:String>
     <system:String x:Key="UI_OpenImage">Open Image</system:String>
@@ -334,6 +335,10 @@
     <system:String x:Key="UI_StreamedLevels">streamed levels</system:String>
     <system:String x:Key="UI_MaterialGraph">Material Graph</system:String>
     <system:String x:Key="UI_MaterialGraph_ResetZoom">Reset Zoom</system:String>
+    <system:String x:Key="UI_BlueprintGraph">Blueprint Graph</system:String>
+    <system:String x:Key="UI_BlueprintGraph_Fit">Fit</system:String>
+    <system:String x:Key="UI_BlueprintGraph_FilterFunctions">Filter functions...</system:String>
+    <system:String x:Key="UI_BlueprintGraph_FindNode">Find node...</system:String>
     <system:String x:Key="UI_TableViewer">Table Viewer</system:String>
     <system:String x:Key="UI_WorldOutliner">World Outliner</system:String>
     <system:String x:Key="UI_WorldOutliner_Filter">Filter actors...</system:String>

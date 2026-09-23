@@ -131,6 +131,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\ReleaseNotes.json" />
+    <EmbeddedResource Include="Resources\BlueprintNodeDatabase.json.gz" />
     <EmbeddedResource Include="Resources\Json.xshd" />
     <EmbeddedResource Include="Resources\Ini.xshd" />
     <EmbeddedResource Include="Resources\spline.vert" />

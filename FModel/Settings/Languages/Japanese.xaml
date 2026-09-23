@@ -246,6 +246,7 @@
     <system:String x:Key="UI_OnlineEvaluator">オンライン評価ツール</system:String>
     <system:String x:Key="UI_OpenAsTable">テーブルとして開く</system:String>
     <system:String x:Key="UI_OpenMaterialGraph">マテリアルグラフで開く</system:String>
+    <system:String x:Key="UI_OpenBlueprintGraph">ブループリントグラフで開く</system:String>
     <system:String x:Key="UI_OpenWorldOutliner">ワールドアウトライナで開く</system:String>
     <system:String x:Key="UI_OpenAsset">アセットを開く</system:String>
     <system:String x:Key="UI_OpenImage">画像を開く</system:String>
@@ -334,6 +335,10 @@
     <system:String x:Key="UI_StreamedLevels">ストリーミングレベル</system:String>
     <system:String x:Key="UI_MaterialGraph">マテリアルグラフ</system:String>
     <system:String x:Key="UI_MaterialGraph_ResetZoom">ズームを戻す</system:String>
+    <system:String x:Key="UI_BlueprintGraph">ブループリントグラフ</system:String>
+    <system:String x:Key="UI_BlueprintGraph_Fit">全体表示</system:String>
+    <system:String x:Key="UI_BlueprintGraph_FilterFunctions">関数を絞り込み...</system:String>
+    <system:String x:Key="UI_BlueprintGraph_FindNode">ノードを検索...</system:String>
     <system:String x:Key="UI_TableViewer">テーブルビューア</system:String>
     <system:String x:Key="UI_WorldOutliner">ワールドアウトライナ</system:String>
     <system:String x:Key="UI_WorldOutliner_Filter">アクターを絞り込み...</system:String>

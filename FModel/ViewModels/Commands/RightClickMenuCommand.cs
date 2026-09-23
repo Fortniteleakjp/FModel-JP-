@@ -69,6 +69,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         TableViewer,
         WorldOutliner,
         MaterialGraph,
+        BlueprintGraph,
         Diff,
         DiffPickFolder,
         DiffPreviousVersion,
@@ -117,6 +118,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_Table_Viewer" => (EAction.Show, EShowAssetType.TableViewer, EBulkType.None),
             "Assets_World_Outliner" => (EAction.Show, EShowAssetType.WorldOutliner, EBulkType.None),
             "Assets_Material_Graph" => (EAction.Show, EShowAssetType.MaterialGraph, EBulkType.None),
+            "Assets_Blueprint_Graph" => (EAction.Show, EShowAssetType.BlueprintGraph, EBulkType.None),
             "Assets_Athena_Profile" => (EAction.Show, EShowAssetType.AthenaProfile, EBulkType.None),
             "Assets_Athena_Queue_Add" => (EAction.Show, EShowAssetType.AthenaQueueAdd, EBulkType.None),
             "Assets_Athena_Queue_Remove" => (EAction.Show, EShowAssetType.AthenaQueueRemove, EBulkType.None),
@@ -194,6 +196,23 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     }
 
                     System.Windows.Application.Current.Dispatcher.Invoke(() => new MaterialGraphWindow(graph).Show());
+                    return;
+                }
+
+                if (showtype is EShowAssetType.BlueprintGraph)
+                {
+                    var entry = assets.FirstOrDefault();
+                    if (entry is null) return;
+
+                    var graph = BlueprintGraphWindow.Load(entry, cancellationToken);
+                    if (graph is null)
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text($"{entry.Name} is not a blueprint", Constants.WHITE, true));
+                        return;
+                    }
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => new BlueprintGraphWindow(graph).Show());
                     return;
                 }
 
