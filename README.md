@@ -33,6 +33,18 @@
   - 右クリックメニューまたはショートカットから利用可能
 - **Diff Tool**
   - アセットを以前のバージョンや別ビルドと比較
+- **ブループリントグラフ**
+  - ブループリントの関数と EventGraph を UE エディタのようなノードグラフで表示
+  - ノード名・ピン名はエディタと同じ表記（[ノード名データ](#ブループリントグラフのノード名データ)を参照）
+  - イベント / Branch / Cast To / Timeline / Delay / SpawnActor / Make Struct などのエディタ専用ノードを再現
+  - ダブルクリックで呼び出し先の関数へ移動、ノード検索、ズーム
+  - 利用には設定の「スクリプトバイトコードをシリアル化」を ON にする必要があります
+- **Verse 宣言の復元**
+  - クックされた Verse のクラス・構造体・列挙型を Verse コードとして復元
+  - 復元した `.verse` ファイルをエクスプローラーから直接開ける
+- **export のページ送り**
+  - export が 5000 個を超えるパッケージをページ単位で表示
+  - 1 ページあたりの export 数を設定で変更可能（1〜1000）
 - **Athena Profile**
   - 選択した Fortnite コスメティックから `profile_athena.json` を生成
   - フォルダ単位でコスメティックを収集
@@ -149,6 +161,48 @@ publish 後の実行ファイル:
 FModel\bin\Publish\FModel.exe
 ```
 
+## ブループリントグラフのノード名データ
+
+クックされたゲームにはエディタ用のメタデータ（関数の表示名、ピン名、純粋関数かどうかなど）が残っていません。
+ブループリントグラフでエディタと同じ名前を表示するため、次の 2 つのソースから作成したデータを
+`FModel/Resources/BlueprintNodeDatabase.json.gz` としてアプリに同梱しています。
+
+| ソース | 用途 |
+| --- | --- |
+| [Unreal Engine のソースコード](https://github.com/EpicGames/UnrealEngine/tree/ue6-main)（`ue6-main` ブランチ） | エンジン関数の `UFUNCTION` 宣言から、表示名（`DisplayName` / `CompactNodeTitle`）、引数名、`UPARAM` の表示名、非表示ピン、`static` / 純粋関数の判定を取得 |
+| [Dumpspace](https://dumpspace.spuckwaffel.com/)（[Spuckwaffel/dumpspace](https://github.com/Spuckwaffel/dumpspace) の Fortnite SDK ダンプ） | エンジンのソースにない Fortnite 独自のクラス・関数の引数とフラグ、クラスの継承関係、メンバー変数の型 |
+
+ノード名の決め方（`FName::NameToDisplayString`、`Target is ...` の表示、Cast To / Timeline / SpawnActor などの K2Node のタイトル）も、
+エンジンのソースコードの実装に合わせています。
+
+> [!NOTE]
+> - Unreal Engine のソースコードの閲覧には、Epic Games アカウントと GitHub アカウントの連携が必要です。
+> - Dumpspace のダンプはデータ取得時点のゲームビルドのものです。手元のゲームと引数がずれる関数は `Arg 1` のように表示されます。
+> - Fortnite 独自の関数はメタデータがないため、表示名は関数名から生成しています。
+
+### データの再生成
+
+ゲームやエンジンの更新に合わせてデータを作り直す場合は、`Tools/GenerateBlueprintNodeDatabase.py` を使用します。
+エンジンのソースはヘッダー（`Engine/Source/Runtime/**/*.h`、`Engine/Plugins/**/*.h`）だけあれば十分です。
+
+```powershell
+# Unreal Engine のヘッダーだけを取得（sparse checkout）
+git clone --filter=blob:none --no-checkout --depth 1 --branch ue6-main https://github.com/EpicGames/UnrealEngine.git ue
+git -C ue sparse-checkout init --no-cone
+Set-Content ue\.git\info\sparse-checkout "/Engine/Source/Runtime/**/*.h`n/Engine/Plugins/**/Classes/**/*.h`n/Engine/Plugins/**/Public/**/*.h"
+git -C ue checkout
+
+# Dumpspace の Fortnite ダンプを取得
+$base = "https://raw.githubusercontent.com/Spuckwaffel/dumpspace/refs/heads/main/Games/Unreal-Engine-5/Fortnite"
+Invoke-WebRequest "$base/FunctionsInfo.json.gz" -OutFile FunctionsInfo.json.gz
+Invoke-WebRequest "$base/ClassesInfo.json.gz" -OutFile ClassesInfo.json.gz
+
+# FModel/Resources/BlueprintNodeDatabase.json.gz を再生成
+python .\Tools\GenerateBlueprintNodeDatabase.py .\ue --dumpspace FunctionsInfo.json.gz --dumpspace-classes ClassesInfo.json.gz
+```
+
+生成元（エンジンのコミットと Dumpspace の更新日時）はデータ内の `source` に記録され、ブループリントグラフの画面下部にも表示されます。
+
 ## CUE4Parse
 
 `CUE4Parse/` は [FabianFG/CUE4Parse](https://github.com/FabianFG/CUE4Parse) を参照する Git submodule です。
@@ -175,6 +229,7 @@ git add CUE4Parse
 FModel-JP-/
 ├─ FModel/                  FModel-JP 本体
 ├─ CUE4Parse/               Unreal Engine 解析ライブラリ (submodule)
+├─ Tools/                   ブループリントのノード名データ生成スクリプト
 ├─ .github/workflows/       GitHub Actions / Release ビルド
 ├─ LICENSE                  GPL-3.0
 ├─ NOTICE                   サードパーティーライセンス・表記
@@ -189,7 +244,7 @@ FModel-JP-/
 - Runtime Identifier: `win-x64`
 - Platform Target: `x64`
 - UI: WPF
-- FModel-JP Version: `4.5`
+- FModel-JP Version: `5.9.0`
 
 変更を加えた場合は、少なくとも Release ビルドが通ることを確認してください。
 
@@ -201,6 +256,8 @@ dotnet build .\FModel\FModel.csproj -c Release --no-restore
 
 - [4sval/FModel](https://github.com/4sval/FModel) — FModel upstream
 - [FabianFG/CUE4Parse](https://github.com/FabianFG/CUE4Parse) — Unreal Engine archive / asset parsing
+- [EpicGames/UnrealEngine](https://github.com/EpicGames/UnrealEngine) — ブループリントグラフのノード名・ピン名（エンジン関数）と命名規則
+- [Spuckwaffel/dumpspace](https://github.com/Spuckwaffel/dumpspace) — ブループリントグラフの Fortnite 独自関数の引数・クラス継承情報
 - FModel / CUE4Parse および各依存ライブラリのすべてのコントリビューター
 
 FModel-JP は upstream の成果を尊重しつつ、日本語対応と独自機能を追加している派生版です。

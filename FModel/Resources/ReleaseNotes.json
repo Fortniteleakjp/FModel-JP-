@@ -1,6 +1,73 @@
 {
   "releases": [
     {
+      "version": "5.9.0",
+      "tag": "5.9.0.0",
+      "date": "2026-09-24",
+      "title": {
+        "en": "Blueprint Graph, Verse Recovery and Export Pages",
+        "ja": "ブループリントグラフ・Verse 復元・export ページ送り"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Blueprint Graph: shows the functions and EventGraph of a blueprint as editor-like nodes (right click > Open Blueprint Graph). Requires \"Serialize Script Bytecode\" in the settings.",
+            "ja": "ブループリントグラフ: ブループリントの関数と EventGraph を UE エディタのようなノードで表示します (右クリック > ブループリントグラフで開く)。設定の「スクリプトバイトコードをシリアル化」を ON にしてください。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Blueprint Graph: node and pin names follow the editor, engine functions from the Unreal Engine source (ue6-main) and Fortnite's own functions from the Dumpspace SDK dump.",
+            "ja": "ブループリントグラフ: ノード名・ピン名をエディタと同じ表記にしました。エンジンの関数は Unreal Engine のソース (ue6-main)、Fortnite 独自の関数は Dumpspace の SDK ダンプを元にしています。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Blueprint Graph: events, Branch, Sequence, Cast To, Timeline, Delay, SpawnActor, Create Widget, Make/Break Struct and event dispatchers are drawn as their editor nodes. Double click a node to jump to the function it calls, search nodes, pan and zoom.",
+            "ja": "ブループリントグラフ: イベント・Branch・Sequence・Cast To・Timeline・Delay・SpawnActor・Create Widget・Make/Break Struct・イベントディスパッチャーをエディタと同じノードで表示します。ダブルクリックで呼び出し先へ移動、ノード検索、ドラッグ移動とズームに対応しています。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Recover Verse Declarations: rebuilds the cooked Verse classes, structs and enums of a package as Verse code (right click menu). Recovered .verse files also show in the explorer.",
+            "ja": "Verse 宣言を復元: パッケージに含まれる Verse のクラス・構造体・列挙型を Verse コードとして復元します (右クリックメニュー)。復元した .verse ファイルはエクスプローラーにも表示されます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Packages with more than 5000 exports are shown page by page, with buttons under the editor to move between pages. The page size can be set in the settings (Exports Per Page, 1-1000).",
+            "ja": "export が 5000 個を超えるパッケージはページに分けて表示し、エディタ下部のボタンでページを移動できるようになりました。1 ページあたりの export 数は設定で変更できます (1〜1000)。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Fixed a crash.",
+            "ja": "クラッシュする問題を修正しました。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Clicking an export index in a paginated package no longer jumps to the wrong export.",
+            "ja": "ページ分けしたパッケージで export 番号をクリックすると、別の export に移動してしまう問題を修正しました。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "A Verse digest without code no longer opens as an empty document, its properties are shown instead.",
+            "ja": "コードが入っていない Verse ダイジェストが空の画面で開く問題を修正しました。プロパティを表示するようになりました。"
+          }
+        }
+      ]
+    },
+    {
       "version": "4.5",
       "tag": "v4.5-jp",
       "date": "2026-09-12",
