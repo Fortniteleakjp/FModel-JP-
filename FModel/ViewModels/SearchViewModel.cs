@@ -2,18 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Framework;
+using FModel.Services;
 using Serilog;
 
 namespace FModel.ViewModels;
 
 public class SearchViewModel : ViewModel
 {
+    /// <summary>One checkbox of the asset type filter.</summary>
+    public sealed class CategoryFilterOption : ViewModel
+    {
+        public EAssetCategory Category { get; init; }
+        public string Header { get; init; }
+
+        private bool _isChecked;
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set => SetProperty(ref _isChecked, value);
+        }
+    }
+
     private sealed class SortCache
     {
         public required int CollectionVersion { get; init; }
@@ -90,6 +106,17 @@ public class SearchViewModel : ViewModel
     private bool _isRegexValid = true;
     private int _collectionVersion;
     private SortCache _sortCache;
+    private uint _categoryMask;
+
+    /// <summary>Asset type checkboxes, guessed from the path (see <see cref="AssetCategoryGuesser"/>). None checked = no filter.</summary>
+    public IReadOnlyList<CategoryFilterOption> CategoryFilters { get; }
+
+    private int _checkedCategoryCount;
+    public int CheckedCategoryCount
+    {
+        get => _checkedCategoryCount;
+        private set => SetProperty(ref _checkedCategoryCount, value);
+    }
 
     // the list binds with IsAsync=True, so the view is first read on a pool thread while the search timer
     // refreshes it on the UI thread: without the lock both could build their own view, the list then kept
@@ -126,7 +153,49 @@ public class SearchViewModel : ViewModel
     {
         _name = name;
         ResultsCount = 0;
+
+        CategoryFilters = new[]
+        {
+            EAssetCategory.Texture, EAssetCategory.Materials, EAssetCategory.Mesh, EAssetCategory.Animation,
+            EAssetCategory.Blueprints, EAssetCategory.Data, EAssetCategory.Media, EAssetCategory.Particle,
+            EAssetCategory.Level, AssetCategoryGuesser.Unknown
+        }.Select(c => new CategoryFilterOption
+        {
+            Category = c,
+            Header = c == AssetCategoryGuesser.Unknown ? "Other" : c.ToString()
+        }).ToArray();
+
+        foreach (var option in CategoryFilters)
+            option.PropertyChanged += OnCategoryFilterChanged;
     }
+
+    private bool _isUpdatingCategories;
+
+    private void OnCategoryFilterChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (_isUpdatingCategories || e.PropertyName != nameof(CategoryFilterOption.IsChecked))
+            return;
+
+        CheckedCategoryCount = CategoryFilters.Count(x => x.IsChecked);
+        RefreshFilter();
+    }
+
+    public void ClearCategoryFilters()
+    {
+        if (CheckedCategoryCount == 0)
+            return;
+
+        _isUpdatingCategories = true;
+        foreach (var option in CategoryFilters)
+            option.IsChecked = false;
+        _isUpdatingCategories = false;
+
+        CheckedCategoryCount = 0;
+        RefreshFilter();
+    }
+
+    // base categories are CategoryBase + (n << 16), so the high word is a small index
+    private static uint CategoryBit(EAssetCategory category) => 1u << (int) ((uint) category >> 16);
 
     public void RefreshFilter()
     {
@@ -244,6 +313,8 @@ public class SearchViewModel : ViewModel
         var options = new List<string>();
         if (HasRegexEnabled) options.Add("regex");
         if (HasMatchCaseEnabled) options.Add("match case");
+        if (CategoryFilters.Any(x => x.IsChecked))
+            options.Add("types: " + string.Join("/", CategoryFilters.Where(x => x.IsChecked).Select(x => x.Header)));
         return $"'{FilterText}'" + (options.Count > 0 ? $" ({string.Join(", ", options)})" : string.Empty);
     }
 
@@ -252,6 +323,13 @@ public class SearchViewModel : ViewModel
         _filters = FilterText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
         _filterRegex = null;
         _isRegexValid = true;
+
+        _categoryMask = 0;
+        foreach (var option in CategoryFilters)
+        {
+            if (option.IsChecked)
+                _categoryMask |= CategoryBit(option.Category);
+        }
 
         if (!HasRegexEnabled)
             return;
@@ -275,10 +353,12 @@ public class SearchViewModel : ViewModel
         if (item is not GameFile entry)
             return true;
 
-        if (!HasRegexEnabled)
-            return _filters.All(x => entry.Path.Contains(x,
+        var matchesText = HasRegexEnabled
+            ? _isRegexValid && _filterRegex.IsMatch(entry.Path)
+            : _filters.All(x => entry.Path.Contains(x,
                 HasMatchCaseEnabled ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
 
-        return _isRegexValid && _filterRegex.IsMatch(entry.Path);
+        // the text test is cheaper, so the type is only guessed for files that already match
+        return matchesText && (_categoryMask == 0 || (_categoryMask & CategoryBit(AssetCategoryGuesser.Guess(entry.Path))) != 0);
     }
 }

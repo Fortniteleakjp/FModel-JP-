@@ -54,6 +54,49 @@
                                 </TextBox.Style>
                             </TextBox>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <ToggleButton x:Name="SearchCategoryButton" ToolTip="{DynamicResource UI_AssetTypeFilter}" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}"
+                                              IsChecked="{Binding IsOpen, ElementName=SearchCategoryPopup, Mode=TwoWay}"
+                                              IsHitTestVisible="{Binding IsOpen, ElementName=SearchCategoryPopup, Converter={x:Static converters:InvertBooleanConverter.Instance}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Data="{StaticResource AssetTypeFilterIcon}">
+                                                    <Path.Style>
+                                                        <Style TargetType="Path">
+                                                            <Setter Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding SearchTab.CheckedCategoryCount, Converter={x:Static converters:IntGreaterThanZeroToVisibilityConverter.Instance}}" Value="Visible">
+                                                                    <Setter Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Path.Style>
+                                                </Path>
+                                            </Canvas>
+                                        </Viewbox>
+                                        <TextBlock Text="{Binding SearchTab.CheckedCategoryCount}" Margin="3 0 0 0" VerticalAlignment="Center"
+                                                   Visibility="{Binding SearchTab.CheckedCategoryCount, Converter={x:Static converters:IntGreaterThanZeroToVisibilityConverter.Instance}}" />
+                                    </StackPanel>
+                                </ToggleButton>
+                                <Popup x:Name="SearchCategoryPopup" PlacementTarget="{Binding ElementName=SearchCategoryButton}" Placement="Bottom"
+                                       StaysOpen="False" AllowsTransparency="True">
+                                    <Border CornerRadius="4" Padding="10 8" BorderThickness="1"
+                                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}">
+                                        <StackPanel MinWidth="170">
+                                            <TextBlock Text="{DynamicResource UI_AssetTypeFilter}" FontWeight="SemiBold" Margin="0 0 0 6" />
+                                            <ItemsControl ItemsSource="{Binding SearchTab.CategoryFilters}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox Content="{Binding Header}" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0 2" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <TextBlock Text="{DynamicResource UI_AssetTypeFilterNote}" TextWrapping="Wrap" MaxWidth="220" Opacity="0.6" FontSize="11" Margin="0 6 0 6" />
+                                            <Button Content="{DynamicResource UI_AssetTypeFilterClear}" Tag="{Binding SearchTab}" Click="OnClearCategoryFiltersClick" HorizontalAlignment="Stretch" />
+                                        </StackPanel>
+                                    </Border>
+                                </Popup>
                                 <ToggleButton ToolTip="{DynamicResource UI_MatchCase}" Padding="5" IsChecked="{Binding SearchTab.HasMatchCaseEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">
@@ -609,6 +652,49 @@
                                 </TextBox.Style>
                             </TextBox>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <ToggleButton x:Name="RefCategoryButton" ToolTip="{DynamicResource UI_AssetTypeFilter}" Padding="5" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}"
+                                              IsChecked="{Binding IsOpen, ElementName=RefCategoryPopup, Mode=TwoWay}"
+                                              IsHitTestVisible="{Binding IsOpen, ElementName=RefCategoryPopup, Converter={x:Static converters:InvertBooleanConverter.Instance}}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Data="{StaticResource AssetTypeFilterIcon}">
+                                                    <Path.Style>
+                                                        <Style TargetType="Path">
+                                                            <Setter Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding RefTab.CheckedCategoryCount, Converter={x:Static converters:IntGreaterThanZeroToVisibilityConverter.Instance}}" Value="Visible">
+                                                                    <Setter Property="Fill" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Path.Style>
+                                                </Path>
+                                            </Canvas>
+                                        </Viewbox>
+                                        <TextBlock Text="{Binding RefTab.CheckedCategoryCount}" Margin="3 0 0 0" VerticalAlignment="Center"
+                                                   Visibility="{Binding RefTab.CheckedCategoryCount, Converter={x:Static converters:IntGreaterThanZeroToVisibilityConverter.Instance}}" />
+                                    </StackPanel>
+                                </ToggleButton>
+                                <Popup x:Name="RefCategoryPopup" PlacementTarget="{Binding ElementName=RefCategoryButton}" Placement="Bottom"
+                                       StaysOpen="False" AllowsTransparency="True">
+                                    <Border CornerRadius="4" Padding="10 8" BorderThickness="1"
+                                            Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                            BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}">
+                                        <StackPanel MinWidth="170">
+                                            <TextBlock Text="{DynamicResource UI_AssetTypeFilter}" FontWeight="SemiBold" Margin="0 0 0 6" />
+                                            <ItemsControl ItemsSource="{Binding RefTab.CategoryFilters}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox Content="{Binding Header}" IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0 2" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <TextBlock Text="{DynamicResource UI_AssetTypeFilterNote}" TextWrapping="Wrap" MaxWidth="220" Opacity="0.6" FontSize="11" Margin="0 6 0 6" />
+                                            <Button Content="{DynamicResource UI_AssetTypeFilterClear}" Tag="{Binding RefTab}" Click="OnClearCategoryFiltersClick" HorizontalAlignment="Stretch" />
+                                        </StackPanel>
+                                    </Border>
+                                </Popup>
                                 <ToggleButton ToolTip="{DynamicResource UI_MatchCase}" Padding="5" IsChecked="{Binding RefTab.HasMatchCaseEnabled}" Style="{DynamicResource {x:Static adonisUi:Styles.ToolbarToggleButton}}">
                                     <Viewbox Width="16" Height="16" HorizontalAlignment="Center">
                                         <Canvas Width="24" Height="24">

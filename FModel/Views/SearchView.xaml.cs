@@ -109,6 +109,12 @@ public partial class SearchView
         viewModel.RefreshFilter();
     }
 
+    private void OnClearCategoryFiltersClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: SearchViewModel viewModel })
+            viewModel.ClearCategoryFilters();
+    }
+
     private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
         _pendingAutoSearch = ReferenceEquals(sender, RefSearchTextBox) ? _refViewModel : _searchViewModel;

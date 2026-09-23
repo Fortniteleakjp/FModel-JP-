@@ -328,6 +328,9 @@
     <system:String x:Key="UI_Skip">スキップ</system:String>
     <system:String x:Key="UI_SkipToIgnoreAllOfThem">すべて無視する場合はスキップしてください。</system:String>
     <system:String x:Key="UI_SocketFormat">ソケットのフォーマット</system:String>
+    <system:String x:Key="UI_AssetTypeFilter">アセットの種類で絞り込み</system:String>
+    <system:String x:Key="UI_AssetTypeFilterNote">ファイル名・フォルダ名から推定します（アセットは読み込みません）。一部のファイルは別の種類に分類されることがあります。</system:String>
+    <system:String x:Key="UI_AssetTypeFilterClear">種類の選択を解除</system:String>
     <system:String x:Key="UI_SortFileSizes">ファイルサイズで並べ替え</system:String>
     <system:String x:Key="UI_Sound">サウンド</system:String>
     <system:String x:Key="UI_StartAnExportToSeeResults">エクスポートを開始すると、ここに結果が表示されます。</system:String>
