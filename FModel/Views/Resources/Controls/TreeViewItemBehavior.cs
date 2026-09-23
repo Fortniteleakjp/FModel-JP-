@@ -36,6 +36,20 @@ public sealed class TreeViewItemBehavior
     private static void OnTreeViewItemSelected(object sender, RoutedEventArgs e)
     {
         if (e.OriginalSource is TreeViewItem item)
+            BringHeaderIntoView(item);
+    }
+
+    /// <summary>
+    /// Brings only the item's own row into view. The item's bounds include its expanded
+    /// children, so for a large expanded folder a plain BringIntoView scrolls to somewhere
+    /// inside that subtree and the selected row itself stays off-screen.
+    /// </summary>
+    public static void BringHeaderIntoView(TreeViewItem item)
+    {
+        item.ApplyTemplate();
+        if (item.Template?.FindName("PART_Header", item) is FrameworkElement header)
+            header.BringIntoView();
+        else
             item.BringIntoView();
     }
 }

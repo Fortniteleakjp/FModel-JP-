@@ -339,10 +339,19 @@ public partial class MainWindow
     public void RefreshVisibleAssetPreviews()
         => ItemContainerGenerator_StatusChanged(AssetsExplorer.ItemContainerGenerator, EventArgs.Empty);
 
+    private int _folderNavigationId;
+
     public async Task<bool> SelectFolderAsync(IReadOnlyList<TreeItem> path)
     {
         if (path.Count == 0)
             return false;
+
+        // A newer navigation, or the user selecting another folder while this one is still
+        // waiting for containers, supersedes it. Without this a slow navigation could finish
+        // seconds later and suddenly steal the selection from whatever the user did meanwhile.
+        var navigationId = ++_folderNavigationId;
+        var selectedAtStart = AssetsFolderName.SelectedItem;
+        bool IsStale() => navigationId != _folderNavigationId || !ReferenceEquals(AssetsFolderName.SelectedItem, selectedAtStart);
 
         // Set the complete model path first. A virtualized container will pick up the
         // expansion state whenever WPF realizes it, independently of UI timing.
@@ -354,32 +363,36 @@ public partial class MainWindow
 
         for (var i = 0; i < path.Count; i++)
         {
-            container = await GetTreeViewItemAsync(parent, path[i]);
+            container = await GetTreeViewItemAsync(parent, path[i], IsStale);
             if (container == null)
                 return false;
 
             // Only ancestors must be expanded. Expanding the target itself can realize a
             // large child subtree even though Go To never needs to display those children.
+            // SetCurrentValue keeps the style's TwoWay binding alive: a local value would detach
+            // the container from its TreeItem and travel with it when the container is recycled.
             if (i < path.Count - 1)
             {
-                container.IsExpanded = true;
+                container.SetCurrentValue(TreeViewItem.IsExpandedProperty, true);
             }
 
             parent = container;
         }
 
-        container.IsSelected = false;
-        container.IsSelected = true;
+        // Toggle so a stale IsSelected=true left on the model still raises a selection change.
+        container.SetCurrentValue(TreeViewItem.IsSelectedProperty, false);
+        container.SetCurrentValue(TreeViewItem.IsSelectedProperty, true);
+        TreeViewItemBehavior.BringHeaderIntoView(container);
         await Dispatcher.InvokeAsync(static () => { }, DispatcherPriority.Background);
         return ReferenceEquals(AssetsFolderName.SelectedItem, path[^1]);
     }
 
-    private async Task<TreeViewItem> GetTreeViewItemAsync(ItemsControl parent, TreeItem item)
+    private async Task<TreeViewItem> GetTreeViewItemAsync(ItemsControl parent, TreeItem item, Func<bool> isStale)
     {
         // FoldersView is bound with IsAsync=True. For large sibling collections its sorted
         // view can take substantially longer than a fixed number of dispatcher turns.
         var timeoutAt = DateTime.UtcNow + TimeSpan.FromSeconds(15);
-        while (DateTime.UtcNow < timeoutAt)
+        while (DateTime.UtcNow < timeoutAt && !isStale())
         {
             parent.ApplyTemplate();
             var presenter = parent.Template.FindName("ItemsHost", parent) as ItemsPresenter ??

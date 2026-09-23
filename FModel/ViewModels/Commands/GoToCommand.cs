@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FModel.Framework;
 using FModel.Services;
+using FModel.Views.Resources.Controls;
+using Serilog;
 
 namespace FModel.ViewModels.Commands;
 
@@ -24,22 +26,16 @@ public class GoToCommand : ViewModelCommand<CustomDirectoriesViewModel>
     {
         _applicationView.SelectedLeftTabIndex = 1; // folders tab
         if (!_applicationView.CUE4Parse.AssetsFolder.TryGetFolder(directory, out var folder))
-            return null;
-
-        // An ancestor of the selected folder is already realized. Selecting it directly
-        // avoids running the virtualized path walker again (notably for breadcrumbs).
-        if (MainWindow.YesWeCats.AssetsFolderName.SelectedItem is TreeItem selectedFolder)
         {
-            for (var ancestor = selectedFolder; ancestor != null; ancestor = ancestor.Parent)
-            {
-                if (!ReferenceEquals(ancestor, folder))
-                    continue;
-
-                folder.IsSelected = true;
-                return folder;
-            }
+            Log.Warning("Go To: folder {Directory} was not found", directory);
+            FLogger.Append(ELog.Warning, () =>
+                FLogger.Text($"Folder '{directory}' was not found in the loaded archives", Constants.WHITE, true));
+            return null;
         }
 
+        // Always walk the realized containers. Setting IsSelected on the model alone does nothing
+        // while the container is virtualized, and the selection then fires later, whenever WPF
+        // happens to realize it (the "sudden jump" after an unrelated action).
         var ancestors = new Stack<TreeItem>();
         for (var ancestor = folder; ancestor != null; ancestor = ancestor.Parent)
             ancestors.Push(ancestor);
@@ -48,6 +44,10 @@ public class GoToCommand : ViewModelCommand<CustomDirectoriesViewModel>
         while (ancestors.TryPop(out var ancestor))
             path.Add(ancestor);
 
-        return await MainWindow.YesWeCats.SelectFolderAsync(path) ? folder : null;
+        if (await MainWindow.YesWeCats.SelectFolderAsync(path))
+            return folder;
+
+        Log.Warning("Go To: could not select {Directory} (cancelled or timed out)", directory);
+        return null;
     }
 }
