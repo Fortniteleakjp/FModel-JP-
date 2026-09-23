@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.ViewModels;
+using Serilog;
 
 namespace FModel.Views;
 
@@ -43,6 +44,7 @@ public partial class SearchView
             RefTab = _refViewModel,
         };
         InitializeComponent();
+        Log.Information("Search window opened, {Total} files listed", _searchViewModel.SearchResults.Count);
 
         Activate();
         SearchTextBox.Focus();

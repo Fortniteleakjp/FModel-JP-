@@ -234,8 +234,8 @@ public partial class CUE4ParseViewModel : ViewModel
 
         GameDirectory = new GameDirectoryViewModel();
         AssetsFolder = new AssetsFolderViewModel();
-        SearchVm = new SearchViewModel();
-        RefVm = new SearchViewModel();
+        SearchVm = new SearchViewModel("Search");
+        RefVm = new SearchViewModel("References");
         TabControl = new TabControlViewModel();
         IoStoreOnDemand = new ConfigIni(nameof(IoStoreOnDemand));
     }

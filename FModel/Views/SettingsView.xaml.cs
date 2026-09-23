@@ -25,10 +25,15 @@ public partial class SettingsView
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private SettingsViewModel _settingsView => _applicationView.SettingsView;
 
+    // most options are bound straight to UserSettings, so what changed is known by comparing before and after
+    private readonly System.Collections.Generic.Dictionary<string, string> _settingsBefore = SettingsLog.Snapshot();
+    private bool _saved;
+
     public SettingsView()
     {
         DataContext = _applicationView;
         _applicationView.SettingsView.Initialize();
+        Closed += (_, _) => SettingsLog.LogChanges(_settingsBefore, SettingsLog.Snapshot(), _saved ? "saved" : "closed without saving");
 
         InitializeComponent();
 
@@ -44,6 +49,7 @@ public partial class SettingsView
     private async void OnClick(object sender, RoutedEventArgs e)
     {
         var restart = _applicationView.SettingsView.Save(out var whatShouldIDo);
+        _saved = true;
         if (restart)
             _applicationView.RestartWithWarning();
 

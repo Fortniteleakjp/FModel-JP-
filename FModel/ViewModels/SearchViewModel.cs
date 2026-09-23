@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.VirtualFileSystem;
 using FModel.Framework;
+using Serilog;
 
 namespace FModel.ViewModels;
 
@@ -103,19 +105,26 @@ public class SearchViewModel : ViewModel
                 if (_searchResultsView != null)
                     return _searchResultsView;
 
+                var watch = Stopwatch.StartNew();
                 PrepareFilter();
                 _searchResultsView = new ListCollectionView(SearchResults)
                 {
                     Filter = ItemFilter,
                 };
                 ResultsCount = _searchResultsView.Count;
+                Log.Information("{Name}: list built, {Shown}/{Total} files for {Filter} in {Elapsed} ms (thread {Thread})",
+                    _name, ResultsCount, SearchResults.Count, DescribeFilter(), watch.ElapsedMilliseconds, Environment.CurrentManagedThreadId);
                 return _searchResultsView;
             }
         }
     }
 
-    public SearchViewModel()
+    /// <summary>Which window tab this is (search, references), for the log.</summary>
+    private readonly string _name;
+
+    public SearchViewModel(string name = "Search")
     {
+        _name = name;
         ResultsCount = 0;
     }
 
@@ -126,11 +135,21 @@ public class SearchViewModel : ViewModel
         {
             // the collection may have been replaced meanwhile, its new view already filters with the current text
             if (!ReferenceEquals(view, _searchResultsView))
+            {
+                Log.Information("{Name}: search for {Filter} skipped, the list was replaced meanwhile", _name, DescribeFilter());
                 return;
+            }
 
+            var watch = Stopwatch.StartNew();
             PrepareFilter();
             view.Refresh();
             ResultsCount = view.Count;
+
+            if (HasRegexEnabled && !_isRegexValid)
+                Log.Warning("{Name}: invalid regular expression {Filter}, nothing matches", _name, DescribeFilter());
+            else
+                Log.Information("{Name}: search for {Filter} -> {Shown}/{Total} files in {Elapsed} ms",
+                    _name, DescribeFilter(), ResultsCount, SearchResults.Count, watch.ElapsedMilliseconds);
         }
     }
 
@@ -140,6 +159,11 @@ public class SearchViewModel : ViewModel
         _collectionVersion++;
         _sortCache = null;
         ApplyCollection(results, refFile);
+
+        if (refFile != null)
+            Log.Information("{Name}: list replaced with {Total} files referencing '{RefFile}'", _name, results.Count, refFile.Path);
+        else
+            Log.Information("{Name}: list replaced with {Total} files", _name, results.Count);
     }
 
     private void ApplyCollection(List<GameFile> results, GameFile refFile)
@@ -166,6 +190,7 @@ public class SearchViewModel : ViewModel
             ESortSizeMode.Descending => ESortSizeMode.Ascending,
             _ => ESortSizeMode.None
         };
+        Log.Information("{Name}: sort by size {Mode}", _name, CurrentSortSizeMode);
 
         var collectionVersion = _collectionVersion;
         var refFile = RefFile;
@@ -211,6 +236,15 @@ public class SearchViewModel : ViewModel
         }
 
         ApplyCollection(sortCache.Get(CurrentSortSizeMode), refFile);
+    }
+
+    /// <summary>The search text and its options as the log shows them.</summary>
+    private string DescribeFilter()
+    {
+        var options = new List<string>();
+        if (HasRegexEnabled) options.Add("regex");
+        if (HasMatchCaseEnabled) options.Add("match case");
+        return $"'{FilterText}'" + (options.Count > 0 ? $" ({string.Join(", ", options)})" : string.Empty);
     }
 
     private void PrepareFilter()

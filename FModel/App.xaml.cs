@@ -184,6 +184,7 @@ public partial class App
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);
         Log.Information("Culture {SysLang}", CultureInfo.CurrentCulture);
+        SettingsLog.LogStartup();
 
         static bool IsConversionLibrary(LogEvent e) =>
             e.Properties.TryGetValue("SourceContext", out var sc) &&
