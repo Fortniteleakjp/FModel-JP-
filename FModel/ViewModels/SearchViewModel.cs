@@ -89,20 +89,28 @@ public class SearchViewModel : ViewModel
     private int _collectionVersion;
     private SortCache _sortCache;
 
+    // the list binds with IsAsync=True, so the view is first read on a pool thread while the search timer
+    // refreshes it on the UI thread: without the lock both could build their own view, the list then kept
+    // showing one while the filter was applied to the other (every search listed the whole collection)
+    private readonly object _viewLock = new();
+
     public ListCollectionView SearchResultsView
     {
         get
         {
-            if (_searchResultsView != null)
-                return _searchResultsView;
-
-            PrepareFilter();
-            _searchResultsView = new ListCollectionView(SearchResults)
+            lock (_viewLock)
             {
-                Filter = ItemFilter,
-            };
-            ResultsCount = _searchResultsView.Count;
-            return _searchResultsView;
+                if (_searchResultsView != null)
+                    return _searchResultsView;
+
+                PrepareFilter();
+                _searchResultsView = new ListCollectionView(SearchResults)
+                {
+                    Filter = ItemFilter,
+                };
+                ResultsCount = _searchResultsView.Count;
+                return _searchResultsView;
+            }
         }
     }
 
@@ -113,9 +121,17 @@ public class SearchViewModel : ViewModel
 
     public void RefreshFilter()
     {
-        PrepareFilter();
-        SearchResultsView.Refresh();
-        ResultsCount = SearchResultsView.Count;
+        var view = SearchResultsView;
+        lock (_viewLock)
+        {
+            // the collection may have been replaced meanwhile, its new view already filters with the current text
+            if (!ReferenceEquals(view, _searchResultsView))
+                return;
+
+            PrepareFilter();
+            view.Refresh();
+            ResultsCount = view.Count;
+        }
     }
 
     public void ChangeCollection(IEnumerable<GameFile> files, GameFile refFile = null)
@@ -128,8 +144,13 @@ public class SearchViewModel : ViewModel
 
     private void ApplyCollection(List<GameFile> results, GameFile refFile)
     {
-        _searchResultsView = null;
-        SearchResults = results;
+        lock (_viewLock)
+        {
+            _searchResultsView = null;
+            _searchResults = results;
+        }
+
+        RaisePropertyChanged(nameof(SearchResults));
         RaisePropertyChanged(nameof(SearchResultsView));
         RefFile = refFile;
         ResultsCount = results.Count;
