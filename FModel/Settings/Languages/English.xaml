@@ -331,6 +331,8 @@
     <system:String x:Key="UI_AssetTypeFilter">Asset Type Filter</system:String>
     <system:String x:Key="UI_AssetTypeFilterNote">Guessed from file and folder names (no asset is read), so a few files may land in the wrong type.</system:String>
     <system:String x:Key="UI_AssetTypeFilterClear">Clear Types</system:String>
+    <system:String x:Key="UI_ExcludeWatermark">Exclude words (separate several with spaces)...</system:String>
+    <system:String x:Key="UI_ExcludeTooltip">Files whose path contains one of these words are left out of the results. Separate several words with spaces or commas. They are plain text, even in regex mode.</system:String>
     <system:String x:Key="UI_SortFileSizes">Sort File Sizes</system:String>
     <system:String x:Key="UI_Sound">Sound</system:String>
     <system:String x:Key="UI_StartAnExportToSeeResults">Start an export to see results here.</system:String>

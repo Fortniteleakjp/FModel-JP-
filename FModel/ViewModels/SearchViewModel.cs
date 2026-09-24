@@ -59,6 +59,14 @@ public class SearchViewModel : ViewModel
         set => SetProperty(ref _filterText, value);
     }
 
+    private string _excludeText = string.Empty;
+    /// <summary>Words a path must not contain, separated by spaces or commas. Plain text even in regex mode.</summary>
+    public string ExcludeText
+    {
+        get => _excludeText;
+        set => SetProperty(ref _excludeText, value);
+    }
+
     private bool _hasRegexEnabled;
     public bool HasRegexEnabled
     {
@@ -102,6 +110,8 @@ public class SearchViewModel : ViewModel
     }
     private ListCollectionView _searchResultsView;
     private string[] _filters = [];
+    private string[] _excludes = [];
+    private static readonly char[] _excludeSeparators = [' ', '　', ',', '、'];
     private Regex _filterRegex;
     private bool _isRegexValid = true;
     private int _collectionVersion;
@@ -315,12 +325,15 @@ public class SearchViewModel : ViewModel
         if (HasMatchCaseEnabled) options.Add("match case");
         if (CategoryFilters.Any(x => x.IsChecked))
             options.Add("types: " + string.Join("/", CategoryFilters.Where(x => x.IsChecked).Select(x => x.Header)));
+        if (_excludes.Length > 0) options.Add("excluding: " + string.Join(" ", _excludes));
         return $"'{FilterText}'" + (options.Count > 0 ? $" ({string.Join(", ", options)})" : string.Empty);
     }
 
     private void PrepareFilter()
     {
         _filters = FilterText.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        _excludes = (ExcludeText ?? string.Empty).Split(_excludeSeparators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Distinct(HasMatchCaseEnabled ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase).ToArray();
         _filterRegex = null;
         _isRegexValid = true;
 
@@ -353,10 +366,20 @@ public class SearchViewModel : ViewModel
         if (item is not GameFile entry)
             return true;
 
+        var comparison = HasMatchCaseEnabled ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
         var matchesText = HasRegexEnabled
             ? _isRegexValid && _filterRegex.IsMatch(entry.Path)
-            : _filters.All(x => entry.Path.Contains(x,
-                HasMatchCaseEnabled ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+            : _filters.All(x => entry.Path.Contains(x, comparison));
+
+        // a path holding any of the excluded words is left out
+        if (matchesText && _excludes.Length > 0)
+        {
+            foreach (var exclude in _excludes)
+            {
+                if (entry.Path.Contains(exclude, comparison))
+                    return false;
+            }
+        }
 
         // the text test is cheaper, so the type is only guessed for files that already match
         return matchesText && (_categoryMask == 0 || (_categoryMask & CategoryBit(AssetCategoryGuesser.Guess(entry.Path))) != 0);

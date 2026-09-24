@@ -26,6 +26,10 @@
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="0" Margin="0 0 0 5" ZIndex="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -134,6 +138,19 @@
                                     </MultiBinding>
                                 </TextBlock.Text>
                             </TextBlock>
+                            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 4 0 0">
+                                <Grid ZIndex="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5 0 0 0" IsHitTestVisible="False">
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExcludeIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Grid>
+                                <TextBox x:Name="SearchExcludeTextBox" Padding="25 0 0 0" MinHeight="26" VerticalContentAlignment="Center" AcceptsTab="False" AcceptsReturn="False"
+                                         Text="{Binding SearchTab.ExcludeText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         TextChanged="OnSearchTextChanged" ToolTip="{DynamicResource UI_ExcludeTooltip}"
+                                         adonisExtensions:WatermarkExtension.Watermark="{DynamicResource UI_ExcludeWatermark}" />
+                            </Grid>
                         </Grid>
                         <ListView Grid.Row="1" x:Name="SearchListView" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
                                       ScrollViewer.CanContentScroll="True" ItemsSource="{Binding SearchTab.SearchResultsView, IsAsync=True}">
@@ -624,6 +641,10 @@
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="0" Margin="0 0 0 5" ZIndex="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
@@ -732,6 +753,19 @@
                                     </MultiBinding>
                                 </TextBlock.Text>
                             </TextBlock>
+                            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 4 0 0">
+                                <Grid ZIndex="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5 0 0 0" IsHitTestVisible="False">
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource ExcludeIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Grid>
+                                <TextBox x:Name="RefExcludeTextBox" Padding="25 0 0 0" MinHeight="26" VerticalContentAlignment="Center" AcceptsTab="False" AcceptsReturn="False"
+                                         Text="{Binding RefTab.ExcludeText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         TextChanged="OnSearchTextChanged" ToolTip="{DynamicResource UI_ExcludeTooltip}"
+                                         adonisExtensions:WatermarkExtension.Watermark="{DynamicResource UI_ExcludeWatermark}" />
+                            </Grid>
                         </Grid>
 
                         <ListView Grid.Row="1" x:Name="RefListView"

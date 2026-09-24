@@ -45,6 +45,13 @@
           }
         },
         {
+          "type": "Added",
+          "text": {
+            "en": "Search: a second box under the search box leaves out every file whose path contains one of the words typed in it. Separate several words with spaces or commas. They are plain text even in regex mode, and follow Match Case.",
+            "ja": "検索: 検索欄の下の「除外する文字」欄に入力した文字をパスに含むファイルを、検索結果から除外できるようにしました。スペースまたはカンマで区切ると複数指定でき、どれか 1 つでも含むファイルが除外されます。正規表現モードでも通常の文字として扱い、「大文字と小文字を区別」の設定に従います。"
+          }
+        },
+        {
           "type": "Changed",
           "text": {
             "en": "Updated to the latest FModel and CUE4Parse: much faster folder tree navigation, instant jump to an asset from the search, and new or updated support for several games (PUBG, Arena Breakout Infinite, Conan Exiles Enhanced, New Gundam Breaker, Destroy All Humans! 2 - Reprobed, Delta Force, Splitgate 2...).",

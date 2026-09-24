@@ -116,7 +116,7 @@ public partial class SearchView
 
     private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
-        _pendingAutoSearch = ReferenceEquals(sender, RefSearchTextBox) ? _refViewModel : _searchViewModel;
+        _pendingAutoSearch = ReferenceEquals(sender, RefSearchTextBox) || ReferenceEquals(sender, RefExcludeTextBox) ? _refViewModel : _searchViewModel;
         _autoSearchTimer.Stop();
         _autoSearchTimer.Start();
     }
