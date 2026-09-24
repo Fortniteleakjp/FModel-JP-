@@ -8,6 +8,7 @@ public interface ISource
     AudioFile PlayedFile { get; }
     float[] FftData { get; }
     SpectrumProvider Spectrum { get; }
+    float[] WaveformPeaks { get; }
 
     void Play();
     void Pause();

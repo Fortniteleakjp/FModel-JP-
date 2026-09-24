@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using CSCore;
@@ -14,6 +15,7 @@ using CSCore.CoreAudioAPI;
 using CSCore.DSP;
 using CSCore.SoundOut;
 using CSCore.Streams;
+using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Criware.Decoders;
 using CUE4Parse.UE4.Criware.Decoders.ADX;
 using CUE4Parse.UE4.Criware.Decoders.HCA;
@@ -23,6 +25,7 @@ using FModel.Framework;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels.Commands;
+using FModel.Views;
 using FModel.Views.Resources.Controls;
 using FModel.Views.Resources.Controls.Aup;
 using Microsoft.Win32;
@@ -92,6 +95,11 @@ public class AudioFile : ViewModel
     public byte[] Data { get; set; }
     public string Extension { get; }
 
+    /// <summary>
+    /// the game file this audio was extracted from, null for files added from disk
+    /// </summary>
+    public GameFile SourceAsset { get; init; }
+
     public AudioFile(int id, byte[] data, string filePath)
     {
         Id = id;
@@ -150,6 +158,7 @@ public class AudioFile : ViewModel
         BytesPerSecond = wave.WaveFormat.BytesPerSecond;
         Extension = audioFile.Extension;
         Data = audioFile.Data;
+        SourceAsset = audioFile.SourceAsset;
     }
 
     public override string ToString()
@@ -172,6 +181,10 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
     public SpectrumProvider Spectrum { get; private set; }
     public float[] FftData { get; private set; }
+    public float[] WaveformPeaks { get; private set; }
+
+    private CancellationTokenSource _waveformCts;
+    private byte[] _waveformData;
 
     private AudioFile _playedFile = new(-1, "No audio file");
     public AudioFile PlayedFile
@@ -236,6 +249,41 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
             RaiseSourceEvent(ESourceEventType.Loading);
             LoadSoundOut();
+            LoadWaveform(SelectedAudioFile.Data, SelectedAudioFile.Extension);
+        });
+    }
+
+    /// <summary>
+    /// decodes the file a second time in the background, replaying the same file reuses the peaks
+    /// </summary>
+    private void LoadWaveform(byte[] data, string extension)
+    {
+        _waveformCts?.Cancel();
+        if (ReferenceEquals(data, _waveformData) && WaveformPeaks != null)
+        {
+            RaiseSourcePropertyChangedEvent(ESourceProperty.WaveformData, WaveformPeaks);
+            return;
+        }
+
+        var cts = _waveformCts = new CancellationTokenSource();
+        WaveformPeaks = null;
+        _waveformData = null;
+        Task.Run(() =>
+        {
+            try
+            {
+                // an empty array tells the view the file couldn't be decoded
+                var peaks = WaveformBuilder.Compute(data, extension, cts.Token) ?? [];
+                if (cts.IsCancellationRequested) return;
+
+                WaveformPeaks = peaks;
+                _waveformData = data;
+                RaiseSourcePropertyChangedEvent(ESourceProperty.WaveformData, peaks);
+            }
+            catch (OperationCanceledException)
+            {
+                // another file was loaded meanwhile
+            }
         });
     }
 
@@ -247,17 +295,20 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
 
             PlayedFile = new AudioFile(-1, "No audio file");
             Spectrum = null;
+            _waveformCts?.Cancel();
+            WaveformPeaks = null;
+            _waveformData = null;
 
             RaiseSourceEvent(ESourceEventType.Clearing);
             ClearSoundOut();
         });
     }
 
-    public void AddToPlaylist(byte[] data, string filePath)
+    public void AddToPlaylist(byte[] data, string filePath, GameFile sourceAsset = null)
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
-            _audioFiles.Add(new AudioFile(_audioFiles.Count, data, filePath));
+            _audioFiles.Add(new AudioFile(_audioFiles.Count, data, filePath) { SourceAsset = sourceAsset });
             if (_audioFiles.Count > 1) return;
 
             SelectedAudioFile = _audioFiles.Last();
@@ -399,6 +450,19 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         }
     }
 
+    /// <summary>
+    /// lists the Wwise events and packages that use the selected audio
+    /// </summary>
+    public void ReverseLookup()
+    {
+        var file = SelectedAudioFile;
+        if (file == null) return;
+
+        var audioName = Path.GetFileNameWithoutExtension(file.FileName);
+        var sourceAsset = file.SourceAsset;
+        ApplicationService.ThreadWorkerView.Begin(cancellationToken => AudioReverseLookupWindow.RunAndShow(sourceAsset, audioName, cancellationToken));
+    }
+
     public void PlayPauseOnStart()
     {
         if (IsStopped)
@@ -517,6 +581,10 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
             if (Spectrum != null)
                 Spectrum = null;
 
+            _waveformCts?.Cancel();
+            WaveformPeaks = null;
+            _waveformData = null;
+
             foreach (var a in _audioFiles)
             {
                 a.Data = null;
@@ -614,7 +682,7 @@ public class AudioPlayerViewModel : ViewModel, ISource, IDisposable
         if (!TryConvert(SelectedAudioFile.FilePath, SelectedAudioFile.Data, SelectedAudioFile.Extension, out var convertedFilePath, true))
             return false;
 
-        var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(convertedFilePath));
+        var newAudio = new AudioFile(SelectedAudioFile.Id, new FileInfo(convertedFilePath)) { SourceAsset = SelectedAudioFile.SourceAsset };
         Replace(newAudio);
 
         return true;

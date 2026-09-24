@@ -1,0 +1,77 @@
+<adonisControls:AdonisWindow x:Class="FModel.Views.AudioReverseLookupWindow"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
+                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                             WindowStartupLocation="CenterScreen" ResizeMode="CanResize" IconVisibility="Collapsed"
+                             Height="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.60'}"
+                             Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.65'}">
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type adonisControls:AdonisWindow}}">
+            <Setter Property="Title" Value="{DynamicResource UI_AudioLookup_Title}" />
+        </Style>
+    </adonisControls:AdonisWindow.Style>
+
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="2 0 2 8">
+            <TextBlock x:Name="TargetTitle" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+            <TextBlock x:Name="TargetDetails" Margin="0 2 0 0" Opacity=".7" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <DockPanel Grid.Row="1" Margin="0 0 0 6">
+            <Button x:Name="OpenButton" DockPanel.Dock="Right" Padding="10 3" Margin="8 0 0 0" Click="OnOpenClick"
+                    Content="{DynamicResource UI_AudioLookup_Open}" IsEnabled="False" />
+            <TextBox x:Name="FilterBox" Padding="4 2" TextChanged="OnFilterTextChanged"
+                     adonisExtensions:WatermarkExtension.Watermark="{DynamicResource UI_AudioLookup_Filter}" />
+        </DockPanel>
+
+        <Grid Grid.Row="2">
+            <DataGrid x:Name="UsageGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Extended"
+                      CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                      EnableRowVirtualization="True" MouseDoubleClick="OnUsageDoubleClick" SelectionChanged="OnSelectionChanged"
+                      Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                      RowBackground="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                      Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}"
+                      HorizontalGridLinesBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}">
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="{DynamicResource UI_AudioLookup_Open}" Click="OnOpenClick" />
+                        <MenuItem Header="{DynamicResource UI_AudioLookup_CopyPath}" Click="OnCopyPathClick" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="{DynamicResource UI_AudioLookup_Depth}" Binding="{Binding Depth}" Width="55" />
+                    <DataGridTextColumn Header="{DynamicResource UI_AudioLookup_Class}" Binding="{Binding ClassName}" Width="190" />
+                    <DataGridTextColumn Header="{DynamicResource UI_AudioLookup_Name}" Binding="{Binding Name}" Width="260" />
+                    <DataGridTextColumn Header="{DynamicResource UI_AudioLookup_Via}" Binding="{Binding Via}" Width="200" />
+                    <DataGridTextColumn x:Name="DetailColumn" Header="{DynamicResource UI_AudioLookup_Detail}" Binding="{Binding Detail}" Width="130" />
+                    <DataGridTextColumn Header="{DynamicResource UI_AudioLookup_Path}" Binding="{Binding Path}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <TextBlock x:Name="EmptyText" Text="{DynamicResource UI_AudioLookup_Empty}" Visibility="Collapsed"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" Opacity=".7" />
+        </Grid>
+
+        <StackPanel Grid.Row="3" Margin="2 6 2 0">
+            <ItemsControl x:Name="NoteList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0 0 0 2"
+                                   Foreground="{DynamicResource {x:Static adonisUi:Brushes.AlertBrush}}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock x:Name="Status" Opacity=".7" TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+    </Grid>
+</adonisControls:AdonisWindow>

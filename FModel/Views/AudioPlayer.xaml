@@ -101,6 +101,15 @@
                                     </Viewbox>
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <MenuItem Header="{DynamicResource UI_AudioReverseLookup}" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Reverse_Lookup">
+                                <MenuItem.Icon>
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SearchIcon}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <MenuItem Header="{DynamicResource UI_Save}" Command="{Binding AudioPlayer.AudioCommand}" CommandParameter="Save">
                                 <MenuItem.Icon>
                                     <Viewbox Width="16" Height="16">
@@ -130,6 +139,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <audioControls:Timeclock Grid.Row="0" />
@@ -155,7 +165,16 @@
                 </Button>
             </StackPanel>
             <audioControls:SpectrumAnalyzer Grid.Row="0" Grid.RowSpan="2" />
-            <audioControls:Timeline Grid.Row="2" />
+            <audioControls:WaveformView Grid.Row="2" Height="110" Margin="0 5 0 0" Source="{Binding AudioPlayer}"
+                                        WaveBrush="#7F848E" CursorBrush="Brown" TextBrush="#7F848E">
+                <audioControls:WaveformView.PlayedBrush>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#45B649" Offset="0.0" />
+                        <GradientStop Color="#DCE35B" Offset="1.0" />
+                    </LinearGradientBrush>
+                </audioControls:WaveformView.PlayedBrush>
+            </audioControls:WaveformView>
+            <audioControls:Timeline Grid.Row="3" />
         </Grid>
     </Grid>
 </adonisControls:AdonisWindow>

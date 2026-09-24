@@ -5,10 +5,31 @@
       "tag": "6.0.0.0",
       "date": "2026-09-24",
       "title": {
-        "en": "Blueprint Graph for Every Blueprint, Asset Type Filter and a Faster Folder Tree",
-        "ja": "全ブループリントのグラフ表示・アセットの種類で絞り込み・フォルダツリーの高速化"
+        "en": "Audio Waveform and Sound Usage Lookup, Blueprint Graph for Every Blueprint and Asset Type Filter",
+        "ja": "音声の波形表示・使用箇所の逆引き・全ブループリントのグラフ表示・アセットの種類で絞り込み"
       },
       "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Audio Player: the waveform of the playing sound is shown above the timeline, the part already played in green. Click anywhere on it to jump there.",
+            "ja": "オーディオプレイヤー: 再生中の音声の波形を再生位置バーの上に表示するようにしました。再生済みの部分は緑色で表示され、波形をクリックするとその位置へ移動します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Find Where This Sound Is Used: right click a sound in the Audio Player playlist or a sound asset in the explorer to list the assets that use it, up to three levels (SoundWave → SoundCue → AnimMontage → AnimBP...). Double click a row to open the asset. In games using Wwise, the Wwise events playing the same media are listed too. Only hard references are searched, in IoStore games.",
+            "ja": "音声の使用箇所の逆引き: オーディオプレイヤーの再生リスト、またはエクスプローラーの音声アセットを右クリックして「この音声の使用箇所を逆引き」を選ぶと、その音声を使っているアセットを 3 段階まで一覧表示します (SoundWave → SoundCue → AnimMontage → AnimBP など)。行をダブルクリックするとアセットを開きます。Wwise を使うゲームでは、同じメディアを再生する Wwise イベントも表示します。検索対象はハード参照のみで、IoStore 形式のゲームに対応しています。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Copy: \"Object Path\" copies the path the engine uses (/Game/Athena/.../Foo.Foo, /BRCosmetics/... for plugins), from the explorer, the search window and the tab menu.",
+            "ja": "コピー: 「オブジェクトパス」で、エンジンが使う形式のパス (/Game/Athena/.../Foo.Foo、プラグインは /BRCosmetics/... など) をコピーできるようにしました。エクスプローラー・検索ウィンドウ・タブの右クリックメニューから使えます。"
+          }
+        },
         {
           "type": "Added",
           "text": {

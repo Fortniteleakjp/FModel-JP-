@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CSCore.CoreAudioAPI;
+using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -22,9 +23,9 @@ public partial class AudioPlayer
         InitializeComponent();
     }
 
-    public void Load(byte[] data, string filePath)
+    public void Load(byte[] data, string filePath, GameFile sourceAsset = null)
     {
-        _applicationView.AudioPlayer.AddToPlaylist(data, filePath);
+        _applicationView.AudioPlayer.AddToPlaylist(data, filePath, sourceAsset);
     }
 
     private void OnClosing(object sender, CancelEventArgs e)

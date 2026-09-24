@@ -39,6 +39,9 @@ public class AudioCommand : ViewModelCommand<AudioPlayerViewModel>
             case "Save_Playlist":
                 contextViewModel.SavePlaylist();
                 break;
+            case "Reverse_Lookup":
+                contextViewModel.ReverseLookup();
+                break;
         }
     }
 }

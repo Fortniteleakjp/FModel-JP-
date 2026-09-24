@@ -70,6 +70,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         WorldOutliner,
         MaterialGraph,
         BlueprintGraph,
+        AudioReverseLookup,
         Diff,
         DiffPickFolder,
         DiffPreviousVersion,
@@ -119,6 +120,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_World_Outliner" => (EAction.Show, EShowAssetType.WorldOutliner, EBulkType.None),
             "Assets_Material_Graph" => (EAction.Show, EShowAssetType.MaterialGraph, EBulkType.None),
             "Assets_Blueprint_Graph" => (EAction.Show, EShowAssetType.BlueprintGraph, EBulkType.None),
+            "Assets_Audio_Reverse_Lookup" => (EAction.Show, EShowAssetType.AudioReverseLookup, EBulkType.None),
             "Assets_Athena_Profile" => (EAction.Show, EShowAssetType.AthenaProfile, EBulkType.None),
             "Assets_Athena_Queue_Add" => (EAction.Show, EShowAssetType.AthenaQueueAdd, EBulkType.None),
             "Assets_Athena_Queue_Remove" => (EAction.Show, EShowAssetType.AthenaQueueRemove, EBulkType.None),
@@ -213,6 +215,15 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     }
 
                     System.Windows.Application.Current.Dispatcher.Invoke(() => new BlueprintGraphWindow(graph).Show());
+                    return;
+                }
+
+                if (showtype is EShowAssetType.AudioReverseLookup)
+                {
+                    var entry = assets.FirstOrDefault();
+                    if (entry is null) return;
+
+                    AudioReverseLookupWindow.RunAndShow(entry, null, cancellationToken);
                     return;
                 }
 

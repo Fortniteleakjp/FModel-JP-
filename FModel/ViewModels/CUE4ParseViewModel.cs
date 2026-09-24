@@ -1935,10 +1935,11 @@ public partial class CUE4ParseViewModel : ViewModel
         // since we are currently in a thread, the audio player's lifetime (memory-wise) will keep the current thread up and running until fmodel itself closes
         // the solution would be to kill the current thread at this line and then open the audio player without "Application.Current.Dispatcher.Invoke"
         // but the ThreadWorkerViewModel is an idiot and doesn't understand we want to kill the current thread inside the current thread and continue the code
+        var sourceAsset = TabControl.SelectedTab?.Entry; // the asset being extracted, used to look up where the sound is used
         Application.Current.Dispatcher.Invoke(delegate
         {
             var audioPlayer = Helper.GetWindow<AudioPlayer>("Audio Player", () => new AudioPlayer().Show());
-            audioPlayer.Load(data, savedAudioPath);
+            audioPlayer.Load(data, savedAudioPath, sourceAsset);
         });
     }
 
