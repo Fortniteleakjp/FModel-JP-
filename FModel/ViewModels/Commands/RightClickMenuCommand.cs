@@ -71,6 +71,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         MaterialGraph,
         BlueprintGraph,
         AudioReverseLookup,
+        MemberUsage,
         Diff,
         DiffPickFolder,
         DiffPreviousVersion,
@@ -121,6 +122,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_Material_Graph" => (EAction.Show, EShowAssetType.MaterialGraph, EBulkType.None),
             "Assets_Blueprint_Graph" => (EAction.Show, EShowAssetType.BlueprintGraph, EBulkType.None),
             "Assets_Audio_Reverse_Lookup" => (EAction.Show, EShowAssetType.AudioReverseLookup, EBulkType.None),
+            "Assets_Member_Usage" => (EAction.Show, EShowAssetType.MemberUsage, EBulkType.None),
             "Assets_Athena_Profile" => (EAction.Show, EShowAssetType.AthenaProfile, EBulkType.None),
             "Assets_Athena_Queue_Add" => (EAction.Show, EShowAssetType.AthenaQueueAdd, EBulkType.None),
             "Assets_Athena_Queue_Remove" => (EAction.Show, EShowAssetType.AthenaQueueRemove, EBulkType.None),
@@ -224,6 +226,23 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     if (entry is null) return;
 
                     AudioReverseLookupWindow.RunAndShow(entry, null, cancellationToken);
+                    return;
+                }
+
+                if (showtype is EShowAssetType.MemberUsage)
+                {
+                    var entry = assets.FirstOrDefault();
+                    if (entry is null) return;
+
+                    var (owner, members) = MemberUsageWindow.ReadMembers(entry);
+                    if (members is null)
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text($"{entry.Name} is not a blueprint", Constants.WHITE, true));
+                        return;
+                    }
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => new MemberUsageWindow(members: members, owner: owner).Show());
                     return;
                 }
 

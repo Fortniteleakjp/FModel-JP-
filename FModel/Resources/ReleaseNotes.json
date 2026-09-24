@@ -1,6 +1,59 @@
 {
   "releases": [
     {
+      "version": "6.1.0",
+      "tag": "6.1.0.0",
+      "date": "2026-09-25",
+      "title": {
+        "en": "Function & Variable Usage",
+        "ja": "関数・変数の使用箇所"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Function & Variable Usage: lists the blueprints that call a function or get / set a variable, and in which function or event they do it, like Find References in the editor. Each row tells how it is used (Call, Get, Set, Bind, Implement) and how many times. Double click a row to open the Blueprint Graph at that spot, the nodes using it highlighted.",
+            "ja": "関数・変数の使用箇所: 関数を呼び出している・変数を取得/設定しているブループリントを、どの関数・イベントで使っているかまで一覧表示するようにしました (UE エディタの「参照を検索」相当)。使い方 (呼び出し・取得・設定・バインド・実装) と回数も表示します。行をダブルクリックすると、ブループリントグラフの該当箇所を開き、使用しているノードをハイライトします。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Function & Variable Usage can be opened from: a node or a function of the Blueprint Graph (right click), a blueprint in the explorer (right click, then pick one of its functions or variables), or the Views menu to type a name: K2_GetActorLocation, Actor:K2_GetActorLocation or /Game/Path/BP_Foo.BP_Foo_C:MyVariable.",
+            "ja": "関数・変数の使用箇所は次の場所から開けます: ブループリントグラフのノードや関数一覧の右クリック、エクスプローラーのブループリントの右クリック (その関数・変数から選択)、「表示」メニュー (名前を入力: K2_GetActorLocation、Actor:K2_GetActorLocation、/Game/Path/BP_Foo.BP_Foo_C:MyVariable など)。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Function & Variable Usage: the first search over the whole game reads every package (about 40 seconds for Fortnite), the next ones only the packages holding blueprints (a few seconds). Which packages hold blueprints is cached for a day, across restarts too, and rebuilt when the game's files change. \"Clear Cache\" at the bottom of the window resets it.",
+            "ja": "関数・変数の使用箇所: ゲーム全体の初回検索は全パッケージを読むため時間がかかります (Fortnite で約 40 秒)。2 回目以降はブループリントを含むパッケージだけを読むため数秒で終わります。この一覧は再起動後も 1 日キャッシュされ、ゲームのファイル構成が変わると作り直します。ウィンドウ右下の「キャッシュを削除」でいつでもリセットできます。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Function & Variable Usage needs \"Serialize Script Bytecode\" to tell how and where a member is used, without it packages are only matched on the names and imports they hold. Packages streamed on demand from the CDN (not installed) are not searched, reading them would download each one.",
+            "ja": "関数・変数の使用箇所で、どの関数でどう使っているかを判定するには設定「スクリプトバイトコードをシリアル化」が必要です。オフの場合は、パッケージが持つ名前とインポートでのみ照合します。CDN からオンデマンド配信されるパッケージ (未インストール) は、1 件ずつダウンロードが必要になるため検索対象外です。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Find Where This Sound Is Used: the selected row is highlighted, it could not be told apart from the others.",
+            "ja": "音声の使用箇所の逆引き: 選択した行の色が変わらず、どれを選択しているか分からなかった問題を修正しました。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Find Where This Sound Is Used: in Fortnite, the lookup downloaded the headers of the on-demand containers from the CDN, and failed when the CDN did not answer.",
+            "ja": "音声の使用箇所の逆引き: Fortnite で、オンデマンド配信のコンテナの情報を CDN からダウンロードしてしまい、CDN が応答しないと逆引きが失敗する問題を修正しました。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.0.0",
       "tag": "6.0.0.0",
       "date": "2026-09-24",

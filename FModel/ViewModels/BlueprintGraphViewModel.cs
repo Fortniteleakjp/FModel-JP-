@@ -14,6 +14,7 @@ using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.BlueprintDecompiler;
 using CUE4Parse.UE4.Objects.UObject.Editor;
+using FModel.Services;
 
 namespace FModel.ViewModels;
 
@@ -102,6 +103,11 @@ public class BlueprintGraphNode : INotifyPropertyChanged
 
     public bool CanJump => !string.IsNullOrEmpty(TargetFunction);
 
+    /// <summary>The function or variable this node calls or reads, as <see cref="MemberUsageQuery"/> text, to find its other uses.</summary>
+    public string MemberQuery { get; set; }
+    public EMemberKind MemberKind { get; set; }
+    public bool HasMemberQuery => MemberQuery != null;
+
     private bool _isSelected;
     public bool IsSelected
     {
@@ -153,6 +159,9 @@ public class BlueprintFunctionGraph
     /// <summary>Parent blueprint the function is declared in, null for the class's own ones.</summary>
     public string InheritedFrom { get; set; }
     public bool IsInherited => InheritedFrom != null;
+
+    /// <summary>The function as <see cref="MemberUsageQuery"/> text, null for the event graph and the class views.</summary>
+    public string MemberQuery { get; set; }
 
     public List<BlueprintGraphNode> Nodes { get; init; } = [];
     public List<BlueprintGraphEdge> Edges { get; init; } = [];
@@ -339,11 +348,17 @@ public static partial class BlueprintGraphBuilder
         if (context.Ubergraph != null)
             graphs.Add(new FunctionGraphBuilder(context.Ubergraph, context).Build(cancellationToken));
 
+        var package = blueprint.Owner?.Name;
         foreach (var function in functions.Where(f => f != context.Ubergraph && !context.IsTimelineCallback(f.Name))
                      .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            graphs.Add(new FunctionGraphBuilder(function, context).Build(cancellationToken));
+            var graph = new FunctionGraphBuilder(function, context).Build(cancellationToken);
+            // an override is the parent's function, calls may go through the parent class
+            graph.MemberQuery = function.SuperStruct is { IsNull: false } overridden
+                ? MemberUsageLookup.QueryForFunction(overridden)
+                : MemberUsageLookup.QueryFor(package, blueprint.Name, function.Name);
+            graphs.Add(graph);
         }
 
         return graphs;
@@ -1084,6 +1099,8 @@ public static partial class BlueprintGraphBuilder
         {
             var (target, property) = DelegateParts(dispatcher);
             var node = ExecNode($"{action} {context.VariableDisplay(property, function)}", EBlueprintNodeKind.Other, statement);
+            node.MemberQuery = VariableQuery(dispatcher);
+            node.MemberKind = EMemberKind.Variable;
             var pin = AddPin(node, "Target");
             if (target != null) Connect(node, pin, Resolve(target, 1));
             else node.Inputs[pin].Value = "self";
@@ -1190,6 +1207,8 @@ public static partial class BlueprintGraphBuilder
 
             // SGraphNodeK2Var draws a variable set as "SET"
             var set = ExecNode("SET", EBlueprintNodeKind.Set, statement);
+            set.MemberQuery = VariableQuery(variable);
+            set.MemberKind = EMemberKind.Variable;
             if (variable is EX_Context { ContextExpression: EX_VariableBase memberVariable } memberContext)
             {
                 AddInput(set, "Target", memberContext.ObjectExpression);
@@ -1362,6 +1381,31 @@ public static partial class BlueprintGraphBuilder
             }
 
             if (info is { Class: "GameplayStatics", Name: "BeginDeferredActorSpawnFromClass" }) _spawnNodes[node] = assigned;
+
+            // what "find usages" of this node looks for: the function, the event dispatcher of a delegate call
+            if (call is EX_CallMulticastDelegate dispatcherCall)
+            {
+                node.MemberQuery = VariableQuery(dispatcherCall.Delegate);
+                node.MemberKind = EMemberKind.Variable;
+            }
+            else if (context.Ubergraph == null || callee.Name != context.Ubergraph.Name)
+            {
+                node.MemberQuery = call switch
+                {
+                    EX_FinalFunction final => MemberUsageLookup.QueryForFunction(final.StackNode),
+                    // a function library runs on its class default object
+                    _ when target is EX_ObjectConst { Value: { IsNull: false } instance } => MemberUsageLookup.QueryForObjectMember(instance, callee.Name),
+                    // one of our own functions, or the parent one it overrides
+                    _ when callee.Owner == null && target is null or EX_Self && context.Functions.TryGetValue(callee.Name, out var own) =>
+                        own.SuperStruct is { IsNull: false } overridden
+                            ? MemberUsageLookup.QueryForFunction(overridden)
+                            : MemberUsageLookup.QueryFor(context.Class.Owner?.Name, context.ClassName, callee.Name),
+                    _ => null
+                };
+                node.MemberQuery ??= MemberUsageLookup.QueryFor(callee.Owner == context.ClassName ? context.Class.Owner?.Name : null, callee.Owner, callee.Name);
+                node.MemberKind = EMemberKind.Function;
+            }
+
             return node;
         }
 
@@ -1586,12 +1630,17 @@ public static partial class BlueprintGraphBuilder
                     if (_producers.TryGetValue(name, out var produced)) return produced;
                     if (IsTemporary(name)) return Source.Later(name);
 
-                    return GetNode(name);
+                    var source = GetNode(name);
+                    source.Node.MemberQuery = VariableQuery(variable);
+                    source.Node.MemberKind = EMemberKind.Variable;
+                    return source;
                 }
                 case EX_Context { ContextExpression: EX_VariableBase member } memberContext:
                 {
                     var display = context.VariableDisplay(member.Variable.ToString(), function);
                     var get = NewNode(display, EBlueprintNodeKind.Get, Code(expression), -1, _DATA_WIDTH);
+                    get.MemberQuery = VariableQuery(member);
+                    get.MemberKind = EMemberKind.Variable;
                     if (ContextTarget(memberContext.ObjectExpression) != null) AddInput(get, "Target", memberContext.ObjectExpression, depth);
                     get.Outputs.Add(new BlueprintPin { Name = display });
                     return new Source(get, 0, null);
@@ -2009,6 +2058,15 @@ public static partial class BlueprintGraphBuilder
     {
         public override string ToString() => property.ToString();
     }
+
+    /// <summary>The member variable an expression reads or writes, null for locals and temporaries.</summary>
+    private static string VariableQuery(KismetExpression expression) => expression switch
+    {
+        EX_Context { ContextExpression: EX_VariableBase member } => VariableQuery(member),
+        EX_LocalVariable or EX_LocalOutVariable => null,
+        EX_VariableBase variable when !IsTemporary(variable.Variable.ToString()) => MemberUsageLookup.QueryForProperty(variable.Variable),
+        _ => null
+    };
 
     private static string VariableNameOf(KismetExpression variable) => variable switch
     {

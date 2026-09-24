@@ -157,8 +157,13 @@
             <TextBlock x:Name="ClassText" DockPanel.Dock="Top" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Margin="2 0 0 4" />
             <TextBox x:Name="FunctionFilter" DockPanel.Dock="Top" Margin="0 0 0 6" TextChanged="OnFunctionFilterChanged"
                      adonisExtensions:WatermarkExtension.Watermark="{DynamicResource UI_BlueprintGraph_FilterFunctions}" />
-            <ListBox x:Name="FunctionList" SelectionChanged="OnFunctionSelected"
+            <ListBox x:Name="FunctionList" SelectionChanged="OnFunctionSelected" ContextMenuOpening="OnFunctionContextMenuOpening"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingPanel.IsVirtualizing="True">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem x:Name="FindFunctionUsagesItem" Header="{DynamicResource UI_MemberUsage_FindFunction}" Click="OnFindFunctionUsagesClick" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:BlueprintFunctionGraph}">
                         <StackPanel Margin="0 1" ToolTip="{Binding Signature}">
@@ -248,6 +253,12 @@
                             <DataTemplate DataType="{x:Type viewModels:BlueprintGraphNode}">
                                 <Border Style="{StaticResource NodeCard}" Width="{Binding Width}" Height="{Binding Height}"
                                         MouseLeftButtonDown="OnNodeClick" ToolTip="{Binding Code}">
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="{DynamicResource UI_MemberUsage_FindNode}" Click="OnFindNodeUsagesClick"
+                                                      IsEnabled="{Binding HasMemberQuery}" />
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
                                     <DockPanel>
                                         <Border DockPanel.Dock="Top" Style="{StaticResource NodeHeader}" Height="{Binding HeaderHeight}">
                                             <StackPanel VerticalAlignment="Center">

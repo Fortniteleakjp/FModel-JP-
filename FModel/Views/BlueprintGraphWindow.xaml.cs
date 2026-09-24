@@ -157,6 +157,32 @@ public partial class BlueprintGraphWindow : AdonisWindow
         Dispatcher.BeginInvoke(() => CenterOn(target), System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
+    /// <summary>
+    /// Opens the function using a member found by <see cref="MemberUsageWindow"/>, the member's nodes highlighted.
+    /// </summary>
+    public void ShowUsage(string functionName, int offset, string member)
+    {
+        if (!string.IsNullOrEmpty(member)) NodeSearch.Text = member;
+        if (!string.IsNullOrEmpty(functionName)) JumpTo(functionName, offset);
+    }
+
+    private void OnFindNodeUsagesClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: BlueprintGraphNode { HasMemberQuery: true } node })
+            new MemberUsageWindow(node.MemberQuery, node.MemberKind, searchOnLoad: true).Show();
+    }
+
+    private void OnFindFunctionUsagesClick(object sender, RoutedEventArgs e)
+    {
+        if (FunctionList.SelectedItem is BlueprintFunctionGraph { MemberQuery: not null } function)
+            new MemberUsageWindow(function.MemberQuery, EMemberKind.Function, searchOnLoad: true).Show();
+    }
+
+    private void OnFunctionContextMenuOpening(object sender, ContextMenuEventArgs e)
+    {
+        FindFunctionUsagesItem.IsEnabled = FunctionList.SelectedItem is BlueprintFunctionGraph { MemberQuery: not null };
+    }
+
     private void OnNodeClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is not FrameworkElement { DataContext: BlueprintGraphNode node }) return;
@@ -262,7 +288,7 @@ public partial class BlueprintGraphWindow : AdonisWindow
         if (_panMoved) e.Handled = true; // no context menu after a right drag
     }
 
-    /// <summary>A left click on a card selects it, and the scroll bars keep their own dragging.</summary>
+    /// <summary>A left click on a card selects it, a right click opens its menu, and the scroll bars keep their own dragging.</summary>
     private static bool IsOnNodeOrScrollBar(DependencyObject source, MouseButton button)
     {
         for (var element = source; element != null; element = element is Visual or System.Windows.Media.Media3D.Visual3D
@@ -272,7 +298,7 @@ public partial class BlueprintGraphWindow : AdonisWindow
             {
                 case System.Windows.Controls.Primitives.ScrollBar:
                     return true;
-                case FrameworkElement { DataContext: BlueprintGraphNode } when button == MouseButton.Left:
+                case FrameworkElement { DataContext: BlueprintGraphNode } when button is MouseButton.Left or MouseButton.Right:
                     return true;
                 case ScrollViewer:
                     return false;

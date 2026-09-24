@@ -421,8 +421,9 @@ public static partial class AudioReverseLookup
     /// </summary>
     private static void FindReferencers(AbstractVfsFileProvider provider, List<(GameFile File, string Label)> seeds, AudioReverseLookupResult result, CancellationToken cancellationToken)
     {
+        // the header of an on-demand container is downloaded when first read (and fails the whole lookup when the CDN doesn't answer)
         var readers = provider.MountedVfs.OfType<IoStoreReader>()
-            .Where(r => r.ContainerHeader is { StoreEntries.Length: > 0 })
+            .Where(r => r is not IoStoreOnDemandReader && r.ContainerHeader is { StoreEntries.Length: > 0 })
             .ToArray();
         if (readers.Length == 0)
         {

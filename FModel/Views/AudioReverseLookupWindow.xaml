@@ -14,6 +14,39 @@
         </Style>
     </adonisControls:AdonisWindow.Style>
 
+    <adonisControls:AdonisWindow.Resources>
+        <!-- the rows have their own background, which hides the theme's selection: the selected row is drawn in the accent color -->
+        <Style x:Key="UsageCell" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="4 2" />
+            <!-- the themed cell template doesn't draw its background -->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                            <ContentPresenter VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" />
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static adonisUi:Brushes.AccentForegroundBrush}}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="UsageRow" TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource {x:Static adonisUi:Brushes.Layer2HighlightBrush}}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </adonisControls:AdonisWindow.Resources>
+
     <Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -36,6 +69,7 @@
 
         <Grid Grid.Row="2">
             <DataGrid x:Name="UsageGrid" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Extended"
+                      CellStyle="{StaticResource UsageCell}" RowStyle="{StaticResource UsageRow}"
                       CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
                       EnableRowVirtualization="True" MouseDoubleClick="OnUsageDoubleClick" SelectionChanged="OnSelectionChanged"
                       Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"

@@ -51,6 +51,9 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Views_GameplayTags":
                 Helper.OpenWindow<AdonisWindow>("Gameplay Tags", () => new GameplayTagBrowserWindow().Show());
                 break;
+            case "Views_MemberUsage":
+                new MemberUsageWindow().Show();
+                break;
             case "Views_ImageMerger":
                 Helper.OpenWindow<AdonisWindow>("Image Merger", () => new ImageMerger().Show());
                 break;

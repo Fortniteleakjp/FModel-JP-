@@ -109,6 +109,10 @@ public static class BlueprintNodeDatabase
         return null;
     }
 
+    /// <summary>Parent classes of a native class, nearest first (from the SDK dump), empty when unknown.</summary>
+    public static IReadOnlyList<string> Supers(string className) =>
+        className != null && _data.Value.Supers.TryGetValue(className, out var supers) ? supers : [];
+
     /// <summary>
     /// Lookup by name alone, for virtual calls and events whose class the bytecode does not name.
     /// Only answers when every class declaring that name agrees, or when <paramref name="preferEvent"/> picks the event.
