@@ -243,6 +243,7 @@
     <system:String x:Key="UI_Nodes">ノード</system:String>
     <system:String x:Key="UI_OK">OK</system:String>
     <system:String x:Key="UI_Offset">オフセット</system:String>
+    <system:String x:Key="UI_ObjectPath">オブジェクトパス</system:String>
     <system:String x:Key="UI_OnlineEvaluator">オンライン評価ツール</system:String>
     <system:String x:Key="UI_OpenAsTable">テーブルとして開く</system:String>
     <system:String x:Key="UI_OpenMaterialGraph">マテリアルグラフで開く</system:String>

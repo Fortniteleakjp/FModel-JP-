@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using CUE4Parse.FileProvider.Objects;
+using FModel.Extensions;
 using FModel.Framework;
 
 namespace FModel.ViewModels.Commands;
@@ -47,6 +48,9 @@ public class CopyCommand : ViewModelCommand<ApplicationViewModel>
                 break;
             case "File_Name_No_Extension":
                 foreach (var entry in entries) sb.AppendLine(entry.NameWithoutExtension);
+                break;
+            case "Object_Path":
+                foreach (var entry in entries) sb.AppendLine(contextViewModel.CUE4Parse.Provider.GetObjectPath(entry));
                 break;
         }
 

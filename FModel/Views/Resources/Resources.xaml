@@ -956,6 +956,7 @@
                                     <MenuItem Header="{DynamicResource UI_PackageName}" Command="{Binding TabCommand}" CommandParameter="File_Name" />
                                     <MenuItem Header="{DynamicResource UI_DirectoryPath}" Command="{Binding TabCommand}" CommandParameter="Directory_Path" />
                                     <MenuItem Header="{DynamicResource UI_PackagePathWOExtension}" Command="{Binding TabCommand}" CommandParameter="File_Path_No_Extension" />
+                                    <MenuItem Header="{DynamicResource UI_ObjectPath}" Command="{Binding TabCommand}" CommandParameter="Object_Path" />
                                     <MenuItem Header="{DynamicResource UI_PackageNameWOExtension}" Command="{Binding TabCommand}" CommandParameter="File_Name_No_Extension" />
                                 </MenuItem>
                             </ContextMenu>

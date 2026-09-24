@@ -663,6 +663,14 @@
                     </MultiBinding>
                 </MenuItem.CommandParameter>
             </MenuItem>
+            <MenuItem Header="{DynamicResource UI_ObjectPath}" Command="{Binding CopyCommand}">
+                <MenuItem.CommandParameter>
+                    <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                        <Binding Source="Object_Path" />
+                        <Binding Path="PlacementTarget.SelectedItems" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                    </MultiBinding>
+                </MenuItem.CommandParameter>
+            </MenuItem>
             <MenuItem Header="{DynamicResource UI_PackageNameWOExtension}" Command="{Binding CopyCommand}">
                 <MenuItem.CommandParameter>
                     <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">

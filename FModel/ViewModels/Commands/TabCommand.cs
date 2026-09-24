@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using AdonisUI.Controls;
+using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Views.Resources.Controls;
@@ -119,6 +120,9 @@ public class TabCommand : ViewModelCommand<TabItem>
                 break;
             case "File_Name_No_Extension":
                 Clipboard.SetText(tabViewModel.Entry.NameWithoutExtension);
+                break;
+            case "Object_Path":
+                Clipboard.SetText(_applicationView.CUE4Parse.Provider.GetObjectPath(tabViewModel.Entry));
                 break;
         }
 

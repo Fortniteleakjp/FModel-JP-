@@ -596,6 +596,14 @@
                                                 </MultiBinding>
                                             </MenuItem.CommandParameter>
                                         </MenuItem>
+                                        <MenuItem Header="{DynamicResource UI_ObjectPath}" Command="{Binding DataContext.mainApplication.CopyCommand}">
+                                            <MenuItem.CommandParameter>
+                                                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                    <Binding Source="Object_Path" />
+                                                    <Binding Path="SelectedItems" />
+                                                </MultiBinding>
+                                            </MenuItem.CommandParameter>
+                                        </MenuItem>
                                         <MenuItem Header="{DynamicResource UI_PackageNameWOExtension}" Command="{Binding DataContext.mainApplication.CopyCommand}">
                                             <MenuItem.CommandParameter>
                                                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
@@ -1045,6 +1053,14 @@
                                             <MenuItem.CommandParameter>
                                                 <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
                                                     <Binding Source="File_Path_No_Extension" />
+                                                    <Binding Path="SelectedItems" />
+                                                </MultiBinding>
+                                            </MenuItem.CommandParameter>
+                                        </MenuItem>
+                                        <MenuItem Header="{DynamicResource UI_ObjectPath}" Command="{Binding DataContext.mainApplication.CopyCommand}">
+                                            <MenuItem.CommandParameter>
+                                                <MultiBinding Converter="{x:Static converters:MultiParameterConverter.Instance}">
+                                                    <Binding Source="Object_Path" />
                                                     <Binding Path="SelectedItems" />
                                                 </MultiBinding>
                                             </MenuItem.CommandParameter>

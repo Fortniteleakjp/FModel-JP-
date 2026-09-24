@@ -243,6 +243,7 @@
     <system:String x:Key="UI_Nodes">Nodes</system:String>
     <system:String x:Key="UI_OK">OK</system:String>
     <system:String x:Key="UI_Offset">Offset</system:String>
+    <system:String x:Key="UI_ObjectPath">Object Path</system:String>
     <system:String x:Key="UI_OnlineEvaluator">Online Evaluator</system:String>
     <system:String x:Key="UI_OpenAsTable">Open as Table</system:String>
     <system:String x:Key="UI_OpenMaterialGraph">Open Material Graph</system:String>

@@ -3,6 +3,7 @@ using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.Utils;
 using FModel.Settings;
 
 namespace FModel.Extensions;
@@ -79,5 +80,43 @@ public static class CUE4ParseExtensions
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// the reverse of <see cref="AbstractFileProvider.FixPath"/>, turns a file path into the object path the engine uses
+    /// "FortniteGame/Plugins/GameFeatures/BRCosmetics/Content/Athena/Foo.uasset" -> "/BRCosmetics/Athena/Foo.Foo"
+    /// </summary>
+    public static string GetObjectPath(this IFileProvider provider, GameFile file)
+    {
+        const string content = "/Content/";
+        // package names can't contain dots, "Foo.o.uasset" (optional package) holds the same object as "Foo.uasset"
+        var objectName = file.NameWithoutExtension.SubstringBefore('.');
+        var path = file.PathWithoutExtension[..^file.NameWithoutExtension.Length] + objectName;
+
+        var index = path.IndexOf(content, StringComparison.OrdinalIgnoreCase);
+        if (index < 0) return $"/{path}.{objectName}"; // not mounted (Config, etc.), nothing better to give
+
+        var root = path[..index];
+        var tree = path[(index + content.Length)..];
+        return $"/{GetMountPoint(provider, root)}/{tree}.{objectName}";
+    }
+
+    private static string GetMountPoint(IFileProvider provider, string root)
+    {
+        if (root.Equals(provider.ProjectName, StringComparison.OrdinalIgnoreCase)) return "Game";
+        if (root.Equals("Engine", StringComparison.OrdinalIgnoreCase)) return "Engine";
+
+        // plugins are usually mounted under their folder name, but the .uplugin name is what actually counts
+        var folderName = root.SubstringAfterLast('/');
+        if (provider.VirtualPaths.TryGetValue(folderName, out var mounted) && root.Equals(mounted, StringComparison.OrdinalIgnoreCase))
+            return folderName;
+
+        foreach (var (name, pluginPath) in provider.VirtualPaths)
+        {
+            if (root.Equals(pluginPath, StringComparison.OrdinalIgnoreCase))
+                return name;
+        }
+
+        return folderName;
     }
 }
