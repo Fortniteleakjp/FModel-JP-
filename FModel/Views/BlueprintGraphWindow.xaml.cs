@@ -64,17 +64,18 @@ public partial class BlueprintGraphWindow : AdonisWindow
         var blueprint = BlueprintGraphBuilder.FindClass(package);
         return blueprint == null
             ? null
-            : BlueprintGraphBuilder.Build(blueprint, entry.Path, provider.ReadScriptData, EditorNames(provider, entry), cancellationToken);
+            : BlueprintGraphBuilder.Build(blueprint, entry.Path, provider.ReadScriptData, EditorNames(provider, entry.PathWithoutExtension), cancellationToken,
+                parent => parent.Owner?.Name is { } parentPackage ? EditorNames(provider, parentPackage) : null);
     }
 
     /// <summary>
     /// Display names of the blueprint's own functions and variables, kept in the CookedClassMetaData of its .o.uasset.
     /// </summary>
-    private static BlueprintEditorNames EditorNames(CUE4Parse.FileProvider.IFileProvider provider, GameFile entry)
+    private static BlueprintEditorNames EditorNames(CUE4Parse.FileProvider.IFileProvider provider, string pathWithoutExtension)
     {
         try
         {
-            if (provider.TryLoadPackage($"{entry.PathWithoutExtension}.o.uasset", out var editorPackage) &&
+            if (provider.TryLoadPackage($"{pathWithoutExtension}.o.uasset", out var editorPackage) &&
                 editorPackage.GetExportOrNull("CookedClassMetaData") is CUE4Parse.UE4.Objects.UObject.Editor.UClassCookedMetaData metaData)
                 return BlueprintEditorNames.From(metaData);
         }
@@ -124,7 +125,9 @@ public partial class BlueprintGraphWindow : AdonisWindow
     /// </summary>
     private void JumpTo(string functionName, int offset)
     {
-        var function = _graph.Functions.FirstOrDefault(f => f.Name == functionName);
+        // a parent blueprint's graph calls into its own functions first, the child's otherwise
+        var function = _graph.Functions.Where(f => f.Name == functionName)
+            .OrderByDescending(f => f.InheritedFrom == _current?.InheritedFrom).FirstOrDefault();
         if (function == null)
         {
             SetStatus($"{functionName} is not a function of {_graph.Name}");

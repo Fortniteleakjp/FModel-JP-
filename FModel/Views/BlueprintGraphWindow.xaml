@@ -57,6 +57,12 @@
                 <DataTrigger Binding="{Binding Kind}" Value="Struct">
                     <Setter Property="Background" Value="#FF245A9E" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="Component">
+                    <Setter Property="Background" Value="#FF2E6B5B" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Kind}" Value="Defaults">
+                    <Setter Property="Background" Value="#FF8A5A1E" />
+                </DataTrigger>
                 <DataTrigger Binding="{Binding IsCompact}" Value="True">
                     <Setter Property="Visibility" Value="Collapsed" />
                 </DataTrigger>
@@ -165,6 +171,12 @@
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsEventStub}" Value="True">
                                 <Setter TargetName="FunctionName" Property="Opacity" Value=".6" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsClassView}" Value="True">
+                                <Setter TargetName="FunctionName" Property="FontWeight" Value="SemiBold" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsInherited}" Value="True">
+                                <Setter TargetName="FunctionName" Property="FontStyle" Value="Italic" />
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>

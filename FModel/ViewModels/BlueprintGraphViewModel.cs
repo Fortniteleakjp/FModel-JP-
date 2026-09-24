@@ -10,6 +10,7 @@ using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Kismet;
+using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.BlueprintDecompiler;
 using CUE4Parse.UE4.Objects.UObject.Editor;
@@ -31,6 +32,8 @@ public enum EBlueprintNodeKind
     Cast,
     Timeline,
     Struct,
+    Component,
+    Defaults,
     Other
 }
 
@@ -139,15 +142,23 @@ public class BlueprintGraphEdge
 public class BlueprintFunctionGraph
 {
     public string Name { get; init; }
-    public string DisplayName { get; init; }
+    public string DisplayName { get; set; }
     public string Signature { get; init; }
     public bool IsUbergraph { get; init; }
     public bool IsEventStub { get; init; }
+
+    /// <summary>Components tree or class defaults: what the class holds besides its functions.</summary>
+    public bool IsClassView { get; init; }
+
+    /// <summary>Parent blueprint the function is declared in, null for the class's own ones.</summary>
+    public string InheritedFrom { get; set; }
+    public bool IsInherited => InheritedFrom != null;
+
     public List<BlueprintGraphNode> Nodes { get; init; } = [];
     public List<BlueprintGraphEdge> Edges { get; init; } = [];
     public double CanvasWidth { get; set; }
     public double CanvasHeight { get; set; }
-    public string Note { get; init; }
+    public string Note { get; set; }
 
     public BlueprintGraphNode FindByOffset(int offset) =>
         Nodes.Where(node => node.IsExec && node.Offset >= offset).MinBy(node => node.Offset);
@@ -205,7 +216,7 @@ public sealed class BlueprintEditorNames
 /// blueprint's own names from its cooked metadata, K2 nodes (casts, timelines, bound events, Make Struct,
 /// Spawn Actor, Create Widget...) from the titles their K2Node classes build.
 /// </summary>
-public static class BlueprintGraphBuilder
+public static partial class BlueprintGraphBuilder
 {
     private const double _EXEC_WIDTH = 240;
     private const double _DATA_WIDTH = 200;
@@ -219,6 +230,7 @@ public static class BlueprintGraphBuilder
     private const int _MAX_STATEMENTS = 1500;
     private const int _MAX_EXPRESSION_DEPTH = 12;
     private const int _MAX_VALUE = 26;
+    private const int _MAX_PARENTS = 16;
 
     // BlueprintDecompilerUtils keeps the function being printed in a static
     private static readonly Lock _decompilerLock = new();
@@ -229,8 +241,77 @@ public static class BlueprintGraphBuilder
         package.GetExports().OfType<UClass>().FirstOrDefault(c => c.FuncMap is { Count: > 0 }) ??
         package.GetExports().OfType<UClass>().FirstOrDefault();
 
+    /// <summary>
+    /// Graphs of every function of <paramref name="blueprint"/>, its components and class defaults, then the functions
+    /// it inherits from its parent blueprints (a child or data-only blueprint often has no function of its own).
+    /// </summary>
+    /// <param name="editorNamesOf">editor names of a parent blueprint class, read from its own .o.uasset</param>
     public static BlueprintGraph Build(UClass blueprint, string packagePath, bool scriptDataRead, BlueprintEditorNames editorNames,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken, Func<UClass, BlueprintEditorNames> editorNamesOf = null)
+    {
+        var graphs = BuildFunctions(blueprint, editorNames, cancellationToken, out var functionCount, out var eventCount);
+        graphs.AddRange(BuildClassViews(blueprint, cancellationToken));
+
+        var inherited = 0;
+        var parents = new List<string>();
+        foreach (var parent in ParentBlueprints(blueprint))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var parentName = parent.Name.EndsWith("_C", StringComparison.Ordinal) ? parent.Name[..^2] : parent.Name;
+            List<BlueprintFunctionGraph> parentGraphs;
+            try
+            {
+                parentGraphs = BuildFunctions(parent, editorNamesOf?.Invoke(parent), cancellationToken, out _, out _);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                continue; // a parent that fails to build is left out
+            }
+
+            if (parentGraphs.Count == 0) continue;
+
+            foreach (var graph in parentGraphs)
+            {
+                graph.InheritedFrom = parentName;
+                if (!graph.IsUbergraph) graph.DisplayName = $"{graph.DisplayName}  ({parentName})";
+                graph.Note = $"Parent: {parentName}  |  {graph.Note}";
+            }
+
+            graphs.AddRange(parentGraphs);
+            inherited += parentGraphs.Count;
+            parents.Add(parentName);
+        }
+
+        string note;
+        if (!scriptDataRead)
+            note = "Script bytecode is not read, enable \"Serialize Script Bytecode\" in the settings and reload to see the graphs";
+        else if (functionCount == 0)
+            note = inherited > 0
+                ? $"this class has no functions of its own, {inherited} inherited from {string.Join(", ", parents)}"
+                : "this class has no functions, see its components and class defaults";
+        else
+            note = $"{functionCount} functions" + (eventCount > 0 ? $", {eventCount} events" : string.Empty) +
+                   (inherited > 0 ? $", {inherited} inherited" : string.Empty) +
+                   $"  |  node names: {BlueprintNodeDatabase.Source ?? "editor naming rules"}";
+
+        return new BlueprintGraph
+        {
+            Name = blueprint.Name,
+            PackagePath = packagePath,
+            SuperName = blueprint.SuperStruct?.Name,
+            Functions = graphs,
+            Note = note
+        };
+    }
+
+    /// <summary>Graphs of the functions declared in <paramref name="blueprint"/> itself, the EventGraph first.</summary>
+    private static List<BlueprintFunctionGraph> BuildFunctions(UClass blueprint, BlueprintEditorNames editorNames, CancellationToken cancellationToken,
+        out int functionCount, out int eventCount)
     {
         var functions = new List<UFunction>();
         foreach (var pointer in blueprint.FuncMap?.Values ?? Enumerable.Empty<FPackageIndex>())
@@ -247,7 +328,12 @@ public static class BlueprintGraphBuilder
             }
         }
 
+        functionCount = functions.Count;
+        eventCount = 0;
+        if (functions.Count == 0) return [];
+
         var context = new BlueprintContext(blueprint, functions, editorNames ?? new BlueprintEditorNames());
+        eventCount = context.Events.Count;
         var graphs = new List<BlueprintFunctionGraph>();
 
         if (context.Ubergraph != null)
@@ -260,23 +346,30 @@ public static class BlueprintGraphBuilder
             graphs.Add(new FunctionGraphBuilder(function, context).Build(cancellationToken));
         }
 
-        string note;
-        if (!scriptDataRead)
-            note = "Script bytecode is not read, enable \"Serialize Script Bytecode\" in the settings and reload to see the graphs";
-        else if (functions.Count == 0)
-            note = "this class has no functions";
-        else
-            note = $"{functions.Count} functions" + (context.Events.Count > 0 ? $", {context.Events.Count} events" : string.Empty) +
-                   $"  |  node names: {BlueprintNodeDatabase.Source ?? "editor naming rules"}";
+        return graphs;
+    }
 
-        return new BlueprintGraph
+    /// <summary>The blueprint classes above <paramref name="blueprint"/>, nearest first, up to the first native class.</summary>
+    private static IEnumerable<UClass> ParentBlueprints(UClass blueprint)
+    {
+        var super = blueprint.SuperStruct;
+        for (var depth = 0; super is { IsNull: false } && depth < _MAX_PARENTS; depth++)
         {
-            Name = blueprint.Name,
-            PackagePath = packagePath,
-            SuperName = blueprint.SuperStruct?.Name,
-            Functions = graphs,
-            Note = note
-        };
+            UClass parent;
+            try
+            {
+                parent = super.TryLoad(out var loaded) ? loaded as UClass : null;
+            }
+            catch (Exception)
+            {
+                parent = null;
+            }
+
+            if (parent is not UBlueprintGeneratedClass) yield break;
+
+            yield return parent;
+            super = parent.SuperStruct;
+        }
     }
 
     /// <param name="Parameters">ubergraph frame variable the stub copies each parameter into, and the parameter name</param>
