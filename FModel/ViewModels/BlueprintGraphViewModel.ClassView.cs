@@ -129,30 +129,40 @@ public static partial class BlueprintGraphBuilder
         self.Children.AddRange(ordered);
 
         var nodes = new List<BlueprintGraphNode>();
-        var edges = new List<BlueprintGraphEdge>();
+        var depthOf = new Dictionary<BlueprintGraphNode, int>();
+        var links = new List<(BlueprintGraphNode Parent, BlueprintGraphNode Child)>();
         var cursor = _MARGIN;
         BlueprintGraphNode Place(ComponentEntry entry, int depth, bool isSelf)
         {
             var node = isSelf ? SelfNode(blueprint, entry) : ComponentNode(entry, nodes.Count);
             if (!isSelf) node.Inputs.Insert(0, new BlueprintPin { Name = "Parent" });
             if (entry.Children.Count > 0) node.Outputs.Add(new BlueprintPin { Name = "Children" });
+            BlueprintNodeMetrics.Fit(node);
             nodes.Add(node);
+            depthOf[node] = depth;
 
-            node.X = _MARGIN + depth * (_COMPONENT_WIDTH + _TREE_GAP_X);
+            // the children start on the row of their parent, one column to the right
             node.Y = cursor;
             var end = cursor + node.Height + _TREE_GAP_Y;
-
-            foreach (var child in entry.Children)
-            {
-                var childNode = Place(child, depth + 1, false);
-                edges.Add(Wire(node.X + node.Width, node.OutputY(0), childNode.X, childNode.InputY(0), EBlueprintEdgeKind.Data));
-            }
+            foreach (var child in entry.Children) links.Add((node, Place(child, depth + 1, false)));
 
             cursor = Math.Max(cursor, end);
             return node;
         }
 
         Place(self, 0, true);
+
+        // one column per depth, as wide as its widest component
+        var columnX = new List<double>();
+        var x = _MARGIN;
+        for (var depth = 0; depthOf.ContainsValue(depth); depth++)
+        {
+            columnX.Add(x);
+            x += depthOf.Where(pair => pair.Value == depth).Max(pair => pair.Key.Width) + _TREE_GAP_X;
+        }
+
+        foreach (var (node, depth) in depthOf) node.X = columnX[depth];
+        var edges = links.Select(link => Wire(link.Parent.X + link.Parent.Width, link.Parent.OutputY(0), link.Child.X, link.Child.InputY(0), EBlueprintEdgeKind.Data)).ToList();
 
         return new BlueprintFunctionGraph
         {
@@ -374,6 +384,7 @@ public static partial class BlueprintGraphBuilder
             foreach (var (name, value, _) in chunk)
                 node.Inputs.Add(new BlueprintPin { Name = name, Value = value });
 
+            BlueprintNodeMetrics.Fit(node);
             nodes.Add(node);
             x += node.Width + _TREE_GAP_X;
         }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
@@ -20,6 +21,7 @@ public partial class BlueprintGraphWindow : AdonisWindow
 {
     private const double _MIN_ZOOM = 0.1;
     private const double _MAX_ZOOM = 2.5;
+    private const double _ZOOM_STEP = 1.15;
 
     private readonly BlueprintGraph _graph;
     private BlueprintFunctionGraph _current;
@@ -29,12 +31,21 @@ public partial class BlueprintGraphWindow : AdonisWindow
 
     private Point? _panOrigin;
     private Point _panScroll;
+    private MouseButton _panButton;
+    private bool _panMoved;
 
     public BlueprintGraphWindow(BlueprintGraph graph)
     {
         _graph = graph;
 
         InitializeComponent();
+
+        // like the editor: the wheel zooms around the cursor, any button dragged on the background pans.
+        // Registered for handled events too, the ScrollViewer swallows the left button
+        GraphScroll.AddHandler(MouseDownEvent, new MouseButtonEventHandler(OnPanStart), true);
+        GraphScroll.AddHandler(MouseUpEvent, new MouseButtonEventHandler(OnPanEnd), true);
+        GraphScroll.PreviewMouseMove += OnPanMove;
+        GraphScroll.LostMouseCapture += (_, _) => _panOrigin = null;
 
         Title = $"{TryFindResource("UI_BlueprintGraph") as string ?? "Blueprint Graph"} - {graph.Name}";
         ClassText.Text = string.IsNullOrEmpty(graph.SuperName) ? graph.Name : $"{graph.Name} : {graph.SuperName}";
@@ -218,10 +229,14 @@ public partial class BlueprintGraphWindow : AdonisWindow
 
     private void OnPanStart(object sender, MouseButtonEventArgs e)
     {
+        if (_panOrigin != null || IsOnNodeOrScrollBar(e.OriginalSource as DependencyObject, e.ChangedButton)) return;
+
         _panOrigin = e.GetPosition(GraphScroll);
         _panScroll = new Point(GraphScroll.HorizontalOffset, GraphScroll.VerticalOffset);
-        GraphRoot.CaptureMouse();
-        GraphRoot.Cursor = Cursors.SizeAll;
+        _panButton = e.ChangedButton;
+        _panMoved = false;
+        GraphScroll.CaptureMouse();
+        e.Handled = true;
     }
 
     private void OnPanMove(object sender, MouseEventArgs e)
@@ -229,30 +244,61 @@ public partial class BlueprintGraphWindow : AdonisWindow
         if (_panOrigin is not { } origin) return;
 
         var position = e.GetPosition(GraphScroll);
+        if (!_panMoved && Math.Abs(position.X - origin.X) + Math.Abs(position.Y - origin.Y) < 3) return;
+
+        _panMoved = true;
+        GraphScroll.Cursor = Cursors.SizeAll;
         GraphScroll.ScrollToHorizontalOffset(_panScroll.X - (position.X - origin.X));
         GraphScroll.ScrollToVerticalOffset(_panScroll.Y - (position.Y - origin.Y));
     }
 
     private void OnPanEnd(object sender, MouseButtonEventArgs e)
     {
+        if (_panOrigin == null || e.ChangedButton != _panButton) return;
+
         _panOrigin = null;
-        GraphRoot.ReleaseMouseCapture();
-        GraphRoot.Cursor = null;
+        GraphScroll.Cursor = null;
+        GraphScroll.ReleaseMouseCapture();
+        if (_panMoved) e.Handled = true; // no context menu after a right drag
+    }
+
+    /// <summary>A left click on a card selects it, and the scroll bars keep their own dragging.</summary>
+    private static bool IsOnNodeOrScrollBar(DependencyObject source, MouseButton button)
+    {
+        for (var element = source; element != null; element = element is Visual or System.Windows.Media.Media3D.Visual3D
+                 ? VisualTreeHelper.GetParent(element) : LogicalTreeHelper.GetParent(element))
+        {
+            switch (element)
+            {
+                case System.Windows.Controls.Primitives.ScrollBar:
+                    return true;
+                case FrameworkElement { DataContext: BlueprintGraphNode } when button == MouseButton.Left:
+                    return true;
+                case ScrollViewer:
+                    return false;
+            }
+        }
+
+        return false;
     }
 
     private void OnGraphMouseWheel(object sender, MouseWheelEventArgs e)
     {
-        if (Keyboard.Modifiers != ModifierKeys.Control) return;
-
-        Zoom(e.Delta > 0 ? 1.1 : 1 / 1.1);
         e.Handled = true;
+        if (Keyboard.Modifiers == ModifierKeys.Shift)
+        {
+            GraphScroll.ScrollToHorizontalOffset(GraphScroll.HorizontalOffset - e.Delta);
+            return;
+        }
+
+        ZoomAt(Math.Pow(_ZOOM_STEP, e.Delta / 120.0), e.GetPosition(GraphScroll));
     }
 
-    private void OnZoomInClick(object sender, RoutedEventArgs e) => Zoom(1.1);
+    private void OnZoomInClick(object sender, RoutedEventArgs e) => ZoomAt(_ZOOM_STEP, ViewportCenter);
 
-    private void OnZoomOutClick(object sender, RoutedEventArgs e) => Zoom(1 / 1.1);
+    private void OnZoomOutClick(object sender, RoutedEventArgs e) => ZoomAt(1 / _ZOOM_STEP, ViewportCenter);
 
-    private void OnResetZoomClick(object sender, RoutedEventArgs e) => SetZoom(1);
+    private void OnResetZoomClick(object sender, RoutedEventArgs e) => ZoomAt(1 / GraphScale.ScaleX, ViewportCenter);
 
     private void OnFitClick(object sender, RoutedEventArgs e)
     {
@@ -262,7 +308,23 @@ public partial class BlueprintGraphWindow : AdonisWindow
         GraphScroll.ScrollToHome();
     }
 
-    private void Zoom(double factor) => SetZoom(GraphScale.ScaleX * factor);
+    private Point ViewportCenter => new(GraphScroll.ViewportWidth / 2, GraphScroll.ViewportHeight / 2);
+
+    /// <summary>Zooms keeping the graph point under <paramref name="anchor"/> (viewport coordinates) where it is.</summary>
+    private void ZoomAt(double factor, Point anchor)
+    {
+        var old = GraphScale.ScaleX;
+        var scale = Math.Clamp(old * factor, _MIN_ZOOM, _MAX_ZOOM);
+        if (Math.Abs(scale - old) < 0.0001) return;
+
+        var graphX = (GraphScroll.HorizontalOffset + anchor.X) / old;
+        var graphY = (GraphScroll.VerticalOffset + anchor.Y) / old;
+
+        SetZoom(scale);
+        GraphScroll.UpdateLayout();
+        GraphScroll.ScrollToHorizontalOffset(graphX * scale - anchor.X);
+        GraphScroll.ScrollToVerticalOffset(graphY * scale - anchor.Y);
+    }
 
     private void SetZoom(double scale)
     {

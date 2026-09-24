@@ -893,6 +893,9 @@ public static partial class BlueprintGraphBuilder
                 }
             }
 
+            // wide enough for its title and for the pins facing each other on a row
+            foreach (var node in _nodes) BlueprintNodeMetrics.Fit(node);
+
             var edges = Layout(entries, links);
             var graph = new BlueprintFunctionGraph
             {
@@ -1795,7 +1798,11 @@ public static partial class BlueprintGraphBuilder
             var inputsOf = _dataLinks.GroupBy(l => l.To).ToDictionary(g => g.Key, g => g.OrderBy(l => l.ToPin).Select(l => l.From).ToList());
             var placed = new HashSet<BlueprintGraphNode>(execNodes);
             var relative = new Dictionary<BlueprintGraphNode, (BlueprintGraphNode Owner, int Depth, double Y)>();
-            var blocks = new Dictionary<BlueprintGraphNode, (int Depth, double Height)>();
+            var blocks = new Dictionary<BlueprintGraphNode, (double Left, double Height)>();
+
+            // distance from the owner's left edge to the right edge of each column of its data block,
+            // every column as wide as its widest node
+            var columnRight = new Dictionary<BlueprintGraphNode, double[]>();
 
             // pure statements nobody reads hang under the exec node that follows them
             var extraRoots = _standaloneOwner.GroupBy(pair => pair.Value).ToDictionary(g => g.Key, g => g.Select(pair => pair.Key).ToList());
@@ -1803,7 +1810,7 @@ public static partial class BlueprintGraphBuilder
             foreach (var owner in execNodes.OrderBy(n => cell[n].Row).ThenBy(n => cell[n].Column))
             {
                 var cursor = 0.0;
-                var maxDepth = 0;
+                var columnWidth = new List<double> { 0 };
 
                 void Place(BlueprintGraphNode node, int depth)
                 {
@@ -1813,12 +1820,23 @@ public static partial class BlueprintGraphBuilder
                     foreach (var input in inputsOf.GetValueOrDefault(node) ?? []) Place(input, depth + 1);
                     relative[node] = (owner, depth, start);
                     cursor = Math.Max(cursor, start + node.Height + _DATA_GAP_Y);
-                    maxDepth = Math.Max(maxDepth, depth);
+                    while (columnWidth.Count <= depth) columnWidth.Add(0);
+                    columnWidth[depth] = Math.Max(columnWidth[depth], node.Width);
                 }
 
                 foreach (var input in inputsOf.GetValueOrDefault(owner) ?? []) Place(input, 1);
                 foreach (var extra in extraRoots.GetValueOrDefault(owner) ?? []) Place(extra, 1);
-                blocks[owner] = (maxDepth, cursor);
+
+                var right = new double[columnWidth.Count];
+                var left = 0.0;
+                for (var depth = 1; depth < columnWidth.Count; depth++)
+                {
+                    right[depth] = left + _DATA_GAP_X / 2;
+                    left += columnWidth[depth] + _DATA_GAP_X;
+                }
+
+                columnRight[owner] = right;
+                blocks[owner] = (left, cursor);
             }
 
             var rows = rowEnd.Count;
@@ -1850,7 +1868,7 @@ public static partial class BlueprintGraphBuilder
 
             foreach (var (node, (_, row)) in cell.OrderBy(pair => pair.Value.Column))
             {
-                var left = blocks.GetValueOrDefault(node).Depth * (_DATA_WIDTH + _DATA_GAP_X);
+                var left = blocks.GetValueOrDefault(node).Left;
                 var position = Math.Max(_MARGIN + left, rowRight[row] + _COLUMN_GAP + left);
                 foreach (var from in predecessors.GetValueOrDefault(node) ?? [])
                     position = Math.Max(position, from.X + from.Width + _COLUMN_GAP + left);
@@ -1862,7 +1880,7 @@ public static partial class BlueprintGraphBuilder
 
             foreach (var (node, (owner, depth, y)) in relative)
             {
-                node.X = owner.X - depth * (_DATA_WIDTH + _DATA_GAP_X) + _DATA_GAP_X / 2 + (_DATA_WIDTH - node.Width);
+                node.X = owner.X - columnRight[owner][depth] - node.Width; // right aligned in its column
                 node.Y = owner.Y + owner.Height + _BLOCK_GAP + y;
             }
 

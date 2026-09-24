@@ -1,6 +1,80 @@
 {
   "releases": [
     {
+      "version": "6.0.0",
+      "tag": "6.0.0.0",
+      "date": "2026-09-24",
+      "title": {
+        "en": "Blueprint Graph for Every Blueprint, Asset Type Filter and a Faster Folder Tree",
+        "ja": "全ブループリントのグラフ表示・アセットの種類で絞り込み・フォルダツリーの高速化"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Blueprint Graph: a \"Components\" graph shows the component tree of the blueprint like the editor's Components panel, native components and the ones inherited from parent blueprints included, each node listing the values it sets (Static Mesh, Box Extent, Template...). Components replaced by a child blueprint are marked \"(overridden)\".",
+            "ja": "ブループリントグラフ: 「Components」でコンポーネントの親子構造を UE エディタのコンポーネントパネルのように表示します。ネイティブのコンポーネントや親ブループリントから継承したものも含み、各ノードに設定値 (Static Mesh、Box Extent、Template など) を表示します。子ブループリントで差し替えたものには「(overridden)」と表示します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Blueprint Graph: a \"Class Defaults\" graph lists the default values the class changes.",
+            "ja": "ブループリントグラフ: 「Class Defaults」で、そのクラスで変更されている初期値を一覧表示します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Blueprint Graph: the EventGraph and functions of the parent blueprints are listed too, in italics with the parent's name. Double clicking in a parent's graph opens that parent's own function first.",
+            "ja": "ブループリントグラフ: 親ブループリントの EventGraph と関数も、親の名前付き・斜体で一覧に表示します。親のグラフ内でダブルクリックすると、その親自身の関数へ優先して移動します。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Blueprint Graph: the mouse wheel zooms in and out around the cursor like the editor, and dragging the background with the right, middle or left button pans (Shift + wheel scrolls sideways).",
+            "ja": "ブループリントグラフ: UE エディタと同じように、マウスホイールでカーソル位置を中心に拡大・縮小できるようにしました。背景を右・中・左ボタンでドラッグすると移動できます (Shift + ホイールで横スクロール)。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Search: filter the results by asset type (Texture, Materials, Mesh, Animation, Blueprints, Data, Media, Particle, Level, Other), several types can be checked at once. The type is guessed from the file and folder names without reading the assets, so a few files may land in the wrong type.",
+            "ja": "検索: 検索結果をアセットの種類 (Texture・Materials・Mesh・Animation・Blueprints・Data・Media・Particle・Level・Other) で絞り込めるようにしました。複数の種類を同時に選べます。アセットを読み込まずファイル名・フォルダ名から推定するため、一部のファイルは別の種類に分類されることがあります。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Updated to the latest FModel and CUE4Parse: much faster folder tree navigation, instant jump to an asset from the search, and new or updated support for several games (PUBG, Arena Breakout Infinite, Conan Exiles Enhanced, New Gundam Breaker, Destroy All Humans! 2 - Reprobed, Delta Force, Splitgate 2...).",
+            "ja": "本家 FModel と CUE4Parse の最新版を取り込みました。フォルダツリーの移動が大幅に速くなり、検索からアセットへの移動も一瞬で終わるようになりました。いくつかのゲーム (PUBG、Arena Breakout Infinite、Conan Exiles Enhanced、New ガンダムブレイカー、Destroy All Humans! 2 - Reprobed、Delta Force、Splitgate 2 など) の対応も追加・更新されています。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Blueprint Graph was empty for blueprints without functions of their own (data-only blueprints, child blueprints whose logic lives in the parent), in Fortnite and in other games alike.",
+            "ja": "自分の関数を持たないブループリント (データのみのブループリントや、処理が親側にある子ブループリント) で、ブループリントグラフが空になる問題を修正しました。Fortnite 以外のゲームでも表示されます。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Blueprint Graph: pin names, typed-in values and titles could be drawn over each other on narrow nodes. Nodes are now as wide as their texts.",
+            "ja": "ブループリントグラフ: 幅の狭いノードで、ピン名・入力値・タイトルが重なって表示されることがある問題を修正しました。ノードの幅を文字に合わせて広げるようにしました。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Going to a favorite directory could fail, then suddenly jump there later after an unrelated action.",
+            "ja": "お気に入りディレクトリへの移動が失敗し、別の操作をした後に突然移動することがある問題を修正しました。"
+          }
+        }
+      ]
+    },
+    {
       "version": "5.9.1",
       "tag": "5.9.1.0",
       "date": "2026-09-24",

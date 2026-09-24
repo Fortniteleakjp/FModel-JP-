@@ -125,9 +125,9 @@
         <DataTemplate x:Key="InputPin" DataType="{x:Type viewModels:BlueprintPin}">
             <StackPanel Orientation="Horizontal" Height="18" Margin="-6 0 0 0">
                 <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PinGlyph}" VerticalAlignment="Center" />
-                <TextBlock Text="{Binding Name}" FontSize="11" Margin="3 0 0 0" VerticalAlignment="Center" MaxWidth="110" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding Name}" FontSize="11" Margin="3 0 0 0" VerticalAlignment="Center" MaxWidth="180" TextTrimming="CharacterEllipsis" />
                 <Border x:Name="ValueBox" Margin="4 1 0 1" Padding="3 0" CornerRadius="2" Background="#FF1E1F24" Visibility="Collapsed">
-                    <TextBlock Text="{Binding Value}" FontSize="10" FontFamily="Consolas" VerticalAlignment="Center" MaxWidth="120" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Value}" FontSize="10" FontFamily="Consolas" VerticalAlignment="Center" MaxWidth="180" TextTrimming="CharacterEllipsis" />
                 </Border>
             </StackPanel>
             <DataTemplate.Triggers>
@@ -139,7 +139,7 @@
 
         <DataTemplate x:Key="OutputPin" DataType="{x:Type viewModels:BlueprintPin}">
             <StackPanel Orientation="Horizontal" Height="18" HorizontalAlignment="Right" Margin="0 0 -6 0">
-                <TextBlock Text="{Binding Name}" FontSize="11" Margin="0 0 3 0" VerticalAlignment="Center" MaxWidth="120" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding Name}" FontSize="11" Margin="0 0 3 0" VerticalAlignment="Center" MaxWidth="180" TextTrimming="CharacterEllipsis" />
                 <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource PinGlyph}" VerticalAlignment="Center" />
             </StackPanel>
         </DataTemplate>
@@ -212,8 +212,7 @@
                           PreviewMouseWheel="OnGraphMouseWheel" BorderThickness="1"
                           BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer3BorderBrush}}"
                           Background="{DynamicResource {x:Static adonisUi:Brushes.Layer1BackgroundBrush}}">
-                <Grid x:Name="GraphRoot" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top"
-                      MouseLeftButtonDown="OnPanStart" MouseMove="OnPanMove" MouseLeftButtonUp="OnPanEnd">
+                <Grid x:Name="GraphRoot" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Grid.LayoutTransform>
                         <ScaleTransform x:Name="GraphScale" ScaleX="1" ScaleY="1" />
                     </Grid.LayoutTransform>
