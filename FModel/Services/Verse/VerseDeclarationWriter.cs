@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
@@ -13,10 +14,22 @@ namespace FModel.Services.Verse;
 /// Writes the Verse declarations of a cooked class, struct or enum.
 ///
 /// Field types, inheritance, enum values, default values and @editable markers come straight out of
-/// the cooked reflection data and are exact. Function bodies are not cooked, so they are written as
-/// external {} - the bytecode level recovery is what the pseudo-C++ decompiler does instead.
+/// the cooked reflection data and are exact. Function bodies are not cooked as source; with bodies on
+/// they are rebuilt from the Kismet bytecode by <see cref="VerseBodyWriter"/>, otherwise they are
+/// written as external {}.
 /// Access specifiers other than &lt;public&gt; are not cooked at all and cannot be recovered.
 /// </summary>
+/// <summary>what is written for the body of a function</summary>
+public enum VerseBodyMode
+{
+    /// <summary>external {}</summary>
+    None,
+    /// <summary>the body rebuilt as Verse source</summary>
+    Rebuilt,
+    /// <summary>the cooked statements listed one by one, for looking at what the compiler generated</summary>
+    Listing
+}
+
 public class VerseDeclarationWriter
 {
     private const uint SolClassFlagConcrete = 1 << 2;
@@ -24,39 +37,120 @@ public class VerseDeclarationWriter
 
     private readonly VerseTypeResolver _resolver;
     private readonly VerseBodyWriter? _bodies;
+    private readonly VerseBodyMode _mode;
+    private readonly VerseDigestIndex? _digest;
+    private string _owner = string.Empty;
+    private IReadOnlyDictionary<string, string>? _initialisers;
+    private VerseDigestType? _digestType;
 
     /// <param name="withBodies">
     /// also re-synthesise each function body from its Kismet bytecode, instead of writing external {}
     /// </param>
     public VerseDeclarationWriter(string package, bool withBodies = false)
+        : this(package, withBodies ? VerseBodyMode.Rebuilt : VerseBodyMode.None)
+    {
+    }
+
+    /// <param name="digest">
+    /// the digests matching declarations take their public signatures from; by default the ones
+    /// found on this machine, never for a listing, which shows the cook as it is
+    /// </param>
+    public VerseDeclarationWriter(string package, VerseBodyMode mode, VerseDigestIndex? digest = null)
     {
         _resolver = new VerseTypeResolver(package);
-        if (withBodies) _bodies = new VerseBodyWriter(_resolver);
+        _mode = mode;
+        if (mode != VerseBodyMode.None) _bodies = new VerseBodyWriter(_resolver) { Listing = mode == VerseBodyMode.Listing };
+        if (mode != VerseBodyMode.Listing) _digest = digest ?? VerseDigestIndex.Shared;
     }
 
     /// <summary>compiler generated members, they were never part of the original source</summary>
     private static bool IsCompilerGenerated(string name) =>
-        name.StartsWith('$') || name.StartsWith("__verse_0x00000000_", StringComparison.Ordinal);
+        name.StartsWith('$') || name.StartsWith("__verse_0x00000000_", StringComparison.Ordinal) ||
+        name.Contains("$OverrideFactory", StringComparison.Ordinal);
 
     public static string Header(string versePath, bool withBodies = false) =>
-        "# ============================================================================\n" +
+        Header(versePath, withBodies ? VerseBodyMode.Rebuilt : VerseBodyMode.None);
+
+    public static string Header(string versePath, VerseBodyMode mode)
+    {
+        if (mode == VerseBodyMode.Listing)
+            return "# ============================================================================\n" +
+                   $"# COOKED VERSE BYTECODE LISTING -- {versePath}\n" +
+                   "#\n" +
+                   "# The declarations of this package with each function body listed statement by\n" +
+                   "# statement as the compiler cooked it, for looking into what it generated: the\n" +
+                   "# transactional copy only, jumps shown as the if they test, compiler temporaries\n" +
+                   "# ($ExprResult_N, $Callee_N, ...) and runtime helpers kept as they are. Parameters\n" +
+                   "# read Arg0..ArgN. A suspends function is only a stub that makes its task; the\n" +
+                   "# statements of the task's Update, where its body runs, follow it.\n" +
+                   "# ============================================================================\n\n";
+
+        var digest = mode == VerseBodyMode.Listing ? null : VerseDigestIndex.Shared;
+        var digestNote = digest is null || digest.IsEmpty
+            ? $"# No Verse digest (*.digest.verse) was found; placing the digests UEFN generates in\n" +
+              $"#   {VerseDigestIndex.UserFolder ?? "the FModel data folder"}\n" +
+              "# fills in parameter names, declared types and doc comments of the APIs they cover.\n"
+            : $"# {digest.Sources.Count} Verse digest file(s) were found: declarations matching them take their\n" +
+              "# public signatures, parameter names, declared types and doc comments from them.\n";
+
+        return "# ============================================================================\n" +
         $"# RECOVERED VERSE DECLARATIONS -- {versePath}\n" +
         "#\n" +
         "# Reconstructed by FModel-JP from the cooked reflection data of this package.\n" +
         "# Field types, inheritance, enum values, default values and @editable markers\n" +
         "# are read straight out of the cooked data and are exact.\n" +
-        (withBodies
-            ? "# Function bodies are RE-SYNTHESISED from the Kismet bytecode: the control flow and\n" +
-              "# the calls are real, the expression-level source form is not. Local names are not\n" +
-              "# cooked, so parameters read Arg0..ArgN and temporaries keep their cooked names.\n" +
-              "# Anything that could not be reduced to a Verse construct says so on its own line.\n"
+        (mode == VerseBodyMode.Rebuilt
+            ? "# Function bodies are RE-SYNTHESISED from the Kismet bytecode: if / not / for / loop,\n" +
+              "# failure contexts, calls and assignments are rebuilt from what the compiler emitted,\n" +
+              "# and suspends functions are read from the task they were lowered into. Local names\n" +
+              "# survive cooking; parameter names do not, so they read Arg0..ArgN unless the body\n" +
+              "# copies them into a named local. Compiler temporaries that could not be folded back\n" +
+              "# read TmpN, and a body whose control flow could not be rebuilt says so and is listed\n" +
+              "# statement by statement instead.\n"
             : "# Bodies are not cooked, so they are written as `external {}`; use Decompile\n" +
               "# for the bytecode level recovery of the implementations.\n") +
         "# Access specifiers other than <public> are NOT cooked and cannot be recovered.\n" +
         "# Effect specifiers such as <transacts> only survive in the names the compiler\n" +
         "# mangled, so they appear where they survived and are left out where they did not.\n" +
         "# A field shown as `any` had its type erased by cooking (a Verse dynamic property).\n" +
+        digestNote +
         "# ============================================================================\n\n";
+    }
+
+    /// <summary>the finishing touches of a recovered file; a listing keeps every path as cooked</summary>
+    public static string Finish(string text, string localPackage, VerseBodyMode mode) =>
+        mode == VerseBodyMode.Listing ? text : WithUsings(text, localPackage);
+
+    private static readonly Regex Qualifier = new(@"\((/[A-Za-z0-9_.@\-/]+):\)", RegexOptions.Compiled);
+
+    /// <summary>
+    /// takes the (/Path/To/Module:) qualifiers out of the recovered text and lists the modules they
+    /// named as using declarations under the header, the way a hand written .verse file spells them;
+    /// modules of the package itself need no using
+    /// </summary>
+    public static string WithUsings(string text, string localPackage)
+    {
+        const string headerEnd = "=\n\n";
+        var split = text.IndexOf(headerEnd, StringComparison.Ordinal);
+        split = split < 0 ? 0 : split + headerEnd.Length;
+
+        var modules = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+        var body = Qualifier.Replace(text[split..], match =>
+        {
+            var path = match.Groups[1].Value;
+            if (string.IsNullOrEmpty(localPackage) ||
+                !path.Equals(localPackage, StringComparison.OrdinalIgnoreCase) &&
+                !path.StartsWith(localPackage + "/", StringComparison.OrdinalIgnoreCase))
+                modules.Add(path);
+            return string.Empty;
+        });
+
+        if (modules.Count == 0) return text[..split] + body;
+
+        var usings = new StringBuilder();
+        foreach (var module in modules) usings.Append("using { ").Append(module).Append(" }\n");
+        return text[..split] + usings + "\n" + body;
+    }
 
     /// <summary>
     /// declaration of one cooked Verse type, indented for the module level it sits at
@@ -67,6 +161,7 @@ public class VerseDeclarationWriter
         var builder = new StringBuilder();
         var indent = new string(' ', indentLevel * 4);
         var name = NameOf(type);
+        _digestType = _digest?.Find(name, ModulePathOf(type));
 
         switch (type)
         {
@@ -96,9 +191,35 @@ public class VerseDeclarationWriter
         return (type.GetOrDefault<string>("PackageRelativeVersePath") ?? type.Name).SubstringAfterLast('/');
     }
 
-    private static void WriteEnum(StringBuilder builder, string indent, string name, UEnum enumeration)
+    /// <summary>the verse path of the module a type sits in, e.g. /Fortnite.com/Devices</summary>
+    private static string ModulePathOf(UObject type)
     {
-        builder.AppendLine($"{indent}{name} := enum:");
+        var package = VerseMangling.UnmangleCasedName(type.GetOrDefault<FName>("MangledPackageVersePath").Text);
+        var relative = type.GetOrDefault<string>("PackageRelativeVersePath") ?? string.Empty;
+        return relative.Contains('/') ? $"{package}/{relative.SubstringBeforeLast('/')}" : package;
+    }
+
+    /// <summary>the comments and attributes a digest writes above a declaration</summary>
+    private static void Preamble(StringBuilder builder, string indent, VerseDigestMember member, bool editable = false)
+    {
+        foreach (var comment in member.Comments) builder.AppendLine($"{indent}{comment}");
+        foreach (var attribute in member.Attributes) builder.AppendLine($"{indent}{attribute}");
+        if (editable && !member.Attributes.Any(a => a.StartsWith("@editable", StringComparison.Ordinal)))
+            builder.AppendLine($"{indent}@editable");
+    }
+
+    /// <summary>the header of a type from its digest entry, or null when there is none</summary>
+    private bool DigestHeader(StringBuilder builder, string indent)
+    {
+        if (_digestType is null) return false;
+        Preamble(builder, indent, _digestType.Header);
+        builder.AppendLine($"{indent}{_digestType.Header.Declaration}:");
+        return true;
+    }
+
+    private void WriteEnum(StringBuilder builder, string indent, string name, UEnum enumeration)
+    {
+        if (!DigestHeader(builder, indent)) builder.AppendLine($"{indent}{name} := enum:");
         foreach (var (key, _) in enumeration.Names ?? [])
         {
             var entry = VerseMangling.UnmangleCasedName(key.Text.SubstringAfterLast(':'));
@@ -110,7 +231,7 @@ public class VerseDeclarationWriter
 
     private void WriteStruct(StringBuilder builder, string indent, string name, UStruct type)
     {
-        builder.AppendLine($"{indent}{name} := struct{Specifiers(type)}{Inherits(type)}:");
+        if (!DigestHeader(builder, indent)) builder.AppendLine($"{indent}{name} := struct{Specifiers(type)}{Inherits(type)}:");
         if (WriteFields(builder, indent, type, null) == 0)
             builder.AppendLine($"{indent}    # no cooked members");
     }
@@ -119,11 +240,15 @@ public class VerseDeclarationWriter
         IReadOnlySet<string>? includedFunctions, bool includeFields, IReadOnlySet<string>? attributedFunctions)
     {
         var specifiers = Specifiers(@class);
-        builder.AppendLine((@class.GetOrDefault<uint>("SolClassFlags") & SolClassFlagModule) != 0
-            ? $"{indent}{name}{specifiers} := module:"
-            : $"{indent}{name} := class{specifiers}{Inherits(@class)}:");
+        if (!DigestHeader(builder, indent))
+            builder.AppendLine((@class.GetOrDefault<uint>("SolClassFlags") & SolClassFlagModule) != 0
+                ? $"{indent}{name}{specifiers} := module:"
+                : $"{indent}{name} := class{specifiers}{Inherits(@class)}:");
 
+        _owner = @class.Name;
+        _initialisers = includeFields && _mode == VerseBodyMode.Rebuilt ? _bodies!.FieldInitialisers(@class) : null;
         var members = includeFields ? WriteFields(builder, indent, @class, @class.ClassDefaultObject.Load()) : 0;
+        _initialisers = null;
         members += WriteFunctions(builder, indent, @class, members > 0, includedFunctions, includeFields,
             attributedFunctions);
         if (members == 0) builder.AppendLine($"{indent}    # no cooked members");
@@ -157,11 +282,23 @@ public class VerseDeclarationWriter
             // parameters belong to their function, not to the type holding it
             if (property.PropertyFlags.HasFlag(EPropertyFlags.Parm)) continue;
 
-            if (property.PropertyFlags.HasFlag(EPropertyFlags.Edit))
-                builder.AppendLine($"{indent}    @editable");
-
+            var editable = property.PropertyFlags.HasFlag(EPropertyFlags.Edit);
             var name = VerseMangling.UnmangleCasedName(field.Name.Text);
-            builder.AppendLine($"{indent}    {name}:{_resolver.Resolve(property)} = {DefaultOf(field.Name.Text, defaults)}");
+            var initial = DefaultOf(field.Name.Text, defaults);
+            // a default that is not a literal is whatever the class default object computed for it
+            if (initial == "external {}" && _initialisers?.TryGetValue(field.Name.Text, out var computed) == true) initial = computed;
+
+            // the digest declares the field with the type the source gave it, which cooking may have erased
+            if (_digestType?.Fields.GetValueOrDefault(name) is { } declared)
+            {
+                Preamble(builder, indent + "    ", declared, editable);
+                builder.AppendLine($"{indent}    {declared.Declaration} = {initial}");
+                written++;
+                continue;
+            }
+
+            if (editable) builder.AppendLine($"{indent}    @editable");
+            builder.AppendLine($"{indent}    {name}:{_resolver.Resolve(property)} = {initial}");
             written++;
         }
 
@@ -205,7 +342,7 @@ public class VerseDeclarationWriter
             if (includedFunctions is not null && !includedFunctions.Contains(function.Name) &&
                 (!includeUnattributedFunctions || attributedFunctions?.Contains(function.Name) == true)) continue;
 
-            declarations.Add($"{indent}    {Signature(function.Name, function, indent + "    ")}");
+            declarations.Add(Signature(function.Name, function, indent + "    "));
         }
 
         if (declarations.Count == 0) return 0;
@@ -225,79 +362,50 @@ public class VerseDeclarationWriter
 
         if (decoded.IndexOf('(') < 0)
         {
+            // a suspends function also takes the task calling it and its resume states, which the source never wrote
             var parameters = (function.ChildProperties ?? [])
                 .OfType<FProperty>()
                 .Where(p => p.PropertyFlags.HasFlag(EPropertyFlags.Parm) && !p.PropertyFlags.HasFlag(EPropertyFlags.ReturnParm))
+                .Where(p => VerseMangling.UnmangleCasedName(p.Name.Text) is not ("CallingTask" or "CallerResumeState" or "CallerCancelState"))
                 .Select(p => $":{_resolver.Resolve(p)}");
 
             decoded = $"{decoded}({string.Join(",", parameters)})";
         }
 
-        decoded = AsExtensionMethod(decoded);
+        var signature = VerseSignatureParser.Parse(decoded);
+        if (signature is null) return $"{indent}{decoded} = external {{}}";
 
         // the decoded name already ends in ":type" when the compiler needed the return type to
         // tell overloads apart, otherwise it comes off the cooked return parameter
-        if (decoded.LastIndexOf(':') <= decoded.LastIndexOf(')'))
+        if (signature.Tail.LastIndexOf(':') < 0)
         {
             var (effects, returnType) = ReturnOf(function);
-            decoded = $"{decoded}{effects}:{returnType}";
+            signature.Tail = $"{signature.Tail}{effects}:{returnType}";
         }
 
-        if (_bodies is null) return $"{decoded} = external {{}}";
-
-        var body = _bodies.Write(function, indent).TrimEnd('\n');
-        return $"{decoded} =\n{body}";
-    }
-
-    /// <summary>
-    /// the compiler lowers an extension method to "operator.Name" taking the receiver as its first
-    /// parameter, Verse spells that as "(:receiver).Name(rest)"
-    /// </summary>
-    private static string AsExtensionMethod(string decoded)
-    {
-        const string prefix = "operator.";
-        if (!decoded.StartsWith(prefix, StringComparison.Ordinal)) return decoded;
-
-        var open = decoded.IndexOf('(');
-        if (open < 0) return decoded;
-
-        var name = decoded[prefix.Length..open];
-        var parameters = SplitParameters(decoded[(open + 1)..decoded.LastIndexOf(')')]);
-        if (parameters.Count == 0) return decoded;
-
-        var receiver = parameters[0];
-        var rest = string.Join(",", parameters.Skip(1));
-        return $"({receiver}).{name}({rest}){decoded[(decoded.LastIndexOf(')') + 1)..]}";
-    }
-
-    /// <summary>
-    /// splits a parameter list on the commas that separate the parameters themselves, leaving the
-    /// ones nested inside tuple, array and type literals alone
-    /// </summary>
-    private static List<string> SplitParameters(string parameterList)
-    {
-        var parameters = new List<string>();
-        var depth = 0;
-        var start = 0;
-        for (var i = 0; i < parameterList.Length; i++)
+        // the digest names the parameters and spells the signature as the source did
+        var preamble = new StringBuilder();
+        string? declared = null;
+        if (_digestType is not null &&
+            VerseDigestIndex.FindFunction(_digestType, signature.Name, signature.Parameters.Select(p => p.Type).ToList()) is { } entry &&
+            entry.Parameters.Count == signature.Parameters.Count)
         {
-            switch (parameterList[i])
+            for (var i = 0; i < entry.Parameters.Count; i++)
             {
-                case '(' or '{' or '[':
-                    depth++;
-                    break;
-                case ')' or '}' or ']':
-                    depth--;
-                    break;
-                case ',' when depth == 0:
-                    parameters.Add(parameterList[start..i]);
-                    start = i + 1;
-                    break;
+                if (signature.Parameters[i].Named || entry.Parameters[i].Name is not { } parameterName || parameterName.StartsWith('?')) continue;
+                signature.Parameters[i].Name = parameterName;
             }
+
+            Preamble(preamble, indent, entry);
+            declared = entry.Declaration;
         }
 
-        if (start < parameterList.Length) parameters.Add(parameterList[start..]);
-        return parameters;
+        if (_bodies is null) return $"{preamble}{indent}{declared ?? signature.Render() + signature.Tail} = external {{}}";
+
+        // the body is rebuilt first, it is what names the parameters
+        var decides = signature.Tail.Contains("<decides>", StringComparison.Ordinal);
+        var body = _bodies.Write(function, indent, signature.Parameters, _owner, decides).TrimEnd('\n');
+        return $"{preamble}{indent}{declared ?? signature.Render() + signature.Tail} =\n{body}";
     }
 
     /// <summary>
@@ -313,6 +421,15 @@ public class VerseDeclarationWriter
         if (returnValue is null) return (string.Empty, "void");
 
         var type = _resolver.Resolve(returnValue);
+
+        // a suspends function returns the task running it; what it yields is that task's _RetVal
+        if (type == "task" || type.EndsWith(":)task", StringComparison.Ordinal))
+        {
+            var yielded = VerseBodyWriter.SuspendsTask(function)?.ChildProperties?
+                .OfType<FProperty>().FirstOrDefault(p => p.Name.Text == "_RetVal");
+            return ("<suspends>", yielded is null ? "void" : _resolver.Resolve(yielded));
+        }
+
         if (!type.StartsWith('?')) return (string.Empty, type);
 
         // EVerseTrue is the cooked stand-in for a failable function that yields nothing

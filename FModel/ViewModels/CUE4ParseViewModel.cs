@@ -1797,7 +1797,11 @@ public partial class CUE4ParseViewModel : ViewModel
     /// <summary>
     /// recovers the Verse declarations cooked into a package and shows them in a new tab
     /// </summary>
-    public bool RecoverVerseDeclarations(GameFile entry, bool addTab = true)
+    /// <param name="listing">
+    /// list every function body as the compiler cooked it, for looking into the bytecode, instead of
+    /// rebuilding it as Verse source
+    /// </param>
+    public bool RecoverVerseDeclarations(GameFile entry, bool addTab = true, bool listing = false)
     {
         if (TabControl.CanAddTabs && addTab)
         {
@@ -1806,28 +1810,38 @@ public partial class CUE4ParseViewModel : ViewModel
         }
         else TabControl.SelectedTab.SoftReset(entry);
 
-        TabControl.SelectedTab.TitleExtra = "Verse";
+        TabControl.SelectedTab.TitleExtra = listing ? "Verse Bytecode" : "Verse";
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
+        var mode = listing ? VerseBodyMode.Listing : VerseBodyMode.Rebuilt;
 
         // RecoveredVerseGameFile is a virtual text file backed by the cooked _Verse.uasset.
         // It is intentionally not a UE package itself, so passing it to Provider.LoadPackage()
         // throws "cannot load non-UE package". Its Read() method already performs the source-file
         // specific Verse reconstruction; show that result directly instead.
-        if (entry is RecoveredVerseGameFile)
+        if (entry is RecoveredVerseGameFile recovered)
         {
-            TabControl.SelectedTab.SetDocumentText(Encoding.UTF8.GetString(entry.Read()), false, false);
+            var text = listing ? recovered.Recover(VerseBodyMode.Listing) : Encoding.UTF8.GetString(entry.Read());
+            TabControl.SelectedTab.SetDocumentText(text, false, false);
             return true;
         }
 
-        var package = Provider.LoadPackage(entry);
-        if (!VerseDeclarationRecovery.HasVerseTypes(package))
+        // the function bodies are rebuilt too, which needs the bytecode deserialized with the exports
+        var source = RecoveredVerseGameFile.WithScriptData(Provider, () =>
+        {
+            var package = Provider.LoadPackage(entry);
+            return VerseDeclarationRecovery.HasVerseTypes(package)
+                ? VerseDeclarationRecovery.FromPackage(package, mode)
+                : null;
+        });
+
+        if (source is null)
         {
             FLogger.Append(ELog.Warning, () =>
                 FLogger.Text($"{entry.Name} does not hold any cooked Verse type", Constants.WHITE, true));
             return false;
         }
 
-        TabControl.SelectedTab.SetDocumentText(VerseDeclarationRecovery.FromPackage(package), false, false);
+        TabControl.SelectedTab.SetDocumentText(source, false, false);
         return true;
     }
 

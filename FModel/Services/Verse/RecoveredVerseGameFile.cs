@@ -55,44 +55,41 @@ public sealed class RecoveredVerseGameFile : GameFile
     private static int _scriptDataUsers;
     private static bool _savedReadScriptData;
 
-    private byte[] Recover()
-    {
-        // Function bodies are synthesised from the Kismet bytecode, which UStruct only deserializes
-        // while the provider's ReadScriptData is on. That user setting is off by default, and with it
-        // off every recovered body reads "the cook holds no bytecode". The exports are deserialized
-        // lazily during recovery, so force it on for exactly that window and restore it afterwards.
-        EnterScriptData();
-        try
-        {
-            var source = _wholePackage
-                ? VerseDeclarationRecovery.FromPackage(_package, withBodies: true)
-                : VerseDeclarationRecovery.FromPackageSource(_package, SourcePath, withBodies: true, _rawPackage);
-            return Encoding.UTF8.GetBytes(source);
-        }
-        finally
-        {
-            ExitScriptData();
-        }
-    }
+    private byte[] Recover() => Encoding.UTF8.GetBytes(Recover(VerseBodyMode.Rebuilt));
 
-    private void EnterScriptData()
+    /// <summary>the source file recovered with the bodies written the given way</summary>
+    public string Recover(VerseBodyMode mode) => WithScriptData(_provider, () => _wholePackage
+        ? VerseDeclarationRecovery.FromPackage(_package, mode)
+        : VerseDeclarationRecovery.FromPackageSource(_package, SourcePath, mode, _rawPackage));
+
+    /// <summary>
+    /// Function bodies are synthesised from the Kismet bytecode, which UStruct only deserializes
+    /// while the provider's ReadScriptData is on. That user setting is off by default, and with it
+    /// off every recovered body reads "the cook holds no bytecode". The exports are deserialized
+    /// lazily during recovery, so it is forced on for exactly that window and restored afterwards.
+    /// </summary>
+    public static T WithScriptData<T>(IFileProvider provider, Func<T> work)
     {
         lock (ScriptDataLock)
         {
             if (_scriptDataUsers++ == 0)
             {
-                _savedReadScriptData = _provider.ReadScriptData;
-                _provider.ReadScriptData = true;
+                _savedReadScriptData = provider.ReadScriptData;
+                provider.ReadScriptData = true;
             }
         }
-    }
 
-    private void ExitScriptData()
-    {
-        lock (ScriptDataLock)
+        try
         {
-            if (--_scriptDataUsers == 0)
-                _provider.ReadScriptData = _savedReadScriptData;
+            return work();
+        }
+        finally
+        {
+            lock (ScriptDataLock)
+            {
+                if (--_scriptDataUsers == 0)
+                    provider.ReadScriptData = _savedReadScriptData;
+            }
         }
     }
 

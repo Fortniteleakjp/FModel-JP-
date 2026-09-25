@@ -27,6 +27,8 @@ public static class VerseMangling
         'N' => ":",
         'M' => ",",
         'K' => "[]",
+        'Q' => "?",
+        'T' => "->",
         'U' => string.Empty, // separates an operator from the name it qualifies
         _ => null
     };

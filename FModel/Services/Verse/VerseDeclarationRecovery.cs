@@ -44,14 +44,23 @@ public static class VerseDeclarationRecovery
         return false;
     }
 
-    public static string FromPackage(IPackage package, bool withBodies = false)
+    public static string FromPackage(IPackage package, bool withBodies = false) =>
+        FromPackage(package, withBodies ? VerseBodyMode.Rebuilt : VerseBodyMode.None);
+
+    public static string FromPackage(IPackage package, VerseBodyMode mode)
     {
-        var types = Collect(package);
+        // the task classes suspends functions are lowered into were never declared in the source;
+        // their bodies are written where the suspends function is
+        // the structs the compiler makes for tuple types are not declarations either, except to look at the cook
+        var types = Collect(package)
+            .Where(type => !IsLoweredTaskType(type) &&
+                           (mode == VerseBodyMode.Listing || !type.CookedName.StartsWith("tuple_", StringComparison.Ordinal)))
+            .ToList();
         if (types.Count == 0) return VerseDeclarationWriter.Header(package.Name) + "# no cooked Verse types in this package\n";
 
         var package_ = PackageVersePath(types);
-        var writer = new VerseDeclarationWriter(package_, withBodies);
-        var builder = new StringBuilder(VerseDeclarationWriter.Header(package_, withBodies));
+        var writer = new VerseDeclarationWriter(package_, mode, Digests(package, mode));
+        var builder = new StringBuilder(VerseDeclarationWriter.Header(package_, mode));
 
         var paths = types.Select(t => t.RelativePath).ToHashSet(StringComparer.Ordinal);
         foreach (var type in types.OrderBy(t => t.RelativePath, StringComparer.Ordinal))
@@ -61,7 +70,7 @@ public static class VerseDeclarationRecovery
             builder.AppendLine();
         }
 
-        return builder.ToString();
+        return VerseDeclarationWriter.Finish(builder.ToString(), package_, mode);
     }
 
     /// <summary>
@@ -104,10 +113,13 @@ public static class VerseDeclarationRecovery
     /// snippet it came from, so no filename guessing is required.
     /// </summary>
     public static string FromPackageSource(IPackage package, string sourcePath, bool withBodies = true,
-        byte[]? rawPackage = null)
+        byte[]? rawPackage = null) =>
+        FromPackageSource(package, sourcePath, withBodies ? VerseBodyMode.Rebuilt : VerseBodyMode.None, rawPackage);
+
+    public static string FromPackageSource(IPackage package, string sourcePath, VerseBodyMode mode, byte[]? rawPackage = null)
     {
         if (TryGetSyntheticKind(sourcePath, out var syntheticKind))
-            return FromPackageSynthetic(package, sourcePath, syntheticKind, withBodies, rawPackage);
+            return FromPackageSynthetic(package, sourcePath, syntheticKind, mode, rawPackage);
 
         // Resolve source ownership from debug data first. This avoids deserializing all ~thousands
         // of Verse exports just to open one source file, and prevents an unrelated malformed export
@@ -139,8 +151,8 @@ public static class VerseDeclarationRecovery
 
         var types = Collect(package, wantedCookedNames);
         var packagePath = PackageVersePath(types);
-        var writer = new VerseDeclarationWriter(packagePath, withBodies);
-        var builder = new StringBuilder(VerseDeclarationWriter.Header(packagePath, withBodies));
+        var writer = new VerseDeclarationWriter(packagePath, mode, Digests(package, mode));
+        var builder = new StringBuilder(VerseDeclarationWriter.Header(packagePath, mode));
 
         var selected = types
             .Where(type => wantedCookedNames.Contains(type.CookedName) && !IsLoweredTaskType(type))
@@ -152,7 +164,7 @@ public static class VerseDeclarationRecovery
         {
             builder.AppendLine($"# {sourcePath}");
             builder.AppendLine("# The cooked debug data retained this source filename, but no reflected Verse type could be attributed to it.");
-            return builder.ToString();
+            return VerseDeclarationWriter.Finish(builder.ToString(), packagePath, mode);
         }
 
         var selectedPaths = selected.Select(type => type.RelativePath).ToHashSet(StringComparer.Ordinal);
@@ -171,8 +183,11 @@ public static class VerseDeclarationRecovery
             builder.AppendLine();
         }
 
-        return builder.ToString();
+        return VerseDeclarationWriter.Finish(builder.ToString(), packagePath, mode);
     }
+
+    private static VerseDigestIndex? Digests(IPackage package, VerseBodyMode mode) =>
+        mode == VerseBodyMode.Listing ? null : VerseDigestIndex.ForPackage(package);
 
     private static uint SourceRow(string cookedName, string sourcePath,
         IReadOnlyDictionary<string, SourceAttribution> typeAttribution,
@@ -220,7 +235,7 @@ public static class VerseDeclarationRecovery
     }
 
     private static string FromPackageSynthetic(IPackage package, string sourcePath, SyntheticKind kind,
-        bool withBodies, byte[]? rawPackage)
+        VerseBodyMode mode, byte[]? rawPackage)
     {
         var attribution = BuildCookedSourceAttribution(package, rawPackage);
         var folder = sourcePath.Contains('/') ? sourcePath.SubstringBeforeLast('/') : string.Empty;
@@ -263,7 +278,7 @@ public static class VerseDeclarationRecovery
         }).OrderBy(type => type.RelativePath, StringComparer.Ordinal).ToList();
 
         var packagePath = PackageVersePath(selected);
-        var builder = new StringBuilder(VerseDeclarationWriter.Header(packagePath, withBodies));
+        var builder = new StringBuilder(VerseDeclarationWriter.Header(packagePath, mode));
         builder.AppendLine($"# {sourcePath}");
         builder.AppendLine("# These reflected types have no VerseDebugData source tracepoint; their declarations are recovered exactly, but their original home file is unknown.");
         builder.AppendLine();
@@ -271,10 +286,10 @@ public static class VerseDeclarationRecovery
         if (selected.Count == 0)
         {
             builder.AppendLine("# no matching unattributed reflected Verse types");
-            return builder.ToString();
+            return VerseDeclarationWriter.Finish(builder.ToString(), packagePath, mode);
         }
 
-        var writer = new VerseDeclarationWriter(packagePath, withBodies);
+        var writer = new VerseDeclarationWriter(packagePath, mode, Digests(package, mode));
         var paths = selected.Select(type => type.RelativePath).ToHashSet(StringComparer.Ordinal);
         foreach (var type in selected)
         {
@@ -282,7 +297,7 @@ public static class VerseDeclarationRecovery
             builder.AppendLine();
         }
 
-        return builder.ToString();
+        return VerseDeclarationWriter.Finish(builder.ToString(), packagePath, mode);
     }
 
     private static string DominantSourceFolder(IEnumerable<string> sourcePaths) => sourcePaths

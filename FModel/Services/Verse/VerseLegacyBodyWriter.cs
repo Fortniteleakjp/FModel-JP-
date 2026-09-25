@@ -18,13 +18,13 @@ namespace FModel.Services.Verse;
 /// names are gone from the cook, so parameters read Arg0..ArgN and temporaries keep their cooked
 /// names.
 /// </summary>
-public class VerseBodyWriter
+public class VerseLegacyBodyWriter
 {
     private const int MaxDepth = 12;
 
     private readonly VerseTypeResolver _resolver;
 
-    public VerseBodyWriter(VerseTypeResolver resolver)
+    public VerseLegacyBodyWriter(VerseTypeResolver resolver)
     {
         _resolver = resolver;
     }
@@ -50,7 +50,7 @@ public class VerseBodyWriter
     /// behind a leading "if (!StmEnabled()) goto <non transactional copy>" - the two are the same
     /// source, so the second copy is dropped
     /// </summary>
-    private static List<KismetExpression> WithoutNonTransactionalPath(KismetExpression[] bytecode)
+    internal static List<KismetExpression> WithoutNonTransactionalPath(KismetExpression[] bytecode)
     {
         var statements = bytecode.ToList();
         if (statements.FirstOrDefault() is not EX_JumpIfNot { BooleanExpression: EX_FinalFunction check } guard)

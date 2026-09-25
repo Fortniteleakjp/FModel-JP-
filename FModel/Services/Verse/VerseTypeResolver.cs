@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Objects.UObject;
@@ -29,11 +30,15 @@ public class VerseTypeResolver
         if (type is null) return "any";
         if (_pathCache.TryGetValue(type.Name, out var cached)) return cached;
 
+        // the cooked struct of a tuple type is named after its mangled spelling, tuple_L_R and so on
+        if (type.Name.StartsWith("tuple_", StringComparison.Ordinal)) return Cache(type.Name, VerseMangling.Decode(type.Name));
+
         var relative = type.GetOrDefault<string>("PackageRelativeVersePath");
         if (string.IsNullOrEmpty(relative))
         {
-            // not a Verse type (a /Script class, say), the UE name is the best we have
-            return Cache(type.Name, type.Name);
+            // not a Verse type (a /Script class, say), the UE name is the best we have; a Verse class
+            // whose path was not cooked is still named Module-name
+            return Cache(type.Name, type.Name.Contains('-') ? VerseMangling.UnmangleCasedName(type.Name.SubstringAfterLast('-')) : type.Name);
         }
 
         var package = VerseMangling.UnmangleCasedName(type.GetOrDefault<FName>("MangledPackageVersePath").Text);
@@ -51,6 +56,17 @@ public class VerseTypeResolver
 
     private UStruct? Load(FPackageIndex? index) => index?.ResolvedObject?.Object?.Value as UStruct;
 
+    /// <summary>an enum is named by the qualified Verse name it carries</summary>
+    public static string EnumName(UEnum? enumeration)
+    {
+        if (enumeration is null) return "any";
+        if (enumeration.GetOrDefault<string>("QualifiedName") is { Length: > 0 } qualified)
+            return VerseMangling.StripOwnerQualifier(qualified);
+        return VerseMangling.UnmangleCasedName(enumeration.Name).SubstringAfterLast('-');
+    }
+
+    private static string EnumName(FPackageIndex? index) => EnumName(index?.ResolvedObject?.Object?.Value as UEnum);
+
     /// <summary>
     /// how a field or parameter of this property is spelled in Verse
     /// </summary>
@@ -67,8 +83,8 @@ public class VerseTypeResolver
         FSetProperty set => $"[]{Resolve(set.ElementProp)}",
         FMapProperty map => $"[{Resolve(map.KeyProp)}]{Resolve(map.ValueProp)}",
         FOptionalProperty optional => $"?{Resolve(optional.ValueProperty)}",
-        FEnumProperty enumeration => NameOf(Load(enumeration.Enum)),
-        FByteProperty b when b.Enum is not null => NameOf(Load(b.Enum)),
+        FEnumProperty enumeration => EnumName(enumeration.Enum),
+        FByteProperty b when b.Enum is not null => EnumName(b.Enum),
         FByteProperty => "int",
         FStructProperty structure => NameOf(Load(structure.Struct)),
         FClassProperty cls => $"type{{{NameOf(Load(cls.MetaClass))}}}",
