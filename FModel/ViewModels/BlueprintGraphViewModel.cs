@@ -10,10 +10,12 @@ using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Kismet;
+using CUE4Parse.UE4.Objects.Core.i18N;
 using CUE4Parse.UE4.Objects.Engine;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Objects.UObject.BlueprintDecompiler;
 using CUE4Parse.UE4.Objects.UObject.Editor;
+using CUE4Parse.Utils;
 using FModel.Services;
 
 namespace FModel.ViewModels;
@@ -490,6 +492,87 @@ public static partial class BlueprintGraphBuilder
         {
             var display = Names.Properties.GetValueOrDefault(name) ?? name;
             return BlueprintNodeDatabase.PinDisplayName(display, IsBoolProperty(name, function));
+        }
+
+        private readonly Dictionary<string, Dictionary<long, string>> _enums = new(StringComparer.Ordinal);
+
+        /// <summary>Enumerators of the enum a property holds, by value: what an enum pin shows instead of its byte.</summary>
+        public Dictionary<long, string> EnumMembers(FProperty property) => property switch
+        {
+            FEnumProperty { Enum: { IsNull: false } enumeration } => EnumMembers(enumeration),
+            FByteProperty { Enum: { IsNull: false } enumeration } => EnumMembers(enumeration),
+            _ => null
+        };
+
+        private Dictionary<long, string> EnumMembers(FPackageIndex index)
+        {
+            if (_enums.TryGetValue(index.Name, out var members)) return members;
+
+            try
+            {
+                // a user defined enum is in a package, a native one only in the mappings
+                if (index.TryLoad(out var loaded) && loaded is UEnum { Names.Length: > 0 } enumeration) members = EnumMembers(enumeration);
+            }
+            catch (Exception)
+            {
+                // native enum
+            }
+
+            return _enums[index.Name] = members ?? EnumMembers(index.Name);
+        }
+
+        private Dictionary<long, string> EnumMembers(string enumName)
+        {
+            if (Class.Owner?.Mappings?.Enums.TryGetValue(enumName, out var values) != true) return null;
+            return values.ToDictionary(v => v.Key, v => EnumeratorDisplay(v.Value));
+        }
+
+        private static Dictionary<long, string> EnumMembers(UEnum enumeration)
+        {
+            // UUserDefinedEnum keeps its editor names apart, its enumerators are NewEnumerator0, 1...
+            var displayNames = new Dictionary<string, string>(StringComparer.Ordinal);
+            if (enumeration.GetOrDefault<UScriptMap>("DisplayNameMap") is { } map)
+            {
+                foreach (var (key, value) in map.Properties)
+                {
+                    if (key?.GenericValue?.ToString() is { } name && (value?.GenericValue as FText)?.Text is { Length: > 0 } display)
+                        displayNames[name.SubstringAfterLast("::")] = display;
+                }
+            }
+
+            var members = new Dictionary<long, string>();
+            foreach (var (name, value) in enumeration.Names)
+            {
+                var member = name.Text.SubstringAfterLast("::");
+                members.TryAdd(value, displayNames.GetValueOrDefault(member) ?? EnumeratorDisplay(member));
+            }
+
+            return members;
+        }
+
+        /// <summary>UEnum::GetDisplayNameTextByIndex without a DisplayName: the friendly form of the enumerator.</summary>
+        private static string EnumeratorDisplay(string name) =>
+            BlueprintNodeDatabase.NameToDisplayString(name.SubstringAfterLast("::"), false);
+
+        /// <summary>Enum of a member of a native class or struct, which only the mappings describe.</summary>
+        public Dictionary<long, string> MappedEnum(string owner, string property)
+        {
+            if (Class.Owner?.Mappings is not { } mappings || !mappings.Types.TryGetValue(owner, out var type)) return null;
+
+            for (var depth = 0; type != null && depth < 32; depth++)
+            {
+                foreach (var info in type.Properties.Values)
+                {
+                    if (info.Name != property) continue;
+                    if (info.MappingType.EnumName is not { } enumName) return null;
+                    if (_enums.TryGetValue(enumName, out var members)) return members;
+                    return _enums[enumName] = EnumMembers(enumName);
+                }
+
+                type = type.Super?.Value;
+            }
+
+            return null;
         }
 
         /// <summary>Node title of one of the class's own functions.</summary>
@@ -1213,12 +1296,12 @@ public static partial class BlueprintGraphBuilder
             {
                 AddInput(set, "Target", memberContext.ObjectExpression);
                 var memberName = memberVariable.Variable.ToString();
-                Connect(set, AddPin(set, context.VariableDisplay(memberName, function)), Resolve(value, 0));
+                Connect(set, AddPin(set, context.VariableDisplay(memberName, function)), AsEnumerator(Resolve(value, 0), value, IsIntegerConstant(value) ? EnumOf(variable) : null));
             }
             else
             {
                 var display = name != null ? context.VariableDisplay(name, function) : Clean(SafeLine(variable));
-                AddInput(set, display, value);
+                AddInput(set, display, value, enumeration: IsIntegerConstant(value) ? EnumOf(variable) : null);
             }
 
             return set;
@@ -1358,7 +1441,7 @@ public static partial class BlueprintGraphBuilder
                     continue;
                 }
 
-                AddInput(node, pinName, argument);
+                AddInput(node, pinName, argument, enumeration: ArgumentEnum(callee, arguments, i));
             }
 
             // a pure call read as a value always returns one, a standalone one only has its out pins
@@ -1718,10 +1801,77 @@ public static partial class BlueprintGraphBuilder
             return Source.Of(Value(expression));
         }
 
-        private void AddInput(BlueprintGraphNode node, string name, KismetExpression expression, int depth = 0)
+        private void AddInput(BlueprintGraphNode node, string name, KismetExpression expression, int depth = 0, Dictionary<long, string> enumeration = null)
         {
             var pin = AddPin(node, name);
-            Connect(node, pin, Resolve(expression, depth + 1));
+            Connect(node, pin, AsEnumerator(Resolve(expression, depth + 1), expression, enumeration));
+        }
+
+        /// <summary>An enum pin shows its enumerator, the bytecode only has the byte.</summary>
+        private static Source AsEnumerator(Source source, KismetExpression expression, Dictionary<long, string> enumeration)
+        {
+            if (enumeration == null || source.Node != null || source.Pending != null) return source;
+
+            long? value = expression switch
+            {
+                EX_ByteConst b => b.Value,
+                EX_IntConst i => i.Value,
+                EX_Int64Const l => l.Value,
+                EX_IntZero => 0,
+                EX_IntOne => 1,
+                _ => null
+            };
+            return value is { } number && enumeration.TryGetValue(number, out var member) ? Source.Of(member) : source;
+        }
+
+        private static bool IsIntegerConstant(KismetExpression expression) =>
+            expression is EX_ByteConst or EX_IntConst or EX_Int64Const or EX_IntZero or EX_IntOne;
+
+        /// <summary>Enumerators of the enum a variable holds: a local, a member of this class, or of another one by its field path.</summary>
+        private Dictionary<long, string> EnumOf(KismetExpression expression)
+        {
+            var pointer = expression switch
+            {
+                EX_Context memberContext => memberContext.ContextExpression is EX_VariableBase member ? member.Variable : null,
+                EX_StructMemberContext structMember => structMember.Property,
+                EX_VariableBase variable => variable.Variable,
+                _ => null
+            };
+            var name = pointer?.ToString();
+            if (string.IsNullOrEmpty(name) || name == "None") return null;
+
+            var owner = pointer.New?.ResolvedOwner;
+            if (owner is { IsNull: false })
+            {
+                try
+                {
+                    if (owner.TryLoad(out var loaded) && loaded is UStruct type and not UScriptClass && type.GetProperty(name, out var field))
+                        return field is FProperty property ? context.EnumMembers(property) : null;
+                }
+                catch (Exception)
+                {
+                    // a native class or struct
+                }
+
+                if (context.MappedEnum(owner.Name, name) is { } mapped) return mapped;
+            }
+
+            return context.FindProperty(name, function) is { } found ? context.EnumMembers(found) : null;
+        }
+
+        /// <summary>
+        /// Enum of a call argument: its parameter's type, or for a byte comparison (K2Node_EnumEquality, Switch on Enum)
+        /// the type of what it is compared against.
+        /// </summary>
+        private Dictionary<long, string> ArgumentEnum(Callee callee, KismetExpression[] arguments, int index)
+        {
+            if (!IsIntegerConstant(arguments[index])) return null;
+
+            var parameter = callee.Function == null ? null
+                : Parameters(callee.Function).Where(p => !p.PropertyFlags.HasFlag(EPropertyFlags.ReturnParm)).ElementAtOrDefault(index);
+            if (parameter != null && context.EnumMembers(parameter) is { } declared) return declared;
+
+            return arguments.Length == 2 && callee.Name.EndsWith("_ByteByte", StringComparison.Ordinal) ? EnumOf(arguments[1 - index]) : null;
         }
 
         private static int AddPin(BlueprintGraphNode node, string name)
