@@ -81,6 +81,7 @@ public partial class App
 #endif
         base.OnStartup(e);
         VerseExportOverrides.Register();
+        FortniteDna.Register();
 
         try
         {

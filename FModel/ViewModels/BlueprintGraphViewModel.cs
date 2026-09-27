@@ -110,6 +110,10 @@ public class BlueprintGraphNode : INotifyPropertyChanged
     public EMemberKind MemberKind { get; set; }
     public bool HasMemberQuery => MemberQuery != null;
 
+    /// <summary>Skeletal mesh a component draws, as an object path, to export its shape keys.</summary>
+    public string MeshPath { get; set; }
+    public bool HasMesh => MeshPath != null;
+
     private bool _isSelected;
     public bool IsSelected
     {
@@ -182,6 +186,10 @@ public class BlueprintGraph
     public string SuperName { get; init; }
     public List<BlueprintFunctionGraph> Functions { get; init; } = [];
     public string Note { get; init; }
+
+    /// <summary>Meshes of the components and the head and face meshes of the class defaults.</summary>
+    public List<BlueprintMeshReference> Meshes { get; init; } = [];
+    public List<BlueprintMeshReference> HeadAndFaceMeshes => Meshes.Where(m => m.IsHeadOrFace).ToList();
 }
 
 /// <summary>
@@ -261,7 +269,8 @@ public static partial class BlueprintGraphBuilder
         CancellationToken cancellationToken, Func<UClass, BlueprintEditorNames> editorNamesOf = null)
     {
         var graphs = BuildFunctions(blueprint, editorNames, cancellationToken, out var functionCount, out var eventCount);
-        graphs.AddRange(BuildClassViews(blueprint, cancellationToken));
+        var meshes = new List<BlueprintMeshReference>();
+        graphs.AddRange(BuildClassViews(blueprint, meshes, cancellationToken));
 
         var inherited = 0;
         var parents = new List<string>();
@@ -316,7 +325,8 @@ public static partial class BlueprintGraphBuilder
             PackagePath = packagePath,
             SuperName = blueprint.SuperStruct?.Name,
             Functions = graphs,
-            Note = note
+            Note = note,
+            Meshes = meshes
         };
     }
 

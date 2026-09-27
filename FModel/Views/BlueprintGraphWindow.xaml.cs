@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -9,7 +10,10 @@ using System.Windows.Media;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
 using FModel.Services;
+using FModel.Settings;
 using FModel.ViewModels;
+using FModel.Views.Resources.Controls;
+using CUE4Parse_Conversion.Options;
 
 namespace FModel.Views;
 
@@ -28,6 +32,8 @@ public partial class BlueprintGraphWindow : AdonisWindow
     private BlueprintGraphNode _selected;
     private List<BlueprintGraphNode> _matches = [];
     private int _matchIndex = -1;
+    private readonly CancellationTokenSource _exportCancellation = new();
+    private bool _exporting;
 
     private Point? _panOrigin;
     private Point _panScroll;
@@ -56,6 +62,15 @@ public partial class BlueprintGraphWindow : AdonisWindow
         else NoteText.Text = graph.Note;
 
         SetStatus(graph.Note);
+
+        var headAndFace = graph.HeadAndFaceMeshes;
+        if (headAndFace.Count > 0)
+        {
+            ShapeKeysButton.Visibility = Visibility.Visible;
+            ShapeKeysButton.ToolTip = string.Join('\n', headAndFace.Select(m => $"{m.Owner}: {m.AssetName}"));
+        }
+
+        Closed += (_, _) => _exportCancellation.Cancel();
     }
 
     /// <summary>
@@ -176,6 +191,91 @@ public partial class BlueprintGraphWindow : AdonisWindow
     {
         if (FunctionList.SelectedItem is BlueprintFunctionGraph { MemberQuery: not null } function)
             new MemberUsageWindow(function.MemberQuery, EMemberKind.Function, searchOnLoad: true).Show();
+    }
+
+    private void OnExportHeadAndFaceShapeKeysClick(object sender, RoutedEventArgs e) => ExportShapeKeys(_graph.HeadAndFaceMeshes);
+
+    private void OnExportNodeShapeKeysClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { DataContext: BlueprintGraphNode { HasMesh: true } node }) return;
+
+        // the component's mesh and, for a head or face, the animation blueprint playing its poses
+        var references = _graph.Meshes.Where(m => m.Owner == node.Title).ToList();
+        if (references.All(m => m.ObjectPath != node.MeshPath))
+            references.Insert(0, new BlueprintMeshReference { Owner = node.Title, ObjectPath = node.MeshPath });
+        ExportShapeKeys(references);
+    }
+
+    /// <summary>
+    /// Exports the meshes into the model folder as UEFormat .uemodel with their morph targets and facial expressions as
+    /// shape keys, one export at a time.
+    /// </summary>
+    private async void ExportShapeKeys(IReadOnlyCollection<BlueprintMeshReference> meshes)
+    {
+        if (_exporting || meshes.Count == 0) return;
+
+        _exporting = true;
+        ShapeKeysButton.IsEnabled = false;
+        SetStatus($"exporting the shape keys of {string.Join(", ", meshes.Select(m => m.AssetName).Distinct())}...");
+        try
+        {
+            var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
+            var summary = await Task.Run(() => ShapeKeyExporter.ExportAsync(provider, _graph.Name, meshes, UserSettings.Default.ModelDirectory,
+                UserSettings.GetExportOptions(exportMorphTargets: true, meshFormat: EMeshFormat.UEFormat), _exportCancellation.Token));
+            ReportShapeKeys(summary);
+        }
+        catch (OperationCanceledException)
+        {
+            // the window was closed
+        }
+        catch (Exception exception)
+        {
+            FLogger.Append(exception);
+            SetStatus($"could not export the shape keys: {exception.Message}");
+        }
+        finally
+        {
+            _exporting = false;
+            ShapeKeysButton.IsEnabled = true;
+        }
+    }
+
+    private void ReportShapeKeys(ShapeKeyExportSummary summary)
+    {
+        foreach (var mesh in summary.Exported)
+        {
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text($"Exported {mesh.MorphTargetCount} morph targets and {mesh.PoseCount} expression shape keys: ", Constants.WHITE);
+                foreach (var file in mesh.PoseFiles.Prepend(mesh.MeshFile).Where(f => f != null))
+                {
+                    FLogger.Link(System.IO.Path.GetFileName(file), file);
+                    FLogger.Text(", ", Constants.WHITE);
+                }
+
+                FLogger.Text("list in ", Constants.WHITE);
+                FLogger.Link(System.IO.Path.GetFileName(mesh.ShapeKeyFile), mesh.ShapeKeyFile, true);
+            });
+        }
+
+        foreach (var (path, reason) in summary.Skipped)
+            FLogger.Append(ELog.Warning, () => FLogger.Text($"Shape keys not exported from {path}: {reason}", Constants.WHITE, true));
+        foreach (var (path, error) in summary.Failed)
+        {
+            FLogger.Append(ELog.Error, () => FLogger.Text($"Could not export the shape keys of {path}", Constants.WHITE, true));
+            FLogger.Append(error);
+        }
+
+        var status = summary.Exported.Count > 0
+            ? $"exported {summary.Exported.Sum(m => m.MorphTargetCount)} morph targets and {summary.Exported.Sum(m => m.PoseCount)} expression shape keys: " +
+              string.Join(", ", summary.Exported.SelectMany(m => m.PoseFiles.Prepend(m.MeshFile)).Where(f => f != null).Select(System.IO.Path.GetFileName)) +
+              "  (import the .uemodel with the UEFormat Blender addon, the expressions are shape keys)"
+            : "no shape key to export";
+        if (summary.Skipped.Count > 0)
+            status += $"  |  skipped: {string.Join(", ", summary.Skipped.Select(s => $"{s.ObjectPath[(s.ObjectPath.LastIndexOf('/') + 1)..]} ({s.Reason})"))}";
+        if (summary.Failed.Count > 0)
+            status += $"  |  {summary.Failed.Count} failed, see the log";
+        SetStatus(status);
     }
 
     private void OnFunctionContextMenuOpening(object sender, ContextMenuEventArgs e)

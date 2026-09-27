@@ -210,6 +210,8 @@
                 <TextBox x:Name="NodeSearch" DockPanel.Dock="Right" Width="220" Margin="6 0 0 0" KeyDown="OnNodeSearchKeyDown"
                          TextChanged="OnNodeSearchChanged"
                          adonisExtensions:WatermarkExtension.Watermark="{DynamicResource UI_BlueprintGraph_FindNode}" />
+                <Button x:Name="ShapeKeysButton" DockPanel.Dock="Right" Padding="10 3" Margin="6 0 0 0" Click="OnExportHeadAndFaceShapeKeysClick"
+                        Content="{DynamicResource UI_BlueprintGraph_ExportShapeKeys}" Visibility="Collapsed" />
                 <TextBlock x:Name="NoteText" VerticalAlignment="Center" Opacity=".75" TextTrimming="CharacterEllipsis" />
             </DockPanel>
 
@@ -257,6 +259,8 @@
                                         <ContextMenu>
                                             <MenuItem Header="{DynamicResource UI_MemberUsage_FindNode}" Click="OnFindNodeUsagesClick"
                                                       IsEnabled="{Binding HasMemberQuery}" />
+                                            <MenuItem Header="{DynamicResource UI_BlueprintGraph_ExportMeshShapeKeys}" Click="OnExportNodeShapeKeysClick"
+                                                      Visibility="{Binding HasMesh, Converter={StaticResource BoolToVisibilityConverter}}" />
                                         </ContextMenu>
                                     </Border.ContextMenu>
                                     <DockPanel>

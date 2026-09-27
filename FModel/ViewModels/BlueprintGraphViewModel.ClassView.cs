@@ -47,7 +47,8 @@ public static partial class BlueprintGraphBuilder
         public List<ComponentEntry> Children { get; } = [];
     }
 
-    private static List<BlueprintFunctionGraph> BuildClassViews(UClass blueprint, CancellationToken cancellationToken)
+    /// <param name="meshes">receives the meshes the components draw and the head and face shape key sources of the class defaults</param>
+    private static List<BlueprintFunctionGraph> BuildClassViews(UClass blueprint, List<BlueprintMeshReference> meshes, CancellationToken cancellationToken)
     {
         UObject defaults = null;
         try
@@ -62,7 +63,7 @@ public static partial class BlueprintGraphBuilder
         var graphs = new List<BlueprintFunctionGraph>();
         foreach (var build in new Func<BlueprintFunctionGraph>[]
                  {
-                     () => ComponentsGraph(blueprint, defaults, cancellationToken),
+                     () => ComponentsGraph(blueprint, defaults, meshes, cancellationToken),
                      () => DefaultsGraph(blueprint, defaults)
                  })
         {
@@ -81,10 +82,23 @@ public static partial class BlueprintGraphBuilder
             }
         }
 
+        try
+        {
+            foreach (var reference in DefaultsMeshes(blueprint, defaults))
+            {
+                if (meshes.All(m => !m.ObjectPath.Equals(reference.ObjectPath, StringComparison.OrdinalIgnoreCase)))
+                    meshes.Add(reference);
+            }
+        }
+        catch (Exception)
+        {
+            // the class defaults point at no mesh we can read
+        }
+
         return graphs;
     }
 
-    private static BlueprintFunctionGraph ComponentsGraph(UClass blueprint, UObject defaults, CancellationToken cancellationToken)
+    private static BlueprintFunctionGraph ComponentsGraph(UClass blueprint, UObject defaults, List<BlueprintMeshReference> meshes, CancellationToken cancellationToken)
     {
         var components = new List<ComponentEntry>();
         var rootKey = NativeComponents(blueprint, defaults, components);
@@ -135,6 +149,17 @@ public static partial class BlueprintGraphBuilder
         BlueprintGraphNode Place(ComponentEntry entry, int depth, bool isSelf)
         {
             var node = isSelf ? SelfNode(blueprint, entry) : ComponentNode(entry, nodes.Count);
+            if (!isSelf && MeshOf(entry.Template) is { } mesh)
+            {
+                node.MeshPath = mesh;
+                var reference = MeshReference(entry.Name, mesh);
+                meshes.Add(reference);
+
+                // a head or face component plays the animation blueprint holding its pose asset
+                if (reference.IsHeadOrFace && AnimClassOf(entry.Template) is { } animClass)
+                    meshes.Add(new BlueprintMeshReference { Owner = entry.Name, ObjectPath = animClass, IsHeadOrFace = true });
+            }
+
             if (!isSelf) node.Inputs.Insert(0, new BlueprintPin { Name = "Parent" });
             if (entry.Children.Count > 0) node.Outputs.Add(new BlueprintPin { Name = "Children" });
             BlueprintNodeMetrics.Fit(node);

@@ -346,6 +346,8 @@
     <system:String x:Key="UI_BlueprintGraph_Fit">Fit</system:String>
     <system:String x:Key="UI_BlueprintGraph_FilterFunctions">Filter functions...</system:String>
     <system:String x:Key="UI_BlueprintGraph_FindNode">Find node...</system:String>
+    <system:String x:Key="UI_BlueprintGraph_ExportShapeKeys">Export Head &amp; Face Shape Keys</system:String>
+    <system:String x:Key="UI_BlueprintGraph_ExportMeshShapeKeys">Export This Mesh's Shape Keys</system:String>
     <system:String x:Key="UI_TableViewer">Table Viewer</system:String>
     <system:String x:Key="UI_WorldOutliner">World Outliner</system:String>
     <system:String x:Key="UI_WorldOutliner_Filter">Filter actors...</system:String>

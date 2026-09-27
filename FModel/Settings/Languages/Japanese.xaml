@@ -346,6 +346,8 @@
     <system:String x:Key="UI_BlueprintGraph_Fit">全体表示</system:String>
     <system:String x:Key="UI_BlueprintGraph_FilterFunctions">関数を絞り込み...</system:String>
     <system:String x:Key="UI_BlueprintGraph_FindNode">ノードを検索...</system:String>
+    <system:String x:Key="UI_BlueprintGraph_ExportShapeKeys">頭部・顔面の形状キーを書き出し</system:String>
+    <system:String x:Key="UI_BlueprintGraph_ExportMeshShapeKeys">このメッシュの形状キーを書き出し</system:String>
     <system:String x:Key="UI_TableViewer">テーブルビューア</system:String>
     <system:String x:Key="UI_WorldOutliner">ワールドアウトライナ</system:String>
     <system:String x:Key="UI_WorldOutliner_Filter">アクターを絞り込み...</system:String>

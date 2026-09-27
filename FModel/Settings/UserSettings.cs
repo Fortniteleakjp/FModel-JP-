@@ -54,10 +54,12 @@ public sealed class UserSettings : ViewModel
         return endpoint.Overwrite || endpoint.IsValid;
     }
 
-    public static ExportOptions GetExportOptions()
+    /// <param name="exportMorphTargets">overrides <see cref="SaveMorphTargets"/>, for exports that are about the morph targets</param>
+    /// <param name="meshFormat">overrides <see cref="MeshExportFormat"/>, for exports only one format can hold</param>
+    public static ExportOptions GetExportOptions(bool? exportMorphTargets = null, EMeshFormat? meshFormat = null)
     {
         return new ExportOptions(
-            Default.MeshExportFormat,
+            meshFormat ?? Default.MeshExportFormat,
             Default.NaniteMeshExportFormat,
             Default.MeshQuality,
             Default.CurrentDir.TexturePlatform,
@@ -67,7 +69,7 @@ public sealed class UserSettings : ViewModel
             Default.ExportAllTextureMips,
             Default.MaterialExportFormat,
             Default.SaveEmbeddedMaterials,
-            Default.SaveMorphTargets,
+            exportMorphTargets ?? Default.SaveMorphTargets,
             Default.SocketExportFormat,
             Default.CompressionFormat
         );
