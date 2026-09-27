@@ -1,6 +1,59 @@
 {
   "releases": [
     {
+      "version": "6.2.0.0",
+      "tag": "6.2.0.0",
+      "date": "2026-09-28",
+      "title": {
+        "en": "Head & Face Shape Key Export",
+        "ja": "頭部・顔面の形状キー書き出し"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Export Head & Face Shape Keys: the Blueprint Graph exports the head and face meshes of a blueprint with their facial expressions as shape keys. The button appears in the toolbar when the blueprint uses a head or face mesh, its tooltip lists them. Right click a component that draws a mesh and pick \"Export This Mesh's Shape Keys\" to export any mesh.",
+            "ja": "頭部・顔面の形状キー書き出し: ブループリントグラフから、ブループリントが使う頭部・顔面のメッシュを、表情を形状キー（シェイプキー）にした状態で書き出せるようにしました。頭部・顔面のメッシュを使うブループリントでは、ツールバーに「頭部・顔面の形状キーを書き出し」が表示されます（カーソルを合わせると対象のメッシュを表示）。メッシュを持つコンポーネントを右クリックして「このメッシュの形状キーを書き出し」を選ぶと、任意のメッシュを書き出せます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Export Head & Face Shape Keys: the head and face are found in the components, the class defaults (character parts such as CharacterParts -> CP_..._Head, down to the mesh they hold) and head animation blueprints (F_MED_X_Head_AnimBP -> the F_MED_X_Head mesh next to it).",
+            "ja": "頭部・顔面の形状キー書き出し: 頭部・顔面は、コンポーネント、Class Defaults（CharacterParts → CP_..._Head などのキャラクターパーツを経由してメッシュまで辿ります）、頭部のアニメーションブループリント（F_MED_X_Head_AnimBP → 同じフォルダの F_MED_X_Head メッシュ）から探します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Export Head & Face Shape Keys: besides the mesh's own morph targets, the facial expressions are baked into the .uemodel as morph targets: the pose assets its animation blueprint plays (Head_PoseAsset, about 60 expressions), or for MetaHuman style heads driven by RigLogic, the expressions rebuilt from its DNA (CTRL_expressions.jawOpen..., about 160). Import the .uemodel with the UEFormat Blender addon and they are listed in the Shape Keys panel, no pose import needed.",
+            "ja": "頭部・顔面の形状キー書き出し: メッシュ自身のモーフターゲットに加え、表情をモーフターゲットとして .uemodel に焼き込みます。表情は、アニメーションブループリントが再生するポーズアセット（Head_PoseAsset、約 60 表情）、または RigLogic で動く MetaHuman 形式の頭部では DNA から生成した表情（CTRL_expressions.jawOpen など約 160 表情）です。Blender の UEFormat アドオンで .uemodel を読み込むだけで、シェイプキー欄に表情が並びます（ポーズの別途読み込みは不要です）。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "The DNA assets of current Fortnite heads (class DNA) can be read. Their RigLogic data is turned into one expression per control, the corrective poses (PSD) included.",
+            "ja": "現在の Fortnite の頭部が使う DNA アセット（クラス DNA）を読み込めるようにしました。RigLogic のデータから、コントロールごとの表情を補正ポーズ（PSD）込みで生成します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Export Head & Face Shape Keys: a {Mesh}_ShapeKeys.json next to each mesh lists its shape keys, where the expressions came from and the components using the mesh.",
+            "ja": "頭部・顔面の形状キー書き出し: 各メッシュの横に {メッシュ名}_ShapeKeys.json を出力し、形状キーの一覧、表情の出どころ、メッシュを使うコンポーネントを記録します。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Export Head & Face Shape Keys always writes UEFormat (.uemodel) with the morph targets, whatever the mesh format and \"Save Morph Targets\" settings say. The other export settings (output folder, LOD quality, materials, compression) are kept. Meshes with no shape keys (face accessories...) are skipped and the reason is logged.",
+            "ja": "頭部・顔面の形状キー書き出しは、設定のメッシュ形式や「モーフターゲットを保存」に関係なく、常に UEFormat (.uemodel) でモーフターゲット付きで書き出します。出力先・LOD の品質・マテリアル・圧縮などその他の設定はそのまま使います。形状キーを持たないメッシュ（顔アクセサリーなど）は書き出さず、理由をログに表示します。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.1.1.0",
       "tag": "6.1.1.0",
       "date": "2026-09-25",
