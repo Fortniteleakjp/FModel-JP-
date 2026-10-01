@@ -27,6 +27,11 @@ namespace FModel.Services;
 public sealed record ShapeKeyExportedMesh(string ObjectPath, string MeshFile, string ShapeKeyFile, int MorphTargetCount,
     IReadOnlyList<string> PoseFiles, int PoseCount);
 
+/// <param name="ShapeKeys">expressions baked into the first LOD</param>
+/// <param name="Sources">each pose asset or DNA and the names of its poses</param>
+public sealed record ExpressionBake(int ShapeKeys, IReadOnlyList<(string Asset, IReadOnlyList<string> Poses)> Sources,
+    IReadOnlyList<(string Asset, Exception Error)> Failed);
+
 public sealed record ShapeKeyExportSummary(
     IReadOnlyList<ShapeKeyExportedMesh> Exported,
     IReadOnlyList<(string ObjectPath, string Reason)> Skipped,
@@ -53,12 +58,6 @@ public static class ShapeKeyExporter
         public USkinnedAsset Mesh { get; init; }
         public List<string> Owners { get; } = [];
         public Dictionary<string, UPoseAsset> Poses { get; } = new(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>The RigLogic DNA of a MetaHuman style head and the poses rebuilt from it.</summary>
-        public FortniteDna Dna { get; set; }
-        public CPoseAsset RigLogicPoses { get; set; }
-
-        public bool HasShapeKeys => Mesh?.MorphTargets.Length > 0 || Poses.Count > 0 || RigLogicPoses?.Poses.Count > 0;
     }
 
     /// <param name="options">export settings, with the morph targets turned on and the UEFormat mesh format (pose assets have no other)</param>
@@ -111,21 +110,7 @@ public static class ShapeKeyExporter
 
         foreach (var (path, target) in targets.ToList())
         {
-            // a MetaHuman style head: its expressions come from RigLogic, rebuilt as poses
-            if (DnaOf(target.Mesh) is { } dna)
-            {
-                try
-                {
-                    target.RigLogicPoses = RigLogicDna.BuildPoses(dna, out _);
-                    target.Dna = dna;
-                }
-                catch (Exception e)
-                {
-                    failed.Add((dna.GetPathName(), e));
-                }
-            }
-
-            if (target.HasShapeKeys) continue;
+            if (target.Mesh.MorphTargets.Length > 0 || target.Poses.Count > 0 || HasExpressions(provider, target.Mesh)) continue;
             Skip(path, "no morph targets nor pose asset");
             targets.Remove(path);
         }
@@ -186,26 +171,16 @@ public static class ShapeKeyExporter
 
             if (meshFile != null)
             {
-                var poseSets = new List<(string Asset, CPoseAsset Poses)>();
-                foreach (var pose in target.Poses.Values)
+                try
                 {
-                    if (pose.TryConvert(out var converted)) poseSets.Add((pose.GetPathName(), converted));
-                    else failed.Add((pose.GetPathName(), new Exception("the pose asset could not be converted (not additive, or holds no pose)")));
+                    var bake = BakeExpressions(provider, target.Mesh, meshFile, target.Poses.Values);
+                    bakedCount = bake.ShapeKeys;
+                    failed.AddRange(bake.Failed);
+                    poses.AddRange(bake.Sources.Select(p => new { p.Asset, File = Path.GetFileName(meshFile), Poses = p.Poses.ToList() }));
                 }
-
-                if (target.RigLogicPoses is { Poses.Count: > 0 } rigLogicPoses) poseSets.Add((target.Dna.GetPathName(), rigLogicPoses));
-
-                if (poseSets.Count > 0)
+                catch (Exception e)
                 {
-                    try
-                    {
-                        bakedCount = UEModelPoseBaker.Bake(meshFile, target.Mesh, poseSets.Select(p => p.Poses).ToList());
-                        poses.AddRange(poseSets.Select(p => new { p.Asset, File = Path.GetFileName(meshFile), Poses = p.Poses.Poses.Select(q => q.PoseName).ToList() }));
-                    }
-                    catch (Exception e)
-                    {
-                        failed.Add((meshFile, e));
-                    }
+                    failed.Add((meshFile, e));
                 }
             }
 
@@ -331,6 +306,95 @@ public static class ShapeKeyExporter
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Whether a mesh has facial expressions to bake, checked without loading them: a RigLogic DNA, a post process
+    /// animation blueprint, or the head animation blueprint or pose asset named after it in its folder.
+    /// </summary>
+    public static bool HasExpressions(IFileProvider provider, USkinnedAsset mesh)
+    {
+        if (mesh.AssetUserData?.Any(data => data.ResolvedObject?.Class?.Name.Text.Contains("DNA", StringComparison.OrdinalIgnoreCase) == true) == true)
+            return true;
+        if (mesh.Properties.Any(p => p.Name.Text == "PostProcessAnimBlueprint" && p.Tag?.GenericValue is FPackageIndex { IsNull: false } or FSoftObjectPath { AssetPathName.IsNone: false }))
+            return true;
+
+        var package = PackageOf(mesh);
+        return provider.TryGetGameFile($"{package}_AnimBP.uasset", out _) || provider.TryGetGameFile($"{package}_PoseAsset.uasset", out _);
+    }
+
+    /// <summary>
+    /// Bakes the facial expressions of a mesh into its exported .uemodel as shape keys: <paramref name="knownPoses"/>,
+    /// the pose assets its post process animation blueprint, or the head animation blueprint next to it, plays, the
+    /// pose asset next to it, and the poses rebuilt from its RigLogic DNA.
+    /// </summary>
+    public static ExpressionBake BakeExpressions(IFileProvider provider, USkinnedAsset mesh, string modelFile, IEnumerable<UPoseAsset> knownPoses = null)
+    {
+        var poses = new Dictionary<string, UPoseAsset>(StringComparer.OrdinalIgnoreCase);
+        foreach (var pose in (knownPoses ?? []).Concat(PosesNextTo(provider, mesh))) poses.TryAdd(pose.GetPathName(), pose);
+
+        var sets = new List<(string Asset, CPoseAsset Poses)>();
+        var failed = new List<(string, Exception)>();
+        foreach (var pose in poses.Values)
+        {
+            if (pose.TryConvert(out var converted)) sets.Add((pose.GetPathName(), converted));
+            else failed.Add((pose.GetPathName(), new Exception("the pose asset could not be converted (not additive, or holds no pose)")));
+        }
+
+        // a MetaHuman style head: its expressions come from RigLogic, rebuilt as poses
+        if (DnaOf(mesh) is { } dna)
+        {
+            try
+            {
+                sets.Add((dna.GetPathName(), RigLogicDna.BuildPoses(dna, out _)));
+            }
+            catch (Exception e)
+            {
+                failed.Add((dna.GetPathName(), e));
+            }
+        }
+
+        sets.RemoveAll(set => set.Poses.Poses.Count == 0);
+        if (sets.Count == 0) return new ExpressionBake(0, [], failed);
+
+        var count = UEModelPoseBaker.Bake(modelFile, mesh, sets.Select(set => set.Poses).ToList());
+        return new ExpressionBake(count, sets.Select(set => (set.Asset, (IReadOnlyList<string>) set.Poses.Poses.Select(p => p.PoseName).ToList())).ToList(), failed);
+    }
+
+    /// <summary>Pose assets of the post process animation blueprint, and of the head animation blueprint and pose asset named after the mesh.</summary>
+    private static List<UPoseAsset> PosesNextTo(IFileProvider provider, USkinnedAsset mesh)
+    {
+        var poses = new List<UPoseAsset>();
+        try
+        {
+            AddAnimBlueprintPoses(mesh, poses);
+
+            var package = PackageOf(mesh);
+            if (provider.TryGetGameFile($"{package}_AnimBP.uasset", out _) &&
+                provider.TryLoadPackageObject($"{package}_AnimBP.{mesh.Name}_AnimBP_C", out var loaded) && loaded is UClass animBlueprint)
+            {
+                foreach (var pose in PosesOf(animBlueprint))
+                    if (!poses.Contains(pose)) poses.Add(pose);
+            }
+
+            if (provider.TryGetGameFile($"{package}_PoseAsset.uasset", out _) &&
+                provider.TryLoadPackageObject<UPoseAsset>($"{package}_PoseAsset.{mesh.Name}_PoseAsset", out var poseAsset) && !poses.Contains(poseAsset))
+                poses.Add(poseAsset);
+        }
+        catch (Exception)
+        {
+            // the expressions found so far are kept
+        }
+
+        return poses;
+    }
+
+    /// <summary>/Game/.../SK_Head from /Game/.../SK_Head.SK_Head.</summary>
+    private static string PackageOf(UObject mesh)
+    {
+        var path = mesh.GetPathName();
+        var dot = path.LastIndexOf('.');
+        return dot > 0 ? path[..dot] : path;
     }
 
     /// <summary>

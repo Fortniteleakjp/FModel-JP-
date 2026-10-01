@@ -475,7 +475,9 @@ public partial class CUE4ParseViewModel : ViewModel
         return _packageCache.GetOrLoad(file, Provider.LoadPackage);
     }
 
-    public async Task RefreshAes()
+    /// <param name="keepUnusableKeys">起動時の自動取得用。APIのキーで今のアーカイブを復号できない場合
+    /// （過去バージョンを開いているなど）、手入力済みのキーを上書きせずに残す</param>
+    public async Task RefreshAes(bool keepUnusableKeys = false)
     {
         // game directory dependent, we don't have the provider game name yet since we don't have aes keys
         // except when this comes from the AES Manager
@@ -490,8 +492,69 @@ public partial class CUE4ParseViewModel : ViewModel
             var aes = await _apiEndpointView.DynamicApi.GetAesKeysAsync(cancellationToken, endpoint.Url, endpoint.Path).ConfigureAwait(false);
             if (aes is not { IsValid: true }) return;
 
+            if (keepUnusableKeys && !CanDecryptArchives(aes))
+            {
+                Log.Warning("AES keys from {Url} cannot decrypt the archives of \"{GameDirectory}\", keeping the saved keys",
+                    endpoint.Url, UserSettings.Default.CurrentDir.GameDirectory);
+                FLogger.Append(ELog.Warning, () =>
+                    FLogger.Text("APIのAESキーでは現在のアーカイブを復号できないため、保存済みのキーを使用します", Constants.WHITE, true));
+                return;
+            }
+
             UserSettings.Default.CurrentDir.AesKeys = aes;
         });
+    }
+
+    /// <summary>
+    /// 登録済みの暗号化アーカイブを1つでも復号できるかを確認する。
+    /// 最新版のAPIキーを過去バージョンのディレクトリへ上書きしてしまうのを防ぐため。
+    /// </summary>
+    private bool CanDecryptArchives(ApiEndpoints.Models.AesResponse aes)
+    {
+        // ストリーミング（LIVE）はAPIと常に同じビルドで、検証のために余計なチャンクを落としたくない
+        if (Provider is StreamedFileProvider)
+            return true;
+
+        var encrypted = Provider.UnloadedVfs.Concat(Provider.MountedVfs).Where(x => x.IsEncrypted).ToArray();
+        if (encrypted.Length == 0)
+            return true;
+
+        var keys = new Dictionary<string, FAesKey>(StringComparer.OrdinalIgnoreCase);
+        void AddKey(string guid, string key)
+        {
+            key = Helper.FixKey(key);
+            if (string.IsNullOrEmpty(guid) || key.Length != 66)
+                return;
+
+            try { keys[guid] = new FAesKey(key); }
+            catch { /* 16進数として読めないキーは無視 */ }
+        }
+
+        if (aes.HasDynamicKeys)
+        {
+            foreach (var dynamicKey in aes.DynamicKeys)
+                AddKey(dynamicKey.Guid, dynamicKey.Key);
+        }
+        AddKey(Constants.ZERO_GUID.ToString(), aes.MainKey);
+
+        // 検証はインデックス先頭の数バイトを復号するだけなので、一致するまで全アーカイブを試しても軽い
+        foreach (var reader in encrypted)
+        {
+            if (!keys.TryGetValue(reader.EncryptionKeyGuid.ToString(), out var key))
+                continue;
+
+            try
+            {
+                if (reader.TestAesKey(key))
+                    return true;
+            }
+            catch (Exception e)
+            {
+                Log.Debug(e, "Failed to test AES key against {Archive}", reader.Name);
+            }
+        }
+
+        return false;
     }
 
     public async Task InitInformation()

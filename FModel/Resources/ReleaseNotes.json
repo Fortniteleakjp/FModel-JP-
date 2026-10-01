@@ -1,6 +1,31 @@
 {
   "releases": [
     {
+      "version": "6.2.1.0",
+      "tag": "6.2.1.0",
+      "date": "2026-10-01",
+      "title": {
+        "en": "AES Keys of Older Builds Kept",
+        "ja": "過去バージョンの AES キーを保持"
+      },
+      "changes": [
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "The AES keys typed for an older build (or any game folder whose AES endpoint serves the keys of another build) were replaced with the latest keys from the endpoint at every start when \"AES Reload at Launch\" was Always or Once Per Day, so they had to be typed again.",
+            "ja": "過去バージョンなど、AES API が別のビルドのキーを返すゲームフォルダで、手入力した AES キーが起動のたびに API の最新キーで上書きされ、入力し直しが必要になっていた問題を修正しました（「起動時にAESキーを再取得」が「Always」または「Once Per Day」の場合）。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "The AES keys fetched at start are now only used when they can decrypt the archives of the opened game folder. Otherwise the saved keys are kept and a warning is logged. Refreshing from the AES Manager or after editing the AES endpoint still always uses the endpoint's keys.",
+            "ja": "起動時に取得した AES キーは、開いているゲームフォルダのアーカイブを復号できる場合にのみ使うようにしました。復号できない場合は保存済みのキーをそのまま使い、ログに警告を表示します。AES マネージャーの更新ボタンや、AES エンドポイントの編集後に取得したキーは、これまでどおり API のキーを使います。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.2.0.0",
       "tag": "6.2.0.0",
       "date": "2026-09-28",

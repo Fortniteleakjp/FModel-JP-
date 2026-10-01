@@ -99,17 +99,6 @@ public partial class MainWindow
 
         ShowReleaseNotesOnce();
 
-        switch (UserSettings.Default.AesReload)
-        {
-            case EAesReload.Always:
-                await _applicationView.CUE4Parse.RefreshAes();
-                break;
-            case EAesReload.OncePerDay when UserSettings.Default.CurrentDir.LastAesReload != DateTime.Today:
-                UserSettings.Default.CurrentDir.LastAesReload = DateTime.Today;
-                await _applicationView.CUE4Parse.RefreshAes();
-                break;
-        }
-
         await Task.WhenAll(
             ApplicationViewModel.InitOodle(),
             ApplicationViewModel.InitZlib()
@@ -124,6 +113,19 @@ public partial class MainWindow
         );
 
         await _applicationView.CUE4Parse.Initialize();
+
+        // アーカイブ登録後に取得し、そのキーで復号できるか確かめてから保存済みのキーと差し替える
+        switch (UserSettings.Default.AesReload)
+        {
+            case EAesReload.Always:
+                await _applicationView.CUE4Parse.RefreshAes(keepUnusableKeys: true);
+                break;
+            case EAesReload.OncePerDay when UserSettings.Default.CurrentDir.LastAesReload != DateTime.Today:
+                UserSettings.Default.CurrentDir.LastAesReload = DateTime.Today;
+                await _applicationView.CUE4Parse.RefreshAes(keepUnusableKeys: true);
+                break;
+        }
+
         await _applicationView.AesManager.InitAes();
         await _applicationView.UpdateProvider(true);
 #if !DEBUG
