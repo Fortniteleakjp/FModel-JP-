@@ -4,11 +4,13 @@
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
              xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+             xmlns:converters="clr-namespace:FModel.Views.Resources.Converters"
              PreviewKeyDown="OnPreviewKeyDown">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="3 0" HorizontalAlignment="Right" Width="500">
@@ -104,8 +106,63 @@
         </Grid>
 
         <avalonEdit:TextEditor x:Name="MyAvalonEditor" Grid.Row="0" Grid.RowSpan="2" SyntaxHighlighting="{Binding Highlighter}" Document="{Binding Document}"
-                               FontFamily="Consolas" FontSize="{Binding FontSize}" IsReadOnly="True" ShowLineNumbers="True" Foreground="#DAE5F2"
+                               FontFamily="Consolas" FontSize="{Binding FontSize}" ShowLineNumbers="True" Foreground="#DAE5F2"
+                               IsReadOnly="{Binding IsEditingJson, Converter={x:Static converters:InvertBooleanConverter.Instance}, FallbackValue=True}"
                                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer3BackgroundBrush}}" PreviewMouseWheel="OnPreviewMouseWheel"
                                TextChanged="OnTextChanged" MouseHover="OnMouseHover" MouseHoverStopped="OnMouseHoverStopped" PreviewMouseUp="OnMouseRelease" />
+
+        <!-- json edit mode: the document is writable and saving writes the package back as .uasset -->
+        <Border Grid.Row="2" Padding="8 4" BorderThickness="0 1 0 0"
+                BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}"
+                Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                Visibility="{Binding IsEditingJson, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Viewbox Grid.Column="0" Width="14" Height="14" Margin="0 0 6 0" VerticalAlignment="Center">
+                    <Canvas Width="24" Height="24">
+                        <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.AccentBrush}}" Data="{StaticResource EditIcon}" />
+                    </Canvas>
+                </Viewbox>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{DynamicResource UI_JsonEditBanner}" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding ReplacementImageText}" FontSize="11" TextTrimming="CharacterEllipsis"
+                               Visibility="{Binding HasReplacementImage, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+                    <TextBlock Text="{Binding ReplacementMeshText}" FontSize="11" TextTrimming="CharacterEllipsis"
+                               Visibility="{Binding HasReplacementMesh, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+                    <TextBlock Text="{Binding EditStatus}" FontSize="11" TextTrimming="CharacterEllipsis" Opacity="0.8"
+                               Visibility="{Binding HasEditStatus, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Padding="8 2" Margin="6 0 0 0" Command="{Binding TabCommand}" CommandParameter="Asset_Save_Edited_Json"
+                            ToolTip="{DynamicResource UI_SaveEditedUAssetTooltip}">
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Width="14" Height="14" Margin="0 0 4 0">
+                                <Canvas Width="24" Height="24">
+                                    <Path Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource SaveIcon}" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBlock Text="{DynamicResource UI_SaveEditedUAsset}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="8 2" Margin="6 0 0 0" Command="{Binding TabCommand}" CommandParameter="Asset_Replace_Texture"
+                            Content="{DynamicResource UI_ReplaceTextureShort}" ToolTip="{DynamicResource UI_ReplaceTextureTooltip}" />
+                    <Button Padding="8 2" Margin="6 0 0 0" Command="{Binding TabCommand}" CommandParameter="Asset_Replace_Mesh"
+                            Content="{DynamicResource UI_ReplaceMeshShort}" ToolTip="{DynamicResource UI_ReplaceMeshTooltip}" />
+                    <Button Padding="8 2" Margin="6 0 0 0" Command="{Binding TabCommand}" CommandParameter="Asset_Clear_Replacements"
+                            Content="{DynamicResource UI_ClearReplacements}"
+                            Visibility="{Binding HasReplacements, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}" />
+                    <Button Padding="8 2" Margin="6 0 0 0" Command="{Binding TabCommand}" CommandParameter="Asset_Create_Pak"
+                            Content="{DynamicResource UI_PakCreatorShort}" ToolTip="{DynamicResource UI_PakCreatorDescription}" />
+                    <Button Padding="8 2" Margin="6 0 0 0" Command="{Binding TabCommand}" CommandParameter="Asset_Open_Edited_Directory"
+                            Content="{DynamicResource UI_OpenEditedDirectory}" />
+                    <Button Padding="8 2" Margin="6 0 0 0" Command="{Binding TabCommand}" CommandParameter="Asset_Stop_Json_Edit"
+                            Content="{DynamicResource UI_StopJsonEdit}" />
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

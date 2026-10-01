@@ -263,6 +263,123 @@ public class TabItem : ViewModel
         set => SetProperty(ref _wholeWord, value);
     }
 
+    private bool _isEditingJson;
+    /// <summary>
+    /// the json of a package is being edited, saving writes it back as a .uasset (see <see cref="FModel.Services.AssetEditing.EditedAssetWriter"/>)
+    /// </summary>
+    public bool IsEditingJson
+    {
+        get => _isEditingJson;
+        private set => SetProperty(ref _isEditingJson, value);
+    }
+
+    /// <summary>
+    /// the document as FModel displayed it when editing started, what the edits are compared against
+    /// </summary>
+    public string EditBaseJson { get; private set; }
+
+    private string _editStatus;
+    public string EditStatus
+    {
+        get => _editStatus;
+        set
+        {
+            SetProperty(ref _editStatus, value);
+            RaisePropertyChanged(nameof(HasEditStatus));
+        }
+    }
+    public bool HasEditStatus => !string.IsNullOrEmpty(EditStatus);
+
+    private string _replacementImagePath;
+    /// <summary>
+    /// an image the package's texture is replaced with when the edits are saved
+    /// </summary>
+    public string ReplacementImagePath
+    {
+        get => _replacementImagePath;
+        set
+        {
+            SetProperty(ref _replacementImagePath, value);
+            RaisePropertyChanged(nameof(HasReplacementImage));
+            RaisePropertyChanged(nameof(ReplacementImageText));
+            RaisePropertyChanged(nameof(HasReplacements));
+        }
+    }
+    public bool HasReplacementImage => !string.IsNullOrEmpty(ReplacementImagePath);
+    public string ReplacementImageText => HasReplacementImage ? $"差し替え画像: {Path.GetFileName(ReplacementImagePath)}" : null;
+
+    private string _replacementMeshPath;
+    /// <summary>
+    /// an OBJ (exported for editing, then reshaped) the package's mesh takes its shape from when the edits are saved
+    /// </summary>
+    public string ReplacementMeshPath
+    {
+        get => _replacementMeshPath;
+        set
+        {
+            SetProperty(ref _replacementMeshPath, value);
+            RaisePropertyChanged(nameof(HasReplacementMesh));
+            RaisePropertyChanged(nameof(ReplacementMeshText));
+            RaisePropertyChanged(nameof(HasReplacements));
+        }
+    }
+    public bool HasReplacementMesh => !string.IsNullOrEmpty(ReplacementMeshPath);
+    public string ReplacementMeshText => HasReplacementMesh ? $"差し替えメッシュ: {Path.GetFileName(ReplacementMeshPath)}" : null;
+    public bool HasReplacements => HasReplacementImage || HasReplacementMesh;
+
+    public bool CanEditJson => Entry is { Extension: "uasset" or "umap" } && DiffContent == null && !string.IsNullOrEmpty(Document?.Text);
+    public bool HasJsonEdits => IsEditingJson && (HasReplacements || Document != null && Document.Text != EditBaseJson);
+
+    public bool BeginJsonEdit()
+    {
+        if (IsEditingJson) return true;
+        if (!CanEditJson) return false;
+
+        EditBaseJson = Document.Text;
+        EditStatus = null;
+        IsEditingJson = true;
+        return true;
+    }
+
+    public void EndJsonEdit(bool restore)
+    {
+        if (!IsEditingJson) return;
+        if (restore && Document != null && EditBaseJson != null)
+        {
+            Document.Text = EditBaseJson;
+            Document.UndoStack.ClearAll();
+        }
+        EditBaseJson = null;
+        EditStatus = null;
+        ReplacementImagePath = null;
+        ReplacementMeshPath = null;
+        IsEditingJson = false;
+    }
+
+    /// <summary>
+    /// shows the texture as it was written back, next to the original
+    /// </summary>
+    public void AddReplacedTexture(UTexture2D texture)
+    {
+        try
+        {
+            var decoded = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+            if (decoded == null) return;
+
+            const string suffix = " (差し替え後)";
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (var previous in _images.Where(i => i.ExportName?.Contains(suffix) == true).ToList()) _images.Remove(previous);
+            });
+            AddImage(texture.Name + suffix, texture.RenderNearestNeighbor, decoded, false, true);
+            Application.Current.Dispatcher.Invoke(() => SelectedImage = _images.LastOrDefault());
+        }
+        catch (System.Exception e)
+        {
+            Log.Warning(e, "Could not preview the replaced texture {Name}", texture.Name);
+        }
+    }
+
     private TextDocument _document;
     public TextDocument Document
     {
@@ -377,6 +494,11 @@ public class TabItem : ViewModel
 
     public void SoftReset(GameFile entry)
     {
+        EditBaseJson = null;
+        EditStatus = null;
+        ReplacementImagePath = null;
+        ReplacementMeshPath = null;
+        IsEditingJson = false;
         Entry = entry;
         TitleExtra = string.Empty;
         ParentExportType = string.Empty;

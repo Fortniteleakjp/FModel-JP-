@@ -104,6 +104,12 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "ToolBox_Open_Code_Directory":
                 OpenDirectorySafe(UserSettings.Default.CodeDirectory, "Code");
                 break;
+            case "ToolBox_Open_Edited_Directory":
+                OpenDirectorySafe(CUE4ParseViewModel.EditedAssetsDirectory, "Edited");
+                break;
+            case "ToolBox_Create_Pak":
+                Helper.OpenWindow<AdonisWindow>("Pak Creator", () => new PakCreatorWindow().Show());
+                break;
             case "ToolBox_Open_Backups_Directory":
                 OpenDirectorySafe(Path.Combine(UserSettings.Default.OutputDirectory, "Backups"), "Backups");
                 break;

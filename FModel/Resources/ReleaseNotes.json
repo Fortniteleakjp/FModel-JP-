@@ -1,6 +1,87 @@
 {
   "releases": [
     {
+      "version": "6.3.0.0",
+      "tag": "6.3.0.0",
+      "date": "2026-10-02",
+      "title": {
+        "en": "Asset Editing & Pak Creation",
+        "ja": "アセットの書き換えと pak 作成"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Edit JSON as .uasset: right click a tab and pick \"Edit JSON and Export as .uasset\" to make the JSON editable. Change values and save (Ctrl+S) to write a .uasset/.uexp with the changes to Output/Edited, laid out like the game's paths (powered by UAssetAPI). The written package is read back and compared with the edited JSON, and the result is shown in the edit bar and the log.",
+            "ja": "JSON を編集して .uasset に書き出す: タブを右クリックして「JSON を編集して .uasset に書き出す」を選ぶと、JSON を編集できるようになります。値を書き換えて保存（Ctrl+S）すると、変更を反映した .uasset/.uexp を Output/Edited にゲーム内と同じパス構成で書き出します（UAssetAPI を使用）。書き出したパッケージは読み直して編集後の JSON と照合し、結果を編集バーとログに表示します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Edit JSON as .uasset: the Properties of every export, DataTable rows and StringTable entries can be edited: numbers, strings, texts, enums, booleans, object and soft object references (a reference to a package not imported yet is added to the imports), and arrays, sets and maps can grow and shrink. Properties left out of the JSON because they hold their default value can be added.",
+            "ja": "JSON を編集して .uasset に書き出す: 各エクスポートの Properties、DataTable の行、StringTable の項目を編集できます。数値・文字列・テキスト・列挙子・真偽値・オブジェクト参照/ソフト参照（まだインポートしていないパッケージへの参照はインポートに追加）に対応し、配列・セット・マップは要素の追加・削除もできます。既定値のため JSON に出ていないプロパティも追加できます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Edit JSON as .uasset: packages of IoStore games (.utoc/.ucas, e.g. current Fortnite) are written as regular .uasset/.uexp. Games with unversioned properties need their mappings (.usmap) like for viewing.",
+            "ja": "JSON を編集して .uasset に書き出す: IoStore（.utoc/.ucas、現在の Fortnite など）のパッケージも、通常の .uasset/.uexp として書き出します。バージョンなしプロパティのゲームでは、表示と同様にマッピング（.usmap）が必要です。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Replace Texture: right click a texture tab (or use \"Replace Image...\" in the edit bar) and pick a PNG, JPEG, BMP or WebP. It is resized and encoded to the texture's resolution, format (DXT1/3/5, BC4/5/6H/7, BGRA8, RGBA8, G8, A8, RG8, G16, RGBA16F) and mip count, and written back in place. It can be saved together with JSON edits.",
+            "ja": "テクスチャ画像の差し替え: テクスチャのタブを右クリック（または編集バーの「画像を差し替え...」）して PNG / JPEG / BMP / WebP を選ぶと、元のテクスチャと同じ解像度・形式（DXT1/3/5、BC4/5/6H/7、BGRA8、RGBA8、G8、A8、RG8、G16、RGBA16F）・ミップ数に合わせてエンコードし、書き戻します。JSON の編集と同時に保存できます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Replace Mesh Shape: \"Export Mesh as Editable OBJ\" (tab right click) writes LOD0 of a static or skeletal mesh to Output/MeshEdit. Move its vertices in Blender or any 3D tool without adding, removing or reordering them, then pick the OBJ with \"Replace Mesh...\". Every LOD follows the new shape and the normals and tangents are rotated to the new faces.",
+            "ja": "メッシュ形状の差し替え: タブの右クリックメニュー「メッシュを編集用 OBJ に書き出す」でスタティックメッシュ・スケルタルメッシュの LOD0 を Output/MeshEdit に書き出し、Blender などで頂点を追加・削除・並べ替えせずに変形してから、「メッシュを差し替え...」でその OBJ を選びます。全 LOD が新しい形に追従し、法線・接線も面の向きに合わせて回転します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Pak Creator: right click the Open Output Folder button next to the log and pick \"Pack Edited Files into a .pak...\" (or \"Pak...\" in the edit bar) packs Output/Edited into an unencrypted, uncompressed .pak (version 3 like u4pak, or 7) with the mount point of your choice. The written pak is opened again and every file is compared with its source.",
+            "ja": "pak の作成: ログ欄の「出力フォルダを開く」ボタンを右クリックして「編集済みを .pak にまとめる...」（または編集バーの「pak 化...」）で、Output/Edited の中身を暗号化・圧縮なしの .pak（u4pak と同じ v3、または v7）にまとめます。マウントポイントも指定できます。作成した pak は開き直して、全ファイルを元と照合します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Pak Creator: \"Merge the AssetRegistry and pack it\" works like AssetRegistryHelper -Merge -Filter=: the assets of your cooked AssetRegistry.bin under the filtered paths (e.g. /Game/Athena/Items/Cosmetics) are appended to the game's registry, picked from the loaded game or from a file, and the result is packed under the name you give (e.g. FortniteGame/AssetRegistry54FD9ABD65879452DCB8CE11C1D7F1AF.bin). Name table registries (version 4 to 6, UE4.19 to 4.25) are supported.",
+            "ja": "pak の作成: 「AssetRegistry をマージして pak に入れる」で、AssetRegistryHelper の -Merge -Filter= と同じく、クックした AssetRegistry.bin のうちフィルターのパス以下（例: /Game/Athena/Items/Cosmetics）のアセットを、ゲームの AssetRegistry（読み込み中のゲームまたはファイルから選択）に追加し、指定した名前（例: FortniteGame/AssetRegistry54FD9ABD65879452DCB8CE11C1D7F1AF.bin）で pak に入れます。名前表形式（バージョン 4〜6、UE4.19〜4.25 頃）に対応しています。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Pak Creator: \"Write a .sig next to the pak\" writes the .sig with the CRC32 of every 64 KiB of the pak. The RSA signature only the game's developer can make is copied from one of the game's .sig, found in the game folder automatically.",
+            "ja": "pak の作成: 「pak と一緒に .sig を作る」で、pak の 64KB ごとの CRC32 を入れた .sig を作成します。ゲーム開発元しか作れない RSA 署名の部分は、ゲームフォルダから自動で見つけたゲームの .sig からコピーします。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "\"Edited (.uasset)\" was added to the right click menu of the Open Output Folder button to open the folder the edited packages are written to.",
+            "ja": "「出力フォルダを開く」ボタンの右クリックメニューに「編集済み (.uasset)」を追加し、書き出したパッケージのフォルダーを開けるようにしました。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "To never write a broken file, saving is refused with the reason when the package is not cooked, when an export UAssetAPI cannot read would have to be rewritten, or when an IoStore package references a package that cannot be read. Virtual, cube and array textures and Nanite meshes cannot be replaced, and an OBJ whose vertex count differs from the export is refused.",
+            "ja": "壊れたファイルを書き出さないよう、未クックのパッケージ、UAssetAPI が読めないエクスポートの書き換えが必要な場合、読めないパッケージを参照している IoStore のパッケージでは、理由を表示して保存しません。仮想テクスチャ・キューブ・配列テクスチャと Nanite メッシュは差し替えできません。頂点数が書き出したものと違う OBJ も受け付けません。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.2.1.0",
       "tag": "6.2.1.0",
       "date": "2026-10-01",

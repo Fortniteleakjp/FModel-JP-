@@ -5,6 +5,10 @@ using FModel.Extensions;
 using FModel.Framework;
 using FModel.Services;
 using FModel.Views.Resources.Controls;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
 namespace FModel.ViewModels.Commands;
 
@@ -126,6 +130,80 @@ public class TabCommand : ViewModelCommand<TabItem>
                 break;
             case "Object_Path":
                 Clipboard.SetText(_applicationView.CUE4Parse.Provider.GetObjectPath(tabViewModel.Entry));
+                break;
+            case "Asset_Edit_Json":
+                if (!tabViewModel.BeginJsonEdit())
+                {
+                    MessageBox.Show("JSON を表示しているパッケージ（.uasset / .umap）のタブで実行してください。", "JSON 編集",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                break;
+            case "Asset_Replace_Texture":
+            {
+                if (!tabViewModel.BeginJsonEdit())
+                {
+                    MessageBox.Show("テクスチャのパッケージ（.uasset）を開いたタブで実行してください。", "テクスチャの差し替え",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+                }
+
+                var dialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "差し替える画像を選択（元のテクスチャと同じ解像度に合わせて書き込みます）",
+                    Filter = "画像 (*.png;*.jpg;*.jpeg;*.bmp;*.webp)|*.png;*.jpg;*.jpeg;*.bmp;*.webp|すべてのファイル (*.*)|*.*",
+                    Multiselect = false
+                };
+                if (dialog.ShowDialog() != true) break;
+
+                tabViewModel.ReplacementImagePath = dialog.FileName;
+                await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.SaveEditedJson(tabViewModel));
+                break;
+            }
+            case "Asset_Export_Mesh_Obj":
+                await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.ExportMeshForEditing(tabViewModel.Entry));
+                break;
+            case "Asset_Replace_Mesh":
+            {
+                if (!tabViewModel.BeginJsonEdit())
+                {
+                    MessageBox.Show("メッシュのパッケージ（.uasset）を開いたタブで実行してください。", "メッシュの差し替え",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+                }
+
+                var editDirectory = CUE4ParseViewModel.MeshEditPath(tabViewModel.Entry);
+                var dialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "編集した OBJ を選択（「メッシュを編集用 OBJ に書き出す」で書き出して変形したもの）",
+                    Filter = "OBJ (*.obj)|*.obj",
+                    InitialDirectory = System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(editDirectory)) ? System.IO.Path.GetDirectoryName(editDirectory) : null,
+                    Multiselect = false
+                };
+                if (dialog.ShowDialog() != true) break;
+
+                tabViewModel.ReplacementMeshPath = dialog.FileName;
+                await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.SaveEditedJson(tabViewModel));
+                break;
+            }
+            case "Asset_Clear_Replacements":
+                tabViewModel.ReplacementImagePath = null;
+                tabViewModel.ReplacementMeshPath = null;
+                break;
+            case "Asset_Save_Edited_Json":
+                if (!tabViewModel.IsEditingJson) break;
+                await _threadWorkerView.Begin(_ => _applicationView.CUE4Parse.SaveEditedJson(tabViewModel));
+                break;
+            case "Asset_Stop_Json_Edit":
+                if (tabViewModel.HasJsonEdits && MessageBox.Show("編集内容を破棄して元の JSON 表示に戻しますか？\n（書き出し済みの .uasset はそのまま残ります）", "JSON 編集",
+                        MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+                    break;
+                tabViewModel.EndJsonEdit(true);
+                break;
+            case "Asset_Create_Pak":
+                Helper.OpenWindow<AdonisWindow>("Pak Creator", () => new Views.PakCreatorWindow().Show());
+                break;
+            case "Asset_Open_Edited_Directory":
+                CUE4ParseViewModel.OpenEditedAssetsDirectory(tabViewModel.Entry);
                 break;
         }
 

@@ -111,6 +111,97 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _outputDirectory, value);
     }
 
+    private string _pakOutputPath;
+    /// <summary>
+    /// last .pak written from the edited packages, see <see cref="FModel.Services.AssetEditing.PakWriter"/>
+    /// </summary>
+    public string PakOutputPath
+    {
+        get => _pakOutputPath;
+        set => SetProperty(ref _pakOutputPath, value);
+    }
+
+    private int _pakVersion = 3;
+    public int PakVersion
+    {
+        get => _pakVersion;
+        set => SetProperty(ref _pakVersion, value);
+    }
+
+    private string _pakMountPoint = "../../../";
+    public string PakMountPoint
+    {
+        get => _pakMountPoint;
+        set => SetProperty(ref _pakMountPoint, value);
+    }
+
+    private bool _pakMergeRegistry;
+    /// <summary>
+    /// merges a cooked AssetRegistry.bin into the game's one and packs it, see <see cref="FModel.Services.AssetEditing.AssetRegistryMerger"/>
+    /// </summary>
+    public bool PakMergeRegistry
+    {
+        get => _pakMergeRegistry;
+        set => SetProperty(ref _pakMergeRegistry, value);
+    }
+
+    private string _pakRegistryBase;
+    /// <summary>
+    /// the registry to merge into, a file or a path inside the loaded game
+    /// </summary>
+    public string PakRegistryBase
+    {
+        get => _pakRegistryBase;
+        set => SetProperty(ref _pakRegistryBase, value);
+    }
+
+    private string _pakRegistrySource;
+    /// <summary>
+    /// the cooked AssetRegistry.bin of the modding project
+    /// </summary>
+    public string PakRegistrySource
+    {
+        get => _pakRegistrySource;
+        set => SetProperty(ref _pakRegistrySource, value);
+    }
+
+    private string _pakRegistryFilter = "/Game";
+    public string PakRegistryFilter
+    {
+        get => _pakRegistryFilter;
+        set => SetProperty(ref _pakRegistryFilter, value);
+    }
+
+    private string _pakRegistryName;
+    /// <summary>
+    /// file name of the merged registry inside the pak
+    /// </summary>
+    public string PakRegistryName
+    {
+        get => _pakRegistryName;
+        set => SetProperty(ref _pakRegistryName, value);
+    }
+
+    private bool _pakWriteSignature = true;
+    /// <summary>
+    /// writes a .sig next to the pak
+    /// </summary>
+    public bool PakWriteSignature
+    {
+        get => _pakWriteSignature;
+        set => SetProperty(ref _pakWriteSignature, value);
+    }
+
+    private string _pakSignatureTemplate;
+    /// <summary>
+    /// a .sig of the game the signed hash is copied from
+    /// </summary>
+    public string PakSignatureTemplate
+    {
+        get => _pakSignatureTemplate;
+        set => SetProperty(ref _pakSignatureTemplate, value);
+    }
+
     private string _rawDataDirectory;
     public string RawDataDirectory
     {

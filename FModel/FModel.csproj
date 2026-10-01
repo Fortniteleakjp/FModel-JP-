@@ -5,9 +5,9 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
-    <Version>6.2.1.0</Version>
-    <AssemblyVersion>6.2.1.0</AssemblyVersion>
-    <FileVersion>6.2.1.0</FileVersion>
+    <Version>6.3.0.0</Version>
+    <AssemblyVersion>6.3.0.0</AssemblyVersion>
+    <FileVersion>6.3.0.0</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -165,6 +165,7 @@
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
     <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+    <PackageReference Include="BCnEncoder.Net" Version="2.3.0" />
     <PackageReference Include="CSCore" Version="1.2.1.2" />
     <PackageReference Include="DiffPlex" Version="1.9.0" />
     <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
@@ -188,6 +189,8 @@
   <ItemGroup>
     <ProjectReference Include="..\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
     <ProjectReference Include="..\CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
+    <!-- UAssetAPI writes edited packages back to .uasset; its NuGet packing is not wanted on every build -->
+    <ProjectReference Include="..\UAssetAPI\UAssetAPI\UAssetAPI.csproj" AdditionalProperties="GeneratePackageOnBuild=false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -296,12 +299,10 @@
     exe 単体でもネイティブ機能 (ACL/Oodle など) が使える。
     CUE4Parse.csproj のビルド内 cmake は失敗しても警告止まりなので、CI ではこちらで明示的に渡す。
   -->
-  <Target Name="BundleCUE4ParseNatives" AfterTargets="ComputeResolvedFilesToPublishList"
-          Condition="'$(CUE4ParseNativeDll)' != ''">
-    <Error Condition="!Exists('$(CUE4ParseNativeDll)')"
-           Text="CUE4ParseNativeDll not found: $(CUE4ParseNativeDll)" />
+  <Target Name="BundleCUE4ParseNatives" AfterTargets="ComputeResolvedFilesToPublishList" Condition="'$(CUE4ParseNativeDll)' != ''">
+    <Error Condition="!Exists('$(CUE4ParseNativeDll)')" Text="CUE4ParseNativeDll not found: $(CUE4ParseNativeDll)" />
     <ItemGroup>
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish->WithMetadataValue('Filename','CUE4Parse-Natives'))" />
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish-&gt;WithMetadataValue('Filename','CUE4Parse-Natives'))" />
       <ResolvedFileToPublish Include="$(CUE4ParseNativeDll)">
         <RelativePath>CUE4Parse-Natives.dll</RelativePath>
         <AssetType>native</AssetType>

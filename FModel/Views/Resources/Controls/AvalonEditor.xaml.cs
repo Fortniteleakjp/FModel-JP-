@@ -53,6 +53,10 @@ public partial class AvalonEditor
     {
         switch (e.Key)
         {
+            case Key.S when Keyboard.Modifiers == ModifierKeys.Control && DataContext is TabItem { IsEditingJson: true } editing:
+                editing.TabCommand.Execute("Asset_Save_Edited_Json");
+                e.Handled = true;
+                break;
             case Key.Escape:
                 ((TabItem) DataContext).HasSearchOpen = false;
                 break;
@@ -125,7 +129,8 @@ public partial class AvalonEditor
         if (!_savedCarets.ContainsKey(avalonEditor.Document.FileName))
             _ignoreCaret = true;
 
-        if (!tabItem.ShouldScroll) return;
+        // typing must not jump back to the scroll target
+        if (!tabItem.ShouldScroll || tabItem.IsEditingJson) return;
 
         var lineNumber = avalonEditor.Document.Text.GetNameLineNumber(tabItem.ScrollTrigger, tabItem.ExportPageStart);
         if (lineNumber == -1) lineNumber = 1;

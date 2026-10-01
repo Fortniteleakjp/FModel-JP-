@@ -719,6 +719,8 @@
                                             <MenuItem Header="{DynamicResource UI_Folder_Properties}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Properties_Directory" />
                                             <MenuItem Header="{DynamicResource UI_Folder_RawData}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_RawData_Directory" />
                                             <MenuItem Header="{DynamicResource UI_Folder_Code}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Code_Directory" />
+                                            <MenuItem Header="{DynamicResource UI_Folder_Edited}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Edited_Directory" />
+                                            <MenuItem Header="{DynamicResource UI_PakCreatorMenu}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Create_Pak" />
                                             <Separator />
                                             <MenuItem Header="{DynamicResource UI_Folder_Backups}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Backups_Directory" />
                                             <MenuItem Header="{DynamicResource UI_Folder_Logs}" Command="{Binding MenuCommand}" CommandParameter="ToolBox_Open_Logs_Directory" />
