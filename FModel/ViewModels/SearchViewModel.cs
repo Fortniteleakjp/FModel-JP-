@@ -114,6 +114,13 @@ public class SearchViewModel : ViewModel
     private static readonly char[] _excludeSeparators = [' ', '　', ',', '、'];
     private Regex _filterRegex;
     private bool _isRegexValid = true;
+    private SearchHighlightPattern _highlightPattern;
+    public SearchHighlightPattern HighlightPattern
+    {
+        get => _highlightPattern;
+        private set => SetProperty(ref _highlightPattern, value);
+    }
+
     private int _collectionVersion;
     private SortCache _sortCache;
     private uint _categoryMask;
@@ -345,7 +352,10 @@ public class SearchViewModel : ViewModel
         }
 
         if (!HasRegexEnabled)
+        {
+            HighlightPattern = new SearchHighlightPattern(_filters, HasMatchCaseEnabled);
             return;
+        }
 
         var options = RegexOptions.Compiled;
         if (!HasMatchCaseEnabled)
@@ -359,6 +369,10 @@ public class SearchViewModel : ViewModel
         {
             _isRegexValid = false;
         }
+
+        HighlightPattern = _isRegexValid && !string.IsNullOrEmpty(FilterText)
+            ? new SearchHighlightPattern([], HasMatchCaseEnabled, _filterRegex)
+            : null;
     }
 
     private bool ItemFilter(object item)
