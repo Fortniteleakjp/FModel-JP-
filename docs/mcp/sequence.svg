@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 760" width="1000" height="760" font-family="'Segoe UI','Yu Gothic UI','Meiryo',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+  </defs>
+  <style>text { paint-order: stroke; stroke: #ffffff; stroke-width: 4px; stroke-linejoin: round; }</style>
+  <rect width="1000" height="760" fill="#ffffff"/>
+  <text x="500" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">接続とツール呼び出しの流れ（fmodel_preview_texture の例）</text>
+
+  <!-- lifeline heads -->
+  <g font-size="13" font-weight="700" text-anchor="middle">
+    <rect x="30" y="54" width="150" height="44" rx="8" fill="#f1f5f9" stroke="#94a3b8"/><text x="105" y="81" fill="#0f172a">AI クライアント</text>
+    <rect x="215" y="54" width="150" height="44" rx="8" fill="#fff7ed" stroke="#f59e0b"/><text x="290" y="74" fill="#7c2d12">McpRelay</text><text x="290" y="90" font-size="11" font-weight="400" fill="#9a3412">FModel.exe --mcp</text>
+    <rect x="400" y="54" width="170" height="44" rx="8" fill="#eff6ff" stroke="#3b82f6"/><text x="485" y="74" fill="#1e3a8a">McpHost / SDK</text><text x="485" y="90" font-size="11" font-weight="400" fill="#1d4ed8">McpServer</text>
+    <rect x="605" y="54" width="170" height="44" rx="8" fill="#eef2ff" stroke="#6366f1"/><text x="690" y="74" fill="#312e81">FModelMcpTools</text><text x="690" y="90" font-size="11" font-weight="400" fill="#4338ca">→ FModelMcpService</text>
+    <rect x="810" y="54" width="160" height="44" rx="8" fill="#ecfdf5" stroke="#10b981"/><text x="890" y="74" fill="#064e3b">CUE4Parse</text><text x="890" y="90" font-size="11" font-weight="400" fill="#047857">live プロバイダ</text>
+  </g>
+  <g stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5 5">
+    <line x1="105" y1="98" x2="105" y2="740"/><line x1="290" y1="98" x2="290" y2="740"/>
+    <line x1="485" y1="98" x2="485" y2="740"/><line x1="690" y1="98" x2="690" y2="740"/><line x1="890" y1="98" x2="890" y2="740"/>
+  </g>
+
+  <!-- phase 1: start -->
+  <rect x="20" y="108" width="960" height="22" fill="#f8fafc"/>
+  <text x="28" y="124" font-size="12" font-weight="700" fill="#475569">① 起動と接続</text>
+  <g font-size="12" fill="#0f172a">
+    <line x1="105" y1="150" x2="286" y2="150" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
+    <text x="196" y="144" text-anchor="middle">プロセス起動（stdio）</text>
+    <line x1="290" y1="180" x2="481" y2="180" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
+    <text x="386" y="174" text-anchor="middle">パイプへ ConnectAsync（2 秒）</text>
+    <rect x="300" y="190" width="300" height="46" rx="6" fill="#fff7ed" stroke="#fdba74"/>
+    <text x="310" y="208" font-size="11" fill="#7c2d12">見つからない → ShellExecute で FModel.exe --mcp-launched</text>
+    <text x="310" y="226" font-size="11" fill="#7c2d12">を起動し、最大 3 分パイプを待つ（--no-launch なら終了）</text>
+    <rect x="495" y="246" width="230" height="46" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="505" y="264" font-size="11" fill="#1e3a8a">WaitForConnection → McpServer.Create(</text>
+    <text x="505" y="282" font-size="11" fill="#1e3a8a">StreamServerTransport(pipe), options).RunAsync</text>
+  </g>
+
+  <!-- phase 2: initialize -->
+  <rect x="20" y="304" width="960" height="22" fill="#f8fafc"/>
+  <text x="28" y="320" font-size="12" font-weight="700" fill="#475569">② 初期化（中継はバイト列をそのまま流すだけ）</text>
+  <g font-size="12" fill="#0f172a">
+    <line x1="105" y1="350" x2="481" y2="350" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
+    <text x="200" y="344" text-anchor="middle">initialize（clientInfo, protocolVersion）</text>
+    <line x1="485" y1="380" x2="109" y2="380" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#r)"/>
+    <text x="300" y="374" text-anchor="middle" fill="#334155">serverInfo fmodel-jp / capabilities / instructions（ガイド）</text>
+    <line x1="105" y1="410" x2="481" y2="410" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
+    <text x="200" y="404" text-anchor="middle">tools/list → 37 ツールのスキーマ</text>
+  </g>
+
+  <!-- phase 3: tool call -->
+  <rect x="20" y="424" width="960" height="22" fill="#f8fafc"/>
+  <text x="28" y="440" font-size="12" font-weight="700" fill="#475569">③ ツール呼び出し</text>
+  <g font-size="12" fill="#0f172a">
+    <line x1="105" y1="470" x2="481" y2="470" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
+    <text x="200" y="464" text-anchor="middle">tools/call fmodel_preview_texture {path, maxSize}</text>
+    <line x1="485" y1="500" x2="686" y2="500" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
+    <text x="585" y="494" text-anchor="middle">引数をバインドして呼ぶ</text>
+    <rect x="600" y="510" width="180" height="62" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>
+    <text x="610" y="528" font-size="11" fill="#312e81">Run(): 例外を分類して isError</text>
+    <text x="610" y="545" font-size="11" fill="#312e81">InSession(): live の Gate を取る</text>
+    <text x="610" y="562" font-size="11" fill="#312e81">File(): パス → GameFile 解決</text>
+    <line x1="690" y1="590" x2="886" y2="590" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
+    <text x="790" y="584" text-anchor="middle">LoadPackageCached</text>
+    <line x1="890" y1="620" x2="694" y2="620" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#r)"/>
+    <text x="790" y="614" text-anchor="middle" fill="#334155">UTexture → Decode(maxSize)</text>
+    <rect x="600" y="630" width="180" height="40" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>
+    <text x="610" y="648" font-size="11" fill="#312e81">SkiaSharp で縮小 → PNG</text>
+    <text x="610" y="663" font-size="11" fill="#312e81">（8 MiB 超はエラー）</text>
+    <line x1="690" y1="700" x2="109" y2="700" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#r)"/>
+    <text x="400" y="694" text-anchor="middle" fill="#334155">CallToolResult: text「256x256 PNG preview…」+ image/png（base64）</text>
+    <text x="400" y="728" text-anchor="middle" font-size="11" fill="#64748b">通常のツールは camelCase JSON を text と structuredContent の両方で返す（10 万文字超は response_too_large）</text>
+  </g>
+</svg>

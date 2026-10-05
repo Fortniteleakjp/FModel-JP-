@@ -509,4 +509,8 @@
     <system:String x:Key="UI_PakWriteSignatureDescription">.sig には pak の 64KB ごとの CRC32（正しく計算します）と、ゲーム開発元しか作れない RSA 署名が入ります。署名部分はゲームの .sig からコピーします。署名を本当に検証するゲームでは弾かれますが、通常の改造環境ではファイルがあれば読み込まれます。</system:String>
     <system:String x:Key="UI_PakSignatureTemplate">署名のコピー元</system:String>
     <system:String x:Key="UI_PakSignatureTemplateDescription">署名部分をコピーするゲームの .sig（pakchunk0-WindowsClient.sig など）。空欄なら空の署名になります。</system:String>
+    <system:String x:Key="UI_McpServer">MCP サーバー</system:String>
+    <system:String x:Key="UI_McpServerDescription">AI アシスタント（Claude・Codex など）が Model Context Protocol で、FModel に読み込んだゲームの閲覧・解析・プレビュー・書き出しをできるようにします。接続できるのは同じ Windows アカウントのプロセスだけです（名前付きパイプ。ネットワークのポートは開きません）。</system:String>
+    <system:String x:Key="UI_McpServerCommand">MCP クライアント用コマンド</system:String>
+    <system:String x:Key="UI_McpServerCommandDescription">このコマンドを AI クライアントに stdio の MCP サーバーとして登録してください。起動中の FModel に中継し、FModel が起動していなければ起動します。</system:String>
 </ResourceDictionary>

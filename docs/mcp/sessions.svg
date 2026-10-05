@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="1000" height="520" font-family="'Segoe UI','Yu Gothic UI','Meiryo',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker>
+  </defs>
+  <rect width="1000" height="520" fill="#ffffff"/>
+  <text x="500" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">セッションモデル：live と追加セッション</text>
+
+  <!-- dictionary -->
+  <rect x="24" y="60" width="210" height="200" rx="10" fill="#f8fafc" stroke="#94a3b8"/>
+  <text x="129" y="84" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">_sessions</text>
+  <text x="129" y="102" text-anchor="middle" font-size="11" fill="#64748b">ConcurrentDictionary&lt;id, McpSession&gt;</text>
+  <rect x="40" y="116" width="178" height="40" rx="6" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="129" y="141" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#064e3b">"live"</text>
+  <rect x="40" y="164" width="178" height="40" rx="6" fill="#f0f9ff" stroke="#38bdf8"/>
+  <text x="129" y="189" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#0c4a6e">"f44a3ed779c1"</text>
+  <text x="129" y="230" text-anchor="middle" font-size="11" fill="#64748b">sessionId 省略時は "live"</text>
+  <text x="129" y="246" text-anchor="middle" font-size="11" fill="#64748b">（EnsureLive で遅延登録）</text>
+
+  <!-- live -->
+  <rect x="290" y="60" width="330" height="200" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+  <text x="455" y="86" text-anchor="middle" font-size="15" font-weight="700" fill="#064e3b">live セッション（IsLive = true）</text>
+  <g font-size="12" fill="#065f46">
+    <text x="306" y="112">Provider = CUE4ParseViewModel.Provider（本体と同一）</text>
+    <text x="306" y="134">AES 鍵・マッピング・言語は FModel の画面で管理</text>
+    <text x="306" y="156">パッケージ読み込みは LoadPackageCached（LRU 128）</text>
+    <text x="306" y="178">ファイルが 0 件の間は「読み込み中」エラー</text>
+    <text x="306" y="200">閉じられない / 鍵・マッピング・言語を変えられない</text>
+    <text x="306" y="222">Verse 復元・画面連携はここだけ</text>
+  </g>
+  <line x1="220" y1="136" x2="286" y2="136" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
+
+  <!-- extra -->
+  <rect x="650" y="60" width="326" height="200" rx="10" fill="#f0f9ff" stroke="#38bdf8" stroke-width="2"/>
+  <text x="813" y="86" text-anchor="middle" font-size="15" font-weight="700" fill="#0c4a6e">追加セッション（最大 4）</text>
+  <g font-size="12" fill="#075985">
+    <text x="666" y="112">open_saved_game / open_game で作成</text>
+    <text x="666" y="134">CUE4ParseViewModel.CreateLocalProvider</text>
+    <text x="666" y="156">→ Initialize → Mount → SubmitKeys → PostMount</text>
+    <text x="666" y="178">保存済みの鍵・UE 版・バージョン設定を流用</text>
+    <text x="666" y="200">submit_keys / set_mappings / load_localization 可</text>
+    <text x="666" y="222">close_game で Dispose（ジョブ実行中は不可）</text>
+  </g>
+  <path d="M220,184 H240 V280 H813 V264" fill="none" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
+
+  <!-- McpSession internals -->
+  <rect x="24" y="300" width="952" height="196" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="40" y="326" font-size="14" font-weight="700" fill="#0f172a">McpSession が持つもの（McpModels.cs）</text>
+  <g font-size="12">
+    <rect x="40" y="340" width="220" height="140" rx="8" fill="#fef9c3" stroke="#eab308"/>
+    <text x="150" y="362" text-anchor="middle" font-weight="700" fill="#713f12">Gate（SemaphoreSlim 1）</text>
+    <text x="52" y="386" fill="#713f12">InSession() が取ってから処理</text>
+    <text x="52" y="406" fill="#713f12">→ 同じプロバイダを MCP から</text>
+    <text x="52" y="426" fill="#713f12">同時に触らせない</text>
+    <text x="52" y="452" fill="#854d0e" font-size="11">エクスポートはアセット 1 件ごとに</text>
+    <text x="52" y="468" fill="#854d0e" font-size="11">取り直す（閲覧系が割り込める）</text>
+
+    <rect x="276" y="340" width="300" height="140" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+    <text x="426" y="362" text-anchor="middle" font-weight="700" fill="#0f172a">Files（パス順の GameFile[]）</text>
+    <text x="288" y="386" fill="#334155">Provider.Files の件数が変わったら並べ直す</text>
+    <text x="288" y="406" fill="#334155">（FModel が AES 再取得で後からマウント</text>
+    <text x="288" y="426" fill="#334155">しても live に反映される）</text>
+    <text x="288" y="452" fill="#475569" font-size="11">browse / search / statistics / compare は</text>
+    <text x="288" y="468" fill="#475569" font-size="11">この配列を二分探索して区間だけ走査</text>
+
+    <rect x="592" y="340" width="368" height="140" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+    <text x="776" y="362" text-anchor="middle" font-weight="700" fill="#0f172a">そのほか</text>
+    <text x="604" y="386" fill="#334155">Registry：load_registry で読んだ AssetRegistry.bin</text>
+    <text x="604" y="406" fill="#334155">MappingsPath：追加セッションのマッピング</text>
+    <text x="604" y="426" fill="#334155">Closed：閉じ始めたら新規の呼び出しを拒否</text>
+    <text x="604" y="452" fill="#475569" font-size="11">ジョブ（McpExportJob）はセッションと別の辞書で管理し、</text>
+    <text x="604" y="468" fill="#475569" font-size="11">sessionId で紐づける（最大 32、古い完了済みから削除）</text>
+  </g>
+</svg>

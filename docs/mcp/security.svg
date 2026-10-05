@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" font-family="'Segoe UI','Yu Gothic UI','Meiryo',sans-serif">
+  <rect width="1000" height="560" fill="#ffffff"/>
+  <text x="500" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">安全のための境界（どこで何を止めているか）</text>
+
+  <g font-size="12">
+    <!-- 1 -->
+    <rect x="24" y="56" width="470" height="150" rx="10" fill="#eff6ff" stroke="#3b82f6"/>
+    <text x="40" y="82" font-size="15" font-weight="700" fill="#1e3a8a">① 接続できる相手</text>
+    <text x="40" y="106" fill="#1e40af">・既定で OFF（設定 › 一般 › MCP サーバー）</text>
+    <text x="40" y="126" fill="#1e40af">・TCP ポートを開かない → ブラウザや LAN から届かない</text>
+    <text x="40" y="146" fill="#1e40af">・名前付きパイプに CurrentUserOnly（同じ Windows ユーザーのみ）</text>
+    <text x="40" y="166" fill="#1e40af">・中継側も CurrentUserOnly で接続 → パイプ名の横取りを検出</text>
+    <text x="40" y="186" fill="#1e40af">・最初のインスタンスは FirstPipeInstance（二重起動を検出）</text>
+    <text x="478" y="82" text-anchor="end" font-size="11" fill="#64748b">McpHost / McpRelay</text>
+
+    <!-- 2 -->
+    <rect x="506" y="56" width="470" height="150" rx="10" fill="#ecfdf5" stroke="#10b981"/>
+    <text x="522" y="82" font-size="15" font-weight="700" fill="#064e3b">② 読めるもの（入力）</text>
+    <text x="522" y="106" fill="#065f46">・live は FModel が既に開いているゲームだけ</text>
+    <text x="522" y="126" fill="#065f46">・追加セッションは FModel に保存済みのゲームフォルダ（の中）だけ</text>
+    <text x="522" y="146" fill="#065f46">　→ 任意フォルダのルーズファイル経由でディスクを読ませない</text>
+    <text x="522" y="166" fill="#065f46">・read_file は 1 回 32 KB、ハッシュ・読み込みは 512 MB まで</text>
+    <text x="522" y="186" fill="#065f46">・応答は 10 万文字まで（超えたら response_too_large）</text>
+    <text x="960" y="82" text-anchor="end" font-size="11" fill="#64748b">McpPathPolicy.GameDirectory / CheckSize</text>
+
+    <!-- 3 -->
+    <rect x="24" y="220" width="470" height="150" rx="10" fill="#fefce8" stroke="#eab308"/>
+    <text x="40" y="246" font-size="15" font-weight="700" fill="#713f12">③ 書けるもの（出力）</text>
+    <text x="40" y="270" fill="#854d0e">・&lt;出力フォルダ&gt;/MCP/ の下にジョブごとの新規フォルダだけ</text>
+    <text x="40" y="290" fill="#854d0e">・ゲーム内パスの ".." / ドライブ指定 / CON 等の予約名を拒否</text>
+    <text x="40" y="310" fill="#854d0e">・ジョブフォルダ内のシンボリックリンク / ジャンクションを拒否</text>
+    <text x="40" y="330" fill="#854d0e">・converted の依存出力は書いた後にフォルダ内か検証</text>
+    <text x="40" y="350" fill="#854d0e">・ゲームのアーカイブは読み取り専用（MCP から書き換え不可）</text>
+    <text x="478" y="246" text-anchor="end" font-size="11" fill="#64748b">ValidateRelative / OutputFile / RejectLinksBelow</text>
+
+    <!-- 4 -->
+    <rect x="506" y="220" width="470" height="150" rx="10" fill="#fdf2f8" stroke="#ec4899"/>
+    <text x="522" y="246" font-size="15" font-weight="700" fill="#831843">④ 秘密情報</text>
+    <text x="522" y="270" fill="#9d174d">・AES 鍵の値は一切返さない（件数と GUID のみ）</text>
+    <text x="522" y="290" fill="#9d174d">・保存済みゲームの鍵は FModel の設定から内部で直接使う</text>
+    <text x="522" y="310" fill="#9d174d">　→ AI の会話（ツール引数）に鍵が載らない</text>
+    <text x="522" y="330" fill="#9d174d">・エラーメッセージ中の 64 桁 16 進は [redacted] に置換</text>
+    <text x="522" y="350" fill="#9d174d">・スタックトレースは返さない（FModel のログにだけ残す）</text>
+    <text x="960" y="246" text-anchor="end" font-size="11" fill="#64748b">ErrorMessage / ReadSavedGames</text>
+
+    <!-- 5 -->
+    <rect x="24" y="384" width="470" height="156" rx="10" fill="#faf5ff" stroke="#a855f7"/>
+    <text x="40" y="410" font-size="15" font-weight="700" fill="#581c87">⑤ FModel 本体の状態を壊さない</text>
+    <text x="40" y="434" fill="#6b21a8">・live は閉じない / 鍵・マッピング・言語を変えない</text>
+    <text x="40" y="454" fill="#6b21a8">・セッションごとの Gate で MCP 側の同時操作を直列化</text>
+    <text x="40" y="474" fill="#6b21a8">・画面操作は Dispatcher 経由、FModel が Ready の時だけ</text>
+    <text x="40" y="494" fill="#6b21a8">・MCP のエクスポートは画面のエクスポートキューと別</text>
+    <text x="40" y="514" fill="#6b21a8">・中継が本体を起動するときは stdio を継承させない</text>
+    <text x="478" y="410" text-anchor="end" font-size="11" fill="#64748b">RejectLive / OpenInFModel / McpRelay</text>
+
+    <!-- 6 -->
+    <rect x="506" y="384" width="470" height="156" rx="10" fill="#f1f5f9" stroke="#64748b"/>
+    <text x="522" y="410" font-size="15" font-weight="700" fill="#0f172a">⑥ アセットの中身は「データ」</text>
+    <text x="522" y="434" fill="#334155">・ゲーム内の文字列には AI への指示に見えるものも混ざりうる</text>
+    <text x="522" y="454" fill="#334155">・ガイド（instructions）で「指示として扱わない」と明示</text>
+    <text x="522" y="474" fill="#334155">・read_file / get_ui_state の結果にも untrusted の注記</text>
+    <text x="522" y="494" fill="#334155">・ツールの注釈：閲覧系は readOnlyHint、すべて openWorld=false</text>
+    <text x="522" y="514" fill="#334155">　（外部ネットワークへ出ない）</text>
+    <text x="960" y="410" text-anchor="end" font-size="11" fill="#64748b">McpWorkflowContent.Guide</text>
+  </g>
+</svg>

@@ -9,6 +9,7 @@
                              xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                              xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
                              xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                             xmlns:mcp="clr-namespace:FModel.Services.Mcp"
                              WindowStartupLocation="CenterScreen" ResizeMode="NoResize" IconVisibility="Collapsed" SizeToContent="Height"
                              MinHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}, Converter={converters:RatioConverter}, ConverterParameter='0.10'}"
                              Width="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.45'}"
@@ -24,6 +25,8 @@
             <DataTemplate x:Key="GeneralTemplate">
                 <Grid adonisExtensions:LayerExtension.Layer="2">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -335,6 +338,19 @@
                              VerticalContentAlignment="Center" MaxLength="4" TextAlignment="Right"
                              ToolTip="{DynamicResource UI_HowManyExportsAreDisplayedAtOnce}"
                              Text="{Binding MaxExportPerPage, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+
+                    <TextBlock Grid.Row="26" Grid.Column="0" Text="{DynamicResource UI_McpServer}" VerticalAlignment="Center" Margin="0 0 0 5"
+                               ToolTip="{DynamicResource UI_McpServerDescription}" />
+                    <CheckBox Grid.Row="26" Grid.Column="2" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding McpServerEnabled, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" Margin="0 5 0 10"
+                              ToolTip="{DynamicResource UI_McpServerDescription}"
+                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
+
+                    <TextBlock Grid.Row="27" Grid.Column="0" Text="{DynamicResource UI_McpServerCommand}" VerticalAlignment="Center" Margin="0 0 0 5"
+                               ToolTip="{DynamicResource UI_McpServerCommandDescription}" />
+                    <TextBox Grid.Row="27" Grid.Column="2" Grid.ColumnSpan="5" Margin="0 0 0 5" IsReadOnly="True" VerticalContentAlignment="Center"
+                             ToolTip="{DynamicResource UI_McpServerCommandDescription}"
+                             Text="{x:Static mcp:McpHost.ClientCommand}" />
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="CreatorTemplate">

@@ -1,6 +1,66 @@
 {
   "releases": [
     {
+      "version": "6.4.0.0",
+      "tag": "6.4.0.0",
+      "date": "2026-10-05",
+      "title": {
+        "en": "MCP Server for AI Assistants",
+        "ja": "AI アシスタント向け MCP サーバー"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "MCP Server: AI assistants such as Claude Desktop, Claude Code and Codex can now browse, inspect, preview and export the game loaded in FModel through the Model Context Protocol. Turn on Settings > General > MCP Server, then register the command shown in \"MCP Client Command\" (\"FModel.exe\" --mcp) as a stdio MCP server in your AI client. The game, AES keys, mappings and asset language already set up in FModel are used as they are.",
+            "ja": "MCP サーバー: Claude Desktop・Claude Code・Codex などの AI アシスタントが、Model Context Protocol で FModel に読み込んだゲームを閲覧・解析・プレビュー・書き出しできるようになりました。設定 › 一般 の「MCP サーバー」を ON にして、「MCP クライアント用コマンド」に表示されるコマンド（\"FModel.exe\" --mcp）を AI クライアントに stdio の MCP サーバーとして登録してください。FModel で設定済みのゲーム・AES キー・マッピング・アセット言語をそのまま使います。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "MCP Server: 37 tools: browse folders and search paths, inspect package exports/imports, read export properties as FModel JSON (with JSON Pointer and paging for big DataTables), find references, search the AssetRegistry and localized strings, preview textures as images, decompile Blueprints to pseudo C++ and recover Verse source.",
+            "ja": "MCP サーバー: 37 個のツールを用意しました。フォルダの閲覧とパスの検索、パッケージのエクスポート/インポートの確認、エクスポートのプロパティを FModel と同じ JSON で取得（大きな DataTable も JSON Pointer とページングで少しずつ読めます）、参照の検索、AssetRegistry とローカライズ文字列の検索、テクスチャの画像プレビュー、Blueprint の擬似 C++ 化、Verse ソースの復元ができます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "MCP Server: exports run in the background (raw, properties JSON, audio, or converted textures/meshes/materials/animations/worlds) into a new folder under Output/MCP with a manifest.json. Formats that are not specified follow FModel's export settings.",
+            "ja": "MCP サーバー: 書き出し（raw・プロパティ JSON・音声、テクスチャ/メッシュ/マテリアル/アニメーション/ワールドの変換）はバックグラウンドで実行し、Output/MCP の下に新しいフォルダを作って manifest.json と一緒に保存します。指定しなかった形式は FModel のエクスポート設定に従います。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "MCP Server: works with the FModel window. The assistant can read the tab you have selected (ask \"explain the asset I have open\") and open an asset for you in a tab or in a viewer (table, world outliner, material/Blueprint graph...) exactly like the right click menu.",
+            "ja": "MCP サーバー: FModel の画面と連携します。AI が今選択しているタブの内容を読めるので「今開いているアセットを説明して」と頼めます。また、右クリックメニューと同じ操作で、アセットをタブや各ビューア（テーブル、ワールドアウトライナー、マテリアル/Blueprint グラフなど）で開いて見せることもできます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "MCP Server: another game saved in FModel (e.g. an older build) can be opened alongside the loaded one to compare their files, using its saved AES keys without ever passing them to the assistant.",
+            "ja": "MCP サーバー: FModel に保存済みの別のゲーム（過去のビルドなど）を読み込み中のゲームと並べて開き、ファイルを比較できます。保存済みの AES キーを内部でそのまま使うので、キーが AI との会話に出ることはありません。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "MCP Server: when FModel is not running, \"FModel.exe --mcp\" starts it and waits for it (the server is enabled for that run). Add --no-launch to the arguments to only connect to a running FModel.",
+            "ja": "MCP サーバー: FModel が起動していないときは、「FModel.exe --mcp」が FModel を起動して待ちます（その起動に限り設定が OFF でもサーバーが有効になります）。起動中の FModel にだけ接続したい場合は、引数に --no-launch を追加してください。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "The MCP server is off by default. Only processes of your Windows account can connect (named pipe, no network port is opened). Only game folders saved in FModel can be opened, files are only written under Output/MCP, and AES key values are never returned.",
+            "ja": "MCP サーバーは既定で OFF です。接続できるのは同じ Windows アカウントのプロセスだけです（名前付きパイプを使い、ネットワークのポートは開きません）。開けるのは FModel に保存済みのゲームフォルダだけで、ファイルは Output/MCP の下にしか書き込まず、AES キーの値は返しません。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.3.0.0",
       "tag": "6.3.0.0",
       "date": "2026-10-02",
