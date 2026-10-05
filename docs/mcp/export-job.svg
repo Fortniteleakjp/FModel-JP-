@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="1000" height="500" font-family="'Segoe UI','Yu Gothic UI','Meiryo',sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#334155"/></marker>
+    <marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+  </defs>
+  <style>text { paint-order: stroke; stroke: #ffffff; stroke-width: 4px; stroke-linejoin: round; }</style>
+  <rect width="1000" height="500" fill="#ffffff"/>
+  <text x="500" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">エクスポートジョブの状態遷移（McpExportJob / RunExport）</text>
+
+  <g font-size="14" font-weight="700" text-anchor="middle">
+    <rect x="30" y="110" width="130" height="50" rx="25" fill="#f1f5f9" stroke="#64748b"/><text x="95" y="140" fill="#0f172a">queued</text>
+    <rect x="230" y="110" width="130" height="50" rx="25" fill="#dbeafe" stroke="#3b82f6"/><text x="295" y="140" fill="#1e3a8a">running</text>
+    <rect x="470" y="110" width="140" height="50" rx="25" fill="#ede9fe" stroke="#8b5cf6"/><text x="540" y="140" fill="#4c1d95">finalizing</text>
+    <rect x="230" y="250" width="130" height="50" rx="25" fill="#fee2e2" stroke="#ef4444"/><text x="295" y="280" fill="#7f1d1d">cancelling</text>
+
+    <rect x="720" y="60" width="250" height="44" rx="22" fill="#dcfce7" stroke="#22c55e"/><text x="845" y="87" fill="#14532d">completed</text>
+    <rect x="720" y="116" width="250" height="44" rx="22" fill="#fef9c3" stroke="#eab308"/><text x="845" y="143" fill="#713f12">completed_with_errors</text>
+    <rect x="720" y="172" width="250" height="44" rx="22" fill="#fee2e2" stroke="#ef4444"/><text x="845" y="199" fill="#7f1d1d">cancelled</text>
+    <rect x="720" y="228" width="250" height="44" rx="22" fill="#fecaca" stroke="#b91c1c"/><text x="845" y="255" fill="#7f1d1d">failed</text>
+  </g>
+
+  <g font-size="12" fill="#334155">
+    <line x1="162" y1="135" x2="226" y2="135" stroke="#334155" stroke-width="2" marker-end="url(#a)"/>
+    <text x="194" y="126" text-anchor="middle">Task.Run</text>
+    <line x1="362" y1="135" x2="466" y2="135" stroke="#334155" stroke-width="2" marker-end="url(#a)"/>
+    <text x="414" y="126" text-anchor="middle">全パス処理後</text>
+    <path d="M612,128 C660,110 680,82 716,82" fill="none" stroke="#22c55e" stroke-width="2" marker-end="url(#a)"/>
+    <text x="664" y="92" text-anchor="middle" font-size="11">全件成功</text>
+    <line x1="612" y1="138" x2="716" y2="138" stroke="#eab308" stroke-width="2" marker-end="url(#a)"/>
+    <text x="664" y="152" text-anchor="middle" font-size="11">一部失敗</text>
+    <path d="M600,160 C640,190 680,194 716,194" fill="none" stroke="#ef4444" stroke-width="2" marker-end="url(#a)"/>
+    <path d="M580,162 C620,240 680,250 716,250" fill="none" stroke="#b91c1c" stroke-width="2" marker-end="url(#a)"/>
+    <text x="640" y="250" text-anchor="middle" font-size="11">想定外の例外</text>
+
+    <line x1="95" y1="162" x2="250" y2="250" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="6 3" marker-end="url(#c)"/>
+    <line x1="295" y1="162" x2="295" y2="246" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="6 3" marker-end="url(#c)"/>
+    <text x="140" y="214" fill="#b91c1c" font-size="11">fmodel_cancel_job</text>
+    <path d="M362,275 C430,275 470,200 520,164" fill="none" stroke="#dc2626" stroke-width="1.8" marker-end="url(#c)"/>
+    <text x="440" y="262" fill="#b91c1c" font-size="11">OperationCanceled</text>
+  </g>
+
+  <!-- per-asset loop -->
+  <rect x="30" y="320" width="460" height="164" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="46" y="344" font-size="14" font-weight="700" fill="#0f172a">running 中：パスごとに ExportOne</text>
+  <g font-size="12" fill="#334155">
+    <text x="46" y="368">1. session.Gate を取る（1 件ごと。閲覧ツールは合間に動ける）</text>
+    <text x="46" y="390">2. mode で分岐</text>
+    <text x="66" y="410">raw … Provider.SavePackage（.uasset+.uexp+.ubulk…）</text>
+    <text x="66" y="430">properties … JsonSerializer で export 配列を書く</text>
+    <text x="66" y="450">audio … SoundDecoder.Decode　converted … ExportSession</text>
+    <text x="46" y="472">3. 例外はその 1 件の失敗として記録し、次へ進む</text>
+  </g>
+
+  <rect x="510" y="320" width="460" height="164" rx="10" fill="#faf5ff" stroke="#c4b5fd"/>
+  <text x="526" y="344" font-size="14" font-weight="700" fill="#4c1d95">finalizing：manifest.json を必ず書く</text>
+  <g font-size="12" fill="#4c1d95">
+    <text x="526" y="368">status（最終状態）・results（パスごとの成否と出力）</text>
+    <text x="526" y="390">files：ジョブフォルダの全ファイル（途中で止まった分も）</text>
+    <text x="526" y="414">出力先：&lt;OutputDirectory&gt;/MCP/export-日時-乱数/</text>
+    <text x="546" y="434">raw/ properties/ audio/ converted/ manifest.json</text>
+    <text x="526" y="458">converted の依存出力がフォルダ外に出たら失敗扱い</text>
+    <text x="526" y="476" font-size="11" fill="#6d28d9">（CUE4Parse 本体は改変しないので書いた後に検証）</text>
+  </g>
+</svg>

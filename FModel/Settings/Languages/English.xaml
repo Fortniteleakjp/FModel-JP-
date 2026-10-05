@@ -509,4 +509,8 @@
     <system:String x:Key="UI_PakWriteSignatureDescription">The .sig holds the CRC32 of every 64 KiB of the pak, which is written correctly, and an RSA signature only the game's developer can make, which is copied from one of the game's .sig. Games that actually check signatures still reject the pak; the usual modding setups only need the file to be there.</system:String>
     <system:String x:Key="UI_PakSignatureTemplate">Signature from</system:String>
     <system:String x:Key="UI_PakSignatureTemplateDescription">A .sig of the game (pakchunk0-WindowsClient.sig...) to copy the signed part from. Empty writes an empty one.</system:String>
+    <system:String x:Key="UI_McpServer">MCP Server</system:String>
+    <system:String x:Key="UI_McpServerDescription">Lets AI assistants (Claude, Codex...) browse, inspect, preview and export the game loaded in FModel through the Model Context Protocol. Only processes of your Windows account can connect (named pipe, no network port).</system:String>
+    <system:String x:Key="UI_McpServerCommand">MCP Client Command</system:String>
+    <system:String x:Key="UI_McpServerCommandDescription">Register this command as a stdio MCP server in your AI client. It relays to the running FModel, and starts FModel if needed.</system:String>
 </ResourceDictionary>

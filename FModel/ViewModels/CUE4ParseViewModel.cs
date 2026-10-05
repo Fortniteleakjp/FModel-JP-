@@ -200,29 +200,7 @@ public partial class CUE4ParseViewModel : ViewModel
             }
             default:
             {
-                Provider = versionContainer.Game switch
-                {
-                    GAME_StateOfDecay2 => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                    [
-                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
-                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
-                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
-                    GAME_eFootball => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                    [
-                        new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
-                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
-                    GAME_DeadByDaylight => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
-                    [
-                        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\DeadByDaylight\\Saved\\PersistentDownloadDir\\DynamicContent")
-                    ], SearchOption.AllDirectories, versionContainer, pathComparer),
-                    GAME_AshEchoes => new AEDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
-                    GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
-                    GAME_HonorofKingsWorld => new HoKWDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
-                    GAME_LordOfMysteries => new LoMDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
-                    GAME_ArcRaiders or GAME_Highguard or GAME_MARVELTokonFightingSouls => new TheiaFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
-                    _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
-                };
-
+                Provider = CreateLocalProvider(gameDirectory, versionContainer, pathComparer);
                 break;
             }
         }
@@ -238,6 +216,36 @@ public partial class CUE4ParseViewModel : ViewModel
         RefVm = new SearchViewModel("References");
         TabControl = new TabControlViewModel();
         IoStoreOnDemand = new ConfigIni(nameof(IoStoreOnDemand));
+    }
+
+    /// <summary>
+    /// the provider of a local installation, picked by game the same way for the main window and for
+    /// the extra games the MCP server opens (<see cref="Services.Mcp.FModelMcpService"/>)
+    /// </summary>
+    public static AbstractVfsFileProvider CreateLocalProvider(string gameDirectory, VersionContainer versionContainer, StringComparer pathComparer)
+    {
+        return versionContainer.Game switch
+        {
+            GAME_StateOfDecay2 => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+            [
+                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\Paks"),
+                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\StateOfDecay2\\Saved\\DisabledPaks")
+            ], SearchOption.AllDirectories, versionContainer, pathComparer),
+            GAME_eFootball => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+            [
+                new(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\KONAMI\\eFootball\\ST\\Download")
+            ], SearchOption.AllDirectories, versionContainer, pathComparer),
+            GAME_DeadByDaylight => new DefaultFileProvider(new DirectoryInfo(gameDirectory),
+            [
+                new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\DeadByDaylight\\Saved\\PersistentDownloadDir\\DynamicContent")
+            ], SearchOption.AllDirectories, versionContainer, pathComparer),
+            GAME_AshEchoes => new AEDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+            GAME_BlackStigma => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, StringComparer.Ordinal),
+            GAME_HonorofKingsWorld => new HoKWDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+            GAME_LordOfMysteries => new LoMDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+            GAME_ArcRaiders or GAME_Highguard or GAME_MARVELTokonFightingSouls => new TheiaFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+            _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
+        };
     }
 
     public async Task Initialize()
@@ -1875,28 +1883,8 @@ public partial class CUE4ParseViewModel : ViewModel
 
         TabControl.SelectedTab.TitleExtra = listing ? "Verse Bytecode" : "Verse";
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
-        var mode = listing ? VerseBodyMode.Listing : VerseBodyMode.Rebuilt;
 
-        // RecoveredVerseGameFile is a virtual text file backed by the cooked _Verse.uasset.
-        // It is intentionally not a UE package itself, so passing it to Provider.LoadPackage()
-        // throws "cannot load non-UE package". Its Read() method already performs the source-file
-        // specific Verse reconstruction; show that result directly instead.
-        if (entry is RecoveredVerseGameFile recovered)
-        {
-            var text = listing ? recovered.Recover(VerseBodyMode.Listing) : Encoding.UTF8.GetString(entry.Read());
-            TabControl.SelectedTab.SetDocumentText(text, false, false);
-            return true;
-        }
-
-        // the function bodies are rebuilt too, which needs the bytecode deserialized with the exports
-        var source = RecoveredVerseGameFile.WithScriptData(Provider, () =>
-        {
-            var package = Provider.LoadPackage(entry);
-            return VerseDeclarationRecovery.HasVerseTypes(package)
-                ? VerseDeclarationRecovery.FromPackage(package, mode)
-                : null;
-        });
-
+        var source = RecoverVerseSource(entry, listing);
         if (source is null)
         {
             FLogger.Append(ELog.Warning, () =>
@@ -1906,6 +1894,31 @@ public partial class CUE4ParseViewModel : ViewModel
 
         TabControl.SelectedTab.SetDocumentText(source, false, false);
         return true;
+    }
+
+    /// <summary>
+    /// the tab-free part of <see cref="RecoverVerseDeclarations"/>, also used by the MCP server
+    /// </summary>
+    /// <returns>null when the package does not hold any cooked Verse type</returns>
+    public string RecoverVerseSource(GameFile entry, bool listing = false)
+    {
+        var mode = listing ? VerseBodyMode.Listing : VerseBodyMode.Rebuilt;
+
+        // RecoveredVerseGameFile is a virtual text file backed by the cooked _Verse.uasset.
+        // It is intentionally not a UE package itself, so passing it to Provider.LoadPackage()
+        // throws "cannot load non-UE package". Its Read() method already performs the source-file
+        // specific Verse reconstruction; show that result directly instead.
+        if (entry is RecoveredVerseGameFile recovered)
+            return listing ? recovered.Recover(VerseBodyMode.Listing) : Encoding.UTF8.GetString(entry.Read());
+
+        // the function bodies are rebuilt too, which needs the bytecode deserialized with the exports
+        return RecoveredVerseGameFile.WithScriptData(Provider, () =>
+        {
+            var package = Provider.LoadPackage(entry);
+            return VerseDeclarationRecovery.HasVerseTypes(package)
+                ? VerseDeclarationRecovery.FromPackage(package, mode)
+                : null;
+        });
     }
 
     public bool Decompile(GameFile entry, bool AddTab = true)
@@ -1920,6 +1933,19 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.TitleExtra = "Decompiled";
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("cpp");
 
+        var cpp = DecompileToPseudoCpp(entry);
+        if (cpp is null) return false;
+
+        TabControl.SelectedTab.SetDocumentText(cpp, false, false);
+        return true;
+    }
+
+    /// <summary>
+    /// the tab-free part of <see cref="Decompile"/>, also used by the MCP server
+    /// </summary>
+    /// <returns>null when the package does not hold any blueprint class</returns>
+    public string DecompileToPseudoCpp(GameFile entry)
+    {
         UClassCookedMetaData cookedMetaData = null;
         try
         {
@@ -1946,7 +1972,7 @@ public partial class CUE4ParseViewModel : ViewModel
             cppList.Add(blueprint.DecompileBlueprintToPseudo(cookedMetaData));
         }
 
-        if (cppList.Count == 0) return false;
+        if (cppList.Count == 0) return null;
         var cpp = cppList.Count > 1 ? string.Join("\n\n", cppList) : cppList.FirstOrDefault() ?? string.Empty;
         if (entry.Path.Contains("_Verse.uasset"))
         {
@@ -1955,9 +1981,7 @@ public partial class CUE4ParseViewModel : ViewModel
         cpp = Regex.Replace(cpp, @"CallFunc_([A-Za-z0-9_]+)_ReturnValue", "$1");
         cpp = Regex.Replace(cpp, @"K2Node_DynamicCast_([A-Za-z0-9_]+)", "$1");
         cpp = Regex.Replace(cpp, @"K2Node_([A-Za-z0-9_]+)", "$1");
-
-        TabControl.SelectedTab.SetDocumentText(cpp, false, false);
-        return true;
+        return cpp;
     }
 
     private void SaveAndPlaySound(CancellationToken cancellationToken, string fullPath, string ext, byte[] data, bool saveAudio, bool updateUi)

@@ -135,6 +135,17 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _pakMountPoint, value);
     }
 
+    private bool _mcpServerEnabled;
+    /// <summary>
+    /// hosts the MCP server inside FModel so AI clients started with "FModel.exe --mcp" can use the loaded game,
+    /// see <see cref="FModel.Services.Mcp.McpHost"/>
+    /// </summary>
+    public bool McpServerEnabled
+    {
+        get => _mcpServerEnabled;
+        set => SetProperty(ref _mcpServerEnabled, value);
+    }
+
     private bool _pakMergeRegistry;
     /// <summary>
     /// merges a cooked AssetRegistry.bin into the game's one and packs it, see <see cref="FModel.Services.AssetEditing.AssetRegistryMerger"/>

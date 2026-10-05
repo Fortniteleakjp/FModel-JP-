@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="1000" height="640" font-family="'Segoe UI','Yu Gothic UI','Meiryo',sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="640" fill="#ffffff"/>
+  <text x="500" y="34" text-anchor="middle" font-size="20" font-weight="700" fill="#0f172a">FModel JP 内蔵 MCP サーバーの全体構成</text>
+
+  <!-- clients -->
+  <rect x="24" y="70" width="190" height="150" rx="12" fill="#f1f5f9" stroke="#94a3b8"/>
+  <text x="119" y="96" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a">MCP クライアント</text>
+  <text x="119" y="124" text-anchor="middle" font-size="13" fill="#334155">Claude Desktop</text>
+  <text x="119" y="146" text-anchor="middle" font-size="13" fill="#334155">Claude Code</text>
+  <text x="119" y="168" text-anchor="middle" font-size="13" fill="#334155">Codex など</text>
+  <text x="119" y="200" text-anchor="middle" font-size="11" fill="#64748b">stdio サーバーとして起動</text>
+
+  <!-- relay -->
+  <rect x="24" y="300" width="190" height="130" rx="12" fill="#fff7ed" stroke="#f59e0b"/>
+  <text x="119" y="326" text-anchor="middle" font-size="15" font-weight="700" fill="#7c2d12">FModel.exe --mcp</text>
+  <text x="119" y="348" text-anchor="middle" font-size="12" fill="#9a3412">McpRelay（別プロセス）</text>
+  <text x="119" y="374" text-anchor="middle" font-size="12" fill="#7c2d12">WPF を起動しない</text>
+  <text x="119" y="394" text-anchor="middle" font-size="12" fill="#7c2d12">stdin ⇄ パイプをバイト中継</text>
+  <text x="119" y="414" text-anchor="middle" font-size="12" fill="#7c2d12">未起動なら本体を起動</text>
+
+  <line x1="119" y1="222" x2="119" y2="296" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <text x="129" y="255" font-size="12" fill="#334155">stdio</text>
+  <text x="129" y="272" font-size="11" fill="#64748b">JSON-RPC（改行区切り）</text>
+
+  <!-- FModel process -->
+  <rect x="270" y="58" width="706" height="560" rx="16" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+  <text x="290" y="80" font-size="16" font-weight="700" fill="#1e3a8a">FModel.exe（起動中の本体プロセス）</text>
+
+  <line x1="216" y1="365" x2="296" y2="365" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrowBlue)" marker-start="url(#arrowBlue)"/>
+  <text x="222" y="455" font-size="11" fill="#1d4ed8">名前付きパイプ</text>
+  <text x="222" y="471" font-size="11" fill="#1d4ed8">FModelJP.Mcp.&lt;SID&gt;</text>
+  <text x="222" y="487" font-size="11" fill="#1d4ed8">CurrentUserOnly</text>
+  <line x1="256" y1="440" x2="256" y2="372" stroke="#93c5fd" stroke-dasharray="3 3"/>
+
+  <!-- host -->
+  <rect x="300" y="110" width="200" height="110" rx="10" fill="#ffffff" stroke="#3b82f6"/>
+  <text x="400" y="136" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">McpHost</text>
+  <text x="400" y="160" text-anchor="middle" font-size="12" fill="#334155">設定 McpServerEnabled で</text>
+  <text x="400" y="178" text-anchor="middle" font-size="12" fill="#334155">起動/停止、受付ループ</text>
+  <text x="400" y="200" text-anchor="middle" font-size="11" fill="#64748b">接続 1 本 = SDK サーバー 1 つ</text>
+
+  <rect x="300" y="300" width="200" height="130" rx="10" fill="#ffffff" stroke="#3b82f6"/>
+  <text x="400" y="326" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">McpServer</text>
+  <text x="400" y="346" text-anchor="middle" font-size="12" fill="#334155">公式 C# SDK 2.2.0</text>
+  <text x="400" y="366" text-anchor="middle" font-size="12" fill="#334155">StreamServerTransport</text>
+  <text x="400" y="390" text-anchor="middle" font-size="11" fill="#64748b">initialize / tools / resources</text>
+  <text x="400" y="406" text-anchor="middle" font-size="11" fill="#64748b">/ prompts / キャンセル通知</text>
+
+  <line x1="400" y1="222" x2="400" y2="296" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="408" y="264" font-size="11" fill="#475569">McpServer.Create</text>
+
+  <!-- tools + resources -->
+  <rect x="540" y="110" width="200" height="110" rx="10" fill="#ffffff" stroke="#6366f1"/>
+  <text x="640" y="136" text-anchor="middle" font-size="14" font-weight="700" fill="#312e81">FModelMcpTools</text>
+  <text x="640" y="158" text-anchor="middle" font-size="12" fill="#334155">37 ツール（fmodel_*）</text>
+  <text x="640" y="178" text-anchor="middle" font-size="12" fill="#334155">Run(): JSON 化・上限</text>
+  <text x="640" y="198" text-anchor="middle" font-size="12" fill="#334155">エラーコード分類</text>
+
+  <rect x="760" y="110" width="196" height="110" rx="10" fill="#ffffff" stroke="#6366f1"/>
+  <text x="858" y="136" text-anchor="middle" font-size="14" font-weight="700" fill="#312e81">Resources / Prompts</text>
+  <text x="858" y="160" text-anchor="middle" font-size="12" fill="#334155">fmodel://guide, ui,</text>
+  <text x="858" y="178" text-anchor="middle" font-size="12" fill="#334155">sessions/{id}, jobs/{id}</text>
+  <text x="858" y="200" text-anchor="middle" font-size="12" fill="#334155">プロンプト 5 種</text>
+
+  <path d="M502,315 H520 V165 H536" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M520,165 V98 H858 V106" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="690" y="94" text-anchor="middle" font-size="11" fill="#64748b">属性付きメソッドから登録（McpServerTool.Create ほか）</text>
+
+  <!-- service -->
+  <rect x="540" y="270" width="416" height="170" rx="10" fill="#ffffff" stroke="#0ea5e9" stroke-width="2"/>
+  <text x="748" y="296" text-anchor="middle" font-size="15" font-weight="700" fill="#0c4a6e">FModelMcpService（partial 6 分割）</text>
+  <g font-size="12" fill="#0f172a">
+    <rect x="556" y="310" width="124" height="52" rx="6" fill="#f0f9ff" stroke="#7dd3fc"/>
+    <text x="618" y="331" text-anchor="middle" font-weight="600">.cs（中核）</text>
+    <text x="618" y="350" text-anchor="middle" font-size="11" fill="#475569">セッション・鍵・補助</text>
+    <rect x="688" y="310" width="124" height="52" rx="6" fill="#f0f9ff" stroke="#7dd3fc"/>
+    <text x="750" y="331" text-anchor="middle" font-weight="600">.Inspection</text>
+    <text x="750" y="350" text-anchor="middle" font-size="11" fill="#475569">閲覧・検索・プレビュー</text>
+    <rect x="820" y="310" width="124" height="52" rx="6" fill="#f0f9ff" stroke="#7dd3fc"/>
+    <text x="882" y="331" text-anchor="middle" font-weight="600">.Code</text>
+    <text x="882" y="350" text-anchor="middle" font-size="11" fill="#475569">BP 擬似コード・Verse</text>
+    <rect x="556" y="372" width="124" height="52" rx="6" fill="#f0f9ff" stroke="#7dd3fc"/>
+    <text x="618" y="393" text-anchor="middle" font-weight="600">.Exports</text>
+    <text x="618" y="412" text-anchor="middle" font-size="11" fill="#475569">バックグラウンドジョブ</text>
+    <rect x="688" y="372" width="124" height="52" rx="6" fill="#f0f9ff" stroke="#7dd3fc"/>
+    <text x="750" y="393" text-anchor="middle" font-weight="600">.SavedGames</text>
+    <text x="750" y="412" text-anchor="middle" font-size="11" fill="#475569">保存済みゲーム</text>
+    <rect x="820" y="372" width="124" height="52" rx="6" fill="#fdf4ff" stroke="#e879f9"/>
+    <text x="882" y="393" text-anchor="middle" font-weight="600">.Desktop</text>
+    <text x="882" y="412" text-anchor="middle" font-size="11" fill="#475569">画面連携（JP 独自）</text>
+  </g>
+  <line x1="640" y1="222" x2="640" y2="266" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- targets -->
+  <g font-size="12">
+    <rect x="300" y="488" width="200" height="110" rx="10" fill="#ecfdf5" stroke="#10b981"/>
+    <text x="400" y="512" text-anchor="middle" font-size="13" font-weight="700" fill="#064e3b">live セッション</text>
+    <text x="400" y="534" text-anchor="middle" fill="#065f46">CUE4ParseViewModel.Provider</text>
+    <text x="400" y="554" text-anchor="middle" fill="#065f46">鍵・マッピング・言語を共有</text>
+    <text x="400" y="576" text-anchor="middle" font-size="11" fill="#047857">LoadPackageCached（LRU 共有）</text>
+
+    <rect x="516" y="488" width="140" height="110" rx="10" fill="#ecfdf5" stroke="#10b981"/>
+    <text x="586" y="512" text-anchor="middle" font-size="13" font-weight="700" fill="#064e3b">追加セッション</text>
+    <text x="586" y="534" text-anchor="middle" fill="#065f46">CreateLocalProvider</text>
+    <text x="586" y="554" text-anchor="middle" fill="#065f46">比較用の別ビルド</text>
+    <text x="586" y="576" text-anchor="middle" font-size="11" fill="#047857">最大 4 つ</text>
+
+    <rect x="672" y="488" width="140" height="110" rx="10" fill="#fdf4ff" stroke="#d946ef"/>
+    <text x="742" y="512" text-anchor="middle" font-size="13" font-weight="700" fill="#701a75">WPF の画面</text>
+    <text x="742" y="534" text-anchor="middle" fill="#86198f">Dispatcher 経由</text>
+    <text x="742" y="554" text-anchor="middle" fill="#86198f">タブ・右クリック</text>
+    <text x="742" y="576" text-anchor="middle" fill="#86198f">メニューと同じ経路</text>
+
+    <rect x="828" y="488" width="128" height="110" rx="10" fill="#fefce8" stroke="#eab308"/>
+    <text x="892" y="512" text-anchor="middle" font-size="13" font-weight="700" fill="#713f12">Output/MCP</text>
+    <text x="892" y="534" text-anchor="middle" fill="#854d0e">ジョブごとの</text>
+    <text x="892" y="554" text-anchor="middle" fill="#854d0e">新規フォルダ</text>
+    <text x="892" y="576" text-anchor="middle" fill="#854d0e">+ manifest.json</text>
+  </g>
+  <line x1="590" y1="442" x2="430" y2="484" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="640" y1="442" x2="600" y2="484" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="860" y1="442" x2="760" y2="484" stroke="#d946ef" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="640" y1="442" x2="860" y2="484" stroke="#eab308" stroke-width="2" marker-end="url(#arrow)"/>
+</svg>

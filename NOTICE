@@ -7,8 +7,10 @@ This software includes material developed by the following third-party libraries
 - CUE4Parse (https://github.com/FabianFG/CUE4Parse/blob/master/LICENSE) - Copyright 2023 CUE4Parse Contributors. Licensed under the Apache License 2.0.
 - DiscordRichPresence (https://github.com/Lachee/discord-rpc-csharp/blob/master/LICENSE) - Copyright (c) 2021 Lachee. Licensed under the MIT License.
 - EpicManifestParser (https://github.com/NotOfficer/EpicManifestParser/blob/master/LICENSE) - Copyright (c) 2020 NotOfficer. Licensed under the MIT License.
+- fmodel-mcp (https://github.com/plu1337/fmodel-mcp/blob/main/LICENSE) - The MCP tool design and parts of the MCP service implementation are adapted from it. Licensed under the GNU General Public License v3.0.
 - ImGui.NET (https://github.com/mellinoe/ImGui.NET/blob/master/LICENSE) - Copyright (c) 2017 Eric Mellino and ImGui.NET contributors. Licensed under the MIT License.
 - K4os.Compression.LZ4 (https://github.com/MiloszKrajewski/K4os.Compression.LZ4/blob/master/LICENSE) - Copyright (c) 2017 Milosz Krajewski. Licensed under the MIT License.
+- Model Context Protocol C# SDK (https://github.com/modelcontextprotocol/csharp-sdk/blob/main/LICENSE) - Copyright (c) Model Context Protocol a Series of LF Projects, LLC. Licensed under the Apache License 2.0.
 - Newtonsoft.Json (https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) - Copyright (c) 2007 James Newton-King. Licensed under the MIT License.
 - NVorbis (https://github.com/NVorbis/NVorbis/blob/master/LICENSE) - Copyright (c) 2020 Andrew Ward. Licensed under the MIT License.
 - Oodle.NET (https://github.com/NotOfficer/Oodle.NET/blob/master/LICENSE) - Copyright (c) 2021 Officer. Licensed under the MIT License.

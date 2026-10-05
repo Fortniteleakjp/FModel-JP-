@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using FModel.Extensions;
 using FModel.Services;
+using FModel.Services.Mcp;
 using FModel.Services.ReleaseNotes;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -98,6 +99,8 @@ public partial class MainWindow
 #endif
 
         ShowReleaseNotesOnce();
+        // AI clients may connect while the game is still loading, the tools report it until files are mounted
+        McpHost.Initialize();
 
         await Task.WhenAll(
             ApplicationViewModel.InitOodle(),
