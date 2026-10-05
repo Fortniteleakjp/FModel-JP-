@@ -1,6 +1,31 @@
 {
   "releases": [
     {
+      "version": "6.4.1.0",
+      "tag": "6.4.1.0",
+      "date": "2026-10-06",
+      "title": {
+        "en": "Search Match Highlighting",
+        "ja": "ファイル検索の一致箇所を強調表示"
+      },
+      "changes": [
+        {
+          "type": "Changed",
+          "text": {
+            "en": "File search results now highlight the matching portions of each file path in purple-pink, making it easier to see where the search terms occur. The same highlighting is available when filtering referencing files.",
+            "ja": "ファイル検索の結果で、検索語に一致したパス内の文字を紫ピンク色で表示するようにしました。フォルダ名やファイル名のどこに検索語が含まれているかを確認しやすくなります。参照ファイルの検索にも同じ強調表示を適用しています。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Highlighting follows the search's case sensitivity and regular expression settings. Space-separated search terms and repeated matches are all highlighted, and overlapping matches are displayed without duplicating the path text. Clearing the search restores the normal text color.",
+            "ja": "強調表示は、大文字・小文字の区別と正規表現の検索設定に従います。スペース区切りの複数語や、同じ語がパス内に複数回ある場合も、一致箇所をすべて強調表示します。一致箇所が重なってもパスの文字は重複せず、検索語をクリアすると通常の文字色に戻ります。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.4.0.0",
       "tag": "6.4.0.0",
       "date": "2026-10-05",
