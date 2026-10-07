@@ -1,9 +1,9 @@
 {
   "releases": [
     {
-      "version": "unreleased",
-      "tag": "unreleased",
-      "date": null,
+      "version": "6.5.0.0",
+      "tag": "6.5.0.0",
+      "date": "2026-10-08",
       "title": {
         "en": "Upstream Updates and OfferCatalog TexturePreview Improvements",
         "ja": "最新上流の取り込みとOfferCatalogのTexturePreview改善"
