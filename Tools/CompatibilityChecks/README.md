@@ -1,7 +1,7 @@
 # 日本語版の統合互換性チェック
 
 上流更新後に、日本語UIリソース、検索強調、MCP引数、ACL DLL、Verseダイジェスト、
-Verseデバッグ情報の通常形式・コンパクト形式、アセット編集、pak作成を実行確認します。
+Verseデバッグ情報の通常形式・コンパクト形式、アセット編集、pak作成、表示アセットの画像生成を実行確認します。
 GUIウィンドウは開かず、ゲームやユーザー設定のファイルは変更しません。
 
 Windows、.NET 10 SDK、Visual StudioのC++ビルドツール、CMakeが必要です。
@@ -14,10 +14,16 @@ cmake --build artifacts/cue4parse-natives-build --config Release --target instal
 dotnet run --project Tools/CompatibilityChecks/CompatibilityChecks.csproj -c Release -p:CUE4PARSE_SKIP_NATIVE=true -p:GeneratePackageOnBuild=false -- .
 ```
 
-8項目がすべて成功すると終了コード0を返します。編集済みのfixtureとpak、診断用JSONは
+9項目がすべて成功すると終了コード0を返します。編集済みのfixtureとpak、診断用JSON・PNGは
 `artifacts/compatibility-checks/<実行ID>/` に出力します。元のfixtureには書き込みません。
 アセット編集はUAssetAPIに同梱されたUE5.5のテクスチャのLightingGuidを変更し、
 FModelの保存処理からUAssetAPIで書き戻して、CUE4Parseでの再読み込み結果を検証します。
+
+表示アセットのチェックでは同じテクスチャfixtureと合成参照を使い、`RenderImage`、
+`FullTileOverrideRenderImage` の優先順位・欠落時の代替、コンパニオンアイコン、
+プレースホルダーの移動先、旧 `Material`、新 `OverrideImageMaterial`、親参照の循環を検証します。
+存在しないパッケージのロード要求が0件であること、再解析しても画像数が増えないことも確認します。
+Fortnite本体やAESキーは不要です。
 
 公式ライブラリのテストも併せて実行できます。
 

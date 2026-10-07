@@ -15,7 +15,8 @@ mainの追加コミットはそのマージコミットでした。統合ブラ�
 
 既存のローカルブランチ15本は、コミットを削除せず、次の名前に整理しました。
 以前からある `backup/pre-upstream-sync-20260915` も維持しています。
-リモート側のブランチ削除・push・リリースは行っていません。
+リモート側の既存ブランチは削除していません。バックアップ・上流原本・統合用の3ブランチは
+originへpush済みです。統合内容は [PR #63](https://github.com/Fortniteleakjp/FModel-JP-/pull/63) でレビューできます。
 
 | 旧名 | 保全先 |
 | --- | --- |
@@ -62,6 +63,20 @@ CUE4ParseとUAssetAPIは `master` です。
   コンパクト形式の大小トレースポイント、完全パスによるハッシュ衝突解決、範囲外参照を扱います。
 - 日本語UI、検索強調、MCP、アセット編集、pak作成などの独自機能を残しています。
 
+## OfferCatalogのTexturePreview修正
+
+新形式の `AthenaItemShopOfferDisplayData` にある `RenderImage`、
+`FullTileOverrideRenderImage`、`OverrideImageMaterial` を扱い、旧 `Material` も維持します。
+任意の画像参照はファイルの存在を確認してから読み込み、欠落パッケージに対する
+`KeyNotFoundException` を避けます。マテリアルの親参照は循環・終端を検出します。
+
+実際の `DAv2_Companion_PinkySight.uasset` は2件のContextualPresentationsに
+存在しない `/OfferCatalog/Art/A_Shop_Tiles_Textures/T_UI_PlaceholderCube` を参照しています。
+本来のショップ画像がない場合、`DAv2_Companion_*` に対応する
+`/CosmeticCompanions/Assets/Items/Companion_*` の `DataList` からLargeIcon、Iconの順で代替します。
+アイコンもない場合は、既知の `/BRCosmetics/Art/A_Shop_Tiles_Textures/` への移動先、
+最後に同梱プレースホルダーを使います。
+
 ## 検証結果
 
 | 検証 | 結果 |
@@ -71,7 +86,8 @@ CUE4ParseとUAssetAPIは `master` です。
 | CUE4Parse公式テスト・UE5.8 | 合格211、失敗0、スキップ1 |
 | CUE4Parse公式テスト・UE6.0 | 合格211、失敗0、スキップ1 |
 | UAssetAPI公式テスト | 合格27、失敗0 |
-| 日本語版互換性チェック | 8項目合格 |
+| 日本語版互換性チェック | 9項目合格（表示アセットの回帰検証を追加） |
+| 実際のPinkySight表示アセット | CreatorPackageから512×512のプレビュー2枚を生成、コンパニオンアイコンを表示、欠落参照例外0件 |
 | 実際のローカルFortniteデータによるVerse検証 | 生データ／上流DebugDataからのソース一覧が88件で一致、関数25件読込、復元本文42,326文字も完全一致 |
 | 自己完結型win-x64単一EXE発行 | 成功 |
 | 発行EXEのMCPヘルプモード起動 | 終了コード0 |

@@ -40,7 +40,8 @@ internal static class Program
             ("Verseパッケージ形式のソース情報", CheckPackageDebug),
             ("Verseコンパクト形式のソース情報", CheckCompactDebug),
             ("アセット編集・再読み込み", () => CheckAssetEditing(root, output)),
-            ("pak作成・再読み込み", () => CheckPak(output))
+            ("pak作成・再読み込み", () => CheckPak(output)),
+            ("新旧OfferDisplayData・欠落画像参照", () => OfferPreviewChecks.Run(root, output))
         };
         var failed = 0;
         foreach (var (name, run) in tests)
@@ -207,6 +208,7 @@ internal static class Program
 
 public class PackageProxy : DispatchProxy
 {
+    public IFileProvider? Provider;
     private UObject[] _exports = [];
     public static IPackage Create(params UObject[] exports)
     {
@@ -218,6 +220,7 @@ public class PackageProxy : DispatchProxy
     protected override object? Invoke(MethodInfo? targetMethod, object?[]? args) => targetMethod!.Name switch
     {
         "get_Name" => "/Example/_Verse",
+        "get_Provider" => Provider,
         "get_ExportMapLength" => _exports.Length,
         "ResolvePackageIndex" => new ResolvedLoadedObject(_exports[((CUE4Parse.UE4.Objects.UObject.FPackageIndex) args![0]!).Index - 1]),
         _ => throw new NotSupportedException(targetMethod.Name)
