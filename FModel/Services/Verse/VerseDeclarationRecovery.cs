@@ -424,10 +424,8 @@ public static class VerseDeclarationRecovery
     {
         // For recovered virtual .verse files we already have the complete cooked _Verse.uasset
         // bytes. Prefer the raw Solaris debug-data parser before touching the $DebugData UObject.
-        // Current Fortnite/UE6 packages use a VerseDebugData serialization layout that the generic
-        // CUE4Parse UVerseDebugData reader does not understand yet (it currently tries to read an
-        // obsolete bool and logs "Invalid bool value (2)"). The raw parser below has been validated
-        // against this package and recovers all 84 snippets and 2385 function records.
+        // Keep the validated raw readers for packages whose debug export cannot be loaded through
+        // the provider. When raw bytes are unavailable, use CUE4Parse's package/compact readers below.
         if (rawPackage is not null)
         {
             lock (RawDebugDataCache)
@@ -460,8 +458,13 @@ public static class VerseDeclarationRecovery
 
             try
             {
-                if (pointer.Object?.Value is FixedVerseDebugData { DebugData: not null } debug)
-                    return Snapshot(debug.DebugData);
+                if (pointer.Object?.Value is UVerseDebugData debug)
+                {
+                    if (debug.DebugData is FSolarisPackageDebugData packageDebug)
+                        return Snapshot(packageDebug);
+                    if (debug.DebugData is FSolarisClientDebugData clientDebug)
+                        return Snapshot(package, clientDebug);
+                }
             }
             catch
             {
@@ -473,9 +476,9 @@ public static class VerseDeclarationRecovery
         return null;
     }
 
-    private static DebugSnapshot Snapshot(UVerseDebugData.FSolarisPackageDebugData debugData)
+    private static DebugSnapshot Snapshot(FSolarisPackageDebugData debugData)
     {
-        var snippets = debugData.Snippets.Select(snippet => DecodeSnippetPath(snippet.Data)).ToArray();
+        var snippets = debugData.Snippets.Select(snippet => DecodeSnippetPath(Encoding.UTF8.GetBytes(snippet.Path))).ToArray();
         var functions = new List<DebugFunction>(debugData.Functions.Length);
         foreach (var function in debugData.Functions)
         {
@@ -489,6 +492,53 @@ public static class VerseDeclarationRecovery
             functions.Add(new DebugFunction(function.FunctionPathName, tracepoints));
         }
 
+        return new DebugSnapshot(snippets, functions);
+    }
+
+    private static DebugSnapshot Snapshot(IPackage package, FSolarisClientDebugData debugData)
+    {
+        var snippets = debugData.SnippetPaths
+            .Select(path => DecodeSnippetPath(Encoding.UTF8.GetBytes(path))).ToArray();
+        var pathsByHash = FunctionPathsByHash(package);
+        var functionIndices = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var (hash, index) in debugData.FunctionLookup)
+        {
+            if (pathsByHash.TryGetValue(hash, out var path)) functionIndices[path] = index;
+        }
+        // Full paths disambiguate the rare CityHash collision.
+        foreach (var (path, index) in debugData.CollisionLookup) functionIndices[path] = index;
+
+        var functions = new List<DebugFunction>(functionIndices.Count);
+        foreach (var (path, index) in functionIndices)
+        {
+            if ((uint) index >= (uint) debugData.Functions.Length) continue;
+            var function = debugData.Functions[index];
+            var isWide = (function.FirstTracepointRef & 1) != 0;
+            var poolIndex = function.FirstTracepointRef >> 1;
+            var poolLength = isWide ? debugData.LargeTracepoints.Length : debugData.SmallTracepoints.Length;
+            if (poolIndex < 0 || function.NumTracepoints < 0 ||
+                (long) poolIndex + function.NumTracepoints > poolLength) continue;
+
+            var tracepoints = new List<DebugTracepoint>(function.NumTracepoints);
+            for (var i = 0; i < function.NumTracepoints; i++)
+            {
+                DebugTracepoint tracepoint;
+                if (isWide)
+                {
+                    var value = debugData.LargeTracepoints[poolIndex + i];
+                    tracepoint = new DebugTracepoint(value.ByteCodeOffset, value.SnippetIndex,
+                        value.Locus.Row, value.Locus.Column);
+                }
+                else
+                {
+                    var value = debugData.SmallTracepoints[poolIndex + i];
+                    tracepoint = new DebugTracepoint(value.ByteCodeOffset, value.SnippetIndex,
+                        value.Row, value.Column);
+                }
+                if ((uint) tracepoint.SnippetIndex < (uint) snippets.Length) tracepoints.Add(tracepoint);
+            }
+            functions.Add(new DebugFunction(path, tracepoints));
+        }
         return new DebugSnapshot(snippets, functions);
     }
 
