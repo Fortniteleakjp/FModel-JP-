@@ -1,6 +1,80 @@
 {
   "releases": [
     {
+      "version": "6.5.0.0",
+      "tag": "6.5.0.0",
+      "date": "2026-10-08",
+      "title": {
+        "en": "Upstream Updates and OfferCatalog TexturePreview Improvements",
+        "ja": "最新上流の取り込みとOfferCatalogのTexturePreview改善"
+      },
+      "changes": [
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Integrated the latest upstream FModel and CUE4Parse available when fetched. UAssetAPI was already up to date. Existing Japanese UI, search highlighting, MCP server, asset editing and pak creation features remain available.",
+            "ja": "取得時点の最新FModel・CUE4Parseを統合しました。UAssetAPIも取得時点の最新版であることを確認しています。日本語UI、検索結果の強調表示、MCPサーバー、アセット編集、pak作成などの既存機能も引き続き利用できます。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Updated Verse support for the latest CUE4Parse readers, including UE6 native digests and source recovery using regular and compact debug data.",
+            "ja": "最新CUE4ParseのVerse読み取り処理に対応しました。UE6のネイティブダイジェストと、通常形式・コンパクト形式のデバッグ情報を使ったソース復元に対応しています。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "TexturePreview now supports RenderImage, FullTileOverrideRenderImage and OverrideImageMaterial in shop display assets, while preserving support for the older Material format.",
+            "ja": "ショップの表示アセットで、新しいRenderImage・FullTileOverrideRenderImage・OverrideImageMaterialを扱えるようにしました。従来のMaterial形式も引き続き対応します。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Companion display assets such as DAv2_Companion_PinkySight.uasset fall back to the matching item's local LargeIcon or Icon when the original shop image is unavailable.",
+            "ja": "DAv2_Companion_PinkySight.uassetなどのコンパニオン表示アセットは、本来のショップ画像を取得できない場合、対応するアイテムのローカルのLargeIconまたはIconをTexturePreviewに表示します。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Fixed KeyNotFoundException caused by missing optional image references. Image packages are checked for existence before loading; unavailable images use a fallback instead.",
+            "ja": "存在しない画像参照を読み込む際のKeyNotFoundExceptionを修正しました。任意の画像参照はファイルの存在を確認してから読み込み、取得できない場合は代替画像を表示します。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Fixed preview processing that could fail to terminate when a material had no image or its parent references formed a cycle.",
+            "ja": "マテリアルに画像がない場合や、親マテリアルの参照が循環している場合に、プレビュー処理が終了しなくなる問題を修正しました。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Fortnite 42.30 and later: shop images used by NewDisplayAssets are delivered through an API. The original shop images cannot be viewed from local NewDisplayAssets files alone. A matching local item icon is used when available; otherwise a placeholder is displayed. This update does not add direct retrieval of API-delivered shop images.",
+            "ja": "Fortnite 42.30以降、ショップのNewDisplayAssetsで使用する画像はAPI配信に切り替わっています。そのため、ローカルのNewDisplayAssetsファイルだけでは本来のショップ画像を閲覧できません。対応するアイコンがローカルに存在する場合はそのアイコンを、それもない場合はプレースホルダー画像を表示します。今回の更新には、API配信されるショップ画像の直接取得機能は含まれていません。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "The old placeholder reference could produce this error: [ERR] System.Collections.Generic.KeyNotFoundException: There is no game file with the path \"FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/Art/A_Shop_Tiles_Textures/T_UI_PlaceholderCube.uasset\" at CUE4Parse.FileProvider.AbstractFileProvider.get_Item(String path). Missing references now fall back safely to a related icon or a placeholder.",
+            "ja": "旧プレースホルダーへの参照により、次のエラーが発生することがありました: [ERR] System.Collections.Generic.KeyNotFoundException: There is no game file with the path \"FortniteGame/Plugins/GameFeatures/OfferCatalog/Content/Art/A_Shop_Tiles_Textures/T_UI_PlaceholderCube.uasset\" at CUE4Parse.FileProvider.AbstractFileProvider.get_Item(String path)。今回の更新では、欠落参照を安全に扱い、関連アイコンやプレースホルダーへ切り替えます。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Validation: all nine compatibility checks passed. Preview images were generated from the actual PinkySight display asset without the missing-reference exception. Release build, self-contained Windows x64 publishing and MCP help-mode startup were also verified.",
+            "ja": "動作確認: 日本語版の互換性チェック9項目に合格しました。実際のPinkySight表示アセットからプレビュー画像を生成し、欠落参照例外が発生しないことを確認しました。Releaseビルド、自己完結型Windows x64 EXEの発行、MCPヘルプモードでの起動も確認済みです。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.4.1.0",
       "tag": "6.4.1.0",
       "date": "2026-10-06",

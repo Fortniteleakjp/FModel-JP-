@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using CUE4Parse.UE4.Assets;
+using CUE4Parse.UE4.Assets.Exports.Verse;
 using CUE4Parse.UE4.Objects.UObject;
 using Serilog;
 
@@ -120,7 +121,7 @@ public sealed class VerseDigestIndex
 
             try
             {
-                if (pointer.Object?.Value?.GetOrDefault<byte[]>("DigestCode") is not { Length: > 0 } code) continue;
+                if (pointer.Object?.Value is not UVerseDigest { ReadableCode: { Length: > 0 } code }) continue;
                 local ??= shared.Copy();
                 local.Add(Encoding.UTF8.GetString(code), $"{package.Name}.{pointer.Name.Text}");
             }
