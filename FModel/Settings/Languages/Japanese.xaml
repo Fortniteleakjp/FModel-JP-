@@ -512,5 +512,5 @@
     <system:String x:Key="UI_McpServer">MCP サーバー</system:String>
     <system:String x:Key="UI_McpServerDescription">AI アシスタント（Claude・Codex など）が Model Context Protocol で、FModel に読み込んだゲームの閲覧・解析・プレビュー・書き出しをできるようにします。接続できるのは同じ Windows アカウントのプロセスだけです（名前付きパイプ。ネットワークのポートは開きません）。</system:String>
     <system:String x:Key="UI_McpServerCommand">MCP クライアント用コマンド</system:String>
-    <system:String x:Key="UI_McpServerCommandDescription">このコマンドを AI クライアントに stdio の MCP サーバーとして登録してください。起動中の FModel に中継し、FModel が起動していなければ起動します。</system:String>
+    <system:String x:Key="UI_McpServerCommandDescription">このコマンドを AI クライアントに stdio の MCP サーバーとして登録してください。更新中も中継を維持し、再起動後に自動で再接続します。以前の FModel.exe --mcp を登録済みの場合は、このコマンドに置き換えてください。</system:String>
 </ResourceDictionary>

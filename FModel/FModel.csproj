@@ -5,9 +5,9 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>FModel.ico</ApplicationIcon>
-    <Version>6.5.0.0</Version>
-    <AssemblyVersion>6.5.0.0</AssemblyVersion>
-    <FileVersion>6.5.0.0</FileVersion>
+    <Version>6.5.1.0</Version>
+    <AssemblyVersion>6.5.1.0</AssemblyVersion>
+    <FileVersion>6.5.1.0</FileVersion>
     <IsPackable>false</IsPackable>
     <IsPublishable>true</IsPublishable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -312,4 +312,17 @@
     </ItemGroup>
   </Target>
 
+  <!-- 本体更新中も動作する中継を埋め込み、実行時にユーザー別キャッシュへ配置する。 -->
+  <PropertyGroup>
+    <McpRelayPublishDir>$(MSBuildProjectDirectory)\..\Tools\McpRelay\bin\$(Configuration)\net10.0-windows\win-x64\publish\</McpRelayPublishDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(McpRelayPublishDir)FModel.Mcp.exe" LogicalName="FModel.Mcp.exe" />
+  </ItemGroup>
+  <Target Name="PublishMcpRelay" BeforeTargets="PrepareForBuild"
+          Inputs="$(MSBuildProjectDirectory)\..\Tools\McpRelay\McpRelay.csproj;$(MSBuildProjectDirectory)\..\Tools\McpRelay\Program.cs;$(MSBuildProjectDirectory)\..\Tools\McpRelay\RelaySession.cs;$(MSBuildProjectDirectory)\Services\Mcp\McpConnectionInfo.cs"
+          Outputs="$(McpRelayPublishDir)FModel.Mcp.exe"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Exec Command="dotnet publish &quot;$(MSBuildProjectDirectory)\..\Tools\McpRelay\McpRelay.csproj&quot; -c $(Configuration) -o &quot;$(McpRelayPublishDir).&quot; --nologo" />
+  </Target>
 </Project>
