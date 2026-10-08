@@ -1,6 +1,45 @@
 {
   "releases": [
     {
+      "version": "6.5.1.0",
+      "tag": "6.5.1.0",
+      "date": "2026-10-09",
+      "title": {
+        "en": "Restore AI Connections After Updates",
+        "ja": "更新後のAI接続を自動復旧"
+      },
+      "changes": [
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Fixed AI connections closing when FModel exits for an update. A separate MCP relay now keeps the AI client's stdio connection open and waits up to three minutes to reconnect and initialize the restarted FModel.",
+            "ja": "更新でFModel本体が終了するとAIとの接続も切れる問題を修正しました。専用MCP中継がAI側のstdio接続を維持し、最大3分間、再起動したFModelへの再接続と初期化を待ちます。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "The MCP Client Command in Settings > General now uses a standalone relay stored separately from the application update directory. If you previously registered FModel.exe --mcp, replace it with the displayed command once. Connection preservation applies to subsequent updates after the new relay is registered.",
+            "ja": "設定 › 一般の「MCP クライアント用コマンド」を、更新先とは別のフォルダに配置する専用中継へ変更しました。従来のFModel.exe --mcpを登録済みの場合は、表示された新しいコマンドに一度置き換えてください。専用中継の登録後から、以降の更新で接続維持が有効になります。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Requests interrupted by a restart or sent while FModel is restarting now receive an error instead of waiting indefinitely. Interrupted requests are not automatically repeated. Export jobs and extra game sessions must be recreated after restart; the live session follows the game loaded by the restarted FModel.",
+            "ja": "再起動で中断した要求や再起動待機中の要求には、待ち続ける代わりにエラーを返します。中断した要求は自動で再実行しません。エクスポートジョブと追加ゲームセッションは再起動後に作り直す必要があり、liveセッションは再起動したFModelが読み込むゲームを参照します。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Validation: all five MCP relay checks and all ten compatibility checks passed, covering reconnection, initialization replay, interrupted requests, client shutdown, timeouts, relay embedding and reuse of a locked relay. Release build and self-contained Windows x64 publishing were also verified.",
+            "ja": "動作確認: MCP中継チェック5項目と互換性チェック10項目に合格しました。再接続、初期化の復元、中断要求、クライアント終了、タイムアウト、中継の埋め込み、ロック中の中継の再利用を確認しています。Releaseビルドと自己完結型Windows x64 EXEの発行も確認済みです。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.5.0.0",
       "tag": "6.5.0.0",
       "date": "2026-10-08",

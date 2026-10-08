@@ -512,5 +512,5 @@
     <system:String x:Key="UI_McpServer">MCP Server</system:String>
     <system:String x:Key="UI_McpServerDescription">Lets AI assistants (Claude, Codex...) browse, inspect, preview and export the game loaded in FModel through the Model Context Protocol. Only processes of your Windows account can connect (named pipe, no network port).</system:String>
     <system:String x:Key="UI_McpServerCommand">MCP Client Command</system:String>
-    <system:String x:Key="UI_McpServerCommandDescription">Register this command as a stdio MCP server in your AI client. It relays to the running FModel, and starts FModel if needed.</system:String>
+    <system:String x:Key="UI_McpServerCommandDescription">Register this command as a stdio MCP server in your AI client. The relay survives updates and reconnects after FModel restarts. Replace any previously registered FModel.exe --mcp command with this command.</system:String>
 </ResourceDictionary>

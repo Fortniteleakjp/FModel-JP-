@@ -14,7 +14,7 @@ cmake --build artifacts/cue4parse-natives-build --config Release --target instal
 dotnet run --project Tools/CompatibilityChecks/CompatibilityChecks.csproj -c Release -p:CUE4PARSE_SKIP_NATIVE=true -p:GeneratePackageOnBuild=false -- .
 ```
 
-9項目がすべて成功すると終了コード0を返します。編集済みのfixtureとpak、診断用JSON・PNGは
+10項目がすべて成功すると終了コード0を返します。編集済みのfixtureとpak、診断用JSON・PNGは
 `artifacts/compatibility-checks/<実行ID>/` に出力します。元のfixtureには書き込みません。
 アセット編集はUAssetAPIに同梱されたUE5.5のテクスチャのLightingGuidを変更し、
 FModelの保存処理からUAssetAPIで書き戻して、CUE4Parseでの再読み込み結果を検証します。
@@ -24,6 +24,9 @@ FModelの保存処理からUAssetAPIで書き戻して、CUE4Parseでの再読�
 プレースホルダーの移動先、旧 `Material`、新 `OverrideImageMaterial`、親参照の循環を検証します。
 存在しないパッケージのロード要求が0件であること、再解析しても画像数が増えないことも確認します。
 Fortnite本体やAESキーは不要です。
+
+MCP中継については本体への埋め込み、更新先とは別のフォルダへの配置、配置済みファイルを
+ロックした状態での再利用を検証します。再接続の検証は `Tools/McpRelayChecks` で実行できます。
 
 公式ライブラリのテストも併せて実行できます。
 

@@ -35,6 +35,7 @@ internal static class Program
         {
             ("日本語リソース・検索強調", CheckInterface),
             ("MCP起動引数", () => Require(McpRelay.IsRelayInvocation(["--mcp", "--no-launch"]), "MCP引数が認識されません")),
+            ("MCP中継の埋め込み・更新対象からの分離", () => CheckMcpRelay(output)),
             ("ネイティブACL", () => Require(CUE4ParseNatives.IsFeatureAvailable("ACL"), "ACL DLLが読み込まれません")),
             ("UE6ネイティブVerseダイジェスト", () => CheckDigest(output)),
             ("Verseパッケージ形式のソース情報", CheckPackageDebug),
@@ -56,6 +57,24 @@ internal static class Program
     private static void Require(bool condition, string message)
     {
         if (!condition) throw new InvalidOperationException(message);
+    }
+
+    private static void CheckMcpRelay(string output)
+    {
+        var assembly = typeof(McpHost).Assembly;
+        using var resource = assembly.GetManifestResourceStream("FModel.Mcp.exe");
+        Require(resource is not null && resource.Length > 0, "単独起動できるMCP中継が埋め込まれていません");
+        var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(resource!));
+        var cache = Path.Combine(output, "mcp-relay");
+        var application = Path.Combine(output, "FModel.exe");
+        var install = assembly.GetType("FModel.Services.Mcp.McpRelayInstaller")!.GetMethod("Install",
+            BindingFlags.NonPublic | BindingFlags.Static, [typeof(string), typeof(string)])!;
+        var command = (string) install.Invoke(null, [cache, application])!;
+        var executable = Path.Combine(cache, hash, "FModel.Mcp.exe");
+        Require(command == $"\"{executable}\" --application \"{application}\"", "接続コマンドのパスが違います");
+        using var locked = File.Open(executable, FileMode.Open, FileAccess.Read, FileShare.Read);
+        Require(Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(locked)) == hash, "配置した中継が壊れています");
+        Require((string) install.Invoke(null, [cache, application])! == command, "実行中の中継を上書きしようとしました");
     }
 
     private static void CheckInterface()
