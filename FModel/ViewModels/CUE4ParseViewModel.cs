@@ -19,6 +19,8 @@ using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.GameTypes.ACE8.Assets.Exports;
+using CUE4Parse.GameTypes.ACE8.Encryption;
 using CUE4Parse.GameTypes.Aion2.Objects;
 using CUE4Parse.GameTypes.AoC.Objects;
 using CUE4Parse.GameTypes.AshEchoes.FileProvider;
@@ -30,6 +32,7 @@ using CUE4Parse.GameTypes.DFHO.Assets.Objects;
 using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.LegoBatman.Assets;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.GameTypes.LordOfMysteries.FileProvider;
 using CUE4Parse.GameTypes.Tencent.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
@@ -47,6 +50,7 @@ using CUE4Parse.UE4.Assets.Exports.Criware;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Fmod;
 using CUE4Parse.UE4.Assets.Exports.GeometryCollection;
+using CUE4Parse.UE4.Assets.Exports.Houdini;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Sound;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
@@ -876,11 +880,14 @@ public partial class CUE4ParseViewModel : ViewModel
                     break;
                 }
 
+                var showSnooper = false;
                 for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
                 {
-                    if (CheckExport(cancellationToken, result.Package, i, bulk))
+                    if (CheckExport(cancellationToken, result.Package, i, ref showSnooper, bulk))
                         break;
                 }
+
+                if (showSnooper) SnooperViewer.Run();
 
                 break;
             }
@@ -897,6 +904,11 @@ public partial class CUE4ParseViewModel : ViewModel
             case "dat" when Provider.Versions.Game is GAME_Aion2:
             {
                 ProcessAion2DatFile(entry, updateUi, saveProperties);
+                break;
+            }
+            case "dat" when Provider.Versions.Game is GAME_AceCombat8WingsofTheve:
+            {
+                ProcessACE8DatFile(entry, updateUi, saveProperties);
                 break;
             }
             case "bytes" when Provider.Versions.Game is GAME_RocoKingdomWorld:
@@ -1217,6 +1229,7 @@ public partial class CUE4ParseViewModel : ViewModel
             }
             case "res": // just skip
             case "bytes": // wuthering waves
+            case "ffxanim": // dead island 2
                 break;
             default:
             {
@@ -1340,6 +1353,43 @@ public partial class CUE4ParseViewModel : ViewModel
 
             TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(dbc, Formatting.Indented), saveProperties, updateUi);
         }
+
+        // Ace Combat 8
+        void ProcessACE8DatFile(GameFile entry, bool updateUi, bool saveProperties)
+        {
+            TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
+
+            if (entry.NameWithoutExtension.EndsWith("_Cmn"))
+            {
+                TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ACE8LocDecrypt.ReadKeysDatFile(entry), Formatting.Indented), saveProperties, updateUi);
+            }
+            else
+            {
+                if (Provider.TryGetGameFile(entry.PathWithoutExtension[..^1] + "Cmn." + entry.Extension, out var keysDatFile))
+                {
+                    var keys = ACE8LocDecrypt.ReadKeysDatFile(keysDatFile);
+                    var values = ACE8LocDecrypt.ReadDatFile(entry);
+                    var locTable = new Dictionary<string, string>(Math.Max(keys.Count, values.Length));
+                    var k = 0;
+                    for (var i = 0; i < values.Length; i++)
+                    {
+                        if (keys.TryGetValue(i, out var key))
+                        {
+                            locTable[key] = values[i];
+                        }
+                        else
+                        {
+                            locTable[$"UnknownKey_{k++}"] = values[i];
+                        }
+                    }
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(locTable, Formatting.Indented), saveProperties, updateUi);
+                }
+                else
+                {
+                    TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(ACE8LocDecrypt.ReadDatFile(entry), Formatting.Indented), saveProperties, updateUi);
+                }
+            }
+        }
     }
 
     private byte[] ProcessLuaFile(byte[] data)
@@ -1404,11 +1454,14 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
 
+        var showSnooper = false;
         for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
         {
-            if (CheckExport(cancellationToken, result.Package, i))
+            if (CheckExport(cancellationToken, result.Package, i, ref showSnooper))
                 break;
         }
+
+        if (showSnooper) SnooperViewer.Run();
     }
 
     /// <summary>
@@ -1428,14 +1481,17 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetExportPagination(result.PageIndex, result.PageCount, result.DocumentExportStart);
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
 
+        var showSnooper = false;
         for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
         {
-            if (CheckExport(cancellationToken, result.Package, i))
+            if (CheckExport(cancellationToken, result.Package, i, ref showSnooper))
                 break;
         }
+
+        if (showSnooper) SnooperViewer.Run();
     }
 
-    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, EBulkType bulk = EBulkType.None) // return true once you want to stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, ref bool showSnooper, EBulkType bulk = EBulkType.None) // return true once you want to stop searching for exports
     {
         var isNone = bulk == EBulkType.None;
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
@@ -1452,8 +1508,8 @@ public partial class CUE4ParseViewModel : ViewModel
             {
                 if (!TabControl.CanAddTabs) return false;
 
-                // not verseDigest.ReadableCode: it throws when the digest code was stripped
-                var digestCode = verseDigest.GetOrDefault<byte[]>("DigestCode");
+                // ReadableCode covers both native UE6 payloads and older tagged properties.
+                var digestCode = verseDigest.ReadableCode;
                 var readableCode = digestCode is { Length: > 0 } ? Encoding.UTF8.GetString(digestCode) : string.Empty;
                 if (string.IsNullOrEmpty(readableCode))
                 {
@@ -1466,6 +1522,16 @@ public partial class CUE4ParseViewModel : ViewModel
                 TabControl.AddTab($"{verseDigest.Name}.verse");
                 TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("verse");
                 TabControl.SelectedTab.SetDocumentText(readableCode, false, false);
+                return true;
+            }
+            // Ace Combat 8
+            case ULuaScript when isNone && pointer.Object.Value is ULuaScript luaScript:
+            {
+                if (!TabControl.CanAddTabs) return false;
+
+                TabControl.AddTab($"{luaScript.Name}.lua");
+                TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("lua");
+                TabControl.SelectedTab.SetDocumentText(luaScript.Code, false, false);
                 return true;
             }
             case UTexture when (isNone || saveTextures) && pointer.Object.Value is UTexture texture:
@@ -1785,6 +1851,8 @@ public partial class CUE4ParseViewModel : ViewModel
             // }:
             case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case UIRMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
+            case UHoudiniStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UGeometryCollection when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkinnedAsset when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
@@ -1795,23 +1863,32 @@ public partial class CUE4ParseViewModel : ViewModel
                                            pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
             {
                 if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
-                    SnooperViewer.Run();
+                    showSnooper = true;
                 return true;
+            }
+            case UIRMeshComponent when isNone && UserSettings.Default.PreviewStaticMeshes:
+            {
+                if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
+                    showSnooper = true;
+                return false;
             }
             case UMaterialInstance when isNone && ModelIsOverwritingMaterial && pointer.Object.Value is UMaterialInstance m:
             {
                 SnooperViewer.Renderer.Swap(m);
-                SnooperViewer.Run();
+                showSnooper = true;
                 return true;
             }
             case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || ModelIsWaitingAnimation:
             {
                 // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
                 SnooperViewer.Renderer.Animate(pointer.Object.Value);
-                SnooperViewer.Run();
+                showSnooper = true;
                 return true;
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
+            case UIRMesh when HasFlag(bulk, EBulkType.Meshes):
+            case UHoudiniAsset when HasFlag(bulk, EBulkType.Meshes):
+            case UHoudiniStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
             case USkinnedAsset when HasFlag(bulk, EBulkType.Meshes):
             case USkeleton when UserSettings.Default.SaveSkeletonAsMesh && HasFlag(bulk, EBulkType.Meshes):

@@ -3,7 +3,6 @@ using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Reflection;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using FModel.Settings;
@@ -18,8 +17,8 @@ namespace FModel.Services.Mcp;
 /// <summary>
 /// FModel 内蔵 MCP サーバーの起動・停止。
 /// <para>
-/// MCP クライアント (Claude Desktop / Claude Code / Codex など) は <c>FModel.exe --mcp</c> を stdio サーバーとして起動し、
-/// その中継プロセス (<see cref="McpRelay"/>) が名前付きパイプでここに繋ぐ。接続 1 本ごとに公式 C# SDK の
+/// MCP クライアント (Claude Desktop / Claude Code / Codex など) は専用中継 FModel.Mcp.exe を起動し、
+/// 名前付きパイプでここに繋ぐ。従来の <see cref="McpRelay"/> も互換用に残す。接続 1 本ごとに公式 C# SDK の
 /// <see cref="McpServer"/> を <see cref="StreamServerTransport"/> 上で動かす。
 /// </para>
 /// <para>
@@ -30,15 +29,15 @@ namespace FModel.Services.Mcp;
 public static class McpHost
 {
     /// <summary>中継が付ける引数。FModel を MCP サーバーとして使う設定に書くのはこれ</summary>
-    public const string RelayArgument = "--mcp";
+    public const string RelayArgument = McpConnectionInfo.RelayArgument;
     /// <summary>中継が FModel を起動したときに付ける引数。この起動に限り設定が無効でもサーバーを立てる</summary>
-    public const string LaunchedArgument = "--mcp-launched";
+    public const string LaunchedArgument = McpConnectionInfo.LaunchedArgument;
     private const int MaxClients = 8;
 
     /// <summary>MCP クライアントに登録するコマンド (設定画面に表示)</summary>
-    public static string ClientCommand => $"\"{Environment.ProcessPath}\" {RelayArgument}";
+    public static string ClientCommand => McpRelayInstaller.ClientCommand;
 
-    public static string PipeName { get; } = $"FModelJP.Mcp.{WindowsIdentity.GetCurrent().User?.Value ?? Environment.UserName}";
+    public static string PipeName => McpConnectionInfo.PipeName;
 
     private static readonly object Sync = new();
     private static CancellationTokenSource _cts;

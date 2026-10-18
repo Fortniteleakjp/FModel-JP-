@@ -56,6 +56,7 @@ public partial class AudioPlayer
 
         if (UserSettings.Default.AddAudio.IsTriggered(e.Key))
         {
+            e.Handled = true;
             var openFileDialog = new OpenFileDialog
             {
                 Title = "Select an audio file",
@@ -78,6 +79,10 @@ public partial class AudioPlayer
             _applicationView.AudioPlayer.Next();
         else if (UserSettings.Default.RemoveAudio.IsTriggered(e.Key))
             _applicationView.AudioPlayer.Remove();
+        else
+            return;
+
+        e.Handled = true;
     }
 
     private void OnAudioFileMouseDoubleClick(object sender, MouseButtonEventArgs e)

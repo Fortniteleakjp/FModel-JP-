@@ -129,6 +129,24 @@ jobs:
             throw "FModel.exe must be at the root of the ZIP."
           }
 
+      - name: Prepare Release Notes
+        shell: pwsh
+        run: |
+          $version = "${{ steps.package_version.outputs.version }}"
+          $notesPath = Join-Path "${{ github.workspace }}" ".github/release-notes/$version.md"
+          if (Test-Path -LiteralPath $notesPath) {
+            $body = (Get-Content -LiteralPath $notesPath -Raw -Encoding utf8).TrimEnd()
+          } else {
+            $body = "初回の場合、下の ZIP をダウンロードして展開するか、FModel.exe を直接ダウンロードしてください。"
+          }
+          $body += @'
+
+
+          Version: `${{ steps.package_version.outputs.version }}`
+          Build: `${{ github.sha }}`
+          '@
+          $body | Set-Content -LiteralPath (Join-Path $env:RUNNER_TEMP "fmodel-release-notes.md") -Encoding utf8
+
       - name: Add Release
         id: release
         uses: ncipollo/release-action@v1.20.0
@@ -137,12 +155,7 @@ jobs:
           name: 'FModel-JP- v${{ steps.package_version.outputs.version }}'
           tag: '${{ steps.package_version.outputs.version }}'
           commit: ${{ github.sha }}
-          body: |
-            初回の場合、下の ZIP をダウンロードして展開するか、FModel.exe を直接ダウンロードしてください。
-            実行した際にアップデート情報が表示されたら、アップデートを実行してください。
-
-            Version: `${{ steps.package_version.outputs.version }}`
-            Build: `${{ github.sha }}`
+          bodyFile: '${{ runner.temp }}/fmodel-release-notes.md'
           # release-action の artifacts はカンマ区切り。改行区切りだと成果物を
           # 正しく解釈できないバージョンがあるため、明示的に1行で指定する。
           artifacts: '${{ steps.package_version.outputs.version }}-${{ github.sha }}.zip,./FModel/bin/Publish/FModel.exe'

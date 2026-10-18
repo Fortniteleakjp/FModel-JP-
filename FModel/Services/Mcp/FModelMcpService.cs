@@ -57,7 +57,7 @@ public sealed partial class FModelMcpService
     {
         name = "FModel JP MCP",
         version = Constants.APP_VERSION,
-        transport = "stdio relay (FModel.exe --mcp) -> named pipe -> running FModel",
+        transport = "stdio relay -> named pipe -> running FModel",
         liveGame = LiveSummary(),
         outputRoot = McpPathPolicy.OutputRoot,
         knownGameDirectories = McpPathPolicy.KnownGameDirectories(),

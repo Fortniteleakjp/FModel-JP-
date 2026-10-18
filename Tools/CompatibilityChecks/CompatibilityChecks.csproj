@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../FModel/FModel.csproj" />
+    <Content Include="../../CUE4Parse/CUE4Parse-Natives/bin/Release/CUE4Parse-Natives.dll"
+             Link="CUE4Parse-Natives.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

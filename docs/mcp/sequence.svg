@@ -10,7 +10,7 @@
   <!-- lifeline heads -->
   <g font-size="13" font-weight="700" text-anchor="middle">
     <rect x="30" y="54" width="150" height="44" rx="8" fill="#f1f5f9" stroke="#94a3b8"/><text x="105" y="81" fill="#0f172a">AI クライアント</text>
-    <rect x="215" y="54" width="150" height="44" rx="8" fill="#fff7ed" stroke="#f59e0b"/><text x="290" y="74" fill="#7c2d12">McpRelay</text><text x="290" y="90" font-size="11" font-weight="400" fill="#9a3412">FModel.exe --mcp</text>
+    <rect x="215" y="54" width="150" height="44" rx="8" fill="#fff7ed" stroke="#f59e0b"/><text x="290" y="74" fill="#7c2d12">RelaySession</text><text x="290" y="90" font-size="11" font-weight="400" fill="#9a3412">FModel.Mcp.exe</text>
     <rect x="400" y="54" width="170" height="44" rx="8" fill="#eff6ff" stroke="#3b82f6"/><text x="485" y="74" fill="#1e3a8a">McpHost / SDK</text><text x="485" y="90" font-size="11" font-weight="400" fill="#1d4ed8">McpServer</text>
     <rect x="605" y="54" width="170" height="44" rx="8" fill="#eef2ff" stroke="#6366f1"/><text x="690" y="74" fill="#312e81">FModelMcpTools</text><text x="690" y="90" font-size="11" font-weight="400" fill="#4338ca">→ FModelMcpService</text>
     <rect x="810" y="54" width="160" height="44" rx="8" fill="#ecfdf5" stroke="#10b981"/><text x="890" y="74" fill="#064e3b">CUE4Parse</text><text x="890" y="90" font-size="11" font-weight="400" fill="#047857">live プロバイダ</text>

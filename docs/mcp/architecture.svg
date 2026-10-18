@@ -20,7 +20,7 @@
 
   <!-- relay -->
   <rect x="24" y="300" width="190" height="130" rx="12" fill="#fff7ed" stroke="#f59e0b"/>
-  <text x="119" y="326" text-anchor="middle" font-size="15" font-weight="700" fill="#7c2d12">FModel.exe --mcp</text>
+  <text x="119" y="326" text-anchor="middle" font-size="15" font-weight="700" fill="#7c2d12">FModel.Mcp.exe</text>
   <text x="119" y="348" text-anchor="middle" font-size="12" fill="#9a3412">McpRelay（別プロセス）</text>
   <text x="119" y="374" text-anchor="middle" font-size="12" fill="#7c2d12">WPF を起動しない</text>
   <text x="119" y="394" text-anchor="middle" font-size="12" fill="#7c2d12">stdin ⇄ パイプをバイト中継</text>

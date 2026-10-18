@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -19,55 +20,44 @@ public class BaseMaterialInstance : BaseIcon
     {
         if (Object is not UMaterialInstanceConstant material) return;
 
-        texture_finding:
-        foreach (var textureParameter in material.TextureParameterValues) // get texture from base material
+        var visited = new HashSet<UMaterialInstanceConstant>();
+        var colorsFound = false;
+        while (material != null && visited.Add(material))
         {
-            if (!textureParameter.ParameterValue.TryLoad<UTexture2D>(out var texture) || Preview != null) continue;
-            switch (textureParameter.ParameterInfo.Name.Text)
+            if (Preview == null)
             {
-                case "SeriesTexture":
-                    GetSeries(texture);
-                    break;
-                case "TextureA":
-                case "TextureB":
-                case "OfferImage":
-                case "CarTexture":
-                    Preview = Utils.GetBitmap(texture);
-                    break;
+                foreach (var parameter in material.TextureParameterValues)
+                {
+                    var name = parameter.Name;
+                    if (name is not ("SeriesTexture" or "TextureA" or "TextureB" or "OfferImage" or "CarTexture")) continue;
+                    if (parameter.ParameterValue?.TryLoad<UTexture2D>(out var texture) != true) continue;
+                    if (name == "SeriesTexture") GetSeries(texture);
+                    else if (Preview == null) Preview = Utils.GetBitmap(texture);
+                }
             }
-        }
 
-        while (material.VectorParameterValues.Length == 0 || // try to get color from parent if not found here
-               material.VectorParameterValues.All(x => x.ParameterInfo.Name.Text.Equals("FallOff_Color"))) // use parent if it only contains FallOff_Color
-        {
-            if (material.TryGetValue(out FPackageIndex parent, "Parent"))
-                Utils.TryGetPackageIndexExport(parent, out material);
-            else return;
-
-            if (material == null) return;
-        }
-
-        if (Preview == null)
-        {
-            if (material.TryGetValue(out FPackageIndex parent, "Parent"))
-                Utils.TryGetPackageIndexExport(parent, out material);
-
-            goto texture_finding;
-        }
-
-        foreach (var vectorParameter in material.VectorParameterValues)
-        {
-            if (vectorParameter.ParameterValue == null) continue;
-            switch (vectorParameter.ParameterInfo.Name.Text)
+            if (!colorsFound && material.VectorParameterValues.Any(x => x.Name != "FallOff_Color"))
             {
-                case "Background_Color_A":
-                    Background[0] = SKColor.Parse(vectorParameter.ParameterValue.Value.Hex);
-                    Border[0] = Background[0];
-                    break;
-                case "Background_Color_B": // Border color can be defaulted here in some case where Background_Color_A should be taken from parent but Background_Color_B from base
-                    Background[1] = SKColor.Parse(vectorParameter.ParameterValue.Value.Hex);
-                    break;
+                foreach (var parameter in material.VectorParameterValues)
+                {
+                    if (parameter.ParameterValue == null) continue;
+                    switch (parameter.Name)
+                    {
+                        case "Background_Color_A":
+                            Background[0] = SKColor.Parse(parameter.ParameterValue.Value.Hex);
+                            Border[0] = Background[0];
+                            break;
+                        case "Background_Color_B":
+                            Background[1] = SKColor.Parse(parameter.ParameterValue.Value.Hex);
+                            break;
+                    }
+                }
+                colorsFound = true;
             }
+
+            if (Preview != null && colorsFound) break;
+            if (!material.TryGetValue(out FPackageIndex parent, "Parent") ||
+                !Utils.TryGetPackageIndexExport(parent, out material)) break;
         }
     }
 

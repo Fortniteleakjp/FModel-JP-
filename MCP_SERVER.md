@@ -35,13 +35,15 @@ FModel JP に、AI アシスタント（Claude Desktop / Claude Code / Codex な
 | 項目 | 内容 |
 | --- | --- |
 | **MCP サーバー**（トグル） | ON にすると FModel 内で MCP サーバーが待ち受けを始めます。既定は OFF。ON/OFF はその場で反映されます（再起動不要）。 |
-| **MCP クライアント用コマンド** | `"<FModel.exe のフルパス>" --mcp` が表示されます。これを AI クライアントに登録します（読み取り専用欄なのでコピーして使ってください）。 |
+| **MCP クライアント用コマンド** | `"<中継EXEのフルパス>" --application "<FModel.exeのフルパス>"` が表示されます。表示されたコマンドを AI クライアントに登録します（読み取り専用欄なのでコピーして使ってください）。 |
 
 接続・切断は FModel のログ欄に `MCP client connected / disconnected` と表示されます。
 
 ### 1-2. AI クライアントに登録する
 
-どのクライアントでも「**stdio の MCP サーバー**として `FModel.exe --mcp` を起動する」設定にします。
+どのクライアントでも「**stdio の MCP サーバー**として設定画面の中継EXEを起動する」設定にします。
+以下の `<中継EXEのフルパス>` は、設定画面に表示されたパスに置き換えてください。
+中継は `%LOCALAPPDATA%\FModelJP\Mcp\<内容のSHA256>\FModel.Mcp.exe` に配置されます。
 
 **Claude Desktop**（`%APPDATA%\Claude\claude_desktop_config.json`）
 
@@ -49,8 +51,8 @@ FModel JP に、AI アシスタント（Claude Desktop / Claude Code / Codex な
 {
   "mcpServers": {
     "fmodel": {
-      "command": "C:\\Tools\\FModel\\FModel.exe",
-      "args": ["--mcp"]
+      "command": "<中継EXEのフルパス>",
+      "args": ["--application", "C:\\Tools\\FModel\\FModel.exe"]
     }
   }
 }
@@ -59,18 +61,33 @@ FModel JP に、AI アシスタント（Claude Desktop / Claude Code / Codex な
 **Claude Code**
 
 ```bash
-claude mcp add fmodel -- "C:\Tools\FModel\FModel.exe" --mcp
+claude mcp add fmodel -- "<中継EXEのフルパス>" --application "C:\Tools\FModel\FModel.exe"
 ```
 
 **Codex**（`~/.codex/config.toml`）
 
 ```toml
 [mcp_servers.fmodel]
-command = "C:\\Tools\\FModel\\FModel.exe"
-args = ["--mcp"]
+command = '<中継EXEのフルパス>'
+args = ["--application", 'C:\Tools\FModel\FModel.exe']
 ```
 
-`--mcp` で起動されたプロセスは画面を出さない **中継** です。起動中の FModel に名前付きパイプで繋ぎます。FModel が起動していなければ中継が FModel を起動し（この起動に限り設定が OFF でもサーバーが立ちます）、最大 3 分待ちます。勝手に起動してほしくない場合は `"args": ["--mcp", "--no-launch"]` にしてください。
+中継は画面を出さず、起動中の FModel に名前付きパイプで繋ぎます。FModel が起動していなければ中継が FModel を起動し（この起動に限り設定が OFF でもサーバーが立ちます）、最大 3 分待ちます。勝手に起動してほしくない場合は引数に `--no-launch` を追加してください。
+
+**以前の `FModel.exe --mcp` を登録済みの場合は、新しいコマンドへ一度だけ置き換えてください。**
+従来のコマンドも利用できますが、本体終了時に中継も終了するため、AI側で再接続が必要です。
+
+### 更新・再起動時の動作
+
+専用中継はFModel本体を読み込まず、更新先とは別のフォルダで動作します。
+更新プログラムが本体EXEの終了を待つ間も、AI側のstdio接続を維持できます。
+本体との接続が切れると、最大3分間、再起動した本体への接続を待ちます。
+その間に旧EXEを起動することはありません。接続後は `initialize` と `notifications/initialized` を復元します。
+
+切断時に応答待ちだった要求には中断エラーを返し、自動では再実行しません。
+再起動待機中の要求にもエラーを返すため、本体の起動後に要求をやり直してください。
+本体内のエクスポートジョブや追加ゲームセッションは再起動で失われるため、作り直す必要があります。
+`live` は再起動した本体が読み込むゲームを指します。AIクライアントが終了した場合は待機も終了します。
 
 ### 1-3. 話しかけ方の例
 
@@ -111,7 +128,7 @@ args = ["--mcp"]
 
 ポイントは 3 つです。
 
-1. **AI クライアントと FModel の間に中継プロセスを挟む。** MCP クライアントの多くはローカルサーバーを「stdio で起動するコマンド」として登録します。しかしゲームを読み込んでいるのは既に起動している FModel なので、`FModel.exe --mcp` は WPF を起動せずに stdin/stdout と名前付きパイプの間でバイト列を流すだけにしています（[`McpRelay`](FModel/Services/Mcp/McpRelay.cs)）。
+1. **AI クライアントと FModel の間に中継プロセスを挟む。** MCP クライアントの多くはローカルサーバーを「stdio で起動するコマンド」として登録します。ゲームを読み込んでいるFModel本体と、中継の `FModel.Mcp.exe` は独立したプロセスです。中継はJSON-RPCの行を転送し、本体再起動時に初期化を復元します（[`RelaySession`](Tools/McpRelay/RelaySession.cs)）。従来の `FModel.exe --mcp` も互換用に残しています。
 2. **プロトコル処理は公式 C# SDK に任せる。** FModel 側は接続 1 本ごとに `McpServer.Create(new StreamServerTransport(pipe, pipe), options)` を作るだけです（[`McpHost.ServeAsync`](FModel/Services/Mcp/McpHost.cs#L143)）。JSON-RPC、バージョン交渉、スキーマ生成、キャンセル通知などは SDK が処理します。
 3. **ツールは「プロトコル境界」と「ドメイン処理」の 2 層。** [`FModelMcpTools`](FModel/Services/Mcp/FModelMcpTools.cs) は属性でツールを宣言し、結果の JSON 化・サイズ上限・エラー分類だけを担当します。実際の処理は [`FModelMcpService`](FModel/Services/Mcp/FModelMcpService.cs)（責務ごとに 6 つの partial）にあります。
 
@@ -140,12 +157,14 @@ public static int Main(string[] args)
 
 WinExe（GUI サブシステム）でも、親プロセスがパイプを渡して起動すれば `Console.OpenStandardInput/Output` はそのパイプになります（検証済み）。
 
-### 4-2. 中継（[`McpRelay.RunAsync`](FModel/Services/Mcp/McpRelay.cs#L49)）
+### 4-2. 専用中継（[`RelaySession.RunAsync`](Tools/McpRelay/RelaySession.cs)）
 
 1. `NamedPipeClientStream(".", McpHost.PipeName, …, PipeOptions.CurrentUserOnly)` で 2 秒だけ接続を試す。
-2. 繋がらなければ `FModel.exe --mcp-launched` を **ShellExecute で** 起動し、最大 3 分待つ（`--no-launch` なら終了コード 2 で終了）。
+2. 初回接続で繋がらなければ、`--application` で指定された `FModel.exe` を `--mcp-launched` 付きで **ShellExecute で** 起動し、最大 3 分待つ（`--no-launch` なら終了コード 2 で終了）。
    - ShellExecute にしているのは **stdio ハンドルを子に継承させないため** です。継承すると FModel のコンソールログ（Serilog）が AI クライアントの stdout に混ざり、プロトコルが壊れます。
-3. `PumpAsync` を 2 本（stdin→パイプ、パイプ→stdout）走らせ、どちらかが閉じたら終了。中身（JSON-RPC）は一切解釈しません。
+3. stdinとパイプを並行して読み取り、JSON-RPCの行を転送します。初期化メッセージと応答待ちの要求IDを保持します。
+4. 本体との接続だけが切れた場合は、実行途中の要求を中断エラーで完了し、最大3分再接続を待ちます。再接続時の初期化応答は中継内で受け取り、AI側へ二重送信しません。
+5. stdinが閉じれば中継は終了します。再接続のタイムアウトは終了コード3です。
 
 ### 4-3. ホスト（[`McpHost`](FModel/Services/Mcp/McpHost.cs)）
 
@@ -166,6 +185,8 @@ WinExe（GUI サブシステム）でも、親プロセスがパイプを渡し�
 | ファイル | 役割 |
 | --- | --- |
 | [`Program.cs`](FModel/Program.cs) | エントリポイント。`--mcp` なら中継、それ以外は WPF |
+| [`Tools/McpRelay/`](Tools/McpRelay/) | 本体から独立した専用中継。AI側の接続維持、本体への再接続、初期化の復元 |
+| [`Services/Mcp/McpRelayInstaller.cs`](FModel/Services/Mcp/McpRelayInstaller.cs) | 埋め込んだ自己完結型中継を内容のハッシュ別に配置。実行中の中継を上書きしない |
 | [`Services/Mcp/McpRelay.cs`](FModel/Services/Mcp/McpRelay.cs) | stdio ⇄ 名前付きパイプの中継、未起動時の FModel 起動 |
 | [`Services/Mcp/McpHost.cs`](FModel/Services/Mcp/McpHost.cs) | パイプの待ち受け、SDK サーバーの生成、ツール等の登録 |
 | [`Services/Mcp/FModelMcpTools.cs`](FModel/Services/Mcp/FModelMcpTools.cs) | **プロトコル境界**。37 ツールの宣言（名前・説明・注釈）、`Run()` による JSON 化とエラー分類 |
@@ -435,6 +456,11 @@ CUE4Parse（サブモジュール）は変更していません。
 ---
 
 ## 12. 検証
+
+更新時の接続維持については、[`Tools/McpRelayChecks`](Tools/McpRelayChecks/README.md) で
+名前付きパイプを使った再接続・初期化復元・中断要求の非再送・クライアント終了・タイムアウトを検証します。
+本体への埋め込みと、配置済み中継をロックした状態での再利用は
+[`Tools/CompatibilityChecks`](Tools/CompatibilityChecks/README.md) に含まれます。
 
 画面を操作せずに検証するハーネスを作りました（スクラッチパッド、リポジトリには含めていません）。
 
