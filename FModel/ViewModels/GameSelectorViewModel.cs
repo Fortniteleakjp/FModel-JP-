@@ -56,7 +56,7 @@ public class GameSelectorViewModel : ViewModel
 
         DetectedDirectories = new ReadOnlyObservableCollection<DirectorySettings>(_detectedDirectories);
 
-        if (DetectedDirectories.FirstOrDefault(x => x.GameDirectory == gameDirectory) is { } detectedGame)
+        if (DetectedDirectories.FirstOrDefault(x => GameDirectoryComparer.Instance.Equals(x.GameDirectory, gameDirectory)) is { } detectedGame)
             SelectedDirectory = detectedGame;
         else if (IsGameDirectoryAvailable(gameDirectory))
             AddUndetectedDir(gameDirectory);

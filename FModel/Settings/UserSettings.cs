@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using CUE4Parse.UE4.Assets.Exports.Material;
@@ -14,6 +16,8 @@ using FModel.ViewModels;
 using FModel.ViewModels.ApiEndpoints.Models;
 using FModel.Views.Snooper;
 using Newtonsoft.Json;
+using OnDeserializedAttribute = System.Runtime.Serialization.OnDeserializedAttribute;
+using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
 namespace FModel.Settings;
 
@@ -31,12 +35,166 @@ public sealed class UserSettings : ViewModel
         Default = new UserSettings();
     }
 
+    private static string BackupFilePath => FilePath + ".bak";
+    private static string TempFilePath => FilePath + ".tmp";
+
+    private static readonly object _saveLock = new();
     private static bool _bSave = true;
     public static void Save()
     {
         if (!_bSave || Default == null) return;
-        Default.PerDirectory[Default.CurrentDir.GameDirectory] = Default.CurrentDir;
-        File.WriteAllText(FilePath, JsonConvert.SerializeObject(Default, Formatting.Indented));
+        lock (_saveLock)
+        {
+            if (Default.CurrentDir?.GameDirectory is { } gameDirectory)
+                Default.PerDirectory[gameDirectory] = Default.CurrentDir;
+
+            WriteAtomically(JsonConvert.SerializeObject(Default, Formatting.Indented));
+        }
+    }
+
+    /// <summary>
+    /// 一時ファイルに書いてから置き換える。File.WriteAllText は先にファイルを空にするので、書き込み中に
+    /// 再起動後の新しいプロセスが読んだり、強制終了されたりすると壊れたファイルが残り、次回起動時に全設定が初期化されていた。
+    /// 置き換え前のファイルは .bak に残し、読み込みに失敗したときの復元元にする。
+    /// </summary>
+    private static void WriteAtomically(string json)
+    {
+        using (var stream = new FileStream(TempFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.WriteThrough))
+        using (var writer = new StreamWriter(stream))
+        {
+            writer.Write(json);
+            writer.Flush();
+            stream.Flush(true);
+        }
+
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                if (File.Exists(FilePath))
+                    File.Replace(TempFilePath, FilePath, BackupFilePath, true);
+                else
+                    File.Move(TempFilePath, FilePath);
+                return;
+            }
+            catch (IOException) when (attempt < 10)
+            {
+                // 別の FModel が設定を読んでいる最中 (共有違反) なので少し待つ
+                Thread.Sleep(100);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 設定を読み込む。壊れていたら .bak から復元し、それも駄目なら壊れたファイルを退避してから初期設定で起動する
+    /// (退避せずに初期設定で起動すると、終了時の保存で元の設定が上書きされて消えてしまう)。
+    /// </summary>
+    /// <param name="messages">ロガーの準備前に読み込むため、ログに残す内容を返す</param>
+    public static UserSettings Load(out List<string> messages)
+    {
+        messages = [];
+        // 保存は置き換えなので本体が消えることはない。無いのは初回起動か、ユーザーが初期化のために消したとき
+        if (!File.Exists(FilePath)) return new UserSettings();
+        if (TryLoad(FilePath, messages, out var settings))
+        {
+            if (settings.MergedDuplicateDirectories > 0)
+            {
+                // まとめた側の登録は次の保存で消えるので、元のファイルを残しておく
+                var copy = KeepCopy("before-merge", messages);
+                messages.Add($"Merged {settings.MergedDuplicateDirectories} duplicated game directory entries (same folder with a different casing or separator)" +
+                             (copy is null ? string.Empty : $", the previous settings were kept as \"{copy}\""));
+            }
+
+            return settings;
+        }
+
+        var corruptPath = KeepCopy("corrupt", messages);
+        if (File.Exists(BackupFilePath) && TryLoad(BackupFilePath, messages, out var backup))
+        {
+            messages.Add($"Restored the settings from \"{BackupFilePath}\"");
+            return backup;
+        }
+
+        messages.Add(corruptPath is null
+            ? "Could not read the settings, starting with the default settings"
+            : $"Could not read the settings, starting with the default settings (the unreadable file was kept as \"{corruptPath}\")");
+        return new UserSettings();
+    }
+
+    private static bool TryLoad(string path, List<string> messages, out UserSettings settings)
+    {
+        settings = null;
+        try
+        {
+            var json = ReadAllTextShared(path);
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                messages.Add($"\"{path}\" is empty");
+                return false;
+            }
+
+            var serializerSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = JsonNetSerializer.SerializerSettings.NullValueHandling,
+                MissingMemberHandling = JsonNetSerializer.SerializerSettings.MissingMemberHandling,
+                ContractResolver = JsonNetSerializer.SerializerSettings.ContractResolver,
+                // 1 つの値が読めない (列挙値の削除など) だけで全設定を捨てない。JSON 自体の破損 (途中で切れている等) は失敗扱いにして .bak へ
+                Error = (_, args) =>
+                {
+                    if (args.ErrorContext.Error is not JsonSerializationException exception) return;
+                    messages.Add($"Ignored an unreadable setting at \"{args.ErrorContext.Path}\": {exception.Message}");
+                    args.ErrorContext.Handled = true;
+                }
+            };
+
+            settings = JsonConvert.DeserializeObject<UserSettings>(json, serializerSettings);
+            if (settings is null)
+            {
+                messages.Add($"\"{path}\" does not contain any settings");
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            messages.Add($"Failed to read \"{path}\": {e.Message}");
+            return false;
+        }
+    }
+
+    private static string ReadAllTextShared(string path)
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+                using var reader = new StreamReader(stream);
+                return reader.ReadToEnd();
+            }
+            catch (IOException) when (attempt < 10 && File.Exists(path))
+            {
+                Thread.Sleep(100);
+            }
+        }
+    }
+
+    private static string KeepCopy(string reason, List<string> messages)
+    {
+        if (!File.Exists(FilePath)) return null;
+        try
+        {
+            var copyPath = Path.Combine(Path.GetDirectoryName(FilePath)!,
+                $"{Path.GetFileNameWithoutExtension(FilePath)}.{reason}-{DateTime.Now:yyyyMMdd-HHmmss}.json");
+            File.Copy(FilePath, copyPath, true);
+            return copyPath;
+        }
+        catch (Exception e)
+        {
+            messages.Add($"Could not keep a copy of the settings: {e.Message}");
+            return null;
+        }
     }
 
     public static void Delete()
@@ -45,6 +203,9 @@ public sealed class UserSettings : ViewModel
         {
             _bSave = false;
             File.Delete(FilePath);
+            // 初期化後に本体が壊れたとき、初期化前の設定が復元されないように
+            if (File.Exists(BackupFilePath))
+                File.Delete(BackupFilePath);
         }
     }
 
@@ -464,11 +625,53 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _jsonHighlightTheme, value);
     }
 
-    private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>();
+    private IDictionary<string, DirectorySettings> _perDirectory = new Dictionary<string, DirectorySettings>(GameDirectoryComparer.Instance);
+    /// <summary>
+    /// ゲームフォルダごとの設定。キーは <see cref="GameDirectoryComparer"/> で比較する。
+    /// 読み込み時は Replace にして、重複を含んだままの辞書を受け取り <see cref="OnDeserialized"/> でまとめる
+    /// (既存の辞書へ追加させると重複キーが後勝ちで黙って上書きされる)。
+    /// </summary>
+    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
     public IDictionary<string, DirectorySettings> PerDirectory
     {
         get => _perDirectory;
         set => SetProperty(ref _perDirectory, value);
+    }
+
+    /// <summary>読み込み時に同じフォルダとしてまとめた重複登録の数 (ログ用)</summary>
+    [JsonIgnore]
+    public int MergedDuplicateDirectories { get; private set; }
+
+    [OnDeserialized]
+    private void OnDeserialized(StreamingContext context)
+    {
+        var source = _perDirectory ?? new Dictionary<string, DirectorySettings>();
+        var merged = new Dictionary<string, DirectorySettings>(GameDirectoryComparer.Instance);
+        var entries = source.Where(x => x.Value != null).Select((x, order) => (x.Key, x.Value, Order: order));
+        foreach (var group in entries.GroupBy(x => x.Key, GameDirectoryComparer.Instance))
+        {
+            // 最後に使っていた登録 > 設定済みの項目が多い登録 > 自動検出された登録 > 後から追加された登録
+            var best = group
+                .OrderByDescending(x => string.Equals(x.Key, GameDirectory, StringComparison.Ordinal) ||
+                                        string.Equals(x.Value.GameDirectory, GameDirectory, StringComparison.Ordinal))
+                .ThenByDescending(x => ConfigurationScore(x.Value))
+                .ThenByDescending(x => !x.Value.IsManual)
+                .ThenByDescending(x => x.Order)
+                .First();
+
+            merged[best.Key] = best.Value;
+            MergedDuplicateDirectories += group.Count() - 1;
+        }
+
+        _perDirectory = merged;
+    }
+
+    private static int ConfigurationScore(DirectorySettings settings)
+    {
+        var score = settings.Endpoints?.Count(e => e is { IsValid: true } || e is { Overwrite: true }) ?? 0;
+        if (!string.IsNullOrEmpty(settings.AesKeys?.MainKey) || settings.AesKeys?.HasDynamicKeys == true)
+            score++;
+        return score;
     }
 
     [JsonIgnore]

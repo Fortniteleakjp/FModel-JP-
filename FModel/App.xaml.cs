@@ -14,7 +14,6 @@ using FModel.Services;
 using FModel.Services.Verse;
 using FModel.Settings;
 using FModel.Views.Snooper;
-using Newtonsoft.Json;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using MessageBox = AdonisUI.Controls.MessageBox;
@@ -83,15 +82,7 @@ public partial class App
         VerseExportOverrides.Register();
         FortniteDna.Register();
 
-        try
-        {
-            UserSettings.Default = JsonConvert.DeserializeObject<UserSettings>(
-                File.ReadAllText(UserSettings.FilePath), JsonNetSerializer.SerializerSettings);
-        }
-        catch
-        {
-            UserSettings.Default = new UserSettings();
-        }
+        UserSettings.Default = UserSettings.Load(out var settingsMessages);
 
         ApplyInterfaceLanguage();
 
@@ -187,6 +178,8 @@ public partial class App
         Log.Information("{OS}", GetOperatingSystemProductName());
         Log.Information("{RuntimeVer}", RuntimeInformation.FrameworkDescription);
         Log.Information("Culture {SysLang}", CultureInfo.CurrentCulture);
+        foreach (var message in settingsMessages)
+            Log.Warning("{Message}", message);
         SettingsLog.LogStartup();
 
         static bool IsConversionLibrary(LogEvent e) =>
@@ -196,9 +189,17 @@ public partial class App
 
     private void AppExit(object sender, ExitEventArgs e)
     {
+        try
+        {
+            UserSettings.Save();
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to save the settings");
+        }
+
         Log.Information("––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––");
         Log.CloseAndFlush();
-        UserSettings.Save();
         Environment.Exit(0);
     }
 

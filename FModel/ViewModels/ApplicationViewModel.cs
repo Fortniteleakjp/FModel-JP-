@@ -265,6 +265,10 @@ public class ApplicationViewModel : ViewModel
 
     public void Restart()
     {
+        // 新しいプロセスは起動直後に設定を読むので、終了時の保存を待たずにここで書いておく
+        // (待つと変更前の設定を読んだり、書き込み途中のファイルを読んで初期化されたりする)
+        UserSettings.Save();
+
         var path = Path.GetFullPath(Environment.GetCommandLineArgs()[0]);
         if (path.EndsWith(".dll"))
         {

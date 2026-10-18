@@ -116,7 +116,7 @@ public class DirectorySettings : ViewModel, ICloneable
 
     private bool Equals(DirectorySettings other)
     {
-        return GameDirectory == other.GameDirectory && UeVersion == other.UeVersion;
+        return GameDirectoryComparer.Instance.Equals(GameDirectory, other.GameDirectory) && UeVersion == other.UeVersion;
     }
 
     public override bool Equals(object obj)
@@ -126,7 +126,7 @@ public class DirectorySettings : ViewModel, ICloneable
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(GameDirectory, (int) UeVersion);
+        return HashCode.Combine(GameDirectoryComparer.Instance.GetHashCode(GameDirectory ?? string.Empty), (int) UeVersion);
     }
 
     public override string ToString()
