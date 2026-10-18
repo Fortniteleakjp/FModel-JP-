@@ -118,6 +118,16 @@
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="{DynamicResource UI_GameInfo}" Command="{Binding MenuCommand}" CommandParameter="Directory_GameInfo" IsEnabled="{Binding Status.IsReady}">
+                        <MenuItem.Icon>
+                            <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource MonitorIcon}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="{DynamicResource UI_MappingInfo}" Command="{Binding MenuCommand}" CommandParameter="Directory_MappingInfo" IsEnabled="{Binding Status.IsReady}">
+                        <MenuItem.Icon>
+                            <Path Width="16" Height="16" Stretch="Uniform" Fill="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" Data="{StaticResource DataTableIcon}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource UI_Packages}">
                     <MenuItem Header="{DynamicResource UI_Search}" IsEnabled="{Binding Status.IsReady}" InputGestureText="Ctrl+Shift+F" Click="OnSearchViewClick">

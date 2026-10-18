@@ -1,6 +1,52 @@
 {
   "releases": [
     {
+      "version": "6.5.2.0",
+      "tag": "6.5.2.0",
+      "date": "2026-10-18",
+      "title": {
+        "en": "Game & Mappings Info, Settings Reset Fix",
+        "ja": "ゲーム・マッピング情報と設定の初期化の修正"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Game & UE Version Info (Directory > Game & UE Version Info): shows the game being explored and checks its Unreal Engine version from several sources at once: the version selected in FModel, the version resources of the game executables and CrashReportClient, the header of packages inside .pak files (package version and the engine that saved them), the pak/utoc/container header format versions, and the engine recorded in the mappings. When the most reliable source disagrees with the selected version, it is highlighted so a wrong UE version can be fixed before assets fail to load. The report can be copied as text for bug reports.",
+            "ja": "ゲーム・UE バージョン情報（ディレクトリ > ゲーム・UE バージョン情報）を追加しました。読み込み中のゲームについて、FModel で選択している UE バージョン、実行ファイルと CrashReportClient のバージョン情報、pak 内パッケージのヘッダー（パッケージバージョンと保存したエンジン）、pak / utoc / コンテナヘッダーの形式、マッピングに記録されたエンジンをまとめて表示し、UE バージョンを確認できます。最も確かな情報と選択中の UE バージョンが食い違う場合は強調表示するので、アセットが読めない原因になる UE バージョンの選び間違いに気付けます。結果はテキストでコピーでき、不具合報告にも使えます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Mappings Info (Directory > Mappings Info): shows the loaded mappings file (location, size, usmap format version, compression, recorded engine and package versions, number of types and properties) and whether its CL matches the game's executables. Every struct, class and enum in the mappings can be searched by name and viewed in a C++-like layout with its parent chain, property order and types, or enum values. Other .usmap / .jmap files can also be opened to inspect them without loading them into the game.",
+            "ja": "マッピング情報（ディレクトリ > マッピング情報）を追加しました。読み込み中のマッピングファイルの場所、サイズ、usmap の形式バージョン、圧縮方式、記録されたエンジン・パッケージバージョン、型とプロパティの数を表示し、ゲームの実行ファイルと CL が一致しているかも確認できます。マッピングに含まれる構造体・クラス・列挙型を名前で検索し、継承元、プロパティの並び順と型、列挙値を C++ 風の形式で確認・コピーできます。ほかの .usmap / .jmap ファイルを開いて、ゲームに読み込まずに中身を調べることもできます。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "The endpoint configuration, AES keys and other settings of Fortnite were sometimes lost. When the Epic Games Launcher wrote the install location with a different casing or with \"/\" instead of \"\\\", the same folder was treated as a new game and started over with the default settings. Game folders are now matched regardless of casing and separators, and folders that were saved several times this way are merged into one, keeping the one used last (the previous settings file is kept as AppSettings.before-merge-*.json).",
+            "ja": "Fortnite のエンドポイント設定や AES キーなどが消えることがある問題を修正しました。Epic Games Launcher がインストール先を大文字・小文字や「/」「\\」の違う表記で記録すると、同じフォルダが別のゲームとして扱われ、初期設定に戻っていました。ゲームフォルダを大文字・小文字や区切り文字の違いを無視して照合するようにし、これまでに表記違いで複数登録されていたフォルダは、最後に使っていた登録を優先して 1 つにまとめます（まとめる前の設定ファイルは AppSettings.before-merge-*.json として残します）。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "All settings were sometimes reset when FModel was closed or restarted while saving them. Settings are now written to a temporary file and swapped in at once, and the previous file is kept as AppSettings.json.bak. If the settings cannot be read, they are restored from that backup, and the unreadable file is kept as AppSettings.corrupt-*.json instead of being overwritten. A single unreadable value no longer discards the other settings.",
+            "ja": "設定の保存中に FModel が終了・再起動すると、まれにすべての設定が初期化されていた問題を修正しました。設定は一時ファイルに書いてから一度に置き換えるようにし、直前の設定を AppSettings.json.bak に残します。設定を読み込めなかった場合はこのバックアップから復元し、読めなかったファイルは上書きせずに AppSettings.corrupt-*.json として残します。また、読めない値が 1 つあるだけで他の設定まで捨てられることはなくなりました。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Changes made right before FModel restarted itself (for example after switching games) could be lost, because the new instance read the settings before the old one had saved them. Settings are now saved before restarting.",
+            "ja": "ゲームの切り替えなどで FModel が自動的に再起動するとき、新しい FModel が保存前の設定を読み込んでしまい、直前の変更が失われることがあった問題を修正しました。再起動の前に設定を保存するようにしました。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.5.1.0",
       "tag": "6.5.1.0",
       "date": "2026-10-09",

@@ -300,6 +300,7 @@ public partial class CUE4ParseViewModel : ViewModel
                                     cancellationToken: cancellationToken,
                                     elementDownloadPredicate: static x => x.Uri.Host is "egdownload.fastly-edge.com" or "epicgames-download1.akamaized.net" or "download.epicgames.com"
                                 ).GetAwaiter().GetResult();
+                                LiveBuildVersion = manifest.Meta?.BuildVersion;
                             }
                             catch (HttpRequestException ex)
                             {
@@ -586,14 +587,21 @@ public partial class CUE4ParseViewModel : ViewModel
         });
     }
 
+    /// <summary>
+    /// 読み込んだマッピングファイルのフルパス。CUE4Parse のプロバイダはファイル名しか公開しないので、ゲーム情報ウィンドウ用に覚えておく
+    /// </summary>
+    public string MappingsFilePath { get; private set; }
+
+    /// <summary>Fortnite [LIVE] で読み込んだマニフェストのビルド名 (例: ++Fortnite+Release-38.10-CL-...)</summary>
+    public string LiveBuildVersion { get; private set; }
+
     private ITypeMappingsProvider SelectMappingsProvider(string path)
     {
-        if (path.EndsWith(".jmap.gz", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".jmap", StringComparison.OrdinalIgnoreCase))
-        {
-            return new JmapTypeMappingsProvider(path);
-        }
-
-        return new FileUsmapTypeMappingsProvider(path);
+        ITypeMappingsProvider provider = path.EndsWith(".jmap.gz", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".jmap", StringComparison.OrdinalIgnoreCase)
+            ? new JmapTypeMappingsProvider(path)
+            : new FileUsmapTypeMappingsProvider(path);
+        MappingsFilePath = path;
+        return provider;
     }
 
     public Task InitMappings(bool force = false)
@@ -601,6 +609,7 @@ public partial class CUE4ParseViewModel : ViewModel
         if (!UserSettings.IsEndpointValid(EEndpointType.Mapping, out var endpoint))
         {
             Provider.MappingsContainer = null;
+            MappingsFilePath = null;
             return Task.CompletedTask;
         }
 
@@ -647,6 +656,7 @@ public partial class CUE4ParseViewModel : ViewModel
 
                     var latestUsmapInfo = latestUsmaps.OrderBy(f => f.LastWriteTime).Last();
                     Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(latestUsmapInfo.FullName);
+                    MappingsFilePath = latestUsmapInfo.FullName;
                     l = ELog.Warning;
                 }
             }

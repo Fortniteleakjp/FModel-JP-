@@ -21,6 +21,8 @@
     <system:String x:Key="UI_ArchiveVersion">アーカイブのバージョン</system:String>
     <system:String x:Key="UI_Archives">アーカイブ</system:String>
     <system:String x:Key="UI_ArchivesInfo">アーカイブ情報</system:String>
+    <system:String x:Key="UI_GameInfo">ゲーム・UE バージョン情報</system:String>
+    <system:String x:Key="UI_MappingInfo">マッピング情報</system:String>
     <system:String x:Key="UI_AssetsSharingTheSameNameAcross">このビューでは、異なるパッケージにある同名のアセットをまとめて表示します。エクスポートには影響しません。</system:String>
     <system:String x:Key="UI_Athena">Athena</system:String>
     <system:String x:Key="UI_AthenaBattlePassLevel">Athena バトルパスレベル</system:String>

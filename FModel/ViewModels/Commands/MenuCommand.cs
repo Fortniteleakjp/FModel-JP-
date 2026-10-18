@@ -39,6 +39,12 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 contextViewModel.CUE4Parse.TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
                 contextViewModel.CUE4Parse.TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(contextViewModel.CUE4Parse.GameDirectory.DirectoryFiles, Formatting.Indented), false, false);
                 break;
+            case "Directory_GameInfo":
+                GameInfoWindow.Open(false);
+                break;
+            case "Directory_MappingInfo":
+                GameInfoWindow.Open(true);
+                break;
             case "Views_3dViewer":
                 contextViewModel.CUE4Parse.SnooperViewer.Run();
                 break;

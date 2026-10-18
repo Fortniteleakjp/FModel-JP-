@@ -21,6 +21,8 @@
     <system:String x:Key="UI_ArchiveVersion">Archive Version</system:String>
     <system:String x:Key="UI_Archives">Archives</system:String>
     <system:String x:Key="UI_ArchivesInfo">Archives Info</system:String>
+    <system:String x:Key="UI_GameInfo">Game &amp; UE Version Info</system:String>
+    <system:String x:Key="UI_MappingInfo">Mappings Info</system:String>
     <system:String x:Key="UI_AssetsSharingTheSameNameAcross">Assets sharing the same name across different packages are grouped together in this view. Exports are not affected.</system:String>
     <system:String x:Key="UI_Athena">Athena</system:String>
     <system:String x:Key="UI_AthenaBattlePassLevel">Athena Battle Pass Level</system:String>
