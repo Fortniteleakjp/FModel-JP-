@@ -217,6 +217,7 @@ public partial class BlueprintGraphWindow : AdonisWindow
         _exporting = true;
         ShapeKeysButton.IsEnabled = false;
         SetStatus($"exporting the shape keys of {string.Join(", ", meshes.Select(m => m.AssetName).Distinct())}...");
+        using var job = BackgroundJobs.Start($"Shape keys: {string.Join(", ", meshes.Select(m => m.AssetName).Distinct())}");
         try
         {
             var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;

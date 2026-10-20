@@ -237,6 +237,7 @@ public partial class PakCreatorWindow
         AssetRegistryMerger.Result registry = null;
         string sigPath = null;
         string error = null;
+        using var job = BackgroundJobs.Start($"{Title}: {Path.GetFileName(output)}");
         await Task.Run(() =>
         {
             try

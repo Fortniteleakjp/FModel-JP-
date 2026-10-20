@@ -524,4 +524,10 @@
     <system:String x:Key="UI_McpServerDescription">AI アシスタント（Claude・Codex など）が Model Context Protocol で、FModel に読み込んだゲームの閲覧・解析・プレビュー・書き出しをできるようにします。接続できるのは同じ Windows アカウントのプロセスだけです（名前付きパイプ。ネットワークのポートは開きません）。</system:String>
     <system:String x:Key="UI_McpServerCommand">MCP クライアント用コマンド</system:String>
     <system:String x:Key="UI_McpServerCommandDescription">このコマンドを AI クライアントに stdio の MCP サーバーとして登録してください。更新中も中継を維持し、再起動後に自動で再接続します。以前の FModel.exe --mcp を登録済みの場合は、このコマンドに置き換えてください。</system:String>
+    <system:String x:Key="UI_BackgroundJobs_Title">バックグラウンド処理</system:String>
+    <system:String x:Key="UI_BackgroundJobs_Short">処理中:</system:String>
+    <system:String x:Key="UI_BackgroundJobs_Tooltip">実行中のバックグラウンド処理を表示</system:String>
+    <system:String x:Key="UI_BackgroundJobs_Cancel">キャンセル</system:String>
+    <system:String x:Key="UI_BackgroundJobs_CancelAll">すべてキャンセル</system:String>
+    <system:String x:Key="UI_BackgroundJobs_MainQueue">メイン処理</system:String>
 </ResourceDictionary>

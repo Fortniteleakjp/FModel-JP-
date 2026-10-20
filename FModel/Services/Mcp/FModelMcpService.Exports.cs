@@ -118,6 +118,7 @@ public sealed partial class FModelMcpService
     {
         var ct = job.Cancellation.Token;
         var finalState = "failed";
+        using var backgroundJob = BackgroundJobs.Start($"MCP export ({job.Total:N0})", () => CancelJob(job.Id));
         try
         {
             lock (job.Sync)
@@ -129,7 +130,11 @@ public sealed partial class FModelMcpService
             foreach (var path in request.Paths)
             {
                 ct.ThrowIfCancellationRequested();
-                lock (job.Sync) job.CurrentPath = path;
+                lock (job.Sync)
+                {
+                    job.CurrentPath = path;
+                    backgroundJob.Report(job.Results.Count, job.Total, path);
+                }
 
                 McpExportItem result;
                 // セッションのロックはアセット 1 件ごとに取る。長いジョブの間も他のツール (閲覧系) が割り込める

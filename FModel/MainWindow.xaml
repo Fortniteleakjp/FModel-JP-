@@ -882,6 +882,87 @@
                             </StackPanel>
                         </Button>
                     </StatusBarItem>
+                    <StatusBarItem Margin="0 0 10 0" Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                                   Visibility="{Binding IsVisible, Source={x:Static services:BackgroundJobs.Instance}, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Grid>
+                            <Button x:Name="BackgroundJobsButton"
+                                    HorizontalContentAlignment="Stretch"
+                                    VerticalContentAlignment="Center"
+                                    Style="{StaticResource StatusBarButton}"
+                                    Background="{Binding Background, RelativeSource={RelativeSource AncestorType=StatusBar}}"
+                                    ToolTip="{DynamicResource UI_BackgroundJobs_Tooltip}"
+                                    Click="OnBackgroundJobsClick">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Viewbox Width="16" Height="16">
+                                        <Canvas Width="24" Height="24">
+                                            <Path Stroke="{Binding Foreground, ElementName=BackgroundJobsButton}"
+                                                  StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                  Data="M12 3a9 9 0 1 0 9 9M12 7v5l3 3M17 3h4v4" />
+                                        </Canvas>
+                                    </Viewbox>
+                                    <TextBlock Margin="10 0 0 0">
+                                        <Run Text="{DynamicResource UI_BackgroundJobs_Short}" />
+                                        <Run Text="{Binding Count, Source={x:Static services:BackgroundJobs.Instance}, Mode=OneWay}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button>
+                            <Popup x:Name="BackgroundJobsPopup"
+                                   PlacementTarget="{Binding ElementName=BackgroundJobsButton}" Placement="Custom"
+                                   CustomPopupPlacementCallback="OnBackgroundJobsPopupPlacement"
+                                   StaysOpen="False" AllowsTransparency="True">
+                                <Border CornerRadius="5" Padding="10" Width="420"
+                                        Background="{DynamicResource {x:Static adonisUi:Brushes.Layer2BackgroundBrush}}"
+                                        BorderBrush="{DynamicResource {x:Static adonisUi:Brushes.Layer1BorderBrush}}"
+                                        BorderThickness="1">
+                                    <DockPanel>
+                                        <DockPanel DockPanel.Dock="Top" Margin="0 0 0 8">
+                                            <Button DockPanel.Dock="Right" Padding="8 2"
+                                                    Content="{DynamicResource UI_BackgroundJobs_CancelAll}"
+                                                    Command="{Binding CancelAllCommand, Source={x:Static services:BackgroundJobs.Instance}}"
+                                                    IsEnabled="{Binding HasCancelableJobs, Source={x:Static services:BackgroundJobs.Instance}}" />
+                                            <TextBlock Text="{DynamicResource UI_BackgroundJobs_Title}" FontWeight="SemiBold" VerticalAlignment="Center"
+                                                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                        </DockPanel>
+                                        <ScrollViewer MaxHeight="360" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                            <ItemsControl ItemsSource="{Binding Jobs, Source={x:Static services:BackgroundJobs.Instance}}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate DataType="{x:Type services:BackgroundJob}">
+                                                        <Grid Margin="0 4">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition Height="Auto" />
+                                                            </Grid.RowDefinitions>
+                                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                                                       ToolTip="{Binding Title}" Foreground="{DynamicResource {x:Static adonisUi:Brushes.ForegroundBrush}}" />
+                                                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Elapsed}" Margin="8 0 0 0" VerticalAlignment="Center" FontSize="11"
+                                                                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                                            <Button Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Margin="8 0 0 0" Padding="6 0" VerticalAlignment="Center"
+                                                                    Content="{DynamicResource UI_BackgroundJobs_Cancel}"
+                                                                    Command="{Binding CancelCommand}"
+                                                                    IsEnabled="{Binding CanCancel}"
+                                                                    Visibility="{Binding IsCancelable, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Detail}" FontSize="11" Margin="0 2 0 0"
+                                                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding Detail}"
+                                                                       Foreground="{DynamicResource {x:Static adonisUi:Brushes.DisabledForegroundBrush}}" />
+                                                            <ProgressBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Height="4" Margin="0 4 0 0"
+                                                                         Minimum="0" Maximum="1" Value="{Binding Progress, Mode=OneWay}"
+                                                                         IsIndeterminate="{Binding IsIndeterminate}" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </DockPanel>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </StatusBarItem>
                     <StatusBarItem Margin="0 0 10 0" Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                         <Button x:Name="ExportSessionButton"
                                 HorizontalContentAlignment="Stretch"

@@ -524,4 +524,10 @@
     <system:String x:Key="UI_McpServerDescription">Lets AI assistants (Claude, Codex...) browse, inspect, preview and export the game loaded in FModel through the Model Context Protocol. Only processes of your Windows account can connect (named pipe, no network port).</system:String>
     <system:String x:Key="UI_McpServerCommand">MCP Client Command</system:String>
     <system:String x:Key="UI_McpServerCommandDescription">Register this command as a stdio MCP server in your AI client. The relay survives updates and reconnects after FModel restarts. Replace any previously registered FModel.exe --mcp command with this command.</system:String>
+    <system:String x:Key="UI_BackgroundJobs_Title">Background tasks</system:String>
+    <system:String x:Key="UI_BackgroundJobs_Short">Tasks:</system:String>
+    <system:String x:Key="UI_BackgroundJobs_Tooltip">Show running background tasks</system:String>
+    <system:String x:Key="UI_BackgroundJobs_Cancel">Cancel</system:String>
+    <system:String x:Key="UI_BackgroundJobs_CancelAll">Cancel all</system:String>
+    <system:String x:Key="UI_BackgroundJobs_MainQueue">Main queue</system:String>
 </ResourceDictionary>

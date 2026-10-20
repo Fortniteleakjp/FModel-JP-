@@ -456,6 +456,17 @@ public partial class MainWindow
         _applicationView.RightClickMenuCommand.Execute(new object[] { trigger, exportable });
     }
 
+    private void OnBackgroundJobsClick(object sender, RoutedEventArgs e)
+    {
+        BackgroundJobsPopup.IsOpen = !BackgroundJobsPopup.IsOpen;
+    }
+
+    private CustomPopupPlacement[] OnBackgroundJobsPopupPlacement(Size popupSize, Size targetSize, Point offset)
+    {
+        // ボタンの右端に揃えてステータスバーの上へ出す
+        return [new CustomPopupPlacement(new Point(targetSize.Width - popupSize.Width, -popupSize.Height - 4), PopupPrimaryAxis.Horizontal)];
+    }
+
     private CustomPopupPlacement[] OnQueueToastCustomPopupPlacement(Size popupSize, Size targetSize, Point offset)
     {
         return

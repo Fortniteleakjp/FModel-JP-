@@ -23,6 +23,19 @@ public sealed class BackgroundJobs : ViewModel
 
     public int Count => Jobs.Count;
     public bool HasJobs => Jobs.Count > 0;
+
+    private bool _isVisible;
+    /// <summary>
+    /// ステータスバーのボタンを出すか。アセットを開くたびに一瞬だけ走るメイン処理でボタンが点滅しないよう、
+    /// 1 秒以上続いている処理があるときだけ true にする。
+    /// </summary>
+    public bool IsVisible
+    {
+        get => _isVisible;
+        private set => SetProperty(ref _isVisible, value);
+    }
+
+    private static readonly TimeSpan VisibleAfter = TimeSpan.FromSeconds(1);
     public bool HasCancelableJobs
     {
         get
@@ -88,6 +101,7 @@ public sealed class BackgroundJobs : ViewModel
         if (Jobs.Count == 0)
         {
             _timer?.Stop();
+            IsVisible = false;
             return;
         }
 
@@ -102,8 +116,14 @@ public sealed class BackgroundJobs : ViewModel
 
     private void Tick()
     {
+        var visible = false;
         foreach (var job in Jobs)
+        {
             job.Refresh();
+            visible |= job.ElapsedTime >= VisibleAfter;
+        }
+
+        IsVisible = visible;
     }
 }
 
@@ -116,7 +136,8 @@ public sealed class BackgroundJob : ViewModel, IDisposable
 
     public string Title { get; }
     public DateTime StartedAt { get; } = DateTime.Now;
-    public bool CanCancel => _cancel != null && !IsCancelling;
+    public bool IsCancelable => _cancel != null;
+    public bool CanCancel => IsCancelable && !IsCancelling;
     public Command CancelCommand { get; }
 
     private string _detail;
@@ -151,6 +172,8 @@ public sealed class BackgroundJob : ViewModel, IDisposable
                 RaisePropertyChanged(nameof(CanCancel));
         }
     }
+
+    public TimeSpan ElapsedTime => _stopwatch.Elapsed;
 
     public string Elapsed
     {

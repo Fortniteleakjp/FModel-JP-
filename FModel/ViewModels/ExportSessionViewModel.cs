@@ -15,6 +15,7 @@ using CUE4Parse_Conversion.Options;
 using CUE4Parse.Utils;
 using FModel.Extensions;
 using FModel.Framework;
+using FModel.Services;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
@@ -192,6 +193,7 @@ public class ExportSessionViewModel : ViewModel
 
         _cts = new CancellationTokenSource();
         StartUiTimer();
+        using var job = BackgroundJobs.Start(Application.Current?.TryFindResource("UI_ExportSession") as string ?? "Export Session", _cts);
 
         string exportDirectory;
         ExportOptions exportOptions;
@@ -219,6 +221,7 @@ public class ExportSessionViewModel : ViewModel
                 }
                 ProgressValue = p.Total > 0 ? (double)p.Completed / p.Total : 0;
             });
+            job.Report(p.Completed, p.Total, $"{p.Completed:N0} / {p.Total:N0}  {p.LastResult?.ObjectPath}");
         });
 
         IReadOnlyList<ExportResult> results = null;
