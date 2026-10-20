@@ -18,6 +18,28 @@ namespace FModel.Services.Mcp;
 internal static class McpPathPolicy
 {
     public static string OutputRoot => Path.Combine(UserSettings.Default.OutputDirectory, "MCP");
+    public static string BackupsDirectory => Path.Combine(UserSettings.Default.OutputDirectory, "Backups");
+
+    /// <summary>
+    /// 差分レポートに使うバックアップ。FModel の Backups フォルダ直下の .fbkp だけ (名前か、そのフォルダ内の絶対パス)。
+    /// 省略または "latest" なら最も新しいもの。
+    /// </summary>
+    public static FileInfo BackupFile(string nameOrPath)
+    {
+        var directory = BackupsDirectory;
+        if (string.IsNullOrWhiteSpace(nameOrPath) || nameOrPath.Equals("latest", StringComparison.OrdinalIgnoreCase))
+        {
+            return (Directory.Exists(directory) ? new DirectoryInfo(directory).EnumerateFiles("*.fbkp").MaxBy(f => f.LastWriteTimeUtc) : null)
+                   ?? throw new FileNotFoundException("No backup (.fbkp) in FModel's Backups folder. Create or download one from Directory > Backup.");
+        }
+
+        var full = Path.GetFullPath(Path.IsPathFullyQualified(nameOrPath) ? nameOrPath : Path.Combine(directory, nameOrPath));
+        if (!string.Equals(Path.GetDirectoryName(full), Path.TrimEndingDirectorySeparator(Path.GetFullPath(directory)), StringComparison.OrdinalIgnoreCase) ||
+            !full.EndsWith(".fbkp", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("backup must be the name of a .fbkp file in FModel's Backups folder (see fmodel_list_backups).");
+        if (!File.Exists(full)) throw new FileNotFoundException("Backup not found. Use fmodel_list_backups.");
+        return new FileInfo(full);
+    }
 
     /// <summary>FModel の設定に保存されているローカルのゲームフォルダ (ライブ配信のトリガーは除く)</summary>
     public static string[] KnownGameDirectories() => UserSettings.Default.PerDirectory.Keys

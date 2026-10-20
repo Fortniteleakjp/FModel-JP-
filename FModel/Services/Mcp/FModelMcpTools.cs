@@ -45,6 +45,13 @@ public sealed class FModelMcpTools(FModelMcpService service)
                 };
             }
 
+            if (result is McpImages images)
+            {
+                var content = new List<ContentBlock> { new TextContentBlock { Text = images.Summary } };
+                foreach (var png in images.Pngs) content.Add(ImageContentBlock.FromBytes(png, "image/png"));
+                return new CallToolResult { IsError = false, Content = content };
+            }
+
             var json = JsonConvert.SerializeObject(result, ProtocolJson);
             if (json.Length > FModelMcpService.MaxResponseChars)
                 return Error("response_too_large", "Result exceeds maxResponseChars. Reduce limit, narrow the search, select a deeper JSON pointer, or export properties and read the output in chunks.");
@@ -239,6 +246,25 @@ public sealed class FModelMcpTools(FModelMcpService service)
      Description("Compare two mounted game versions by virtual path, size, compression and encryption metadata. Returns added, removed and metadata_changed files. Equal metadata is NOT proof of equal bytes; hash individual files to verify content. Optional folder prefix and pagination.")]
     public Task<CallToolResult> Compare(string leftSessionId, string rightSessionId, CancellationToken cancellationToken, string prefix = "", int offset = 0, int limit = 100) =>
         Run("fmodel_compare_sessions", () => service.CompareSessions(leftSessionId, rightSessionId, prefix, offset, limit, cancellationToken));
+
+    [McpServerTool(Name = "fmodel_list_backups", ReadOnly = true, OpenWorld = false),
+     Description("FModel JP: list the FModel backup files (.fbkp, a snapshot of a game version's file list) available for fmodel_diff_report, newest first.")]
+    public Task<CallToolResult> ListBackups() => Run("fmodel_list_backups", service.ListBackups);
+
+    [McpServerTool(Name = "fmodel_diff_report", ReadOnly = false, Destructive = false, OpenWorld = false),
+     Description("FModel JP: what changed in a game update. Compares an FModel backup (.fbkp of an older version; default: newest backup) with the current files of the session and returns added/modified/removed counts by category and folder plus a paginated, filterable file list (change=all|added|modified|removed, category from summary.byCategory, folder prefix, path query). Metadata only (path, size, encryption), like FModel's 'All (New)/(Modified)' modes. writeReport=true also writes report.md (grouped Markdown for a news write-up) and diff.json for the current filter to a new folder under FModel's Output/MCP. The first call parses the backup (a few seconds for Fortnite); later pages reuse it.")]
+    public Task<CallToolResult> DiffReport(CancellationToken cancellationToken, string sessionId = Live, string backup = "latest", string change = "all", string category = "", string prefix = "", string query = "", bool writeReport = false, int offset = 0, int limit = 100) =>
+        Run("fmodel_diff_report", () => service.DiffReport(sessionId, backup, change, category, prefix, query, writeReport, offset, limit, cancellationToken));
+
+    [McpServerTool(Name = "fmodel_render_icon", ReadOnly = false, Destructive = false, OpenWorld = false),
+     Description("FModel JP: render the item icon FModel shows for an item definition (Fortnite cosmetics, weapons, quests, banners...; also some other games' data assets) and return it as inline PNG image(s). The full-size PNG is also saved under FModel's Output/MCP. style: Default, NoBackground, NoText, Flat, Cataba (default: FModel's cosmetic style setting). objectName selects an export; otherwise the first renderable export is used. Uses the game loaded in FModel (live) with its language. maxSize 64..2048 bounds the returned image only.")]
+    public Task<CallToolResult> RenderIcon(string path, CancellationToken cancellationToken, string objectName = null, string style = "", int maxSize = 512) =>
+        Run("fmodel_render_icon", () => service.RenderIcon(path, objectName, style, maxSize, cancellationToken));
+
+    [McpServerTool(Name = "fmodel_render_icons", ReadOnly = false, Destructive = false, OpenWorld = false),
+     Description("FModel JP: render item icons for up to 100 assets (for example the added cosmetics from fmodel_diff_report) and save them as PNG files in a new folder under FModel's Output/MCP. Returns per-asset success, file paths and errors; no inline images. style as in fmodel_render_icon.")]
+    public Task<CallToolResult> RenderIcons(string[] paths, CancellationToken cancellationToken, string style = "") =>
+        Run("fmodel_render_icons", () => service.RenderIcons(paths, style, cancellationToken));
 
     #endregion
 

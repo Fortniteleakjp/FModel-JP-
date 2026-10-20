@@ -30,6 +30,9 @@ public static class McpWorkflowContent
         Select UEFormat or ActorX for animations. Worlds require USD and can be large; sublevels are opt-in.
         To compare with another build, fmodel_list_saved_games then fmodel_open_saved_game, and fmodel_compare_sessions
         (metadata only; hash files with asset_info when byte equality matters). Close extra sessions when done.
+        For "what's new in this update", fmodel_list_backups then fmodel_diff_report against a backup of the previous
+        version (summary by category/folder, filter change=added; writeReport=true writes a Markdown report). Render item
+        icons of new cosmetics with fmodel_render_icon (inline image) or fmodel_render_icons (PNG files, up to 100).
         On load failure: check session_info/list_archives for missing keys, mappings, the engine profile and Oodle.
         The live session's keys/mappings/culture are changed in FModel's UI, not through MCP. Do not retry unchanged inputs.
         Archive writing/repacking is not exposed through MCP.

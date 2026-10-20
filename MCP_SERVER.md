@@ -99,6 +99,8 @@ args = ["--application", 'C:\Tools\FModel\FModel.exe']
 | 「この Verse を復元して」 | `fmodel_recover_verse` |
 | 「このメッシュを glTF で書き出して」 | `fmodel_start_export` → `fmodel_job_status` → `fmodel_job_results` |
 | 「前のビルドと比べて何が増えた？」 | `fmodel_open_saved_game` → `fmodel_compare_sessions` → `fmodel_close_game` |
+| 「今回のアプデの追加ファイルをまとめて」 | `fmodel_list_backups` → `fmodel_diff_report`（`writeReport=true` で Markdown レポート） |
+| 「新しいスキンのアイコンを出して」 | `fmodel_diff_report`（change=added）→ `fmodel_render_icon` / `fmodel_render_icons` |
 | 「それを FModel で開いて」 | `fmodel_open_in_fmodel`（右クリックメニューと同じ動作） |
 
 ---
@@ -189,7 +191,7 @@ WinExe（GUI サブシステム）でも、親プロセスがパイプを渡し�
 | [`Services/Mcp/McpRelayInstaller.cs`](FModel/Services/Mcp/McpRelayInstaller.cs) | 埋め込んだ自己完結型中継を内容のハッシュ別に配置。実行中の中継を上書きしない |
 | [`Services/Mcp/McpRelay.cs`](FModel/Services/Mcp/McpRelay.cs) | stdio ⇄ 名前付きパイプの中継、未起動時の FModel 起動 |
 | [`Services/Mcp/McpHost.cs`](FModel/Services/Mcp/McpHost.cs) | パイプの待ち受け、SDK サーバーの生成、ツール等の登録 |
-| [`Services/Mcp/FModelMcpTools.cs`](FModel/Services/Mcp/FModelMcpTools.cs) | **プロトコル境界**。37 ツールの宣言（名前・説明・注釈）、`Run()` による JSON 化とエラー分類 |
+| [`Services/Mcp/FModelMcpTools.cs`](FModel/Services/Mcp/FModelMcpTools.cs) | **プロトコル境界**。41 ツールの宣言（名前・説明・注釈）、`Run()` による JSON 化とエラー分類 |
 | [`Services/Mcp/McpWorkflowContent.cs`](FModel/Services/Mcp/McpWorkflowContent.cs) | AI 向けガイド（instructions）、リソース 5 個、プロンプト 5 個 |
 | [`Services/Mcp/FModelMcpService.cs`](FModel/Services/Mcp/FModelMcpService.cs) | 中核：セッション管理、アーカイブ、鍵、マッピング、共通補助（パス解決・ページング・エラー整形） |
 | [`Services/Mcp/FModelMcpService.SavedGames.cs`](FModel/Services/Mcp/FModelMcpService.SavedGames.cs) | FModel に保存済みのゲームの一覧と、それを追加セッションとして開く処理 |
@@ -197,6 +199,7 @@ WinExe（GUI サブシステム）でも、親プロセスがパイプを渡し�
 | [`Services/Mcp/FModelMcpService.Code.cs`](FModel/Services/Mcp/FModelMcpService.Code.cs) | Blueprint 擬似コード、Verse 復元 |
 | [`Services/Mcp/FModelMcpService.Exports.cs`](FModel/Services/Mcp/FModelMcpService.Exports.cs) | バックグラウンドのエクスポートジョブ |
 | [`Services/Mcp/FModelMcpService.Desktop.cs`](FModel/Services/Mcp/FModelMcpService.Desktop.cs) | FModel の画面との連携（JP 独自） |
+| [`Services/Mcp/FModelMcpService.Reports.cs`](FModel/Services/Mcp/FModelMcpService.Reports.cs) | バックアップとの差分レポート、アイテムアイコンの生成（JP 独自） |
 | [`Services/Mcp/McpModels.cs`](FModel/Services/Mcp/McpModels.cs) | 引数モデル（`OpenGameOptions` / `ExportRequest`）、`McpSession`、`McpExportJob`、結果レコード |
 | [`Services/Mcp/McpPathPolicy.cs`](FModel/Services/Mcp/McpPathPolicy.cs) | 入力（開けるフォルダ）と出力（書けるフォルダ）の制約 |
 
@@ -282,6 +285,15 @@ WinExe（GUI サブシステム）でも、親プロセスがパイプを渡し�
 | --- | --- | --- |
 | `get_ui_state` 🆕 | [`UiState`](FModel/Services/Mcp/FModelMcpService.Desktop.cs#L37) | ユーザーが今見ているタブ（アセット・画像・表示中テキスト）と開いているタブ |
 | `open_in_fmodel` 🆕 | [`OpenInFModel`](FModel/Services/Mcp/FModelMcpService.Desktop.cs#L85) | 右クリックメニューと同じ操作でアセットを開く（json / metadata / references / decompile / verse / table / world_outliner / material_graph / blueprint_graph など 12 種） |
+
+### 更新追跡（JP 独自）
+
+| ツール | 実装 | 内容 |
+| --- | --- | --- |
+| `list_backups` 🆕 | [`ListBackups`](FModel/Services/Mcp/FModelMcpService.Reports.cs#L37) | FModel の Backups フォルダの .fbkp 一覧（新しい順） |
+| `diff_report` 🆕 | [`DiffReport`](FModel/Services/Mcp/FModelMcpService.Reports.cs#L52) | バックアップと現在のファイル一覧の差分（追加/変更/削除）。カテゴリ・フォルダ別の集計と絞り込み付き一覧、`writeReport=true` で report.md / diff.json を Output/MCP に出力。判定は読み込みモード「すべて（新規）/（変更）」と同じ（パス・サイズ・暗号化） |
+| `render_icon` 🆕 | [`RenderIcon`](FModel/Services/Mcp/FModelMcpService.Reports.cs#L241) | FModel のタブと同じアイテムアイコン（Creator）を PNG 画像で返す（原寸は Output/MCP に保存）。live 専用 |
+| `render_icons` 🆕 | [`RenderIcons`](FModel/Services/Mcp/FModelMcpService.Reports.cs#L270) | 最大 100 件のアイコンを PNG ファイルに一括出力 |
 
 ### リソースとプロンプト
 

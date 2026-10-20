@@ -70,6 +70,8 @@ public sealed partial class FModelMcpService
             "browse/search", "package exports/properties/imports/names", "IoStore referencers", "asset registry", "localization",
             "text/binary reads", "texture preview", "Blueprint pseudocode", "Verse source recovery",
             "raw/JSON/texture/audio/mesh/animation/material/world export jobs", "session comparison",
+            "update diff report against an FModel backup (list_backups / diff_report, Markdown report)",
+            "item icon rendering like FModel's tabs (render_icon / render_icons)",
             "FModel window integration (open an asset in a tab or viewer, read what the user is looking at)"
         },
         limitations = new[]

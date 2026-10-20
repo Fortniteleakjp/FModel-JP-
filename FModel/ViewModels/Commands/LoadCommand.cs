@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider.Objects;
-using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.VirtualFileSystem;
 using CUE4Parse.Utils;
 using FModel.Extensions;
@@ -18,7 +17,6 @@ using FModel.Services;
 using FModel.Services.Athena;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
-using K4os.Compression.LZ4.Streams;
 using Microsoft.Win32;
 
 namespace FModel.ViewModels.Commands;
@@ -29,8 +27,6 @@ namespace FModel.ViewModels.Commands;
 /// </summary>
 public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 {
-    private const uint _IS_LZ4 = 0x184D2204u;
-
     private ThreadWorkerViewModel _threadWorkerView => ApplicationService.ThreadWorkerView;
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private DiscordHandler _discordHandler => DiscordService.DiscordHandler;
@@ -189,19 +185,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
 
     private List<GameFile> ParseBackup(string path, ELoadingMode mode, CancellationToken cancellationToken = default)
     {
-        using var fileStream = new FileStream(path, FileMode.Open);
-        using var memoryStream = new MemoryStream();
-
-        if (fileStream.ReadUInt32() == _IS_LZ4)
-        {
-            fileStream.Position -= 4;
-            using var compressionStream = LZ4Stream.Decode(fileStream);
-            compressionStream.CopyTo(memoryStream);
-        }
-        else fileStream.CopyTo(memoryStream);
-
-        memoryStream.Position = 0;
-        using var archive = new FStreamArchive(fileStream.Name, memoryStream);
+        var backup = BackupFileReader.Read(path, cancellationToken);
         var entries = new List<GameFile>();
 
         switch (mode)
@@ -209,34 +193,7 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             case ELoadingMode.AllButNew:
             {
                 var paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                var magic = archive.Read<uint>();
-                if (magic != BackupManagerViewModel.FBKP_MAGIC)
-                {
-                    archive.Position -= sizeof(uint);
-                    while (archive.Position < archive.Length)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        archive.Position += 29;
-                        paths.Add(archive.ReadString()[1..]);
-                        archive.Position += 4;
-                    }
-                }
-                else
-                {
-                    var version = archive.Read<EBackupVersion>();
-                    var count = archive.Read<int>();
-                    for (var i = 0; i < count; i++)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        archive.Position += sizeof(long) + sizeof(byte);
-                        var fullPath = archive.ReadString();
-                        if (version < EBackupVersion.PerfectPath) fullPath = fullPath[1..];
-
-                        paths.Add(fullPath);
-                    }
-                }
+                foreach (var entry in backup) paths.Add(entry.Path);
 
                 foreach (var (key, asset) in _applicationView.CUE4Parse.Provider.Files)
                 {
@@ -250,39 +207,10 @@ public class LoadCommand : ViewModelCommand<LoadingModesViewModel>
             }
             case ELoadingMode.AllButModified:
             {
-                var magic = archive.Read<uint>();
-                if (magic != BackupManagerViewModel.FBKP_MAGIC)
+                foreach (var entry in backup)
                 {
-                    archive.Position -= sizeof(uint);
-                    while (archive.Position < archive.Length)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        archive.Position += 16;
-                        var uncompressedSize = archive.Read<long>();
-                        var isEncrypted = archive.ReadFlag();
-                        archive.Position += 4;
-                        var fullPath = archive.ReadString()[1..];
-                        archive.Position += 4;
-
-                        AddEntry(fullPath, uncompressedSize, isEncrypted, entries);
-                    }
-                }
-                else
-                {
-                    var version = archive.Read<EBackupVersion>();
-                    var count = archive.Read<int>();
-                    for (var i = 0; i < count; i++)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        var uncompressedSize = archive.Read<long>();
-                        var isEncrypted = archive.ReadFlag();
-                        var fullPath = archive.ReadString();
-                        if (version < EBackupVersion.PerfectPath) fullPath = fullPath[1..];
-
-                        AddEntry(fullPath, uncompressedSize, isEncrypted, entries);
-                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    AddEntry(entry.Path, entry.Size, entry.IsEncrypted, entries);
                 }
                 break;
             }
