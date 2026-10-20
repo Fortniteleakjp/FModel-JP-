@@ -1,6 +1,52 @@
 {
   "releases": [
     {
+      "version": "6.6.0.0",
+      "tag": "6.6.0.0",
+      "date": "2026-10-21",
+      "title": {
+        "en": "Video Player, Background Tasks, MCP Diff Reports",
+        "ja": "動画プレイヤー・処理一覧・MCP の差分レポート"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Video player: opening a .mp4, .m4v, .mov or .webm file now plays it in a video player with play/pause (Space), stop, seeking and volume. The video can be saved with \"Save...\" or opened in the default external player. Formats Windows cannot play by itself, such as WebM or AV1, are played with Microsoft Edge WebView2 (a message is shown when the WebView2 runtime is missing or the file has no video track).",
+            "ja": "動画プレイヤーを追加しました。.mp4 / .m4v / .mov / .webm のファイルを開くと動画プレイヤーで再生し、再生・一時停止（Space）、停止、シーク、音量の調整ができます。「保存...」で動画を書き出したり、「外部プレイヤーで開く」で関連付けられたプレイヤーで開いたりできます。WebM や AV1 など Windows 標準では再生できない形式は Microsoft Edge WebView2 で再生します（WebView2 ランタイムが無い場合や、映像トラックの無いファイルでは案内を表示します）。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Background tasks in the status bar: when a task runs for more than a second, a \"Tasks: N\" button appears on the right of the status bar. It lists every running task with its name, details, elapsed time and progress, and each task can be canceled individually or all at once (tasks that cannot be stopped midway, such as creating a pak or exporting shape keys, have no cancel button). Listed tasks: the main queue (asset loading and exports, ESC still cancels it), function & variable usage searches, gameplay tag scans, the game & UE version report, the export session, pak creation, shape key exports and MCP exports, diff reports and icon rendering.",
+            "ja": "ステータスバーにバックグラウンド処理の一覧を追加しました。1 秒以上かかる処理が動いていると、ステータスバーの右側に「処理中: N」ボタンが表示されます。押すと実行中の処理が名前・詳細・経過時間・進捗つきで一覧され、処理ごとの「キャンセル」と「すべてキャンセル」で止められます（pak の作成や形状キーの書き出しなど途中で止められない処理にはキャンセルボタンを出しません）。対象は、メイン処理（アセットの読み込み・書き出し。ESC でのキャンセルも従来どおり）、関数・変数の使用箇所の検索、ゲームプレイタグの走査、ゲーム・UE バージョン情報の調査、エクスポートセッション、pak の作成、形状キーの書き出し、MCP からのエクスポート・差分レポート・アイコン生成です。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "MCP update diff reports: fmodel_list_backups lists the FModel backups (.fbkp), and fmodel_diff_report compares a backup with the current game files and returns the added, modified and removed files, counted by category and folder, with a list that can be filtered by change, category, folder and path. writeReport=true also writes a Markdown report (report.md, handy as a draft for news posts) and diff.json under Output/MCP. Like the \"All (New)/(Modified)\" loading modes, files are compared by path, size and encryption only. \"Removed\" also lists files of archives that are not mounted right now (on-demand content or missing AES keys).",
+            "ja": "MCP にアップデートの差分レポートを追加しました。fmodel_list_backups でバックアップ（.fbkp）を一覧し、fmodel_diff_report でバックアップと現在のゲームのファイル一覧を比べて、追加・変更・削除をカテゴリ別・フォルダ別の集計と、変更の種類・カテゴリ・フォルダ・パスで絞り込める一覧で返します。writeReport=true にすると、記事の下書きに使える Markdown（report.md）と diff.json を Output/MCP に書き出します。判定は読み込みモード「すべて（新規）/（変更）」と同じくパス・サイズ・暗号化の有無で行い、中身の一致までは比べません。「削除」には、今マウントされていないアーカイブ（オンデマンド配信分や AES キー未入力のもの）のファイルも含まれます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "MCP item icons: fmodel_render_icon returns the same icon FModel shows for an item definition (cosmetics, weapons, quests and more) as an image and also saves the full-size PNG under Output/MCP, and fmodel_render_icons writes the icons of up to 100 assets as PNG files, for example the new cosmetics found with fmodel_diff_report. The style (Default, NoBackground, NoText, Flat, Cataba) can be chosen; it defaults to the icon style in the settings.",
+            "ja": "MCP にアイテムアイコンの生成を追加しました。fmodel_render_icon はアイテム定義（コスメ・武器・クエストなど）を開いたときと同じアイコンを画像として返し、原寸の PNG を Output/MCP にも保存します。fmodel_render_icons は最大 100 件のアイコンを PNG ファイルにまとめて書き出すので、差分レポートで見つけた新しいコスメをまとめて画像にできます。スタイル（Default / NoBackground / NoText / Flat / Cataba）を指定でき、省略時は設定のアイコンスタイルを使います。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Backup files (.fbkp) are read 1.4 to 2.7 times faster, which also speeds up the \"All (New)\" and \"All (Modified)\" loading modes.",
+            "ja": "バックアップ（.fbkp）の読み込みを 1.4〜2.7 倍速くしました。読み込みモード「すべて（新規）」「すべて（変更）」も速くなります。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.5.2.0",
       "tag": "6.5.2.0",
       "date": "2026-10-18",
