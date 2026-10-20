@@ -63,10 +63,15 @@ public partial class GameplayTagBrowserWindow : AdonisWindow
         Cancel();
         _cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = _cancellationTokenSource.Token;
+        using var job = BackgroundJobs.Start(TryFindResource("UI_GameplayTags") as string ?? "Gameplay Tags", _cancellationTokenSource);
 
         try
         {
-            var progress = new Progress<string>(path => SetStatus(path));
+            var progress = new Progress<string>(path =>
+            {
+                SetStatus(path);
+                job.Report(path);
+            });
             _collection = await Task.Run(
                 () => GameplayTagCollector.Collect(provider, ((IProgress<string>) progress).Report, cancellationToken),
                 cancellationToken).ConfigureAwait(true);

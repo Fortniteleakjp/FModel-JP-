@@ -32,6 +32,15 @@
     <system:String x:Key="UI_AthenaQueueDuplicateTitle">Already in Athena Queue</system:String>
     <system:String x:Key="UI_Audio">Audio</system:String>
     <system:String x:Key="UI_AudioPlayer">Audio Player</system:String>
+    <system:String x:Key="UI_VideoPlayer">Video Player</system:String>
+    <system:String x:Key="UI_VideoPlayer_PlayPause">Play / Pause (Space)</system:String>
+    <system:String x:Key="UI_VideoPlayer_Stop">Stop</system:String>
+    <system:String x:Key="UI_VideoPlayer_Volume">Volume</system:String>
+    <system:String x:Key="UI_VideoPlayer_Save">Save...</system:String>
+    <system:String x:Key="UI_VideoPlayer_OpenExternal">Open in external player</system:String>
+    <system:String x:Key="UI_VideoPlayer_WebView2Missing">Playing this video requires the Microsoft Edge WebView2 Runtime. Install it from Microsoft, or use "Open in external player".</system:String>
+    <system:String x:Key="UI_VideoPlayer_NoVideo">This file has no video track (audio only).</system:String>
+    <system:String x:Key="UI_VideoPlayer_Failed">This video could not be played. Windows may not have a decoder for its codec. Try "Open in external player".</system:String>
     <system:String x:Key="UI_AutoExportAttachedMaterials">Auto-Export Attached Materials</system:String>
     <system:String x:Key="UI_AutoSavePackagesFollowingTheirGame">Auto-save packages following their game directory</system:String>
     <system:String x:Key="UI_Backup">Backup</system:String>

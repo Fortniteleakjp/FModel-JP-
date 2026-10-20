@@ -443,6 +443,8 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 AssetCategory = EAssetCategory.Font;
                 break;
             case "webm":
+            case "m4v":
+            case "mov":
             case "mp4":
             case "usm":
                 AssetCategory = EAssetCategory.Video;

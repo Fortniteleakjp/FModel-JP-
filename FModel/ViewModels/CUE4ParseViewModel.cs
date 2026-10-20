@@ -1156,6 +1156,21 @@ public partial class CUE4ParseViewModel : ViewModel
 
                 break;
             }
+            case "mp4":
+            case "m4v":
+            case "mov":
+            case "webm":
+            {
+                if (!updateUi)
+                    break;
+
+                // 動画は MediaElement (Media Foundation) で再生する。保存は生データのエクスポートか、プレイヤーの「保存」から
+                var data = Provider.SaveAsset(entry);
+                cancellationToken.ThrowIfCancellationRequested();
+                Application.Current.Dispatcher.Invoke(() => VideoPlayerWindow.Open(data, entry.Path));
+
+                break;
+            }
             case "udic":
             {
                 var archive = entry.CreateReader();

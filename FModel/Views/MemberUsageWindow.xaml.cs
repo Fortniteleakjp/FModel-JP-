@@ -194,6 +194,7 @@ public partial class MemberUsageWindow : AdonisWindow
         NoteList.ItemsSource = null;
         EmptyText.Visibility = Visibility.Collapsed;
         Status.Text = string.Format(Text("UI_MemberUsage_Searching", "Searching {0}..."), query.Display);
+        using var job = BackgroundJobs.Start($"{Text("UI_MemberUsage_Title", "Function & Variable Usage")}: {query.Display}", _cancellation);
 
         var progress = new Progress<(int Done, int Total)>(p =>
         {
@@ -202,6 +203,7 @@ public partial class MemberUsageWindow : AdonisWindow
             {
                 Progress.IsIndeterminate = true;
                 Status.Text = string.Format(Text("UI_MemberUsage_Analyzing", "Reading the bytecode of the matching packages ({0} packages scanned)..."), p.Total);
+                job.Report(Status.Text);
                 return;
             }
 
@@ -209,6 +211,7 @@ public partial class MemberUsageWindow : AdonisWindow
             Progress.Maximum = p.Total;
             Progress.Value = p.Done;
             Status.Text = string.Format(Text("UI_MemberUsage_Scanning", "Scanning packages {0:N0} / {1:N0}"), p.Done, p.Total);
+            job.Report(p.Done, p.Total, Status.Text);
         });
 
         var stopwatch = Stopwatch.StartNew();

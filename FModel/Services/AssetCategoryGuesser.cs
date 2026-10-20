@@ -22,7 +22,7 @@ public static class AssetCategoryGuesser
         (EAssetCategory.Level, ["umap"]),
         (EAssetCategory.Texture, ["png", "jpg", "jpeg", "tga", "dds", "bmp", "psd", "exr", "hdr", "svg"]),
         (EAssetCategory.Media, ["wem", "bnk", "wav", "ogg", "mp3", "flac", "awb", "acb", "bank", "xvag", "at9", "binka", "opus",
-            "bk2", "bik", "mp4", "webm", "usm", "ufont", "ttf", "otf"]),
+            "bk2", "bik", "mp4", "m4v", "mov", "webm", "usm", "ufont", "ttf", "otf"]),
         (EAssetCategory.Data, ["json", "ini", "locres", "locmeta", "csv", "txt", "xml", "uplugin", "uproject", "bin", "usmap",
             "res", "license", "tps", "po", "udn", "uefnproject", "archive"]),
         (EAssetCategory.Blueprints, ["verse"]));

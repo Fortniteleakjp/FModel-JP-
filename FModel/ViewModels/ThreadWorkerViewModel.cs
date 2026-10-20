@@ -34,10 +34,25 @@ public class ThreadWorkerViewModel : ViewModel
             if (_currentCancellationTokenSource == value) return;
             SetProperty(ref _currentCancellationTokenSource, value);
             RaisePropertyChanged("CanBeCanceled");
+
+            // メインキューはトークンの生存期間＝実行中としてバックグラウンド処理一覧に載せる
+            if (value == null)
+            {
+                _backgroundJob?.Dispose();
+                _backgroundJob = null;
+            }
+            else if (_backgroundJob == null)
+            {
+                _backgroundJob = BackgroundJobs.Start(
+                    System.Windows.Application.Current?.TryFindResource("UI_BackgroundJobs_MainQueue") as string ?? "Main queue",
+                    Cancel, () => _applicationView.Status.Label);
+            }
         }
     }
 
     public bool CanBeCanceled => CurrentCancellationTokenSource != null;
+
+    private BackgroundJob _backgroundJob;
 
     private ApplicationViewModel _applicationView => ApplicationService.ApplicationView;
     private readonly AsyncQueue<Func<CancellationToken, Task>> _jobs;

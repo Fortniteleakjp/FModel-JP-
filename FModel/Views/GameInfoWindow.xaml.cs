@@ -94,6 +94,7 @@ public partial class GameInfoWindow : AdonisWindow
         RefreshButton.IsEnabled = false;
         CopyReportButton.IsEnabled = false;
         SetStatus("ゲームの情報を調べています…");
+        using var job = BackgroundJobs.Start(TryFindResource("UI_GameInfo") as string ?? "Game Info", _reportCancellation);
         try
         {
             var context = _contextFactory();

@@ -32,6 +32,15 @@
     <system:String x:Key="UI_AthenaQueueDuplicateTitle">すでにキューに存在します</system:String>
     <system:String x:Key="UI_Audio">音声</system:String>
     <system:String x:Key="UI_AudioPlayer">オーディオプレイヤー</system:String>
+    <system:String x:Key="UI_VideoPlayer">動画プレイヤー</system:String>
+    <system:String x:Key="UI_VideoPlayer_PlayPause">再生 / 一時停止 (Space)</system:String>
+    <system:String x:Key="UI_VideoPlayer_Stop">停止</system:String>
+    <system:String x:Key="UI_VideoPlayer_Volume">音量</system:String>
+    <system:String x:Key="UI_VideoPlayer_Save">保存...</system:String>
+    <system:String x:Key="UI_VideoPlayer_OpenExternal">外部プレイヤーで開く</system:String>
+    <system:String x:Key="UI_VideoPlayer_WebView2Missing">この動画の再生には Microsoft Edge WebView2 ランタイムが必要です。Microsoft から入手してインストールするか、「外部プレイヤーで開く」を使ってください。</system:String>
+    <system:String x:Key="UI_VideoPlayer_NoVideo">このファイルには映像トラックがありません (音声のみ)。</system:String>
+    <system:String x:Key="UI_VideoPlayer_Failed">この動画は再生できませんでした。Windows にこのコーデックのデコーダーが無い可能性があります。「外部プレイヤーで開く」を試してください。</system:String>
     <system:String x:Key="UI_AutoExportAttachedMaterials">付随するマテリアルも自動でエクスポート</system:String>
     <system:String x:Key="UI_AutoSavePackagesFollowingTheirGame">ゲームのディレクトリ構成に従ってパッケージを自動保存</system:String>
     <system:String x:Key="UI_Backup">バックアップ</system:String>
