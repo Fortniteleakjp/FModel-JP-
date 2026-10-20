@@ -41,7 +41,7 @@
           "type": "Changed",
           "text": {
             "en": "Backup files (.fbkp) are read 1.4 to 2.7 times faster, which also speeds up the \"All (New)\" and \"All (Modified)\" loading modes.",
-            "ja": "バックアップ（.fbkp）の読み込みを 1.4〜2.7 倍速くしました。読み込みモード「すべて（新規）」「すべて（変更）」も速くなります。"
+            "ja": "バックアップ（.fbkp）の読み込みを 1.4〜2.7 倍速くしました。読み込みモード「All (New)」「All (Modified)」も速くなります。"
           }
         }
       ]
