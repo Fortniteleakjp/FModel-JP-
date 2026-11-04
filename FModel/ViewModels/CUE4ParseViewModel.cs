@@ -616,6 +616,14 @@ public partial class CUE4ParseViewModel : ViewModel
 
             if (Provider.MappingsContainer is FileUsmapTypeMappingsProvider m)
             {
+                var backfilled = MappingsBackfill.Apply(m, MappingsFilePath);
+                if (backfilled.Count > 0)
+                {
+                    FLogger.Append(ELog.Warning, () => FLogger.Text(
+                        $"Mappings '{m.FileName}' were missing {backfilled.Count} classes, filled from older mappings: {string.Join(", ", backfilled.Take(5))}{(backfilled.Count > 5 ? ", ..." : "")}",
+                        Constants.WHITE, true));
+                }
+
                 Log.Information($"Mappings pulled from '{m.FileName}'");
                 FLogger.Append(l, () => FLogger.Text($"Mappings pulled from '{m.FileName}'", Constants.WHITE, true));
             }

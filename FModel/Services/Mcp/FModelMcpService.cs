@@ -277,9 +277,12 @@ public sealed partial class FModelMcpService
     private static ITypeMappingsProvider LoadMappings(string path)
     {
         if (new FileInfo(path).Length > MaxReadBytes) throw new ArgumentException("Mappings file exceeds maxReadBytes.");
-        return path.EndsWith(".usmap", StringComparison.OrdinalIgnoreCase)
-            ? new FileUsmapTypeMappingsProvider(path)
-            : new JmapTypeMappingsProvider(path);
+        if (!path.EndsWith(".usmap", StringComparison.OrdinalIgnoreCase))
+            return new JmapTypeMappingsProvider(path);
+
+        var mappings = new FileUsmapTypeMappingsProvider(path);
+        MappingsBackfill.Apply(mappings, path);
+        return mappings;
     }
 
     /// <summary>
