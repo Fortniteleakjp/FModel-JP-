@@ -1,6 +1,66 @@
 {
   "releases": [
     {
+      "version": "6.7.0.0",
+      "tag": "6.7.0.0",
+      "date": "2026-11-04",
+      "title": {
+        "en": "New 3D Viewer, Embedded File Export, Mappings Backfill",
+        "ja": "新しい 3D ビューア・埋め込みファイルの書き出し・マッピングの補完"
+      },
+      "changes": [
+        {
+          "type": "Changed",
+          "text": {
+            "en": "New 3D viewer: the 3D viewer has been replaced with the new viewer from the original FModel. It previews static and skeletal meshes, skeletons, animations, materials, Blueprint classes, worlds and Dead by Daylight procedural maps. A loaded model is selected, placed on the ground and focused automatically. When the viewer asks for an asset (for example an animation to play on a model), the request is shown on the right of the status bar; double-click a matching asset to send it. The old viewer's settings, such as the camera mode, have been removed.",
+            "ja": "3D ビューアを本家 FModel の新しいビューアに置き換えました。スタティックメッシュ・スケルタルメッシュ・スケルトン・アニメーション・マテリアル・ブループリントクラス・ワールド・Dead by Daylight の自動生成マップをプレビューできます。読み込んだモデルは自動で選択され、地面に合わせて配置し、カメラを合わせます。ビューアがアセットを求めているとき（モデルに再生するアニメーションなど）は、ステータスバーの右側に表示されるので、該当するアセットをダブルクリックして渡してください。旧ビューアの設定（カメラモードなど）は削除しました。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Embedded file export: \"Embedded Files\" in the file and folder right-click menus (and a hotkey in the settings) saves the files embedded in assets, such as Houdini assets (.hda), Flash movies (.swf) and Wwise audio and asset libraries, to the raw data export folder. The file menu shows the extensions found in the selected asset.",
+            "ja": "埋め込みファイルの書き出しを追加しました。ファイル・フォルダの右クリックメニューの「埋め込みファイル」（設定でホットキーも割り当てられます）で、Houdini アセット（.hda）、Flash ムービー（.swf）、Wwise の音声やアセットライブラリなど、アセットに埋め込まれたファイルを生データの出力先に保存します。ファイルのメニューには、選択したアセットに含まれる拡張子が表示されます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Texture compression options in the export options: the PNG compression level (0-9, 3 is recommended for speed) and TGA RLE compression. Both are lossless.",
+            "ja": "エクスポート設定にテクスチャの圧縮設定を追加しました。PNG の圧縮レベル（0〜9、速度重視なら 3 を推奨）と TGA の RLE 圧縮を選べます。どちらも可逆圧縮です。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Updated CUE4Parse to the latest version: support for March of Giants, Deadzone Rogue 2, Ghostwire Tokyo, Phantom Blade Zero, Eclipse: The Awakening, ArcheAge Chronicles and Hello Neighbor: Renovated, AES decryption for Monster Hunter Outlanders, fixes for Delta Force, Star Wars Galactic Racer, Marvel Rivals and PUBG Mobile, Paper2D flipbooks exported as animated images, ETC texture decoding and UE6 landscape textures.",
+            "ja": "CUE4Parse を最新版に更新しました。March of Giants・Deadzone Rogue 2・Ghostwire Tokyo・Phantom Blade Zero・Eclipse: The Awakening・ArcheAge Chronicles・Hello Neighbor: Renovated に対応し、Monster Hunter Outlanders の AES 復号、Delta Force・Star Wars Galactic Racer・Marvel Rivals・PUBG Mobile の修正、Paper2D フリップブックのアニメーション画像での書き出し、ETC 形式のテクスチャのデコード、UE6 のランドスケープテクスチャに対応しました。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Opening an animation or skeleton in Fortnite 43.00 no longer fails with \"Object reference not set to an instance of an object\". The downloaded 43.00 mappings have no properties for some classes (Skeleton and 19 others), so FModel now fills those empty classes from older mappings of the same game left in the mappings folder, and lists them in the log.",
+            "ja": "Fortnite 43.00 でアニメーションやスケルトンを開くと「Object reference not set to an instance of an object」で失敗する問題を修正しました。配信されている 43.00 のマッピングでは、Skeleton など 20 クラスのプロパティ定義が抜けています。マッピングフォルダに残っている同じゲームの旧バージョンのマッピングから、空のクラスだけを補うようにしました（補ったクラスはログに表示します）。"
+          }
+        },
+        {
+          "type": "Removed",
+          "text": {
+            "en": "The \"Merge Editor-Only Data (.o.uasset)\" setting has been removed. CUE4Parse now reads the editor-only data of .o.uasset packages on its own.",
+            "ja": "「エディタ専用データを統合 (.o.uasset)」の設定を削除しました。.o.uasset のエディタ専用データは CUE4Parse が自動で読み込むようになりました。"
+          }
+        },
+        {
+          "type": "Removed",
+          "text": {
+            "en": "Detex.dll is no longer downloaded or used; textures are decoded by CUE4Parse's built-in decoders.",
+            "ja": "Detex.dll のダウンロードと使用をやめました。テクスチャは CUE4Parse に内蔵されたデコーダーで変換します。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.6.0.0",
       "tag": "6.6.0.0",
       "date": "2026-10-21",
