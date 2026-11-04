@@ -9,9 +9,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using AdonisUI.Controls;
 using CUE4Parse_Conversion.Exporters;
+using CUE4Parse.UE4.Assets.Exports.Paper2D;
 using CUE4Parse_Conversion.Sounds;
 using CUE4Parse;
 using CUE4Parse.Compression;
@@ -32,11 +32,12 @@ using CUE4Parse.GameTypes.DFHO.Assets.Objects;
 using CUE4Parse.GameTypes.HonorOfKings.FileProvider;
 using CUE4Parse.GameTypes.KRD.Assets.Exports;
 using CUE4Parse.GameTypes.LegoBatman.Assets;
-using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.GameTypes.LordOfMysteries.FileProvider;
-using CUE4Parse.GameTypes.Tencent.RocoKingdomWorld.Assets.Objects;
+using CUE4Parse.GameTypes.MarchOfGiants.FileProvider;
+using CUE4Parse.GameTypes.Nascar.Assets.Exports;
 using CUE4Parse.GameTypes.SMG.UE4.Assets.Exports.Wwise;
 using CUE4Parse.GameTypes.SquareEnix.UE4.Assets.Exports;
+using CUE4Parse.GameTypes.Tencent.RocoKingdomWorld.Assets.Objects;
 using CUE4Parse.GameTypes.Theia.FileProvider;
 using CUE4Parse.GameTypes.WarnerBros.GothamKnights.Assets.Exports.Wwise;
 using CUE4Parse.MappingsProvider;
@@ -76,6 +77,7 @@ using CUE4Parse.UE4.Shaders;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.UE4.Wwise;
 using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Dto;
 using EpicManifestParser;
 using EpicManifestParser.UE;
 using FModel.Creator;
@@ -87,11 +89,8 @@ using FModel.Services.Athena;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
-using FModel.Views.Snooper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
 using Serilog;
 using SkiaSharp;
 using Svg.Skia;
@@ -113,53 +112,6 @@ public partial class CUE4ParseViewModel : ViewModel
         RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private static readonly HttpClient _chunkClient = ManifestParseOptions.CreateDefaultClient();
-
-    private bool _modelIsOverwritingMaterial;
-    public bool ModelIsOverwritingMaterial
-    {
-        get => _modelIsOverwritingMaterial;
-        set => SetProperty(ref _modelIsOverwritingMaterial, value);
-    }
-
-    private bool _modelIsWaitingAnimation;
-    public bool ModelIsWaitingAnimation
-    {
-        get => _modelIsWaitingAnimation;
-        set => SetProperty(ref _modelIsWaitingAnimation, value);
-    }
-
-    public bool IsSnooperOpen => _snooper is { Exists: true, IsVisible: true };
-    private Snooper _snooper;
-    public Snooper SnooperViewer
-    {
-        get
-        {
-            if (_snooper != null) return _snooper;
-
-            return Application.Current.Dispatcher.Invoke(delegate
-            {
-                var scale = ImGuiController.GetDpiScale();
-                var htz = Snooper.GetMaxRefreshFrequency();
-                return _snooper = new Snooper(
-                    new GameWindowSettings { UpdateFrequency = htz },
-                    new NativeWindowSettings
-                    {
-                        ClientSize = new OpenTK.Mathematics.Vector2i(
-                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenWidth * .75 * scale),
-                            Convert.ToInt32(SystemParameters.MaximizedPrimaryScreenHeight * .85 * scale)),
-                        NumberOfSamples = Constants.SAMPLES_COUNT,
-                        WindowBorder = WindowBorder.Resizable,
-                        Flags = ContextFlags.ForwardCompatible,
-                        Profile = ContextProfile.Core,
-                        Vsync = VSyncMode.Adaptive,
-                        APIVersion = new Version(4, 6),
-                        StartVisible = false,
-                        StartFocused = false,
-                        Title = "3D Viewer"
-                    });
-            });
-        }
-    }
 
     public AbstractVfsFileProvider Provider { get; }
     public GameDirectoryViewModel GameDirectory { get; }
@@ -248,6 +200,7 @@ public partial class CUE4ParseViewModel : ViewModel
             GAME_HonorofKingsWorld => new HoKWDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
             GAME_LordOfMysteries => new LoMDefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
             GAME_ArcRaiders or GAME_Highguard or GAME_MARVELTokonFightingSouls => new TheiaFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
+            GAME_MarchofGiants => new MogFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer),
             _ => new DefaultFileProvider(gameDirectory, SearchOption.AllDirectories, versionContainer, pathComparer)
         };
     }
@@ -853,32 +806,6 @@ public partial class CUE4ParseViewModel : ViewModel
                 if (saveProperties || updateUi)
                 {
                     var displayData = result.GetDisplayData(saveProperties);
-
-                    if (UserSettings.Default.MergeEditorOnlyDataExports && Provider.TryLoadPackage(entry.Path.SubstringBefore('.') + ".o.uasset", out var editorAsset))
-                    {
-                        var pkg = Provider.LoadPackage(entry.Path);
-                        var exports = pkg.GetExports().ToArray();
-                        var finalExports = new List<UObject>(exports);
-                        var editorOnlyDataExports = new HashSet<UObject>();
-
-                        foreach (var export in exports)
-                        {
-                            var editorData = editorAsset.GetExportOrNull(export.Name + "EditorOnlyData");
-                            if (editorData == null)
-                                continue;
-
-                            export.Properties.AddRange(editorData.Properties);
-                            editorOnlyDataExports.Add(editorData);
-                        }
-
-                        if (editorOnlyDataExports.Count > 0)
-                        {
-                            finalExports.AddRange(editorAsset.GetExports().Where(editorExport => !editorOnlyDataExports.Contains(editorExport)));
-                        }
-
-                        displayData = finalExports;
-                    }
-
                     TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(displayData, Formatting.Indented), saveProperties, updateUi);
                     if (saveProperties) break; // do not search for viewable exports if we are dealing with jsons
                 }
@@ -890,14 +817,14 @@ public partial class CUE4ParseViewModel : ViewModel
                     break;
                 }
 
-                var showSnooper = false;
-                for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
+                var exportEmbeddedFiles = HasFlag(bulk, EBulkType.EmbeddedFiles);
+                var start = exportEmbeddedFiles ? 0 : result.InclusiveStart;
+                var end = exportEmbeddedFiles ? result.Package.ExportMapLength : result.ExclusiveEnd;
+                for (var i = start; i < end; i++)
                 {
-                    if (CheckExport(cancellationToken, result.Package, i, ref showSnooper, bulk))
+                    if (CheckExport(cancellationToken, result.Package, i, bulk))
                         break;
                 }
-
-                if (showSnooper) SnooperViewer.Run();
 
                 break;
             }
@@ -1479,14 +1406,11 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector(""); // json
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
 
-        var showSnooper = false;
         for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
         {
-            if (CheckExport(cancellationToken, result.Package, i, ref showSnooper))
+            if (CheckExport(cancellationToken, result.Package, i))
                 break;
         }
-
-        if (showSnooper) SnooperViewer.Run();
     }
 
     /// <summary>
@@ -1506,17 +1430,14 @@ public partial class CUE4ParseViewModel : ViewModel
         TabControl.SelectedTab.SetExportPagination(result.PageIndex, result.PageCount, result.DocumentExportStart);
         TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(result.GetDisplayData(), Formatting.Indented), false, false);
 
-        var showSnooper = false;
         for (var i = result.InclusiveStart; i < result.ExclusiveEnd; i++)
         {
-            if (CheckExport(cancellationToken, result.Package, i, ref showSnooper))
+            if (CheckExport(cancellationToken, result.Package, i))
                 break;
         }
-
-        if (showSnooper) SnooperViewer.Run();
     }
 
-    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, ref bool showSnooper, EBulkType bulk = EBulkType.None) // return true once you want to stop searching for exports
+    private bool CheckExport(CancellationToken cancellationToken, IPackage pkg, int index, EBulkType bulk = EBulkType.None) // return true once you want to stop searching for exports
     {
         var isNone = bulk == EBulkType.None;
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
@@ -1529,6 +1450,19 @@ public partial class CUE4ParseViewModel : ViewModel
         var dummy = ((AbstractUePackage) pkg).ConstructObject(pointer.Class, pkg);
         switch (dummy)
         {
+            case not null when isNone && SnooperViewModel.Instance.TryDeliver(pointer.Object.Value):
+            {
+                // the viewer asked for this kind of asset and took it
+                return true;
+            }
+            case UObject when HasFlag(bulk, EBulkType.EmbeddedFiles):
+            {
+                if (EmbeddedFilesDto.Supports(dummy) && new EmbeddedFilesDto(pointer.Object.Value).Files.Count > 0)
+                {
+                    SaveExport(pointer.Object.Value);
+                }
+                return false; // Don't stop, a package may contain several exports with embedded files
+            }
             case UVerseDigest when isNone && pointer.Object.Value is UVerseDigest verseDigest:
             {
                 if (!TabControl.CanAddTabs) return false;
@@ -1867,52 +1801,26 @@ public partial class CUE4ParseViewModel : ViewModel
                 return false;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
-            // case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds && TabControl.SelectedTab.ParentExportType switch
-            // {
-            //     "JunoBuildInstructionsItemDefinition" => true,
-            //     "JunoBuildingSetAccountItemDefinition" => true,
-            //     "JunoBuildingPropAccountItemDefinition" => true,
-            //     _ => false
-            // }:
-            case UPaperSprite when isNone && UserSettings.Default.PreviewMaterials:
+            case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds:
+            case UPaperTileMap when isNone && UserSettings.Default.PreviewWorlds && Provider.Versions.Game is GAME_DeadByDaylight:
             case UStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UIRMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UHoudiniStaticMesh when isNone && UserSettings.Default.PreviewStaticMeshes:
             case UGeometryCollection when isNone && UserSettings.Default.PreviewStaticMeshes:
             case USkinnedAsset when isNone && UserSettings.Default.PreviewSkeletalMeshes:
             case USkeleton when isNone && UserSettings.Default.SaveSkeletonAsMesh:
-            case UMaterialInstance when isNone && UserSettings.Default.PreviewMaterials && !ModelIsOverwritingMaterial &&
-                                        !(Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) &&
-                                          (pkg.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
-                                           pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
-                                           pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
+            case UAnimationAsset when isNone && UserSettings.Default.PreviewAnimations:
+            case UMaterialInterface when isNone && UserSettings.Default.PreviewMaterials &&
+                                         !(Provider.ProjectName.Equals("FortniteGame", StringComparison.OrdinalIgnoreCase) &&
+                                           (pkg.Name.Contains("/MI_OfferImages/", StringComparison.OrdinalIgnoreCase) ||
+                                            pkg.Name.Contains("/RenderSwitch_Materials/", StringComparison.OrdinalIgnoreCase) ||
+                                            pkg.Name.Contains("/MI_BPTile/", StringComparison.OrdinalIgnoreCase))):
             {
-                if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
-                    showSnooper = true;
-                return true;
-            }
-            case UIRMeshComponent when isNone && UserSettings.Default.PreviewStaticMeshes:
-            {
-                if (SnooperViewer.TryLoadExport(cancellationToken, dummy, pointer.Object))
-                    showSnooper = true;
-                return false;
-            }
-            case UMaterialInstance when isNone && ModelIsOverwritingMaterial && pointer.Object.Value is UMaterialInstance m:
-            {
-                SnooperViewer.Renderer.Swap(m);
-                showSnooper = true;
-                return true;
-            }
-            case UAnimSequenceBase when isNone && UserSettings.Default.PreviewAnimations || ModelIsWaitingAnimation:
-            {
-                // animate all animations using their specified skeleton or when we explicitly asked for a loaded model to be animated (ignoring whether we wanted to preview animations)
-                SnooperViewer.Renderer.Animate(pointer.Object.Value);
-                showSnooper = true;
+                SnooperViewModel.Instance.Load(pointer.Object.Value, cancellationToken);
                 return true;
             }
             case UStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case UIRMesh when HasFlag(bulk, EBulkType.Meshes):
-            case UHoudiniAsset when HasFlag(bulk, EBulkType.Meshes):
             case UHoudiniStaticMesh when HasFlag(bulk, EBulkType.Meshes):
             case UGeometryCollection when HasFlag(bulk, EBulkType.Meshes):
             case USkinnedAsset when HasFlag(bulk, EBulkType.Meshes):
@@ -1920,6 +1828,8 @@ public partial class CUE4ParseViewModel : ViewModel
             // case UMaterialInterface when HasFlag(bulk, EBulkType.Materials):
             case UAnimationAsset when HasFlag(bulk, EBulkType.Animations):
             case UWorld when HasFlag(bulk, EBulkType.Worlds):
+            case UBlueprintGeneratedClass when HasFlag(bulk, EBulkType.Worlds):
+            case UPaperTileMap when HasFlag(bulk, EBulkType.Worlds) && Provider.Versions.Game is GAME_DeadByDaylight:
             {
                 SaveExport(pointer.Object.Value);
                 return true;
@@ -2048,11 +1958,11 @@ public partial class CUE4ParseViewModel : ViewModel
     /// <returns>null when the package does not hold any blueprint class</returns>
     public string DecompileToPseudoCpp(GameFile entry)
     {
+        var pkg = Provider.LoadPackage(entry);
         UClassCookedMetaData cookedMetaData = null;
         try
         {
-            var editorPkg = Provider.LoadPackage(entry.Path.Replace(".uasset", ".o.uasset"));
-            cookedMetaData = editorPkg.GetExport<UClassCookedMetaData>("CookedClassMetaData");
+            cookedMetaData = pkg.GetExportOrNull<UClassCookedMetaData>("CookedClassMetaData");
         }
         catch
         {
@@ -2060,7 +1970,6 @@ public partial class CUE4ParseViewModel : ViewModel
         }
 
         var cppList = new List<string>();
-        var pkg = Provider.LoadPackage(entry);
         for (var i = 0; i < pkg.ExportMapLength; i++)
         {
             var pointer = new FPackageIndex(pkg, i + 1).ResolvedObject;

@@ -17,6 +17,7 @@ using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.VirtualFileSystem;
 using CUE4Parse_Conversion.Textures;
+using CUE4Parse_Conversion.Options;
 using FModel.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -262,12 +263,12 @@ public sealed partial class FModelMcpService
         }
 
         ct.ThrowIfCancellationRequested();
-        var platform = s.Provider.Versions.Platform;
+        var options = new ExportOptions(texturePlatform: s.Provider.Versions.Platform);
         var decoded = texture switch
         {
-            UTexture2DArray array => array.DecodeTextureArray(platform)?.FirstOrDefault(),
-            UTextureCube => texture.Decode(platform)?.ToPanorama(),
-            _ => texture.Decode(maxSize, platform)
+            UTexture2DArray array => array.DecodeTextureArray(options, ct)?.FirstOrDefault(),
+            UTextureCube => texture.Decode(options, ct)?.ToPanorama(),
+            _ => texture.Decode(maxSize, options, ct)
         } ?? throw new NotSupportedException("No decodable texture mip found.");
 
         using var bitmap = decoded.ToSkBitmap();

@@ -218,7 +218,6 @@
     <system:String x:Key="UI_Material">Material</system:String>
     <system:String x:Key="UI_MaterialDepth">Material Depth</system:String>
     <system:String x:Key="UI_MayRequireARestartForChanges">* May Require a restart for changes to take effect</system:String>
-    <system:String x:Key="UI_MergeEditorOnlyDataOUasset">Merge Editor-Only Data (.o.uasset)</system:String>
     <system:String x:Key="UI_NextExportPage">Next Export Page</system:String>
     <system:String x:Key="UI_PreviousExportPage">Previous Export Page</system:String>
     <system:String x:Key="UI_MaxExportPerPage">Exports Per Page</system:String>
@@ -296,7 +295,6 @@
     <system:String x:Key="UI_PropertiesJson">Properties (.json)</system:String>
     <system:String x:Key="UI_RawDataUasset">Raw Data (.uasset)</system:String>
     <system:String x:Key="UI_RawString">Raw string</system:String>
-    <system:String x:Key="UI_ReadsOUassetPackagesAndMerges">Reads .o.uasset packages and merges their editor-only data into the parent asset. Useful for JSON-based asset export workflows</system:String>
     <system:String x:Key="UI_HowManyExportsAreDisplayedAtOnce">How many exports are displayed at once for packages holding more than 5000 of them. Raise it to read big packages in fewer pages, at the cost of memory and loading time (1-1000)</system:String>
     <system:String x:Key="UI_ReferenceViewer">Reference Viewer</system:String>
     <system:String x:Key="UI_ReferenceViewerHint">Drag to pan, scroll to zoom, double-click a node to open the asset</system:String>
@@ -378,6 +376,14 @@
     <system:String x:Key="UI_Texture">Texture</system:String>
     <system:String x:Key="UI_TextureFormat">Texture Format</system:String>
     <system:String x:Key="UI_TexturePlatform">Texture Platform</system:String>
+    <system:String x:Key="UI_EmbeddedFiles">Embedded Files</system:String>
+    <system:String x:Key="UI_ExportEmbeddedFiles">Export Embedded Files</system:String>
+    <system:String x:Key="UI_ExportEmbeddedFilesTooltip">Export files embedded in the selected assets</system:String>
+    <system:String x:Key="UI_PngCompression">PNG Compression</system:String>
+    <system:String x:Key="UI_PngCompressionTooltip">Lossless compression. Level 3 is recommended for speed.</system:String>
+    <system:String x:Key="UI_TgaRleCompression">TGA RLE Compression</system:String>
+    <system:String x:Key="UI_TgaRleCompressionTooltip">Lossless compression of repeated pixels. File size depends on the image.</system:String>
+    <system:String x:Key="UI_SnooperPendingRequestHint" xml:space="preserve">: double-click one</system:String>
     <system:String x:Key="UI_TextureQuality">Texture Quality</system:String>
     <system:String x:Key="UI_Textures">Textures</system:String>
     <system:String x:Key="UI_TheAccountIdAndLockerNameUsed">The account id and locker name used in the generated profile_athena.json</system:String>

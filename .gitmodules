@@ -4,3 +4,6 @@
 [submodule "UAssetAPI"]
 	path = UAssetAPI
 	url = https://github.com/atenfyr/UAssetAPI.git
+[submodule "Snooper"]
+	path = Snooper
+	url = https://github.com/FModel/Snooper

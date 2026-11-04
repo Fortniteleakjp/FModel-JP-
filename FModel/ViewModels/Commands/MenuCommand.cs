@@ -46,7 +46,7 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
                 GameInfoWindow.Open(true);
                 break;
             case "Views_3dViewer":
-                contextViewModel.CUE4Parse.SnooperViewer.Run();
+                SnooperViewModel.Instance.Load(null);
                 break;
             case "Views_ExportSession":
                 Helper.OpenWindow<AdonisWindow>("Export Session", () => new ExportSessionWindow().Show());

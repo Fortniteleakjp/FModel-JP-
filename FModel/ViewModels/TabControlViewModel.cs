@@ -159,7 +159,7 @@ public class TabImage : ViewModel
 
         if (PixelFormatUtils.IsHDR(bitmap.PixelFormat) || (UserSettings.Default.TextureExportFormat != ETextureFormat.Jpeg && UserSettings.Default.TextureExportFormat != ETextureFormat.Png))
         {
-            ImageBuffer = bitmap.Encode(UserSettings.Default.TextureExportFormat, UserSettings.Default.SaveHdrTexturesAsHdr, out var ext);
+            ImageBuffer = bitmap.Encode(UserSettings.GetExportOptions(), out var ext);
             ExportName += "." + ext;
         }
         else
@@ -363,7 +363,7 @@ public class TabItem : ViewModel
     {
         try
         {
-            var decoded = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+            var decoded = texture.Decode(UserSettings.GetExportOptions());
             if (decoded == null) return;
 
             const string suffix = " (差し替え後)";
@@ -522,12 +522,12 @@ public class TabItem : ViewModel
         var img = new CTexture[1];
         if (texture is UTexture2DArray textureArray)
         {
-            img = textureArray.DecodeTextureArray(UserSettings.Default.CurrentDir.TexturePlatform);
+            img = textureArray.DecodeTextureArray(UserSettings.GetExportOptions());
             appendLayerNumber = true;
         }
         else
         {
-            img[0] = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+            img[0] = texture.Decode(UserSettings.GetExportOptions());
             if (texture is UTextureCube)
             {
                 img[0] = img[0].ToPanorama();

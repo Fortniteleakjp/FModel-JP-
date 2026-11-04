@@ -900,7 +900,7 @@ namespace FModel.Views
                 var texture = package.GetExports().FirstOrDefault(e => e is UTexture2D) as UTexture2D;
                 if (texture != null)
                 {
-                    var cTexture = texture.Decode(256, UserSettings.Default.CurrentDir.TexturePlatform);
+                    var cTexture = texture.Decode(256, UserSettings.GetExportOptions());
                     if (cTexture != null)
                     {
                         using var skBitmap = cTexture.ToSkBitmap();

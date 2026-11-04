@@ -253,27 +253,6 @@
                               Margin="0 5 0 10"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" />
 
-                    <TextBlock Grid.Row="20"
-                               Grid.Column="0"
-                               Text="{DynamicResource UI_MergeEditorOnlyDataOUasset}"
-                               VerticalAlignment="Center"
-                               ToolTip="{DynamicResource UI_ReadsOUassetPackagesAndMerges}"
-                               Margin="0 0 0 5"
-                               Visibility="{Binding DataContext.CUE4Parse.Provider.ProjectName,
-                                            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}},
-                                            Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
-                                            ConverterParameter='FortniteGame'}" />
-                    <CheckBox Grid.Row="20"
-                              Grid.Column="2"
-                              Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
-                              IsChecked="{Binding MergeEditorOnlyDataExports, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
-                              Margin="0 5 0 10"
-                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}"
-                              Visibility="{Binding DataContext.CUE4Parse.Provider.ProjectName,
-                                           RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:Views.SettingsView}},
-                                           Converter={x:Static converters:ProjectNameToVisibilityConverter.Instance},
-                                           ConverterParameter='FortniteGame'}" />
-
                     <TextBlock Grid.Row="21"
                                Grid.Column="0"
                                Text="{DynamicResource UI_CRIWAREDecryptionKey}"
@@ -504,6 +483,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -541,44 +521,47 @@
                     <TextBlock Grid.Row="9" Grid.Column="0" Text="{DynamicResource UI_ExportRawData}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="9" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding ExportData, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="{DynamicResource UI_ExportProperties}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="{DynamicResource UI_ExportEmbeddedFiles}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="10" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding ExportProperties, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="{DynamicResource UI_ExportTextures}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding ExportEmbeddedFiles, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="{DynamicResource UI_ExportProperties}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="11" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding ExportTextures, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="{DynamicResource UI_ExportModels}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding ExportProperties, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="{DynamicResource UI_ExportTextures}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="12" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding ExportModels, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="13" Grid.Column="0" Text="{DynamicResource UI_ExportWorlds}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding ExportTextures, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="13" Grid.Column="0" Text="{DynamicResource UI_ExportModels}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="13" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding ExportWorlds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="14" Grid.Column="0" Text="{DynamicResource UI_ExportAnimations}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding ExportModels, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="14" Grid.Column="0" Text="{DynamicResource UI_ExportWorlds}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="14" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding ExportAnimations, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="15" Grid.Column="0" Text="{DynamicResource UI_ExportAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding ExportWorlds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="15" Grid.Column="0" Text="{DynamicResource UI_ExportAnimations}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="15" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                                            HotKey="{Binding ExportAnimations, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="16" Grid.Column="0" Text="{DynamicResource UI_ExportAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="16" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding ExportAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="16" Grid.Column="0" Text="{DynamicResource UI_ExportDecompiledBlueprints}" VerticalAlignment="Center" />
-                    <controls:HotkeyTextBox Grid.Row="16" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
+                    <TextBlock Grid.Row="17" Grid.Column="0" Text="{DynamicResource UI_ExportDecompiledBlueprints}" VerticalAlignment="Center" />
+                    <controls:HotkeyTextBox Grid.Row="17" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}"
                                             HotKey="{Binding ExportCode, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
 
-                    <Separator Grid.Row="17" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
+                    <Separator Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource CustomSeparator}" />
 
-                    <TextBlock Grid.Row="18" Grid.Column="0" Text="{DynamicResource UI_AddAudioFile}" VerticalAlignment="Center" Margin="0 0 0 5" />
-                    <controls:HotkeyTextBox Grid.Row="18" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding AddAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="19" Grid.Column="0" Text="{DynamicResource UI_PlayPauseCurrentAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <TextBlock Grid.Row="19" Grid.Column="0" Text="{DynamicResource UI_AddAudioFile}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="19" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding PlayPauseAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="20" Grid.Column="0" Text="{DynamicResource UI_PreviousAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding AddAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="20" Grid.Column="0" Text="{DynamicResource UI_PlayPauseCurrentAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="20" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding PreviousAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="21" Grid.Column="0" Text="{DynamicResource UI_NextAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding PlayPauseAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="21" Grid.Column="0" Text="{DynamicResource UI_PreviousAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="21" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
-                                            HotKey="{Binding NextAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="22" Grid.Column="0" Text="{DynamicResource UI_RemoveSelectedAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                                            HotKey="{Binding PreviousAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="22" Grid.Column="0" Text="{DynamicResource UI_NextAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <controls:HotkeyTextBox Grid.Row="22" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
+                                            HotKey="{Binding NextAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="23" Grid.Column="0" Text="{DynamicResource UI_RemoveSelectedAudio}" VerticalAlignment="Center" Margin="0 0 0 5" />
+                    <controls:HotkeyTextBox Grid.Row="23" Grid.Column="2" Style="{StaticResource TextBoxDefaultStyle}" Margin="0 0 0 5"
                                             HotKey="{Binding RemoveAudio, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}" />
                 </Grid>
             </DataTemplate>

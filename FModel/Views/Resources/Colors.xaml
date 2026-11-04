@@ -53,6 +53,7 @@
     <SolidColorBrush x:Key="SQLBrush" Color="#00758f" />
     <SolidColorBrush x:Key="PythonBrush" Color="#3d77a8" />
     <SolidColorBrush x:Key="CSharpBrush" Color="#9e559a" />
+    <SolidColorBrush x:Key="FlashBrush" Color="#f44336" />
 
     <!-- Asset family brushes -->
     <SolidColorBrush x:Key="CriwareBrush" Color="#005bab" />
@@ -68,4 +69,5 @@
     <SolidColorBrush x:Key="BatmanBrush" Color="Gold" />
     <SolidColorBrush x:Key="ArcSysBrush" Color="Red" />
     <SolidColorBrush x:Key="NascarBrush" Color="#dd002a" />
+    <SolidColorBrush x:Key="DbdBrush" Color="#8fa1d0"/>
 </ResourceDictionary>

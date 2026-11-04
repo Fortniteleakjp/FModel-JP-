@@ -218,7 +218,6 @@
     <system:String x:Key="UI_Material">マテリアル</system:String>
     <system:String x:Key="UI_MaterialDepth">マテリアルの深度</system:String>
     <system:String x:Key="UI_MayRequireARestartForChanges">* 変更の反映に再起動が必要な場合があります</system:String>
-    <system:String x:Key="UI_MergeEditorOnlyDataOUasset">エディタ専用データを統合 (.o.uasset)</system:String>
     <system:String x:Key="UI_NextExportPage">次の export ページ</system:String>
     <system:String x:Key="UI_PreviousExportPage">前の export ページ</system:String>
     <system:String x:Key="UI_MaxExportPerPage">1 ページあたりの export 数</system:String>
@@ -296,7 +295,6 @@
     <system:String x:Key="UI_PropertiesJson">プロパティ (.json)</system:String>
     <system:String x:Key="UI_RawDataUasset">生データ (.uasset)</system:String>
     <system:String x:Key="UI_RawString">生の文字列</system:String>
-    <system:String x:Key="UI_ReadsOUassetPackagesAndMerges">.o.uasset パッケージを読み込み、エディタ専用データを親アセットに統合します。JSON ベースのエクスポート作業に便利です</system:String>
     <system:String x:Key="UI_HowManyExportsAreDisplayedAtOnce">export が 5000 個以上あるパッケージで一度に表示する export の数です。増やすと少ないページ数で読めますが、メモリと読み込み時間を消費します (1〜1000)</system:String>
     <system:String x:Key="UI_ReferenceViewer">参照ビューア</system:String>
     <system:String x:Key="UI_ReferenceViewerHint">ドラッグで移動 / ホイールで拡大縮小 / ダブルクリックでアセットを開く</system:String>
@@ -378,6 +376,14 @@
     <system:String x:Key="UI_Texture">テクスチャ</system:String>
     <system:String x:Key="UI_TextureFormat">テクスチャ形式</system:String>
     <system:String x:Key="UI_TexturePlatform">テクスチャのプラットフォーム</system:String>
+    <system:String x:Key="UI_EmbeddedFiles">埋め込みファイル</system:String>
+    <system:String x:Key="UI_ExportEmbeddedFiles">埋め込みファイルをエクスポート</system:String>
+    <system:String x:Key="UI_ExportEmbeddedFilesTooltip">選択したアセットに埋め込まれたファイルをエクスポートします</system:String>
+    <system:String x:Key="UI_PngCompression">PNG 圧縮</system:String>
+    <system:String x:Key="UI_PngCompressionTooltip">可逆圧縮です。速度重視ならレベル 3 を推奨します。</system:String>
+    <system:String x:Key="UI_TgaRleCompression">TGA RLE 圧縮</system:String>
+    <system:String x:Key="UI_TgaRleCompressionTooltip">連続するピクセルを可逆圧縮します。ファイルサイズは画像によって変わります。</system:String>
+    <system:String x:Key="UI_SnooperPendingRequestHint" xml:space="preserve">：対象をダブルクリックしてください</system:String>
     <system:String x:Key="UI_TextureQuality">テクスチャの品質</system:String>
     <system:String x:Key="UI_Textures">テクスチャ</system:String>
     <system:String x:Key="UI_TheAccountIdAndLockerNameUsed">生成される profile_athena.json の accountId とロッカー名に使われます</system:String>

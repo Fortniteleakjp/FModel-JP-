@@ -109,9 +109,7 @@ public partial class MainWindow
 
         var auxiliaryInitialization = Task.WhenAll(
             _applicationView.CUE4Parse.InitMappings(),
-            ApplicationViewModel.InitDetex(),
             ApplicationViewModel.InitVgmStream(),
-            ApplicationViewModel.InitImGuiSettings(newOrUpdated),
             UserSettings.Default.DecompileLua ? ApplicationViewModel.InitUnluac() : Task.CompletedTask
         );
 
@@ -215,6 +213,8 @@ public partial class MainWindow
         }
         else if (_applicationView.Status.IsReady && UserSettings.Default.ExportData.IsTriggered(e.Key))
             OnExportHotkey("Save_Data");
+        else if (_applicationView.Status.IsReady && UserSettings.Default.ExportEmbeddedFiles.IsTriggered(e.Key))
+            OnExportHotkey("Save_EmbeddedFiles");
         else if (_applicationView.Status.IsReady && UserSettings.Default.ExportProperties.IsTriggered(e.Key))
             OnExportHotkey("Save_Properties");
         else if (_applicationView.Status.IsReady && UserSettings.Default.ExportTextures.IsTriggered(e.Key))

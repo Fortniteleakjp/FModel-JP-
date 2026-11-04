@@ -25,7 +25,7 @@ public static class SettingsLog
     private static readonly string[] _startupKeys =
     [
         "InterfaceLanguage", "AssetLanguage", "LoadingMode", "AesReload", "ReadScriptData", "ReadShaderMaps",
-        "MaxExportPerPage", "MergeEditorOnlyDataExports", "KeepDirectoryStructure", "ShowDecompileOption",
+        "MaxExportPerPage", "KeepDirectoryStructure", "ShowDecompileOption",
         "FeaturePreviewNewAssetExplorer", "PreviewTexturesAssetExplorer", "ExplorerViewMode", "ConvertAudioOnBulkExport",
         "DecompileLua", "MeshExportFormat", "TextureExportFormat", "MaterialExportFormat",
         "CurrentDir.UeVersion", "CurrentDir.TexturePlatform"

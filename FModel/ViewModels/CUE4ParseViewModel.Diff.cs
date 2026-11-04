@@ -408,10 +408,10 @@ public partial class CUE4ParseViewModel
 
                         CTexture[] textures;
                         if (texture is UTexture2DArray arr)
-                            textures = arr.DecodeTextureArray(UserSettings.Default.CurrentDir.TexturePlatform);
+                            textures = arr.DecodeTextureArray(UserSettings.GetExportOptions());
                         else
                         {
-                            var single = texture.Decode(UserSettings.Default.CurrentDir.TexturePlatform);
+                            var single = texture.Decode(UserSettings.GetExportOptions());
                             if (texture is UTextureCube)
                             {
                                 single = single?.ToPanorama();

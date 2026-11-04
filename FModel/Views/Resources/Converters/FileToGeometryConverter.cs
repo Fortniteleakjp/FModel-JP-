@@ -90,10 +90,13 @@ public class FileToGeometryConverter : IMultiValueConverter
                 "sql" => ("SQLIcon", "SQLBrush"),
                 "py" => ("PythonIcon", "PythonBrush"),
                 "cs" => ("CSharpIcon", "CSharpBrush"),
+                "swf" => ("FlashIcon", "FlashBrush"),
                 _ => ("DataTableIcon", "NeutralBrush")
             },
 
             EAssetCategory.ByteCode => ("CodeIcon", "CodeBrush"),
+
+            EAssetCategory.Flash => ("FlashIcon", "FlashBrush"),
 
             // Game specific below
             EAssetCategory.Borderlands => ("BorderlandsIcon", "BorderlandsBrush"),
@@ -103,6 +106,7 @@ public class FileToGeometryConverter : IMultiValueConverter
             EAssetCategory.LegoBatman or EAssetCategory.GothamKnights => ("BatmanIcon", "BatmanBrush"),
             EAssetCategory.ArcSys => ("ArcSysIcon", "ArcSysBrush"),
             EAssetCategory.Nascar => ("NascarIcon", "NascarBrush"),
+            EAssetCategory.DeadByDaylight => ("DbdIcon", "DbdBrush"),
 
             _ => ("AssetIcon", "NeutralBrush")
         };
@@ -119,6 +123,8 @@ public class FileToGeometryConverter : IMultiValueConverter
             (EAssetFamily.FMod, _) => ("FModIcon", brush),
 
             (EAssetFamily.Houdini, _) => ("HoudiniIcon", "HoudiniBrush"),
+
+            (EAssetFamily.Paper2D, not EAssetCategory.DeadByDaylight) => ("Paper2DIcon", brush),
 
             _ => (geometry, brush),
         };
