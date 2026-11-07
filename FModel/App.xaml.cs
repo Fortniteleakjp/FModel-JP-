@@ -80,6 +80,7 @@ public partial class App
 #endif
         base.OnStartup(e);
         FortniteDna.Register();
+        Services.RowStructInference.InferringDataTable.Register();
 
         UserSettings.Default = UserSettings.Load(out var settingsMessages);
 

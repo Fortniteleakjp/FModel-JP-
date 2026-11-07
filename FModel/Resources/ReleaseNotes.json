@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "version": "6.8.0.0",
+      "tag": "6.8.0.0",
+      "date": "2026-11-07",
+      "title": {
+        "en": "Guessing DataTable Row Structs Missing from the Mappings",
+        "ja": "マッピングに無い DataTable の行構造体の推定"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "DataTables whose row struct is missing from the mappings now show their rows. The downloaded Fortnite 43.00 mappings lack the structs of some game feature plugins entirely (for example DelilahTreasurePrizeRow of DT_DelilahTreasureHunt_Prizes), so those tables used to show only \"Rows\": {} and log \"Missing prop mappings\". FModel now guesses the type of each property from the rows: numbers, booleans, names, strings, texts, soft references, nested structs and arrays, and known structs such as GameplayTag, GameplayTagContainer, PrimaryAssetId, DataTableRowHandle, CurveTableRowHandle, ScalableFloat and InstancedStruct. Cooked data has no property names, so they are made up (Name_0, Bool_4...), except texts whose key reads {RowName}_{Name} (for example PrizeName). A guessed table ends with \"RowStructGuessed\" in its JSON and its properties are listed in the log. To avoid showing a wrong definition, tables whose rows can be split in more than one way, tables with a single row and tables that can't be solved within a few seconds are left as before. Checked against DataTables whose row structs are in the mappings, every guess from two rows or more had the right types. A guessed struct is reused, and a struct that couldn't be guessed isn't retried, until the mappings are reloaded.",
+            "ja": "行構造体の定義がマッピングに無い DataTable も、行を表示できるようにしました。配信されている Fortnite 43.00 のマッピングには、一部の GameFeature プラグインの構造体が丸ごと入っていません（例: DT_DelilahTreasureHunt_Prizes の DelilahTreasurePrizeRow）。これまでは \"Rows\": {} しか表示されず、ログに「Missing prop mappings」と出ていました。行データから各プロパティの型を推定します。数値・真偽値・名前・文字列・テキスト・ソフト参照・構造体や配列の入れ子と、GameplayTag・GameplayTagContainer・PrimaryAssetId・DataTableRowHandle・CurveTableRowHandle・ScalableFloat・InstancedStruct に対応しています。cook 済みのデータにはプロパティ名が無いため、名前は Name_0・Bool_4 のような仮名です。ただし、テキストのキーが {行名}_{名前} の形なら、その名前を使います（例: PrizeName）。推定した DataTable は JSON の末尾に \"RowStructGuessed\" が付き、推定したプロパティの一覧はログにも出ます。誤った定義で表示しないよう、行の区切り方が 2 通り以上考えられるもの・行が 1 つしかないもの・数秒以内に解けないものは推定しません（これまでどおり Rows は空です）。定義がある DataTable で推定結果を正解と照合したところ、2 行以上で推定できたものはすべて正しい型でした。推定した定義は、マッピングを読み込み直すまで使い回します。推定できなかった構造体も、読み込み直すまで再試行しません。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.7.0.0",
       "tag": "6.7.0.0",
       "date": "2026-11-04",
