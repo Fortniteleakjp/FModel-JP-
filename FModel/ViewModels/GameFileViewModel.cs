@@ -324,6 +324,11 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                 _ => (EAssetCategory.All, EBulkType.None),
             };
 
+            // 旧バージョン(14.40等)はマッピングが無く、アイテム定義が型の付かない UObject になる
+            if (AssetCategory == EAssetCategory.All &&
+                FortniteItemPreview.IsUntypedItemDefinition(dummy, _applicationView.CUE4Parse?.Provider.ProjectName))
+                (AssetCategory, AssetActions) = (EAssetCategory.ItemDefinitionBase, EBulkType.Textures);
+
             if (EmbeddedFilesDto.Supports(dummy))
             {
                 var files = new EmbeddedFilesDto(pointer.Object.Value).Files;
@@ -355,33 +360,13 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     if (!resolve.HasFlag(EResolveCompute.Preview))
                         break;
 
-                    if (pointer.Object.Value is UItemDefinitionBase itemDef)
+                    // DataList（新しい版）→ HeroDefinition / WeaponDefinition → 自身の Small/LargePreviewImage（旧版）
+                    if (FortniteItemPreview.FindTexture(pointer.Object.Value) is { } itemTexture &&
+                        itemTexture.Decode(MaxPreviewSize, UserSettings.GetExportOptions()) is { } itemImage)
                     {
-                        if (LookupPreview(itemDef.DataList)) break;
-
-                        if (itemDef is UAthenaPickaxeItemDefinition pickaxe && pickaxe.WeaponDefinition.TryLoad(out UItemDefinitionBase weaponDef))
-                        {
-                            LookupPreview(weaponDef.DataList);
-                        }
-
-                        bool LookupPreview(FInstancedStruct[] dataList)
-                        {
-                            foreach (var data in dataList)
-                            {
-                                if (!data.NonConstStruct.TryGetValue(out FSoftObjectPath icon, "Icon", "LargeIcon") ||
-                                    !icon.TryLoad<UTexture2D>(out var texture))
-                                    continue;
-
-                                var img = texture.Decode(MaxPreviewSize, UserSettings.GetExportOptions());
-                                if (img == null) return false;
-
-                                using var bitmap = img.ToSkBitmap();
-                                using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
-                                SetPreviewImage(image);
-                                return true;
-                            }
-                            return false;
-                        }
+                        using var bitmap = itemImage.ToSkBitmap();
+                        using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
+                        SetPreviewImage(image);
                     }
                     break;
                 default:
