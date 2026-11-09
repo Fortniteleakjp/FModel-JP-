@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,13 +18,15 @@ using System.Windows.Threading;
 using AdonisUI.Controls;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse.UE4.IO.Objects;
 using CUE4Parse_Conversion.Textures;
 using FModel.Services;
 using FModel.Settings;
 using FModel.Extensions;
-using Newtonsoft.Json;
+using Serilog;
 
 namespace FModel.Views
 {
@@ -52,6 +54,9 @@ namespace FModel.Views
         private List<ReferenceNode> _searchResults = new List<ReferenceNode>();
         private int _currentSearchIndex = -1;
         private AnimationClock _scrollClock;
+        private CancellationTokenSource _loadCts;
+        private Task _loadTask;
+        private bool _isClosed;
 
         public static readonly RoutedCommand FindCommand = new RoutedCommand();
 
@@ -404,60 +409,110 @@ namespace FModel.Views
 
         private async Task LoadReferencesAsync()
         {
-            if (IsLoading) return;
+            // 読み込み中の更新は、前の検索を止めてから今の条件でやり直す
+            _loadCts?.Cancel();
+            var cts = new CancellationTokenSource();
+            _loadCts = cts;
+            if (_loadTask != null)
+            {
+                try { await _loadTask; } catch { /* 前の検索の結果は使わない */ }
+                if (cts.IsCancellationRequested) return;
+            }
+
+            var task = LoadReferencesCoreAsync(cts);
+            _loadTask = task;
+            await task;
+        }
+
+        private async Task LoadReferencesCoreAsync(CancellationTokenSource cts)
+        {
+            var token = cts.Token;
             IsLoading = true;
             ClearSearchHighlights();
             FlatNodes = null;
             Connections = null;
+
+            var searchMode = SearchMode;
+            var maxDepth = Math.Max(1, MaxDepth);
+            var filter = AssetTypeFilter;
+            ProgressMax = maxDepth;
+            ProgressValue = 0;
+            ProgressText = Localize("UI_RefChain_Preparing", "Preparing...");
+
+            // Progress<T> は作成したスレッド(UI)へ通知を戻す
+            var progress = new Progress<(int Depth, string Text)>(p =>
+            {
+                if (token.IsCancellationRequested) return;
+                if (p.Depth >= 0) ProgressValue = p.Depth;
+                ProgressText = p.Text;
+            });
+
+            using var job = BackgroundJobs.Start(Localize("UI_ReferenceViewer", "Reference Viewer"), cts, () => ProgressText);
+            string summary = null;
             try
             {
                 // UIスレッドをブロックしないようにバックグラウンドで実行
                 var result = await Task.Run(() =>
                 {
-                    var nodes = new List<ReferenceNode>();
                     var provider = ApplicationService.ApplicationView.CUE4Parse.Provider;
+                    var graph = PackageReferenceGraph.Get(provider);
+                    var builder = new ReferenceTreeBuilder(this, provider, graph, filter, maxDepth, progress, token);
 
-                    // 1. 選択されたアイテムごとのルートノード作成
+                    var nodes = new List<ReferenceNode>();
                     foreach (var item in _selectedItems)
                     {
-                        if (item is GameFile gameFile)
-                        {
-                            var rootNode = new ReferenceNode { Name = gameFile.Name, Path = gameFile.Path };
-                            var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                            
-                            if (SearchMode == 0)
-                            {
-                                BuildDependencyTree(rootNode, gameFile, MaxDepth, 0, visited, provider);
-                            }
-                            else
-                            {
-                                BuildReferencerTree(rootNode, gameFile, MaxDepth, 0, visited, provider);
-                            }
-
-                            nodes.Add(rootNode);
-                        }
+                        if (item is not GameFile gameFile) continue;
+                        token.ThrowIfCancellationRequested();
+                        nodes.Add(searchMode == 0 ? builder.BuildDependencies(gameFile) : builder.BuildReferencers(gameFile));
                     }
 
-                    return nodes;
-                });
+                    return (Nodes: nodes, builder.FoundCount, builder.Truncated);
+                }, token);
 
-                _rootNodes = result;
+                token.ThrowIfCancellationRequested();
+                _rootNodes = result.Nodes;
                 LayoutNodes(_rootNodes);
+
+                summary = string.Format(Localize(searchMode == 0 ? "UI_RefChain_SummaryDependencies" : "UI_RefChain_SummaryReferencers", "{0} assets"), result.FoundCount);
+                if (result.Truncated)
+                    summary += " — " + string.Format(Localize("UI_RefChain_Truncated", "stopped at {0} assets per root"), ReferenceTreeBuilder.MaxNodesPerRoot);
 
                 // 読み込み直後は対象アセットのノードが画面中央に来るようにする
                 ZoomScale = 1.0;
                 var focus = _rootNodes.FirstOrDefault();
                 if (focus != null) CenterOnNode(focus);
             }
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+                // 閉じた／やり直した
+                if (_loadCts == cts && !_isClosed)
+                    summary = Localize("UI_RefChain_Canceled", "Canceled");
+            }
             catch (Exception ex)
             {
-                AdonisUI.Controls.MessageBox.Show(this, $"An error occurred while resolving references:\n{ex.Message}", "Error", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
+                Log.Error(ex, "Failed to resolve the references of {Root}", RootLabel);
+                if (!_isClosed)
+                    AdonisUI.Controls.MessageBox.Show(this, $"An error occurred while resolving references:\n{ex.Message}", "Error", AdonisUI.Controls.MessageBoxButton.OK, AdonisUI.Controls.MessageBoxImage.Error);
             }
             finally
             {
-                _hasLoaded = true;
-                IsLoading = false;
+                if (_loadCts == cts)
+                {
+                    _hasLoaded = true;
+                    IsLoading = false;
+                    SearchStatus = summary;
+                }
             }
+        }
+
+        private static string Localize(string key, string fallback) =>
+            Application.Current?.TryFindResource(key) as string ?? fallback;
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _isClosed = true;
+            _loadCts?.Cancel();
+            base.OnClosed(e);
         }
 
         // UEFN の参照ビューアのように、深さごとの列に分けつつ親を子の中央に置いて上下へ広げる
@@ -749,151 +804,208 @@ namespace FModel.Views
             }
         }
 
-        // 依存関係（Dependencies / Uses）ツリー構築
-        private void BuildDependencyTree(ReferenceNode parentNode, GameFile file, int maxDepth, int currentDepth, ISet<string> visited, CUE4Parse.FileProvider.IFileProvider provider)
+        /// <summary>
+        /// 深さごとに幅優先でツリーを作る。依存先・参照元はコンテナヘッダー（IoStore）とインポートマップ（pak）から引くので、
+        /// 参照元の検索でも全パッケージを読み込まない
+        /// </summary>
+        private sealed class ReferenceTreeBuilder
         {
-            if (currentDepth >= maxDepth || !visited.Add(file.Path))
-                return;
+            // 広く使われるアセットだとゲームのほぼ全体が並ぶので、ルートごとに打ち切る
+            public const int MaxNodesPerRoot = 3000;
+            private const int MaxPreviews = 100;
 
-            try
+            private readonly ReferenceChainWindow _owner;
+            private readonly AbstractVfsFileProvider _provider;
+            private readonly PackageReferenceGraph _graph;
+            private readonly string _filter;
+            private readonly int _maxDepth;
+            private readonly IProgress<(int Depth, string Text)> _progress;
+            private readonly CancellationToken _token;
+            private readonly ParallelOptions _parallel;
+            private int _previews;
+
+            public int FoundCount { get; private set; }
+            public bool Truncated { get; private set; }
+
+            private sealed class Item
             {
-                IPackage ipackage = null;
-                string json = null;
+                public ReferenceNode Node;
+                public ReferenceNode Parent;
+                public GameFile File;
+                public IPackage Package;
+                public string ClassName;
+                public PackageKey Key;
+            }
 
-                if (provider is AbstractFileProvider abstractProvider)
+            public ReferenceTreeBuilder(ReferenceChainWindow owner, AbstractVfsFileProvider provider, PackageReferenceGraph graph,
+                string filter, int maxDepth, IProgress<(int Depth, string Text)> progress, CancellationToken token)
+            {
+                _owner = owner;
+                _provider = provider;
+                _graph = graph;
+                _filter = filter;
+                _maxDepth = maxDepth;
+                _progress = progress;
+                _token = token;
+                _parallel = new ParallelOptions { CancellationToken = token };
+            }
+
+            private bool IsFiltered => !string.IsNullOrEmpty(_filter) && _filter != "All";
+
+            public ReferenceNode BuildDependencies(GameFile root)
+            {
+                var format = Localize("UI_RefChain_ResolvingDependencies", "Resolving dependencies (depth {0}/{1}, {2} found)");
+                var rootItem = NewItem(root, null, default);
+                Load(rootItem, true);
+
+                var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { root.Path };
+                var level = new List<Item> { rootItem };
+                var count = 0;
+                for (var depth = 1; depth <= _maxDepth && level.Count > 0 && !Truncated; depth++)
                 {
-                    var result = abstractProvider.GetLoadPackageResult(file);
-                    ipackage = result.Package;
-                    if (ipackage != null)
+                    _progress.Report((depth - 1, string.Format(format, depth, _maxDepth, count)));
+
+                    var dependencies = new List<GameFile>[level.Count];
+                    Parallel.For(0, level.Count, _parallel, i =>
                     {
-                        try { json = JsonConvert.SerializeObject(result.GetDisplayData()); } catch { }
-                    }
-                }
-                else if (provider.TryLoadPackage(file.Path, out ipackage))
-                {
-                    try { json = JsonConvert.SerializeObject(ipackage.GetExports()); } catch { }
-                }
+                        var item = level[i];
+                        dependencies[i] = [];
+                        if (item.Package == null) return;
 
-                if (ipackage == null) return;
+                        dependencies[i].AddRange(_graph.GetHardDependencies(item.File, item.Package));
+                        dependencies[i].AddRange(_graph.GetSoftDependencies(item.Package));
+                        item.Package = null; // エクスポートまで読んだパッケージは早めに手放す
+                    });
 
-                var className = GetPackageClassName(ipackage);
-                parentNode.AccentBrush = GetBrushForClass(className);
-                parentNode.IconData = GetIconForClass(className);
-                parentNode.TypeName = className;
-                if (className.Contains("Texture") || className.Contains("RenderTarget"))
-                {
-                    parentNode.PreviewImage = GetTexturePreview(ipackage);
-                }
-
-                var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                // パッケージからインポート（依存先）を取得
-                if (ipackage is IoPackage ioPackage)
-                {
-                    foreach (var importIndex in ioPackage.ImportMap)
+                    var next = new List<Item>();
+                    for (var i = 0; i < level.Count && !Truncated; i++)
                     {
-                        var resolved = ioPackage.ResolveObjectIndex(importIndex);
-                        if (resolved != null && resolved.Class != null && resolved.Class.Name.Text == "Package") dependencies.Add(resolved.Name.Text);
-                    }
-                }
-                else if (ipackage is Package package)
-                {
-                    foreach (var import in package.ImportMap)
-                    {
-                        if (import.ClassName.ToString() == "Package") dependencies.Add(import.ObjectName.ToString());
-                    }
-                }
-
-                // Soft References (JSONから取得)
-                if (!string.IsNullOrEmpty(json))
-                {
-                    var matches = Regex.Matches(json, "\"(?:AssetPathName|ObjectPath)\"\\s*:\\s*\"([^\"]+)\"");
-                    foreach (Match match in matches)
-                    {
-                        if (match.Success && match.Groups.Count > 1)
+                        foreach (var dependency in dependencies[i].OrderBy(d => d.Path, StringComparer.OrdinalIgnoreCase))
                         {
-                            var path = match.Groups[1].Value;
-                            var dotIndex = path.LastIndexOf('.');
-                            if (dotIndex > 0) path = path.Substring(0, dotIndex);
-                            dependencies.Add(path);
-                        }
-                    }
-                }
-
-                foreach (var depPath in dependencies)
-                {
-                    var lookupPath = depPath.StartsWith("/") ? depPath.Substring(1) : depPath;
-                    // パス解決（拡張子なしのパスからGameFileを探す）
-                    if (provider.TryGetGameFile(lookupPath + ".uasset", out var depFile))
-                    {
-                        // フィルタリング: 子ノードを追加する前にタイプをチェック
-                        if (!string.IsNullOrEmpty(AssetTypeFilter) && AssetTypeFilter != "All")
-                        {
-                            if (provider.TryLoadPackage(depFile.Path, out var depPackage))
+                            if (visited.Contains(dependency.Path)) continue;
+                            if (count + next.Count >= MaxNodesPerRoot)
                             {
-                                var depClassName = GetPackageClassName(depPackage);
-                                if (!IsTypeMatch(depClassName, AssetTypeFilter)) continue;
+                                Truncated = true;
+                                break;
                             }
-                            else
-                                continue; // パッケージが読み込めない場合はスキップ（安全策）
+
+                            visited.Add(dependency.Path);
+                            next.Add(NewItem(dependency, level[i].Node, default));
                         }
-
-                        var childNode = new ReferenceNode { Name = depFile.Name, Path = depFile.Path };
-                        parentNode.Children.Add(childNode);
-                        BuildDependencyTree(childNode, depFile as GameFile, maxDepth, currentDepth + 1, visited, provider);
                     }
+
+                    // 最後の深さでは種類が分かればよいので、パッケージを持ち続けない
+                    LoadAll(next, depth < _maxDepth);
+                    level = Attach(next);
+                    count += level.Count;
                 }
+
+                FoundCount += count;
+                return rootItem.Node;
             }
-            catch { }
-        }
 
-        // 参照元（Referencers）ツリー構築
-        private void BuildReferencerTree(ReferenceNode parentNode, GameFile file, int maxDepth, int currentDepth, ISet<string> visited, CUE4Parse.FileProvider.IFileProvider provider)
-        {
-            if (currentDepth >= maxDepth || !visited.Add(file.Path))
-                return;
-
-            try
+            public ReferenceNode BuildReferencers(GameFile root)
             {
-                // 親ノード（この場合は参照されている側）のスタイル設定
-                if (provider.TryLoadPackage(file.Path, out var ipackage))
+                var format = Localize("UI_RefChain_SearchingReferencers", "Searching referencers (depth {0}/{1}, {2} found)");
+                var rootItem = NewItem(root, null, default);
+                Load(rootItem, false);
+
+                var indexing = new ActionProgress<string>(text => _progress.Report((-1, text)));
+                var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { root.Path };
+                var level = new List<Item> { rootItem };
+                var count = 0;
+                for (var depth = 1; depth <= _maxDepth && level.Count > 0 && !Truncated; depth++)
                 {
-                    var className = GetPackageClassName(ipackage);
-                    parentNode.AccentBrush = GetBrushForClass(className);
-                    parentNode.IconData = GetIconForClass(className);
-                    parentNode.TypeName = className;
-                    if (className.Contains("Texture") || className.Contains("RenderTarget"))
+                    _progress.Report((depth - 1, string.Format(format, depth, _maxDepth, count)));
+
+                    var referencers = _graph.FindReferencers(level.Select(i => i.Key).ToList(), indexing, _token);
+                    var next = new List<Item>();
+                    foreach (var referencer in referencers)
                     {
-                        parentNode.PreviewImage = GetTexturePreview(ipackage);
+                        if (visited.Contains(referencer.File.Path)) continue;
+                        if (count + next.Count >= MaxNodesPerRoot)
+                        {
+                            Truncated = true;
+                            break;
+                        }
+
+                        visited.Add(referencer.File.Path);
+                        next.Add(NewItem(referencer.File, level[referencer.ParentIndex].Node, referencer.Key));
                     }
+
+                    // 次の深さの検索はパッケージIDで足りるので、読み込みは種類と見た目のためだけ
+                    LoadAll(next, false);
+                    level = Attach(next);
+                    count += level.Count;
                 }
 
-                // このファイルをインポートしているファイル（参照元）を探す
-                // 注意: インデックスがないため、全ファイルスキャンが必要となり非常に重い処理です
-                var referencers = FindReferencers(file.PathWithoutExtension, provider);
+                FoundCount += count;
+                return rootItem.Node;
+            }
 
-                foreach (var refFile in referencers)
+            private static Item NewItem(GameFile file, ReferenceNode parent, PackageKey key) => new()
+            {
+                Node = new ReferenceNode { Name = file.Name, Path = file.Path },
+                Parent = parent,
+                File = file,
+                Key = new PackageKey(key.Id, file.Path)
+            };
+
+            private void LoadAll(List<Item> items, bool keepPackage)
+            {
+                Parallel.For(0, items.Count, _parallel, i => Load(items[i], keepPackage));
+            }
+
+            private void Load(Item item, bool keepPackage)
+            {
+                try
                 {
-                    // フィルタリング
-                    if (!string.IsNullOrEmpty(AssetTypeFilter) && AssetTypeFilter != "All")
+                    if (!_provider.TryLoadPackage(item.File, out var package)) return;
+
+                    item.Key = new PackageKey(item.Key.Id ?? PackageKey.From(item.File, package).Id, item.File.Path);
+                    item.ClassName = GetMainClassName(package, item.File);
+                    item.Node.TypeName = item.ClassName;
+                    item.Node.AccentBrush = GetBrushForClass(item.ClassName);
+                    item.Node.IconData = _owner.GetIconForClass(item.ClassName);
+
+                    if (item.ClassName != null && (item.ClassName.Contains("Texture") || item.ClassName.Contains("RenderTarget")) &&
+                        Interlocked.Increment(ref _previews) <= MaxPreviews)
                     {
-                        if (provider.TryLoadPackage(refFile.Path, out var refPackage))
-                        {
-                            var refClassName = GetPackageClassName(refPackage);
-                            if (!IsTypeMatch(refClassName, AssetTypeFilter)) continue;
-                        }
-                        else
-                            continue;
+                        item.Node.PreviewImage = GetTexturePreview(package);
                     }
 
-                    var childNode = new ReferenceNode { Name = refFile.Name, Path = refFile.Path };
-                    parentNode.Children.Add(childNode);
-                    BuildReferencerTree(childNode, refFile, maxDepth, currentDepth + 1, visited, provider);
+                    if (keepPackage) item.Package = package;
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    Log.Debug(e, "Failed to load {Path} for the reference viewer", item.File.Path);
                 }
             }
-            catch { }
+
+            /// <summary>
+            /// 種類で絞り込んだうえで親にぶら下げる。外れたものはその先も辿らない
+            /// </summary>
+            private List<Item> Attach(List<Item> items)
+            {
+                _token.ThrowIfCancellationRequested();
+                var attached = new List<Item>(items.Count);
+                foreach (var item in items)
+                {
+                    if (IsFiltered && !IsTypeMatch(item.ClassName, _filter)) continue;
+                    item.Parent.Children.Add(item.Node);
+                    attached.Add(item);
+                }
+
+                return attached;
+            }
         }
 
-        private ImageSource GetTexturePreview(IPackage package)
+        private sealed class ActionProgress<T>(Action<T> report) : IProgress<T>
+        {
+            public void Report(T value) => report(value);
+        }
+
+        private static ImageSource GetTexturePreview(IPackage package)
         {
             try
             {
@@ -931,50 +1043,14 @@ namespace FModel.Views
                     }
                 }
             }
-            catch { }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                Log.Debug(e, "Failed to decode the preview of {Name}", package.Name);
+            }
             return null;
         }
 
-        private IEnumerable<GameFile> FindReferencers(string targetPackagePath, CUE4Parse.FileProvider.IFileProvider provider)
-        {
-            var results = new System.Collections.Concurrent.ConcurrentBag<GameFile>();
-            var targetPath = targetPackagePath.StartsWith("/") ? targetPackagePath : "/" + targetPackagePath;
-
-            // 並列処理で全ファイルをスキャン
-            Parallel.ForEach(provider.Files, (kvp) =>
-            {
-                var file = kvp.Value;
-                // アセットファイル以外はスキップ
-                if (!file.Name.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) && 
-                    !file.Name.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
-                    return;
-
-                try
-                {
-                    if (provider.TryLoadPackage(file.Path, out var package))
-                    {
-                        // パッケージのインポートリストをチェック
-                        if (package is Package pkg)
-                        {
-                            foreach (var import in pkg.ImportMap)
-                            {
-                                if (import.ObjectName.Text.Contains(targetPath.Substring(targetPath.LastIndexOf('/') + 1)))
-                                {
-                                    results.Add(file as GameFile);
-                                    break;
-                                }
-                            }
-                        }
-                        // IoPackage等の対応は省略（必要に応じて追加）
-                    }
-                }
-                catch { }
-            });
-
-            return results;
-        }
-
-        private bool IsTypeMatch(string className, string filter)
+        private static bool IsTypeMatch(string className, string filter)
         {
             if (string.IsNullOrEmpty(className)) return false;
             if (filter == "All") return true;
@@ -992,26 +1068,27 @@ namespace FModel.Views
             };
         }
 
-        private string GetPackageClassName(IPackage ipackage)
+        /// <summary>
+        /// アセット名と同じ（BPなら "_C" の）エクスポートのクラス。先頭のエクスポートが本体とは限らない
+        /// </summary>
+        private static string GetMainClassName(IPackage ipackage, GameFile file)
         {
-            if (ipackage == null) return null;
+            var name = file.NameWithoutExtension;
+            switch (ipackage)
+            {
+                case IoPackage ioPackage when ioPackage.ExportMap.Length > 0:
+                {
+                    var names = ioPackage.ExportMap.Select(e => ioPackage.CreateFNameFromMappedName(e.ObjectName).Text).ToArray();
+                    var index = Array.FindIndex(names, n => n.Equals(name, StringComparison.OrdinalIgnoreCase));
+                    if (index < 0) index = Array.FindIndex(names, n => n.Equals(name + "_C", StringComparison.OrdinalIgnoreCase));
+                    return ioPackage.ResolveObjectIndex(ioPackage.ExportMap[Math.Max(0, index)].ClassIndex)?.Name.Text;
+                }
+                case Package package when package.ExportMap.Length > 0:
+                    return (package.ExportMap.FirstOrDefault(e => e.ObjectName.Text.Equals(name, StringComparison.OrdinalIgnoreCase))
+                            ?? package.ExportMap.FirstOrDefault(e => e.ObjectName.Text.Equals(name + "_C", StringComparison.OrdinalIgnoreCase))
+                            ?? package.ExportMap[0]).ClassName;
+            }
 
-            if (ipackage is IoPackage ioPackage)
-            {
-                if (ioPackage.ExportMap.Length > 0)
-                {
-                    var entry = ioPackage.ExportMap[0];
-                    var resolved = ioPackage.ResolveObjectIndex(entry.ClassIndex);
-                    return resolved != null ? resolved.Name.Text : null;
-                }
-            }
-            else if (ipackage is Package package)
-            {
-                if (package.ExportMap.Length > 0)
-                {
-                    return package.ExportMap[0].ClassName.ToString();
-                }
-            }
             return null;
         }
 

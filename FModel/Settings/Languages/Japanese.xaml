@@ -298,6 +298,14 @@
     <system:String x:Key="UI_HowManyExportsAreDisplayedAtOnce">export が 5000 個以上あるパッケージで一度に表示する export の数です。増やすと少ないページ数で読めますが、メモリと読み込み時間を消費します (1〜1000)</system:String>
     <system:String x:Key="UI_ReferenceViewer">参照ビューア</system:String>
     <system:String x:Key="UI_ReferenceViewerHint">ドラッグで移動 / ホイールで拡大縮小 / ダブルクリックでアセットを開く</system:String>
+    <system:String x:Key="UI_RefChain_Preparing">準備中...</system:String>
+    <system:String x:Key="UI_RefChain_ResolvingDependencies">依存先を解決中（深さ {0}/{1}、{2} 件）</system:String>
+    <system:String x:Key="UI_RefChain_SearchingReferencers">参照元を検索中（深さ {0}/{1}、{2} 件）</system:String>
+    <system:String x:Key="UI_RefChain_IndexingPackages">pak のパッケージを索引中（{0}/{1}）</system:String>
+    <system:String x:Key="UI_RefChain_SummaryDependencies">依存先 {0} 件</system:String>
+    <system:String x:Key="UI_RefChain_SummaryReferencers">参照元 {0} 件</system:String>
+    <system:String x:Key="UI_RefChain_Truncated">ルートごとに {0} 件で打ち切りました</system:String>
+    <system:String x:Key="UI_RefChain_Canceled">キャンセルしました</system:String>
     <system:String x:Key="UI_Referencers">参照元 (Referencers)</system:String>
     <system:String x:Key="UI_References">参照</system:String>
     <system:String x:Key="UI_Refresh">更新</system:String>

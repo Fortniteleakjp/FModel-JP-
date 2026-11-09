@@ -298,6 +298,14 @@
     <system:String x:Key="UI_HowManyExportsAreDisplayedAtOnce">How many exports are displayed at once for packages holding more than 5000 of them. Raise it to read big packages in fewer pages, at the cost of memory and loading time (1-1000)</system:String>
     <system:String x:Key="UI_ReferenceViewer">Reference Viewer</system:String>
     <system:String x:Key="UI_ReferenceViewerHint">Drag to pan, scroll to zoom, double-click a node to open the asset</system:String>
+    <system:String x:Key="UI_RefChain_Preparing">Preparing...</system:String>
+    <system:String x:Key="UI_RefChain_ResolvingDependencies">Resolving dependencies (depth {0}/{1}, {2} found)</system:String>
+    <system:String x:Key="UI_RefChain_SearchingReferencers">Searching referencers (depth {0}/{1}, {2} found)</system:String>
+    <system:String x:Key="UI_RefChain_IndexingPackages">Indexing pak packages ({0}/{1})</system:String>
+    <system:String x:Key="UI_RefChain_SummaryDependencies">{0} dependencies</system:String>
+    <system:String x:Key="UI_RefChain_SummaryReferencers">{0} referencers</system:String>
+    <system:String x:Key="UI_RefChain_Truncated">stopped at {0} assets per root</system:String>
+    <system:String x:Key="UI_RefChain_Canceled">Canceled</system:String>
     <system:String x:Key="UI_Referencers">Referencers</system:String>
     <system:String x:Key="UI_References">References</system:String>
     <system:String x:Key="UI_Refresh">Refresh</system:String>
