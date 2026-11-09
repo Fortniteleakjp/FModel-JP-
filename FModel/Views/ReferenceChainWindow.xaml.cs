@@ -26,6 +26,7 @@ using CUE4Parse_Conversion.Textures;
 using FModel.Services;
 using FModel.Settings;
 using FModel.Extensions;
+using FModel.Framework;
 using Serilog;
 
 namespace FModel.Views
@@ -1009,45 +1010,15 @@ namespace FModel.Views
         {
             try
             {
-                var texture = package.GetExports().FirstOrDefault(e => e is UTexture2D) as UTexture2D;
-                if (texture != null)
-                {
-                    var cTexture = texture.Decode(256, UserSettings.GetExportOptions());
-                    if (cTexture != null)
-                    {
-                        using var skBitmap = cTexture.ToSkBitmap();
-                        if (skBitmap.ColorType == SkiaSharp.SKColorType.Bgra8888)
-                        {
-                            var bitmapSource = BitmapSource.Create(skBitmap.Width, skBitmap.Height, 96, 96, PixelFormats.Bgra32, null, skBitmap.Bytes, skBitmap.RowBytes);
-                            bitmapSource.Freeze();
-                            return bitmapSource;
-                        }
-
-                        using var bgraBitmap = new SkiaSharp.SKBitmap(skBitmap.Width, skBitmap.Height, SkiaSharp.SKColorType.Bgra8888, skBitmap.AlphaType);
-                        if (skBitmap.CopyTo(bgraBitmap))
-                        {
-                            var bitmapSource = BitmapSource.Create(bgraBitmap.Width, bgraBitmap.Height, 96, 96, PixelFormats.Bgra32, null, bgraBitmap.Bytes, bgraBitmap.RowBytes);
-                            bitmapSource.Freeze();
-                            return bitmapSource;
-                        }
-
-                        using var data = skBitmap.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
-                        using var stream = new MemoryStream(data.ToArray());
-                        var bitmap = new BitmapImage();
-                        bitmap.BeginInit();
-                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmap.StreamSource = stream;
-                        bitmap.EndInit();
-                        bitmap.Freeze();
-                        return bitmap;
-                    }
-                }
+                if (package.GetExports().FirstOrDefault(e => e is UTexture2D) is not UTexture2D texture) return null;
+                using var bitmap = texture.Decode(256, UserSettings.GetExportOptions())?.ToSkBitmap();
+                return bitmap?.ToBitmapSource();
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
                 Log.Debug(e, "Failed to decode the preview of {Name}", package.Name);
+                return null;
             }
-            return null;
         }
 
         private static bool IsTypeMatch(string className, string filter)

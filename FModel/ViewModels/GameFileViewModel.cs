@@ -351,8 +351,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                     if (img != null)
                     {
                         using var bitmap = img.ToSkBitmap();
-                        using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
-                        SetPreviewImage(image);
+                        SetPreviewImage(bitmap);
                     }
                     break;
                 }
@@ -365,8 +364,7 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                         itemTexture.Decode(MaxPreviewSize, UserSettings.GetExportOptions()) is { } itemImage)
                     {
                         using var bitmap = itemImage.ToSkBitmap();
-                        using var image = bitmap.Encode(SKEncodedImageFormat.Png, 100);
-                        SetPreviewImage(image);
+                        SetPreviewImage(bitmap);
                     }
                     break;
                 default:
@@ -500,10 +498,9 @@ public class GameFileViewModel(GameFile asset) : ViewModel
                         bitmap = SKBitmap.Decode(stream);
                     }
 
-                    using var image = bitmap.Encode(lowercaseExtension == "jpg" ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
-                    SetPreviewImage(image);
+                    SetPreviewImage(bitmap);
 
-                    bitmap.Dispose();
+                    bitmap?.Dispose();
                 });
             }
             case "swf":
@@ -546,19 +543,12 @@ public class GameFileViewModel(GameFile asset) : ViewModel
         }
     }
 
-    private void SetPreviewImage(SKData data)
+    private void SetPreviewImage(SKBitmap bitmap)
     {
-        using var ms = new MemoryStream(data.ToArray());
-        ms.Position = 0;
-
-        var bitmap = new BitmapImage();
-        bitmap.BeginInit();
-        bitmap.CacheOption = BitmapCacheOption.OnLoad;
-        bitmap.StreamSource = ms;
-        bitmap.EndInit();
-        bitmap.Freeze();
-
-        Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = bitmap);
+        // straight from the pixels, encoding every thumbnail to png and decoding it back was the costly part
+        var image = bitmap.ToBitmapSource();
+        if (image != null)
+            Application.Current.Dispatcher.InvokeAsync(() => PreviewImage = image);
     }
 
     private CancellationTokenSource _previewCts;

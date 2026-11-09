@@ -27,7 +27,23 @@ public class TabImage : ViewModel
 {
     public string ExportName { get; set; }
 
-    public byte[] ImageBuffer { get; set; }
+    private readonly string _baseName;
+    private byte[] _imageBuffer;
+    private Func<byte[]> _encodeImageBuffer;
+
+    /// <summary>
+    /// the file written when the image is saved or copied, encoded on first use
+    /// most images are only looked at, encoding them up front was the slowest part of opening a texture
+    /// </summary>
+    public byte[] ImageBuffer
+    {
+        get => _imageBuffer ??= _encodeImageBuffer?.Invoke();
+        set
+        {
+            _imageBuffer = value;
+            _encodeImageBuffer = null;
+        }
+    }
 
     private ulong? _imageHash;
     /// <summary>
@@ -82,20 +98,20 @@ public class TabImage : ViewModel
 
     public TabImage(string name, bool rnn, SKBitmap img)
     {
-        ExportName = name;
+        ExportName = _baseName = name;
         RenderNearestNeighbor = rnn;
         SetImage(img);
     }
 
     public TabImage(string name, bool rnn, CTexture img)
     {
-        ExportName = name;
+        ExportName = _baseName = name;
         RenderNearestNeighbor = rnn;
         SetImage(img);
     }
 
-    private BitmapImage _image;
-    public BitmapImage Image
+    private BitmapSource _image;
+    public BitmapSource Image
     {
         get => _image;
         set
@@ -133,49 +149,46 @@ public class TabImage : ViewModel
         }
 
         _bmp = bitmap;
-        ExportName += "." + (NoAlpha ? "jpg" : "png");
-        using var data = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
-        using var stream = new MemoryStream(ImageBuffer = data.ToArray(), false);
-        var image = new BitmapImage();
-        image.BeginInit();
-        image.CacheOption = BitmapCacheOption.OnLoad;
-        image.StreamSource = stream;
-        image.EndInit();
-        image.Freeze();
-        Image = image;
+        EncodeLater(bitmap, NoAlpha);
+        Image = bitmap.ToBitmapSource(NoAlpha);
     }
 
-    private void SetImage(CTexture bitmap)
+    private void SetImage(CTexture texture)
     {
-        if (bitmap is null)
+        if (texture is null)
         {
             ImageBuffer = null;
             Image = null;
             return;
         }
 
-        _bmp = bitmap.ToSkBitmap();
-        byte[] imageData = _bmp.Encode(NoAlpha ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100).ToArray();
-
-        if (PixelFormatUtils.IsHDR(bitmap.PixelFormat) || (UserSettings.Default.TextureExportFormat != ETextureFormat.Jpeg && UserSettings.Default.TextureExportFormat != ETextureFormat.Png))
+        _bmp = texture.ToSkBitmap();
+        var format = UserSettings.Default.TextureExportFormat;
+        if (PixelFormatUtils.IsHDR(texture.PixelFormat) || (format != ETextureFormat.Jpeg && format != ETextureFormat.Png))
         {
-            ImageBuffer = bitmap.Encode(UserSettings.GetExportOptions(), out var ext);
-            ExportName += "." + ext;
+            // the extension depends on what the encoder picks, this one can't wait
+            ImageBuffer = texture.Encode(UserSettings.GetExportOptions(), out var ext);
+            ExportName = $"{_baseName}.{ext}";
         }
         else
         {
-            ImageBuffer = imageData;
-            ExportName += "." + (NoAlpha || UserSettings.Default.TextureExportFormat == ETextureFormat.Jpeg ? "jpg" : "png");
+            EncodeLater(_bmp, NoAlpha || format == ETextureFormat.Jpeg);
         }
 
-        using var stream = new MemoryStream(imageData);
-        var image = new BitmapImage();
-        image.BeginInit();
-        image.CacheOption = BitmapCacheOption.OnLoad;
-        image.StreamSource = stream;
-        image.EndInit();
-        image.Freeze();
-        Image = image;
+        Image = _bmp.ToBitmapSource(NoAlpha);
+    }
+
+    /// <param name="jpeg">the data now matches the extension, a jpg export used to hold png data</param>
+    private void EncodeLater(SKBitmap bitmap, bool jpeg)
+    {
+        // the base name, switching the alpha channel used to stack the extensions ("name.png.jpg")
+        ExportName = _baseName + (jpeg ? ".jpg" : ".png");
+        _imageBuffer = null;
+        _encodeImageBuffer = () =>
+        {
+            using var data = bitmap.Encode(jpeg ? SKEncodedImageFormat.Jpeg : SKEncodedImageFormat.Png, 100);
+            return data?.ToArray();
+        };
     }
 
     private SKBitmap _bmp;

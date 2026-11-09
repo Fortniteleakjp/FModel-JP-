@@ -1,5 +1,6 @@
 using AdonisUI.Controls;
 using FModel.Extensions;
+using FModel.Framework;
 using FModel.Settings;
 using FModel.Views.Resources.Controls;
 using Microsoft.Win32;
@@ -22,7 +23,21 @@ namespace FModel.Views;
 public partial class ImageMerger
 {
     private const string FILENAME = "Preview.png";
+    private SKBitmap _merged;
     private byte[] _imageBuffer;
+
+    /// <summary>
+    /// the png of the merged image, only encoded when it is saved or copied
+    /// </summary>
+    private byte[] ImageBuffer
+    {
+        get
+        {
+            if (_imageBuffer != null || _merged == null) return _imageBuffer;
+            using var data = _merged.Encode(SKEncodedImageFormat.Png, 100);
+            return _imageBuffer = data?.ToArray();
+        }
+    }
 
     public ImageMerger()
     {
@@ -103,7 +118,7 @@ public partial class ImageMerger
 
         await Task.Run(() =>
         {
-            using var bmp = new SKBitmap(maxWidth - margin, maxHeight - margin, SKColorType.Rgba8888, SKAlphaType.Premul);
+            var bmp = new SKBitmap(maxWidth - margin, maxHeight - margin, SKColorType.Rgba8888, SKAlphaType.Premul);
             using var canvas = new SKCanvas(bmp);
 
             for (var i = 0; i < images.Length; i++)
@@ -114,16 +129,14 @@ public partial class ImageMerger
                 }
             }
 
-            using var data = bmp.Encode(SKEncodedImageFormat.Png, 100);
-            using var stream = new MemoryStream(_imageBuffer = data.ToArray());
-            var photo = new BitmapImage();
-            photo.BeginInit();
-            photo.CacheOption = BitmapCacheOption.OnLoad;
-            photo.StreamSource = stream;
-            photo.EndInit();
-            photo.Freeze();
-
-            Application.Current.Dispatcher.Invoke(delegate { ImagePreview.Source = photo; });
+            var photo = bmp.ToBitmapSource();
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                _merged?.Dispose();
+                _merged = bmp;
+                _imageBuffer = null;
+                ImagePreview.Source = photo;
+            });
         }).ContinueWith(t =>
         {
             AddButton.IsEnabled = true;
@@ -234,6 +247,9 @@ public partial class ImageMerger
     {
         ImagesListBox.Items.Clear();
         ImagePreview.Source = null;
+        _merged?.Dispose();
+        _merged = null;
+        _imageBuffer = null;
     }
 
     private void OnOpenImage(object sender, RoutedEventArgs e)
@@ -269,7 +285,8 @@ public partial class ImageMerger
 
             using (var fs = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write, FileShare.Read))
             {
-                fs.Write(_imageBuffer, 0, _imageBuffer.Length);
+                var buffer = ImageBuffer;
+                fs.Write(buffer, 0, buffer.Length);
             }
 
             SaveCheck(saveFileDialog.FileName, Path.GetFileName(saveFileDialog.FileName));
@@ -296,6 +313,7 @@ public partial class ImageMerger
 
     private void OnCopyImage(object sender, RoutedEventArgs e)
     {
-        ClipboardExtensions.SetImage(_imageBuffer, FILENAME);
+        if (ImageBuffer is { } buffer)
+            ClipboardExtensions.SetImage(buffer, FILENAME);
     }
 }
