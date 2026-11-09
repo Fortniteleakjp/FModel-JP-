@@ -148,7 +148,7 @@ public class Reward
             //     break;
             default:
             {
-                var path = Utils.GetFullPath($"FortniteGame/(?:Content/Athena|Content/Items|Plugins/GameFeatures)/.*?/{trigger}.uasset"); // path has no objectname and its needed so we push the trigger again as the objectname
+                var path = Utils.FindAssetPath(trigger, "FortniteGame/Content/Athena/", "FortniteGame/Content/Items/", "FortniteGame/Plugins/GameFeatures/"); // path has no objectname and its needed so we push the trigger again as the objectname
                 if (!string.IsNullOrWhiteSpace(path) && Utils.TryLoadObject(path.Replace("uasset", trigger), out UObject d))
                 {
                     _theReward = new BaseIcon(d, EIconStyle.Default);

@@ -25,9 +25,17 @@ public abstract class UCreator
     public abstract void ParseForInfo();
     public abstract SKBitmap[] Draw();
 
+    // decoded once and shared by every icon, nothing draws on it
+    private static readonly Lazy<SKBitmap> _placeholder = new(() =>
+    {
+        var bitmap = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/FModel;component/Resources/T_Placeholder_Item_Image.png"))?.Stream);
+        bitmap?.SetImmutable();
+        return bitmap;
+    });
+
     protected UCreator(UObject uObject, EIconStyle style)
     {
-        DefaultPreview = SKBitmap.Decode(Application.GetResourceStream(new Uri("pack://application:,,,/FModel;component/Resources/T_Placeholder_Item_Image.png"))?.Stream);
+        DefaultPreview = _placeholder.Value;
         Background = new[] { SKColor.Parse("5BFD00"), SKColor.Parse("003700") };
         Border = new[] { SKColor.Parse("1E8500"), SKColor.Parse("5BFD00") };
         DisplayName = string.Empty;

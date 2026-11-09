@@ -1208,8 +1208,7 @@ public partial class CUE4ParseViewModel : ViewModel
         void ProcessRocoBinFile(GameFile entry, bool updateUi, bool saveProperties)
         {
             TabControl.SelectedTab.Highlighter = AvalonExtensions.HighlighterSelector("json");
-            var nonFileName = "/" + entry.NameWithoutExtension + ".non";
-            var nonPath = Provider.Files.Keys.FirstOrDefault(k => k.EndsWith(nonFileName, StringComparison.OrdinalIgnoreCase));
+            var nonPath = Provider.Files.FindByName(entry.NameWithoutExtension + ".non").FirstOrDefault()?.Path;
 
             // I will only get one localization file because they did not translate any languages, lol
             var locPathKey = entry.Path.Replace("/BinData/", "/BinLocalize/zh_Hans/").Replace("/BinDataCompressed/", "/BinLocalize/zh_Hans/");
@@ -1775,7 +1774,8 @@ public partial class CUE4ParseViewModel : ViewModel
             case UWubDialogueEvent when (isNone || saveAudio) && pointer.Object.Value is UWubDialogueEvent wubDialogueEvent:
             {
                 var files = wubDialogueEvent.Wems
-                    .SelectMany(wem => Provider.Files.Values.Where(file => file.Path.EndsWith(wem.Text + ".wem", StringComparison.OrdinalIgnoreCase)))
+                    .SelectMany(wem => Provider.Files.FindByName(wem.Text.SubstringAfterLast('/') + ".wem")
+                        .Where(file => file.Path.EndsWith(wem.Text + ".wem", StringComparison.OrdinalIgnoreCase)))
                     .ToList();
                 foreach (var entry in files)
                 {

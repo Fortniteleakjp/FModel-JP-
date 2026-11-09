@@ -211,6 +211,23 @@ public static class Utils
         return string.Empty;
     }
 
+    /// <summary>
+    /// the path of the first <c>{assetName}.uasset</c> under one of the directories, empty when there is none
+    /// </summary>
+    public static string FindAssetPath(string assetName, params string[] directories)
+    {
+        foreach (var file in _applicationView.CUE4Parse.Provider.Files.FindByName(assetName + ".uasset"))
+        {
+            foreach (var directory in directories)
+            {
+                if (file.Path.StartsWith(directory, StringComparison.OrdinalIgnoreCase))
+                    return file.Path;
+            }
+        }
+
+        return string.Empty;
+    }
+
     public static void DrawCenteredMultilineText(SKCanvas c, string text, int maxCount, int size, int margin, SKTextAlign side, SKRect area, SKPaint paint)
     {
         var lineHeight = paint.TextSize * 1.2f;
