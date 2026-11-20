@@ -13,7 +13,8 @@ dotnet run --project Tools/McpRelayChecks/McpRelayChecks.csproj -c Release
 - 実行途中の要求には中断エラーを返し、要求を自動で再実行しない
 - 再起動待機中の要求には待機中であることを返す
 - 初回接続／再接続待機中のstdin終了で、中継が速やかに終了
-- --no-launchと再接続タイムアウト
+- 起動引数の解釈（既定は本体を起動しない、--launchで起動、--no-launchが優先）
+- 未起動時に既定で本体を起動しないことと再接続タイムアウト
 - 再初期化に失敗した場合の接続再試行
 
 中継の埋め込み・配置の検証は `Tools/CompatibilityChecks` に含まれます。

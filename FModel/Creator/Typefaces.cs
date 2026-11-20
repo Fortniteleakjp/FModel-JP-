@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using CUE4Parse.FileProvider;
 using CUE4Parse.UE4.Versions;
 using FModel.Settings;
 using FModel.ViewModels;
@@ -10,11 +11,12 @@ namespace FModel.Creator;
 
 public class Typefaces
 {
-    private readonly Uri _BURBANK_BIG_CONDENSED_BOLD = new("pack://application:,,,/Resources/BurbankBigCondensed-Bold.ttf");
+    private readonly Uri _BURBANK_BIG_CONDENSED_BOLD = new("pack://application:,,,/FModel;component/Resources/BurbankBigCondensed-Bold.ttf");
     private const string _EXT = ".ufont";
 
     // FortniteGame
     private const string _FORTNITE_BASE_PATH = "FortniteGame/Plugins/FortUILibrary/Content/Fonts/";
+    private const string _FORTNITE_LEGACY_BASE_PATH = "FortniteGame/Content/UI/Foundation/Fonts/";
     private const string _ASIA_ERINM = "AsiaERINM"; // korean fortnite
     private const string _BURBANK_BIG_CONDENSED_BLACK = "BurbankBigCondensed-Black"; // russian
     private const string _BURBANK_BIG_REGULAR_BLACK = "BurbankBigRegular-Black";
@@ -48,7 +50,7 @@ public class Typefaces
     private const string _XIANGHEHEI_SC_PRO_BLACK = "XiangHeHei_SC/MXiangHeHeiSCPro-Black";
     private const string _XIANGHEHEI_SC_PRO_HEAVY = "XiangHeHei_SC/MXiangHeHeiSCPro-Heavy";
 
-    private readonly CUE4ParseViewModel _viewModel;
+    private readonly IFileProvider _provider;
 
     public readonly SKTypeface Default; // used as a fallback font for all untranslated strings (item source, ...)
     public readonly SKTypeface DisplayName;
@@ -60,14 +62,15 @@ public class Typefaces
     public readonly SKTypeface TandemGenDescription;
     public readonly SKTypeface TandemAddDescription;
 
-    public Typefaces(CUE4ParseViewModel viewModel)
+    public Typefaces(CUE4ParseViewModel viewModel) : this(viewModel.Provider, UserSettings.Default.AssetLanguage) { }
+
+    public Typefaces(IFileProvider provider, ELanguage language)
     {
-        _viewModel = viewModel;
-        var language = UserSettings.Default.AssetLanguage;
+        _provider = provider;
 
         Default = SKTypeface.FromStream(Application.GetResourceStream(_BURBANK_BIG_CONDENSED_BOLD)?.Stream);
 
-        switch (viewModel.Provider.ProjectName.ToUpperInvariant())
+        switch (provider.ProjectName.ToUpperInvariant())
         {
             case "FORTNITEGAME":
             {
@@ -192,8 +195,30 @@ public class Typefaces
 
     public SKTypeface OnTheFly(string path, bool fallback = false)
     {
-        if (!_viewModel.Provider.TrySaveAsset(path, out var data)) return fallback ? null : Default;
-        var m = new MemoryStream(data) { Position = _viewModel.Provider.Versions.Game >= EGame.GAME_UE5_6 ? 4 : 0 };
-        return SKTypeface.FromStream(m);
+        if (string.IsNullOrWhiteSpace(path)) return fallback ? null : Default;
+        var typeface = LoadTypeface(path);
+        if (typeface != null) return typeface;
+
+        // Fortnite moved the shared fonts into FortUILibrary. Community designs can
+        // reference either location, so resolve the same font in both directions.
+        var normalizedPath = path.Replace('\\', '/');
+        if (normalizedPath.StartsWith("/Game/UI/Foundation/Fonts/", StringComparison.OrdinalIgnoreCase))
+            normalizedPath = _FORTNITE_LEGACY_BASE_PATH + normalizedPath["/Game/UI/Foundation/Fonts/".Length..];
+        else if (normalizedPath.StartsWith("/FortUILibrary/Fonts/", StringComparison.OrdinalIgnoreCase))
+            normalizedPath = _FORTNITE_BASE_PATH + normalizedPath["/FortUILibrary/Fonts/".Length..];
+        if (normalizedPath.StartsWith(_FORTNITE_BASE_PATH, StringComparison.OrdinalIgnoreCase))
+            typeface = LoadTypeface(_FORTNITE_LEGACY_BASE_PATH + normalizedPath[_FORTNITE_BASE_PATH.Length..]);
+        else if (normalizedPath.StartsWith(_FORTNITE_LEGACY_BASE_PATH, StringComparison.OrdinalIgnoreCase))
+            typeface = LoadTypeface(_FORTNITE_BASE_PATH + normalizedPath[_FORTNITE_LEGACY_BASE_PATH.Length..]);
+
+        return typeface ?? (fallback ? null : Default);
+    }
+
+    private SKTypeface LoadTypeface(string path)
+    {
+        if (!_provider.TrySaveAsset(path, out var data)) return null;
+        var offset = _provider.Versions.Game >= EGame.GAME_UE5_6 ? 4 : 0;
+        if (data.Length <= offset) return null;
+        return SKTypeface.FromStream(new MemoryStream(data) { Position = offset });
     }
 }

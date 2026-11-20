@@ -29,8 +29,8 @@
     <line x1="290" y1="180" x2="481" y2="180" stroke="#334155" stroke-width="1.8" marker-end="url(#a)"/>
     <text x="386" y="174" text-anchor="middle">パイプへ ConnectAsync（2 秒）</text>
     <rect x="300" y="190" width="300" height="46" rx="6" fill="#fff7ed" stroke="#fdba74"/>
-    <text x="310" y="208" font-size="11" fill="#7c2d12">見つからない → ShellExecute で FModel.exe --mcp-launched</text>
-    <text x="310" y="226" font-size="11" fill="#7c2d12">を起動し、最大 3 分パイプを待つ（--no-launch なら終了）</text>
+    <text x="310" y="208" font-size="11" fill="#7c2d12">見つからない → 既定は終了（コード 2）。--launch 時だけ</text>
+    <text x="310" y="226" font-size="11" fill="#7c2d12">FModel.exe --mcp-launched を起動し最大 3 分待つ</text>
     <rect x="495" y="246" width="230" height="46" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
     <text x="505" y="264" font-size="11" fill="#1e3a8a">WaitForConnection → McpServer.Create(</text>
     <text x="505" y="282" font-size="11" fill="#1e3a8a">StreamServerTransport(pipe), options).RunAsync</text>

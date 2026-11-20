@@ -2,7 +2,7 @@ using FModel.Services.Mcp;
 
 if (args.Contains("--help"))
 {
-    Console.Error.WriteLine("FModel.Mcp.exe --application <FModel.exe> [--no-launch]");
+    Console.Error.WriteLine("FModel.Mcp.exe --application <FModel.exe> [--launch]");
     return 0;
 }
 
@@ -16,7 +16,7 @@ if (applicationIndex < 0 || applicationIndex + 1 >= args.Length || !Path.IsPathF
 try
 {
     return await RelaySession.RunAsync(Console.OpenStandardInput(), Console.OpenStandardOutput(),
-        args[applicationIndex + 1], args.Contains("--no-launch"), McpConnectionInfo.PipeName, TimeSpan.FromMinutes(3));
+        args[applicationIndex + 1], McpConnectionInfo.ShouldLaunch(args), McpConnectionInfo.PipeName, TimeSpan.FromMinutes(3));
 }
 catch (Exception e)
 {

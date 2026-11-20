@@ -42,7 +42,8 @@ internal static class Program
             ("Verseコンパクト形式のソース情報", CheckCompactDebug),
             ("アセット編集・再読み込み", () => CheckAssetEditing(root, output)),
             ("pak作成・再読み込み", () => CheckPak(output)),
-            ("新旧OfferDisplayData・欠落画像参照", () => OfferPreviewChecks.Run(root, output))
+            ("新旧OfferDisplayData・欠落画像参照", () => OfferPreviewChecks.Run(root, output)),
+            ("新旧Fortniteフォント・欠落時の代替", () => TypefaceChecks.Run(root))
         };
         var failed = 0;
         foreach (var (name, run) in tests)

@@ -16,7 +16,9 @@ namespace FModel.Services.Mcp;
 /// (JSON-RPC の中身は FModel 側の SDK が処理する)。WPF は一切起動しない。
 /// </para>
 /// <para>
-/// FModel が起動していなければ <see cref="McpHost.LaunchedArgument"/> を付けて起動し、パイプが現れるまで待つ。
+/// FModel が起動していなければ、<c>--launch</c> 指定時だけ <see cref="McpHost.LaunchedArgument"/> を付けて起動し、
+/// パイプが現れるまで待つ。既定で起動しないのは、AI クライアントがログイン時に自動起動すると、その場で中継も
+/// 起動されて PC 起動のたびに FModel が開いてしまうため。
 /// 診断メッセージはすべて stderr に出す (stdout は MCP のプロトコル専用)。
 /// </para>
 /// </summary>
@@ -31,13 +33,13 @@ public static class McpRelay
     {
         if (args.Any(a => a is "--help" or "-h"))
         {
-            Console.Error.WriteLine("FModel.exe --mcp [--no-launch]\nRelays an MCP stdio client to the MCP server running inside FModel (enable it in Settings > General).");
+            Console.Error.WriteLine("FModel.exe --mcp [--launch]\nRelays an MCP stdio client to the MCP server running inside FModel (enable it in Settings > General).");
             return 0;
         }
 
         try
         {
-            return RunAsync(args.Any(a => a.Equals("--no-launch", StringComparison.OrdinalIgnoreCase))).GetAwaiter().GetResult();
+            return RunAsync(McpConnectionInfo.ShouldLaunch(args)).GetAwaiter().GetResult();
         }
         catch (Exception e)
         {
@@ -46,15 +48,15 @@ public static class McpRelay
         }
     }
 
-    private static async Task<int> RunAsync(bool noLaunch)
+    private static async Task<int> RunAsync(bool launch)
     {
         // CurrentUserOnly: サーバー側が同じユーザーで動いていることも確かめる (パイプ名の横取り対策)
         await using var pipe = new NamedPipeClientStream(".", McpHost.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
         if (!await TryConnectAsync(pipe, QuickConnect))
         {
-            if (noLaunch)
+            if (!launch)
             {
-                Console.Error.WriteLine("FModel is not running, or its MCP server is disabled (Settings > General > MCP server).");
+                Console.Error.WriteLine(McpConnectionInfo.NotRunningMessage);
                 return 2;
             }
 

@@ -9,7 +9,9 @@ namespace FModel.Services.Mcp;
 // stdin/stdout は AI クライアントの接続期間中維持し、FModel への接続だけを張り直す。
 internal static class RelaySession
 {
-    internal static async Task<int> RunAsync(Stream input, Stream output, string application, bool noLaunch,
+    // launch は --launch 指定時だけ true。AI クライアントはログイン時の自動起動でも stdio サーバーを即起動するため、
+    // 既定で FModel を起動すると PC 起動のたびに FModel が開いてしまう。
+    internal static async Task<int> RunAsync(Stream input, Stream output, string application, bool launch,
         string pipeName, TimeSpan reconnectTimeout)
     {
         using var lifetime = new CancellationTokenSource();
@@ -31,9 +33,9 @@ internal static class RelaySession
             if (lifetime.IsCancellationRequested) return 0;
             if (connection is null)
             {
-                if (noLaunch)
+                if (!launch)
                 {
-                    Console.Error.WriteLine("FModel is not running, or its MCP server is disabled (Settings > General > MCP server).");
+                    Console.Error.WriteLine(McpConnectionInfo.NotRunningMessage);
                     return 2;
                 }
                 Console.Error.WriteLine("Starting FModel and waiting for its MCP server...");

@@ -8,7 +8,8 @@ var tests = new (string Name, Func<Task> Run)[]
     ("再接続・再初期化・中断要求の非再実行", CheckReconnectAsync),
     ("再接続待機中のクライアント終了", CheckClientExitAsync),
     ("初回接続待機中のクライアント終了", CheckInitialExitAsync),
-    ("no-launch・接続タイムアウト", CheckNoLaunchAsync),
+    ("起動引数の解釈", CheckLaunchArgumentsAsync),
+    ("既定で本体を起動しない・接続タイムアウト", CheckNoLaunchAsync),
     ("再初期化失敗時の再試行", CheckFailedHandshakeAsync)
 };
 var failed = 0;
@@ -85,10 +86,20 @@ static async Task CheckInitialExitAsync()
     Require(await relay.WaitAsync(TimeSpan.FromSeconds(2)) == 0, "初回接続待機が終了しません");
 }
 
+static Task CheckLaunchArgumentsAsync()
+{
+    // AI クライアントのログイン時自動起動に連動して FModel が開かないよう、起動は --launch のときだけ。
+    Require(!McpConnectionInfo.ShouldLaunch(["--application", @"C:\FModel.exe"]), "引数なしで本体を起動します");
+    Require(!McpConnectionInfo.ShouldLaunch(["--application", @"C:\FModel.exe", "--no-launch"]), "--no-launch で本体を起動します");
+    Require(McpConnectionInfo.ShouldLaunch(["--application", @"C:\FModel.exe", "--LAUNCH"]), "--launch で本体を起動しません");
+    Require(!McpConnectionInfo.ShouldLaunch(["--launch", "--no-launch"]), "--no-launch が --launch より優先されません");
+    return Task.CompletedTask;
+}
+
 static async Task CheckNoLaunchAsync()
 {
     await using (var missing = await Client.CreateAsync())
-        Require(await missing.Start() == 2, "no-launch でアプリを起動したか、終了コードが違います");
+        Require(await missing.Start() == 2, "既定でアプリを起動したか、終了コードが違います");
 
     await using var client = await Client.CreateAsync();
     using var host = new Host(client.PipeName);
@@ -185,7 +196,7 @@ sealed class Client : IAsyncDisposable
         _reader = new StreamReader(_output, new UTF8Encoding(false), leaveOpen: true);
     }
     public Task<int> Start(TimeSpan? timeout = null) => RelaySession.RunAsync(_relayInput, _relayOutput,
-        @"Z:\missing-fmodel.exe", true, PipeName, timeout ?? TimeSpan.FromSeconds(10));
+        @"Z:\missing-fmodel.exe", false, PipeName, timeout ?? TimeSpan.FromSeconds(10));
     public Task WriteAsync(string value) => _writer.WriteLineAsync(value);
     public async Task<JsonNode> ReadAsync() => JsonNode.Parse(await _reader.ReadLineAsync().WaitAsync(TimeSpan.FromSeconds(3)) ?? throw new IOException("EOF"))!;
     public async Task CloseInputAsync() { await _writer.FlushAsync(); _input.Dispose(); }

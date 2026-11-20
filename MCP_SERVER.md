@@ -72,7 +72,9 @@ command = '<中継EXEのフルパス>'
 args = ["--application", 'C:\Tools\FModel\FModel.exe']
 ```
 
-中継は画面を出さず、起動中の FModel に名前付きパイプで繋ぎます。FModel が起動していなければ中継が FModel を起動し（この起動に限り設定が OFF でもサーバーが立ちます）、最大 3 分待ちます。勝手に起動してほしくない場合は引数に `--no-launch` を追加してください。
+中継は画面を出さず、起動中の FModel に名前付きパイプで繋ぎます。FModel が起動していなければ、既定では接続に失敗して終了します（終了コード 2）。FModel を先に起動してから AI クライアントで再接続してください。
+
+未起動時に中継から FModel を起動させたい場合は、引数に `--launch` を追加してください（この起動に限り設定が OFF でもサーバーが立ち、最大 3 分待ちます）。ただし多くの AI クライアントは起動した時点で MCP サーバーも起動するため、AI クライアントを Windows のログイン時に自動起動している場合は、PC を起動するたびに FModel も開きます。以前の既定（起動する）はこの理由で変更しました。`--no-launch` は互換のため受け付けます（指定すると `--launch` より優先）。
 
 **以前の `FModel.exe --mcp` を登録済みの場合は、新しいコマンドへ一度だけ置き換えてください。**
 従来のコマンドも利用できますが、本体終了時に中継も終了するため、AI側で再接続が必要です。
@@ -162,7 +164,7 @@ WinExe（GUI サブシステム）でも、親プロセスがパイプを渡し�
 ### 4-2. 専用中継（[`RelaySession.RunAsync`](Tools/McpRelay/RelaySession.cs)）
 
 1. `NamedPipeClientStream(".", McpHost.PipeName, …, PipeOptions.CurrentUserOnly)` で 2 秒だけ接続を試す。
-2. 初回接続で繋がらなければ、`--application` で指定された `FModel.exe` を `--mcp-launched` 付きで **ShellExecute で** 起動し、最大 3 分待つ（`--no-launch` なら終了コード 2 で終了）。
+2. 初回接続で繋がらなければ、既定では終了コード 2 で終了する。`--launch` 指定時だけ（`--no-launch` があれば優先して起動しない）、`--application` で指定された `FModel.exe` を `--mcp-launched` 付きで **ShellExecute で** 起動し、最大 3 分待つ。既定で起動しないのは、ログイン時に自動起動する AI クライアントが中継も即起動し、PC 起動のたびに FModel が開くため。
    - ShellExecute にしているのは **stdio ハンドルを子に継承させないため** です。継承すると FModel のコンソールログ（Serilog）が AI クライアントの stdout に混ざり、プロトコルが壊れます。
 3. stdinとパイプを並行して読み取り、JSON-RPCの行を転送します。初期化メッセージと応答待ちの要求IDを保持します。
 4. 本体との接続だけが切れた場合は、実行途中の要求を中断エラーで完了し、最大3分再接続を待ちます。再接続時の初期化応答は中継内で受け取り、AI側へ二重送信しません。
@@ -189,7 +191,7 @@ WinExe（GUI サブシステム）でも、親プロセスがパイプを渡し�
 | [`Program.cs`](FModel/Program.cs) | エントリポイント。`--mcp` なら中継、それ以外は WPF |
 | [`Tools/McpRelay/`](Tools/McpRelay/) | 本体から独立した専用中継。AI側の接続維持、本体への再接続、初期化の復元 |
 | [`Services/Mcp/McpRelayInstaller.cs`](FModel/Services/Mcp/McpRelayInstaller.cs) | 埋め込んだ自己完結型中継を内容のハッシュ別に配置。実行中の中継を上書きしない |
-| [`Services/Mcp/McpRelay.cs`](FModel/Services/Mcp/McpRelay.cs) | stdio ⇄ 名前付きパイプの中継、未起動時の FModel 起動 |
+| [`Services/Mcp/McpRelay.cs`](FModel/Services/Mcp/McpRelay.cs) | stdio ⇄ 名前付きパイプの中継、`--launch` 時の FModel 起動 |
 | [`Services/Mcp/McpHost.cs`](FModel/Services/Mcp/McpHost.cs) | パイプの待ち受け、SDK サーバーの生成、ツール等の登録 |
 | [`Services/Mcp/FModelMcpTools.cs`](FModel/Services/Mcp/FModelMcpTools.cs) | **プロトコル境界**。41 ツールの宣言（名前・説明・注釈）、`Run()` による JSON 化とエラー分類 |
 | [`Services/Mcp/McpWorkflowContent.cs`](FModel/Services/Mcp/McpWorkflowContent.cs) | AI 向けガイド（instructions）、リソース 5 個、プロンプト 5 個 |
@@ -493,12 +495,12 @@ CUE4Parse（サブモジュール）は変更していません。
 | list_saved_games / open_saved_game（live の再利用） | ✅ |
 | open_saved_game（現行 Fortnite、5 秒で 68 アーカイブ）→ compare_sessions（Backpacks で 1,208 件の差分）→ 追加セッションで get_properties → close_game | ✅ |
 | エラー分類：存在しないパス=not_found、未登録フォルダ=invalid_argument、live を閉じる=invalid_state、live の言語変更=invalid_state、limit=999=invalid_argument | ✅ |
-| 中継単体：FModel 未起動 + `--no-launch` で終了コード 2 とメッセージ、`--help` | ✅ |
+| 中継単体：FModel 未起動（`--launch` なし）で終了コード 2 とメッセージ、`--help` | ✅ |
 
 まだ確認していないもの（画面を伴うため、実機での確認をお願いします）：
 
 - 設定画面の 2 行の見た目と、トグルの ON/OFF で待ち受けが即座に切り替わること
-- 中継が FModel を **自動起動** する経路（`--mcp-launched`）
+- 中継が FModel を **自動起動** する経路（`--launch` → `--mcp-launched`）
 - Claude Desktop など実際のクライアントからの利用
 
 ---
