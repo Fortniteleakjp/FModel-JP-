@@ -1,6 +1,52 @@
 {
   "releases": [
     {
+      "version": "6.10.0.0",
+      "tag": "6.10.0.0",
+      "date": "2026-11-21",
+      "title": {
+        "en": "Widget Designer: View Widget Blueprints and Editor Utility Widgets Like the UMG Designer",
+        "ja": "ウィジェットデザイナー：ウィジェット BP・エディタユーティリティウィジェットを UMG デザイナー風に表示"
+      },
+      "changes": [
+        {
+          "type": "Added",
+          "text": {
+            "en": "Widget Designer: draws the widget tree of a widget blueprint (UMG), Editor Utility Widgets included, the way the UMG designer shows it. The hierarchy is on the left, the laid out widgets in the middle and the selected widget's slot, position, size and properties on the right. Click a widget in the preview or in the hierarchy to select it, zoom with the mouse wheel, pan with the right or middle button, filter the hierarchy by name, class or text, and switch the screen size between the desired size, common resolutions and a custom size.",
+            "ja": "ウィジェットデザイナーを追加しました。ウィジェット BP（UMG）のウィジェットツリーを、エディタユーティリティウィジェットも含めて UMG デザイナーのように描画します。左に階層、中央に配置したウィジェット、右に選択したウィジェットのスロット・位置・サイズ・プロパティを表示します。プレビューか階層でクリックすると選択でき、マウスホイールでズーム、右ボタンか中ボタンのドラッグでパンします。階層は名前・クラス・テキストで絞り込めます。画面サイズは推奨サイズ・主な解像度・任意のサイズから選べます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Opening a widget blueprint from the asset explorer now opens it in the Widget Designer, next to the JSON. It can be turned off with \"Open Widget Blueprints in the Widget Designer\" in the preview settings. It can also be opened with \"Open in Widget Designer\" in the file context menu.",
+            "ja": "アセットエクスプローラーでウィジェット BP を開くと、JSON と一緒にウィジェットデザイナーも開くようにしました。設定のプレビューにある「ウィジェットBPをウィジェットデザイナーで開く」でオフにできます。ファイルの右クリックメニュー「ウィジェットデザイナーで開く」からも開けます。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "Views > \"Widget Designer (open .uasset file)\" opens a widget blueprint saved outside of the game archives (for example an Editor Utility Widget saved next to the game, such as Content/AssetResolver.uasset). Its imports are resolved against the loaded game.",
+            "ja": "表示メニューの「ウィジェットデザイナー (.uasset ファイルを開く)」で、ゲームのアーカイブ外に保存されたウィジェット BP を開けるようにしました（例: ゲームのフォルダーに置かれたエディタユーティリティウィジェット Content/AssetResolver.uasset）。参照先は読み込み中のゲームから探します。"
+          }
+        },
+        {
+          "type": "Added",
+          "text": {
+            "en": "The Widget Designer lays out canvas panels (anchors, offsets, alignment, ZOrder), horizontal and vertical boxes, overlays, size boxes, scale boxes, grids, wrap boxes, scroll boxes, widget switchers and named slots. It draws brushes (rounded boxes, borders, 9-slice images), texts with the game's fonts, buttons, check boxes, progress bars, sliders and text boxes. Widget blueprints nested in the tree are drawn from their own tree, and when an instance sets a single text, it is shown in the nested text block.",
+            "ja": "キャンバスパネル（アンカー・オフセット・アライメント・ZOrder）、水平・垂直ボックス、オーバーレイ、サイズボックス、スケールボックス、グリッド、ラップボックス、スクロールボックス、ウィジェットスイッチャー、名前付きスロットを配置します。ブラシ（角丸・枠線・9 スライス画像）、ゲームのフォントによるテキスト、ボタン、チェックボックス、プログレスバー、スライダー、テキストボックスを描画します。ツリー内で使われている別のウィジェット BP はその BP のツリーから描画し、インスタンスで設定されたテキストが 1 つだけなら内側のテキストに表示します。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Limitations: materials can't be drawn (white ones are drawn faintly, tinted ones with their color) and Blueprint graphs such as PreConstruct aren't run, so texts and styles set there aren't reflected. List views show a placeholder.",
+            "ja": "制限事項：マテリアルは描画できません（白いものは薄く、色付きのものはその色で塗ります）。PreConstruct などのブループリントのグラフは実行しないため、そこで設定されるテキストやスタイルは反映されません。リストビューはプレースホルダーで表示します。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.9.0.0",
       "tag": "6.9.0.0",
       "date": "2026-11-21",
