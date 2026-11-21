@@ -1,6 +1,59 @@
 {
   "releases": [
     {
+      "version": "6.9.0.0",
+      "tag": "6.9.0.0",
+      "date": "2026-11-21",
+      "title": {
+        "en": "Faster Reference Viewer, Cosmetic Images of Older Versions, MCP Relay No Longer Starts FModel",
+        "ja": "参照ビューアの高速化・旧バージョンのコスメ画像・MCP 中継が FModel を起動しない既定に"
+      },
+      "changes": [
+        {
+          "type": "Changed",
+          "text": {
+            "en": "The MCP relay no longer starts FModel when it isn't running: it exits with code 2 and asks you to start FModel first. Many AI clients start their MCP servers as soon as they open, so an AI client opened at Windows sign-in used to open FModel every time the PC started. Add --launch to the relay arguments to keep the old behavior (the server then starts even if it is turned off in the settings, and the relay waits up to 3 minutes). --no-launch is still accepted and wins over --launch.",
+            "ja": "MCP 中継は、FModel が起動していなくても FModel を起動しないようにしました。終了コード 2 で終了し、先に FModel を起動するよう表示します。多くの AI クライアントは起動した時点で MCP サーバーも起動するため、Windows のログイン時に AI クライアントを自動起動していると、PC を起動するたびに FModel も開いていました。これまでどおり中継から起動させたい場合は、中継の引数に --launch を追加してください（この起動に限り設定が OFF でもサーバーが立ち、最大 3 分待ちます）。--no-launch も引き続き使え、--launch より優先します。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Reference Viewer: searching referencers found nothing in IoStore games, loaded every package of the game, listed assets that only contained the name somewhere and couldn't be canceled. Referencers and dependencies of IoStore packages are now read from the container headers without loading any package. Pak and loose packages are indexed from their import maps once (about 20 seconds the first time for Fortnite, which also has pak packages, then instant). The progress is shown, the search stops at 3000 assets per root, and closing the window or refreshing cancels it.",
+            "ja": "参照ビューアの参照元検索で、IoStore のゲームでは常に 0 件になる・ゲームの全パッケージを読み込む・名前を含むだけのアセットまで参照元として表示する・キャンセルできない、という問題を修正しました。IoStore のパッケージはコンテナヘッダーから参照元と依存先を求め、パッケージを読み込みません。pak・ルーズファイルのパッケージはインポートマップから一度だけ索引を作ります（pak のパッケージもある Fortnite では初回に約 20 秒、2 回目以降はすぐ終わります）。進捗を表示し、ルートごとに 3000 件で打ち切り、ウィンドウを閉じるか更新すると検索を止めます。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "The asset explorer now shows the images of cosmetics from older versions (for example 14.40). Their item definitions have no DataList, which was the only place the image was looked for. Like the icons, the image now falls back to the HeroDefinition or WeaponDefinition and then to the item's own SmallPreviewImage or LargePreviewImage.",
+            "ja": "旧バージョン（例: 14.40）のコスメも、アセットエクスプローラーに画像を表示するようにしました。これまでは DataList の画像しか見ておらず、DataList の無い旧バージョンでは画像が出ませんでした。アイコン生成と同じく、HeroDefinition・WeaponDefinition、アイテム自身の SmallPreviewImage・LargePreviewImage の順に画像を探します。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Images open faster: thumbnails, texture tabs, the image merger and the Reference Viewer now display the pixels directly instead of encoding them to PNG and decoding them back. The file used to save or copy a texture is encoded only when you save or copy it.",
+            "ja": "画像の表示を速くしました。サムネイル・テクスチャタブ・画像結合・参照ビューアで、画像を PNG に変換してから読み直すのをやめ、画素をそのまま表示します。テクスチャを保存・コピーするときのファイルは、保存・コピーするときに初めて作ります。"
+          }
+        },
+        {
+          "type": "Changed",
+          "text": {
+            "en": "Finding files by name no longer walks every file of the game: reward icons in Fortnite, LEGO Batman dialogue audio and the .non files of Roco Kingdom data now use an index of file names, built on first use and rebuilt when archives are mounted. The placeholder image of the icons is also decoded once and shared.",
+            "ja": "ファイル名でファイルを探す処理で、ゲームの全ファイルを調べるのをやめました。Fortnite の報酬アイコン・LEGO Batman の会話音声・Roco Kingdom のデータに対応する .non ファイルの検索は、ファイル名の索引を使います。索引は初めて使うときに作り、アーカイブをマウントすると作り直します。アイコンのプレースホルダー画像も一度だけ読み込んで使い回します。"
+          }
+        },
+        {
+          "type": "Fixed",
+          "text": {
+            "en": "Fortnite community icon designs find their fonts whether they reference the old location (UI/Foundation/Fonts) or the new one (FortUILibrary/Fonts).",
+            "ja": "Fortnite のコミュニティ製アイコンデザインで、フォントの参照先が旧位置（UI/Foundation/Fonts）と新位置（FortUILibrary/Fonts）のどちらでもフォントが見つかるようにしました。"
+          }
+        }
+      ]
+    },
+    {
       "version": "6.8.0.0",
       "tag": "6.8.0.0",
       "date": "2026-11-07",
