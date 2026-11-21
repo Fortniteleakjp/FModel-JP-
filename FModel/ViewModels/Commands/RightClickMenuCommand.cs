@@ -71,6 +71,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
         WorldOutliner,
         MaterialGraph,
         BlueprintGraph,
+        WidgetDesigner,
         AudioReverseLookup,
         MemberUsage,
         Diff,
@@ -123,6 +124,7 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
             "Assets_World_Outliner" => (EAction.Show, EShowAssetType.WorldOutliner, EBulkType.None),
             "Assets_Material_Graph" => (EAction.Show, EShowAssetType.MaterialGraph, EBulkType.None),
             "Assets_Blueprint_Graph" => (EAction.Show, EShowAssetType.BlueprintGraph, EBulkType.None),
+            "Assets_Widget_Designer" => (EAction.Show, EShowAssetType.WidgetDesigner, EBulkType.None),
             "Assets_Audio_Reverse_Lookup" => (EAction.Show, EShowAssetType.AudioReverseLookup, EBulkType.None),
             "Assets_Member_Usage" => (EAction.Show, EShowAssetType.MemberUsage, EBulkType.None),
             "Assets_Athena_Profile" => (EAction.Show, EShowAssetType.AthenaProfile, EBulkType.None),
@@ -220,6 +222,23 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                     }
 
                     System.Windows.Application.Current.Dispatcher.Invoke(() => new BlueprintGraphWindow(graph).Show());
+                    return;
+                }
+
+                if (showtype is EShowAssetType.WidgetDesigner)
+                {
+                    var entry = assets.FirstOrDefault();
+                    if (entry is null) return;
+
+                    var document = WidgetDesignerWindow.Load(entry, cancellationToken);
+                    if (document is null)
+                    {
+                        FLogger.Append(ELog.Warning, () =>
+                            FLogger.Text($"{entry.Name} is not a widget blueprint", Constants.WHITE, true));
+                        return;
+                    }
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => new WidgetDesignerWindow(document).Show());
                     return;
                 }
 

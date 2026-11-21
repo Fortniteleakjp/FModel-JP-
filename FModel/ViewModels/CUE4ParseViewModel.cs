@@ -89,6 +89,7 @@ using FModel.Services.Athena;
 using FModel.Settings;
 using FModel.Views;
 using FModel.Views.Resources.Controls;
+using FModel.ViewModels.WidgetDesigner;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Serilog;
@@ -1807,6 +1808,25 @@ public partial class CUE4ParseViewModel : ViewModel
                 }
 
                 return false;
+            }
+            case UWidgetBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWidgets:
+            {
+                // UMG / Editor Utility Widgets: show the designer instead of an empty 3D viewer
+                UmgDocument document;
+                try
+                {
+                    document = UmgLoader.Load(Provider, pkg, pkg.Name, cancellationToken);
+                }
+                catch (Exception e) when (e is not OperationCanceledException)
+                {
+                    // the JSON is already shown, a widget tree we can't draw shouldn't fail the whole extraction
+                    Log.Warning(e, "Failed to read the widget tree of {Package}", pkg.Name);
+                    return false;
+                }
+                if (document is null) return false;
+
+                Application.Current.Dispatcher.Invoke(() => new WidgetDesignerWindow(document).Show());
+                return true;
             }
             case UWorld when isNone && UserSettings.Default.PreviewWorlds:
             case UBlueprintGeneratedClass when isNone && UserSettings.Default.PreviewWorlds:

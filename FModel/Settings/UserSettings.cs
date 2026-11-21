@@ -970,6 +970,13 @@ public sealed class UserSettings : ViewModel
         set => SetProperty(ref _previewWorlds, value);
     }
 
+    private bool _previewWidgets = true;
+    public bool PreviewWidgets
+    {
+        get => _previewWidgets;
+        set => SetProperty(ref _previewWidgets, value);
+    }
+
     private bool _saveMorphTargets = true;
     public bool SaveMorphTargets
     {

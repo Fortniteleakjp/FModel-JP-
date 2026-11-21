@@ -259,6 +259,16 @@
     <system:String x:Key="UI_OpenAsTable">Open as Table</system:String>
     <system:String x:Key="UI_OpenMaterialGraph">Open Material Graph</system:String>
     <system:String x:Key="UI_OpenBlueprintGraph">Open Blueprint Graph</system:String>
+    <system:String x:Key="UI_OpenWidgetDesigner">Open in Widget Designer</system:String>
+    <system:String x:Key="UI_WidgetDesigner">Widget Designer</system:String>
+    <system:String x:Key="UI_WidgetDesigner_OpenFile">Widget Designer (open .uasset file)...</system:String>
+    <system:String x:Key="UI_WidgetDesigner_ScreenSize">Screen size</system:String>
+    <system:String x:Key="UI_WidgetDesigner_Width">Width</system:String>
+    <system:String x:Key="UI_WidgetDesigner_Height">Height</system:String>
+    <system:String x:Key="UI_WidgetDesigner_Outlines">Outlines</system:String>
+    <system:String x:Key="UI_WidgetDesigner_Filter">Search widgets...</system:String>
+    <system:String x:Key="UI_WidgetDesigner_Empty">This widget blueprint has no widgets</system:String>
+    <system:String x:Key="UI_WidgetDesigner_Desired">Desired size</system:String>
     <system:String x:Key="UI_OpenWorldOutliner">Open World Outliner</system:String>
     <system:String x:Key="UI_OpenAsset">Open Asset</system:String>
     <system:String x:Key="UI_OpenImage">Open Image</system:String>
@@ -290,6 +300,7 @@
     <system:String x:Key="UI_PreviewSkeletalMeshes">Preview Skeletal Meshes</system:String>
     <system:String x:Key="UI_PreviewStaticMeshes">Preview Static Meshes</system:String>
     <system:String x:Key="UI_PreviewWorldsUmap">Preview Worlds (.umap)</system:String>
+    <system:String x:Key="UI_PreviewWidgets">Open Widget Blueprints in the Widget Designer</system:String>
     <system:String x:Key="UI_Previous">Previous</system:String>
     <system:String x:Key="UI_PreviousAudio">Previous Audio</system:String>
     <system:String x:Key="UI_PropertiesJson">Properties (.json)</system:String>

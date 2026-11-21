@@ -412,6 +412,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -451,8 +452,13 @@
                               IsChecked="{Binding PreviewWorlds, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="{DynamicResource UI_HandleSkeletonsAsEmptyMeshes}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="{DynamicResource UI_PreviewWidgets}" VerticalAlignment="Center" Margin="0 0 0 5" />
                     <CheckBox Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
+                              IsChecked="{Binding PreviewWidgets, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
+                              Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 5"/>
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="{DynamicResource UI_HandleSkeletonsAsEmptyMeshes}" VerticalAlignment="Center" />
+                    <CheckBox Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="3" Content="{Binding IsChecked, RelativeSource={RelativeSource Self}, Converter={x:Static converters:BoolToToggleConverter.Instance}}"
                               IsChecked="{Binding SaveSkeletonAsMesh, Source={x:Static local:Settings.UserSettings.Default}, Mode=TwoWay}"
                               Style="{DynamicResource {x:Static adonisUi:Styles.ToggleSwitch}}" Margin="0 5 0 0"/>
                 </Grid>

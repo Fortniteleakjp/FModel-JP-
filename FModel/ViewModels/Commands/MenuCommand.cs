@@ -60,6 +60,9 @@ public class MenuCommand : ViewModelCommand<ApplicationViewModel>
             case "Views_MemberUsage":
                 new MemberUsageWindow().Show();
                 break;
+            case "Views_WidgetDesigner":
+                WidgetDesignerWindow.OpenFromDisk();
+                break;
             case "Views_ImageMerger":
                 Helper.OpenWindow<AdonisWindow>("Image Merger", () => new ImageMerger().Show());
                 break;
